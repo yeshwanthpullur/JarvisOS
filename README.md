@@ -19,6 +19,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 - Executive JARVIS Core as the permanent request entry point
 - Conversation and Command engines for the interactive operating interface
 - Agent Creator Framework for future blueprint-driven agent manufacturing
+- Reflection and Learning Framework for post-execution evaluation and improvement
 
 ## Folder Structure
 
@@ -46,6 +47,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 | `task_intelligence/` | Project, goal, milestone, priority, scheduling, progress, dashboard, and reporting intelligence above the task engine. |
 | `research/` | Research intelligence and learning engine for structured research, knowledge building, and learning plans. |
 | `reasoning/` | Executive reasoning and decision engine for evaluating alternatives, plans, confidence, and decisions before execution. |
+| `reflection/` | Reflection and learning engine for post-execution analysis, improvement metadata, and pattern capture. |
 | `plugins/` | Official extension framework, plugin manifests, lifecycle, permissions, and example plugins. |
 | `server/` | Future API server, background services, and network interfaces. |
 | `skills/` | Reusable abilities that future agents can call. |
@@ -96,6 +98,8 @@ JARVIS is the Executive Intelligence layer, not an agent. Every future user requ
 Structured workflows are created by JARVIS and executed by the Workflow Engine. Provider work inside a workflow still routes only through `ProviderRouter` and the Provider Execution Framework.
 
 Retrieval is the precision layer above storage. JARVIS decides what information is needed, and the Retrieval Engine determines how to obtain it from memory, knowledge, Obsidian, and history sources without duplicating storage.
+
+Reflection is the post-execution counterpart to reasoning. Reasoning decides before execution; reflection evaluates afterward and prepares learning metadata for future executive judgment. It never replaces Executive JARVIS or the Provider Router.
 
 ## Conversation And Commands
 

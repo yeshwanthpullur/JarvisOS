@@ -31,6 +31,7 @@ from jarvis.jarvis_tasks import JarvisTasks
 from jarvis.jarvis_tools import JarvisTools
 from jarvis.jarvis_validator import JarvisValidator
 from reasoning import ReasoningManager
+from reflection import ReflectionManager
 from retrieval import RetrievalManager
 from workflow import WorkflowManager
 
@@ -47,6 +48,7 @@ class JarvisExecutiveStatistics:
     dispatcher_status: str
     planning_status: str
     reasoning_status: str
+    reflection_status: str
     providers_status: str
     memory_status: str
     knowledge_status: str
@@ -77,6 +79,8 @@ class JarvisManager:
         self.event_bus = JarvisEventBus(self.logger)
         reasoning_manager = context.metadata.get("reasoning_manager") if context else None
         self.reasoning = reasoning_manager if isinstance(reasoning_manager, ReasoningManager) else ReasoningManager()
+        reflection_manager = context.metadata.get("reflection_manager") if context else None
+        self.reflection = reflection_manager if isinstance(reflection_manager, ReflectionManager) else ReflectionManager()
         self.controller = JarvisController(reasoning_manager=self.reasoning)
         self.memory = JarvisMemory(context.memory_manager if context else None)
         self.knowledge = JarvisKnowledge(
@@ -112,6 +116,8 @@ class JarvisManager:
         self.runtime.start()
         if not self.reasoning.initialized:
             self.reasoning.initialize()
+        if not self.reflection.initialized:
+            self.reflection.initialize()
         self.department_registry.load_defaults()
         self.metrics.startup_count += 1
         self.health.heartbeat()
@@ -129,6 +135,7 @@ class JarvisManager:
             "workflow": self.workflow,
             "retrieval": self.retrieval,
             "reasoning": self.reasoning,
+            "reflection": self.reflection,
             "departments": self.department_registry,
         }.items():
             self.registry.register(key, component, "executive")
@@ -160,6 +167,7 @@ class JarvisManager:
             dispatcher_status="ready" if self.controller.dispatcher.initialized else "unavailable",
             planning_status="ready" if self.controller.planning.initialized else "unavailable",
             reasoning_status="ready" if self.reasoning.initialized else "unavailable",
+            reflection_status="ready" if self.reflection.initialized else "unavailable",
             providers_status="ready" if self.providers.initialized else "unavailable",
             memory_status="ready" if self.memory.initialized else "unavailable",
             knowledge_status="ready" if self.knowledge.initialized else "unavailable",

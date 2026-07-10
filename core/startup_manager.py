@@ -24,6 +24,7 @@ from providers import ProviderManager, ProviderRouter, ProviderRouterStatistics
 from retrieval import RetrievalManager, RetrievalStatistics
 from research import ResearchManager, ResearchStatistics
 from reasoning import ReasoningManager, ReasoningStatistics
+from reflection import ReflectionManager, ReflectionStatistics
 from workflow import WorkflowManager, WorkflowStatistics
 from task_intelligence import TaskIntelligenceManager, TaskIntelligenceStatistics
 from tasks import TaskEngineStatistics, TaskManager
@@ -54,6 +55,7 @@ class StartupManager:
         self.task_intelligence_manager: TaskIntelligenceManager | None = None
         self.research_manager: ResearchManager | None = None
         self.reasoning_manager: ReasoningManager | None = None
+        self.reflection_manager: ReflectionManager | None = None
         self.health_results: tuple[HealthResult, ...] = ()
         self.memory_statistics: MemoryStatistics | None = None
         self.brain_statistics: BrainStatistics | None = None
@@ -64,6 +66,7 @@ class StartupManager:
         self.retrieval_statistics: RetrievalStatistics | None = None
         self.research_statistics: ResearchStatistics | None = None
         self.reasoning_statistics: ReasoningStatistics | None = None
+        self.reflection_statistics: ReflectionStatistics | None = None
         self.agent_statistics: AgentFrameworkStatistics | None = None
         self.agent_creator: AgentCreator | None = None
         self.agent_creator_statistics: AgentCreatorStatistics | None = None
@@ -169,6 +172,10 @@ class StartupManager:
         self.reasoning_statistics = self.reasoning_manager.initialize()
         self.status.mark_module_loaded("reasoning")
 
+        self.reflection_manager = ReflectionManager(logger=logging.getLogger("reflection"))
+        self.reflection_statistics = self.reflection_manager.initialize()
+        self.status.mark_module_loaded("reflection")
+
         self.plugin_manager = PluginManager(
             plugin_dir=self.settings.plugins.plugin_dir,
             settings=self.settings,
@@ -223,6 +230,7 @@ class StartupManager:
                 "provider_manager": self.provider_manager,
                 "provider_execution_manager": self.provider_execution_manager,
                 "reasoning_manager": self.reasoning_manager,
+                "reflection_manager": self.reflection_manager,
             },
         )
         self.jarvis_core = JarvisCore(context=jarvis_context)
@@ -488,6 +496,9 @@ class StartupManager:
                 "reasoning": lambda: (
                     self.reasoning_manager is not None and self.reasoning_manager.initialized
                 ),
+                "reflection": lambda: (
+                    self.reflection_manager is not None and self.reflection_manager.initialized
+                ),
                 "reasoning_engine": lambda: (
                     self.reasoning_manager is not None and self.reasoning_manager.engine.initialized
                 ),
@@ -514,6 +525,44 @@ class StartupManager:
                 "confidence_engine": lambda: (
                     self.reasoning_manager is not None
                     and self.reasoning_manager.engine.confidence_engine.initialized
+                ),
+                "reflection": lambda: (
+                    self.reflection_manager is not None and self.reflection_manager.initialized
+                ),
+                "reflection_engine": lambda: (
+                    self.reflection_manager is not None and self.reflection_manager.engine.initialized
+                ),
+                "reflection_analyzer": lambda: (
+                    self.reflection_manager is not None
+                    and self.reflection_manager.engine.analyzer.initialized
+                ),
+                "reflection_learning": lambda: (
+                    self.reflection_manager is not None
+                    and self.reflection_manager.engine.learning.initialized
+                ),
+                "reflection_patterns": lambda: (
+                    self.reflection_manager is not None
+                    and self.reflection_manager.engine.patterns.initialized
+                ),
+                "reflection_confidence": lambda: (
+                    self.reflection_manager is not None
+                    and self.reflection_manager.engine.confidence.initialized
+                ),
+                "reflection_improvement": lambda: (
+                    self.reflection_manager is not None
+                    and self.reflection_manager.engine.improvement.initialized
+                ),
+                "reflection_registry": lambda: (
+                    self.reflection_manager is not None
+                    and self.reflection_manager.registry.initialized
+                ),
+                "reflection_metrics": lambda: (
+                    self.reflection_manager is not None
+                    and self.reflection_manager.metrics is not None
+                ),
+                "reflection_diagnostics": lambda: (
+                    self.reflection_manager is not None
+                    and self.reflection_manager.diagnostics is not None
                 ),
                 "plugins": lambda: (
                     self.plugin_manager is not None
@@ -844,6 +893,15 @@ class StartupManager:
             print(f"    Planning Status: {reasoning_stats.planning_status}")
             print(f"    Confidence Status: {reasoning_stats.confidence_status}")
             print(f"    Overall Intelligence Status: {reasoning_stats.overall_intelligence_status}")
+        if self.reflection_manager is not None:
+            reflection_stats = self.reflection_manager.statistics()
+            print("  Reflection Engine Initialized")
+            print(f"    Reflection Status: {reflection_stats.reflection_status}")
+            print(f"    Learning Status: {reflection_stats.learning_status}")
+            print(f"    Pattern Status: {reflection_stats.pattern_status}")
+            print(f"    Confidence Status: {reflection_stats.confidence_status}")
+            print(f"    Improvement Status: {reflection_stats.improvement_status}")
+            print(f"    Overall Reflection Health: {reflection_stats.overall_reflection_health}")
         if self.plugin_statistics is not None:
             print("  Plugin Framework Initialized")
             print(f"    Loaded Plugins: {self.plugin_statistics.loaded_plugins}")
@@ -1036,6 +1094,12 @@ class StartupManager:
             print(f"  Decision status: {rz.decision_status}")
             print(f"  Planning status: {rz.planning_status}")
             print(f"  Confidence status: {rz.confidence_status}")
+        if self.reflection_manager is not None:
+            rf = self.reflection_manager.statistics()
+            print(f"  Reflection status: {rf.reflection_status}")
+            print(f"  Learning status: {rf.learning_status}")
+            print(f"  Pattern status: {rf.pattern_status}")
+            print(f"  Improvement status: {rf.improvement_status}")
         if self.plugin_statistics is not None:
             print(f"  Loaded plugins: {self.plugin_statistics.loaded_plugins}")
             print(f"  Enabled plugins: {self.plugin_statistics.enabled_plugins}")
