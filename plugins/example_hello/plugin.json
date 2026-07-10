@@ -1,0 +1,14 @@
+{
+  "name": "Hello Plugin",
+  "id": "hello_plugin",
+  "version": "0.1.0",
+  "author": "JARVIS OS",
+  "description": "Example plugin proving the plugin framework lifecycle.",
+  "permissions": ["notifications"],
+  "dependencies": [],
+  "configuration": {
+    "message": "Plugin Loaded Successfully"
+  },
+  "compatibility_version": "0.1",
+  "entry_point": "plugin:HelloPlugin"
+}

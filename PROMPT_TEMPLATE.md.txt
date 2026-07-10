@@ -1,0 +1,15 @@
+Read MASTER_SPEC.md.
+
+Read PROJECT_RULES.md.
+
+Read the entire existing project before making changes.
+
+Do not overwrite working modules.
+
+Extend the existing architecture.
+
+Maintain backward compatibility.
+
+OBJECTIVE
+
+<Write today's task here>

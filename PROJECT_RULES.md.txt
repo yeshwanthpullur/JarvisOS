@@ -1,0 +1,285 @@
+# JARVIS OS - PROJECT RULES
+
+Version: 1.0
+
+These rules apply to every future development task.
+
+---
+
+# 1. BEFORE CODING
+
+Always:
+
+- Read MASTER_SPEC.md.
+- Read PROJECT_RULES.md.
+- Read the entire project before making changes.
+- Understand the current architecture.
+- Preserve working code.
+
+Never overwrite existing working modules.
+
+Always extend existing functionality.
+
+---
+
+# 2. ARCHITECTURE
+
+JARVIS OS is built using modular architecture.
+
+Core coordinates everything.
+
+Managers manage systems.
+
+Agents perform work.
+
+Plugins provide capabilities.
+
+Providers connect AI models.
+
+Memory stores structured knowledge.
+
+Obsidian stores human-readable knowledge.
+
+Everything should be replaceable.
+
+---
+
+# 3. PROVIDERS
+
+Never hardcode:
+
+- OpenAI
+- Claude
+- Gemini
+- Ollama
+- DeepSeek
+- Grok
+- Mistral
+- Any future AI
+
+Always communicate through:
+
+ProviderRouter
+
+Every provider must implement the same interface.
+
+Future providers should work without modifying the rest of the project.
+
+---
+
+# 4. MEMORY
+
+SQLite is the structured memory.
+
+Obsidian is the human-readable brain.
+
+Knowledge databases remain separate from memories.
+
+Never duplicate data.
+
+Use IDs instead of duplicated content.
+
+---
+
+# 5. DEVELOPMENT
+
+Every feature must include:
+
+- Documentation
+- Logging
+- Error handling
+- Unit tests
+- Configuration
+- Type hints
+- Clean architecture
+
+---
+
+# 6. CODE QUALITY
+
+Use:
+
+SOLID
+
+DRY
+
+KISS
+
+Composition over inheritance.
+
+Small modules.
+
+Small functions.
+
+Readable code.
+
+No hacks.
+
+No temporary shortcuts.
+
+No duplicate logic.
+
+---
+
+# 7. PLUGINS
+
+New capabilities should become plugins whenever possible.
+
+Core should remain lightweight.
+
+Plugins should be installable and removable.
+
+Plugins should declare:
+
+- Name
+- Version
+- Dependencies
+- Permissions
+
+---
+
+# 8. AGENTS
+
+Agents perform tasks.
+
+Managers coordinate agents.
+
+Agents should remain independent.
+
+Multiple agents should eventually execute tasks concurrently.
+
+---
+
+# 9. SECURITY
+
+Never expose:
+
+API Keys
+
+Passwords
+
+Tokens
+
+Secrets
+
+Store secrets in:
+
+.env
+
+Never hardcode credentials.
+
+---
+
+# 10. CONFIGURATION
+
+Everything configurable belongs in:
+
+config.yaml
+
+or
+
+.env
+
+Never hardcode user paths.
+
+---
+
+# 11. SCALABILITY
+
+Design every module so it can later support:
+
+Unlimited AI providers
+
+Unlimited plugins
+
+Unlimited agents
+
+Distributed execution
+
+Cloud execution
+
+Local execution
+
+Offline mode
+
+Online mode
+
+Multiple operating systems
+
+Future hardware
+
+---
+
+# 12. FUTURE VISION
+
+JARVIS should eventually:
+
+Learn continuously.
+
+Improve itself through approved updates.
+
+Support phone and desktop.
+
+Understand:
+
+PDFs
+
+Videos
+
+Images
+
+Audio
+
+GitHub
+
+Websites
+
+Research papers
+
+Books
+
+Notes
+
+Emails
+
+Calendars
+
+Documents
+
+Control applications.
+
+Build skills.
+
+Execute workflows.
+
+Coordinate specialized agents.
+
+Switch AI providers automatically.
+
+Run locally, in the cloud, or hybrid.
+
+Remain modular for future expansion.
+
+---
+
+# 13. DEVELOPMENT WORKFLOW
+
+For every task:
+
+Read the project.
+
+Plan.
+
+Implement.
+
+Write tests.
+
+Write documentation.
+
+Run tests.
+
+Verify startup.
+
+Provide an END OF TASK REPORT.
+
+Never claim success without verification.

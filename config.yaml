@@ -1,0 +1,75 @@
+general:
+  app_name: JARVIS OS
+  environment: development
+  debug: false
+
+logging:
+  level: INFO
+  log_dir: logs
+  log_file: jarvis-os.log
+  max_bytes: 1048576
+  backup_count: 5
+
+memory:
+  enabled: true
+  storage_dir: memory
+  task_store_dir: data/tasks
+  vector_index_dir: data/vector-indexes
+
+brain:
+  enabled: true
+  vault_path: data/obsidian-vault
+  vault_name: Jarvis Brain
+  auto_create_vault: true
+  daily_note_format: "%Y-%m-%d"
+
+models:
+  default_model: ""
+  fallback_model: ""
+  allow_local_models: true
+
+providers:
+  default_provider: ""
+  enabled_providers: []
+  timeout_seconds: 30
+  max_retries: 2
+  track_costs: true
+  definitions: {}
+
+agents:
+  enabled: true
+  max_concurrent_agents: 4
+  workspace_dir: data/agent-workspaces
+
+plugins:
+  enabled: true
+  plugin_dir: plugins
+  allow_user_plugins: false
+  auto_discover: true
+  auto_enable: true
+  compatibility_version: "0.1"
+
+downloads:
+  download_dir: data/downloads
+  max_concurrent_downloads: 3
+  verify_integrity: true
+
+automation:
+  enabled: false
+  queue_dir: data/automation-queue
+  max_concurrent_jobs: 2
+
+security:
+  secrets_dir: data/secrets
+  allow_shell_execution: false
+  allow_network_access: true
+  require_confirmation_for_installers: true
+
+desktop:
+  enabled: true
+  platform: windows
+  downloads_folder: ""
+
+mobile:
+  enabled: false
+  api_enabled: false
