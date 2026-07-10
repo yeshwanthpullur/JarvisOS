@@ -20,6 +20,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 - Conversation and Command engines for the interactive operating interface
 - Agent Creator Framework for future blueprint-driven agent manufacturing
 - Reflection and Learning Framework for post-execution evaluation and improvement
+- Adaptive Intelligence Loop for executive-approved learning recommendations
 
 ## Folder Structure
 
@@ -48,6 +49,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 | `research/` | Research intelligence and learning engine for structured research, knowledge building, and learning plans. |
 | `reasoning/` | Executive reasoning and decision engine for evaluating alternatives, plans, confidence, and decisions before execution. |
 | `reflection/` | Reflection and learning engine for post-execution analysis, improvement metadata, and pattern capture. |
+| `adaptive/` | Adaptive intelligence loop for executive-approved learning recommendations and adaptation queues. |
 | `plugins/` | Official extension framework, plugin manifests, lifecycle, permissions, and example plugins. |
 | `server/` | Future API server, background services, and network interfaces. |
 | `skills/` | Reusable abilities that future agents can call. |
@@ -100,6 +102,8 @@ Structured workflows are created by JARVIS and executed by the Workflow Engine. 
 Retrieval is the precision layer above storage. JARVIS decides what information is needed, and the Retrieval Engine determines how to obtain it from memory, knowledge, Obsidian, and history sources without duplicating storage.
 
 Reflection is the post-execution counterpart to reasoning. Reasoning decides before execution; reflection evaluates afterward and prepares learning metadata for future executive judgment. It never replaces Executive JARVIS or the Provider Router.
+
+Adaptive Intelligence sits after reflection. It prepares validated learning recommendations and keeps Executive JARVIS as the only authority that can approve adaptation.
 
 ## Conversation And Commands
 

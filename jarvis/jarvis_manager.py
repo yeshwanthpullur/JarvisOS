@@ -32,6 +32,7 @@ from jarvis.jarvis_tools import JarvisTools
 from jarvis.jarvis_validator import JarvisValidator
 from reasoning import ReasoningManager
 from reflection import ReflectionManager
+from adaptive import AdaptiveManager
 from retrieval import RetrievalManager
 from workflow import WorkflowManager
 
@@ -49,6 +50,7 @@ class JarvisExecutiveStatistics:
     planning_status: str
     reasoning_status: str
     reflection_status: str
+    adaptive_status: str
     providers_status: str
     memory_status: str
     knowledge_status: str
@@ -81,6 +83,8 @@ class JarvisManager:
         self.reasoning = reasoning_manager if isinstance(reasoning_manager, ReasoningManager) else ReasoningManager()
         reflection_manager = context.metadata.get("reflection_manager") if context else None
         self.reflection = reflection_manager if isinstance(reflection_manager, ReflectionManager) else ReflectionManager()
+        adaptive_manager = context.metadata.get("adaptive_manager") if context else None
+        self.adaptive = adaptive_manager if isinstance(adaptive_manager, AdaptiveManager) else AdaptiveManager()
         self.controller = JarvisController(reasoning_manager=self.reasoning)
         self.memory = JarvisMemory(context.memory_manager if context else None)
         self.knowledge = JarvisKnowledge(
@@ -118,6 +122,8 @@ class JarvisManager:
             self.reasoning.initialize()
         if not self.reflection.initialized:
             self.reflection.initialize()
+        if not self.adaptive.initialized:
+            self.adaptive.initialize()
         self.department_registry.load_defaults()
         self.metrics.startup_count += 1
         self.health.heartbeat()
@@ -136,6 +142,7 @@ class JarvisManager:
             "retrieval": self.retrieval,
             "reasoning": self.reasoning,
             "reflection": self.reflection,
+            "adaptive": self.adaptive,
             "departments": self.department_registry,
         }.items():
             self.registry.register(key, component, "executive")
@@ -168,6 +175,7 @@ class JarvisManager:
             planning_status="ready" if self.controller.planning.initialized else "unavailable",
             reasoning_status="ready" if self.reasoning.initialized else "unavailable",
             reflection_status="ready" if self.reflection.initialized else "unavailable",
+            adaptive_status="ready" if self.adaptive.initialized else "unavailable",
             providers_status="ready" if self.providers.initialized else "unavailable",
             memory_status="ready" if self.memory.initialized else "unavailable",
             knowledge_status="ready" if self.knowledge.initialized else "unavailable",

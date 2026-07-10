@@ -1,12 +1,14 @@
 # Executive JARVIS Core
 
-JARVIS is the permanent Executive Intelligence layer of JARVIS OS. It is not an agent. Every future request enters JARVIS first, then flows through intent detection, decision metadata, reasoning, retrieval planning, task intelligence, research intelligence, planning, workflow orchestration, dispatch, reflection, existing managers, response building, and history.
+JARVIS is the permanent Executive Intelligence layer of JARVIS OS. It is not an agent. Every future request enters JARVIS first, then flows through intent detection, decision metadata, reasoning, retrieval planning, task intelligence, research intelligence, planning, workflow orchestration, dispatch, reflection, adaptive intelligence, existing managers, response building, and history.
 
 JARVIS never talks directly to AI providers. Provider work must route through the existing Provider Router.
 
 The Conversation Engine and Command Engine now provide the user-facing operating interface for Executive JARVIS. CLI input flows through conversation context, command parsing or request handling, and then into the Executive pipeline.
 
 Reflection is the post-execution counterpart to reasoning. It evaluates completed work, prepares learning metadata, and supports future reasoning improvements. It remains advisory only.
+
+Adaptive Intelligence reviews reflection and learning metadata after execution. It prepares validated recommendations for Executive JARVIS, which remains the only authority that can approve adaptation.
 
 ## Responsibilities
 

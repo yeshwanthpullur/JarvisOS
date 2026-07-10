@@ -25,6 +25,7 @@ from retrieval import RetrievalManager, RetrievalStatistics
 from research import ResearchManager, ResearchStatistics
 from reasoning import ReasoningManager, ReasoningStatistics
 from reflection import ReflectionManager, ReflectionStatistics
+from adaptive import AdaptiveManager, AdaptiveStatistics
 from workflow import WorkflowManager, WorkflowStatistics
 from task_intelligence import TaskIntelligenceManager, TaskIntelligenceStatistics
 from tasks import TaskEngineStatistics, TaskManager
@@ -56,6 +57,7 @@ class StartupManager:
         self.research_manager: ResearchManager | None = None
         self.reasoning_manager: ReasoningManager | None = None
         self.reflection_manager: ReflectionManager | None = None
+        self.adaptive_manager: AdaptiveManager | None = None
         self.health_results: tuple[HealthResult, ...] = ()
         self.memory_statistics: MemoryStatistics | None = None
         self.brain_statistics: BrainStatistics | None = None
@@ -67,6 +69,7 @@ class StartupManager:
         self.research_statistics: ResearchStatistics | None = None
         self.reasoning_statistics: ReasoningStatistics | None = None
         self.reflection_statistics: ReflectionStatistics | None = None
+        self.adaptive_statistics: AdaptiveStatistics | None = None
         self.agent_statistics: AgentFrameworkStatistics | None = None
         self.agent_creator: AgentCreator | None = None
         self.agent_creator_statistics: AgentCreatorStatistics | None = None
@@ -176,6 +179,10 @@ class StartupManager:
         self.reflection_statistics = self.reflection_manager.initialize()
         self.status.mark_module_loaded("reflection")
 
+        self.adaptive_manager = AdaptiveManager(logger=logging.getLogger("adaptive"))
+        self.adaptive_statistics = self.adaptive_manager.initialize()
+        self.status.mark_module_loaded("adaptive")
+
         self.plugin_manager = PluginManager(
             plugin_dir=self.settings.plugins.plugin_dir,
             settings=self.settings,
@@ -231,6 +238,7 @@ class StartupManager:
                 "provider_execution_manager": self.provider_execution_manager,
                 "reasoning_manager": self.reasoning_manager,
                 "reflection_manager": self.reflection_manager,
+                "adaptive_manager": self.adaptive_manager,
             },
         )
         self.jarvis_core = JarvisCore(context=jarvis_context)
@@ -499,6 +507,9 @@ class StartupManager:
                 "reflection": lambda: (
                     self.reflection_manager is not None and self.reflection_manager.initialized
                 ),
+                "adaptive": lambda: (
+                    self.adaptive_manager is not None and self.adaptive_manager.initialized
+                ),
                 "reasoning_engine": lambda: (
                     self.reasoning_manager is not None and self.reasoning_manager.engine.initialized
                 ),
@@ -563,6 +574,40 @@ class StartupManager:
                 "reflection_diagnostics": lambda: (
                     self.reflection_manager is not None
                     and self.reflection_manager.diagnostics is not None
+                ),
+                "adaptive_manager": lambda: (
+                    self.adaptive_manager is not None and self.adaptive_manager.initialized
+                ),
+                "adaptive_engine": lambda: (
+                    self.adaptive_manager is not None and self.adaptive_manager.engine.initialized
+                ),
+                "adaptive_experience": lambda: (
+                    self.adaptive_manager is not None
+                    and self.adaptive_manager.engine.experience.initialized
+                ),
+                "adaptive_policy": lambda: (
+                    self.adaptive_manager is not None
+                    and self.adaptive_manager.engine.policy is not None
+                ),
+                "adaptive_rules": lambda: (
+                    self.adaptive_manager is not None
+                    and self.adaptive_manager.engine.rules.initialized
+                ),
+                "adaptive_learning_queue": lambda: (
+                    self.adaptive_manager is not None
+                    and self.adaptive_manager.engine.queue.initialized
+                ),
+                "adaptive_registry": lambda: (
+                    self.adaptive_manager is not None
+                    and self.adaptive_manager.registry.initialized
+                ),
+                "adaptive_metrics": lambda: (
+                    self.adaptive_manager is not None
+                    and self.adaptive_manager.metrics is not None
+                ),
+                "adaptive_diagnostics": lambda: (
+                    self.adaptive_manager is not None
+                    and self.adaptive_manager.diagnostics is not None
                 ),
                 "plugins": lambda: (
                     self.plugin_manager is not None
@@ -902,6 +947,15 @@ class StartupManager:
             print(f"    Confidence Status: {reflection_stats.confidence_status}")
             print(f"    Improvement Status: {reflection_stats.improvement_status}")
             print(f"    Overall Reflection Health: {reflection_stats.overall_reflection_health}")
+        if self.adaptive_manager is not None:
+            adaptive_stats = self.adaptive_manager.statistics()
+            print("  Adaptive Intelligence Initialized")
+            print(f"    Adaptive Intelligence Status: {adaptive_stats.adaptive_status}")
+            print(f"    Experience Status: {adaptive_stats.experience_status}")
+            print(f"    Learning Queue Status: {adaptive_stats.learning_queue_status}")
+            print(f"    Policy Status: {adaptive_stats.policy_status}")
+            print(f"    Rules Status: {adaptive_stats.rules_status}")
+            print(f"    Overall Adaptive Intelligence Health: {adaptive_stats.overall_adaptive_health}")
         if self.plugin_statistics is not None:
             print("  Plugin Framework Initialized")
             print(f"    Loaded Plugins: {self.plugin_statistics.loaded_plugins}")
@@ -1100,6 +1154,12 @@ class StartupManager:
             print(f"  Learning status: {rf.learning_status}")
             print(f"  Pattern status: {rf.pattern_status}")
             print(f"  Improvement status: {rf.improvement_status}")
+        if self.adaptive_manager is not None:
+            ad = self.adaptive_manager.statistics()
+            print(f"  Adaptive status: {ad.adaptive_status}")
+            print(f"  Experience status: {ad.experience_status}")
+            print(f"  Learning queue status: {ad.learning_queue_status}")
+            print(f"  Rules status: {ad.rules_status}")
         if self.plugin_statistics is not None:
             print(f"  Loaded plugins: {self.plugin_statistics.loaded_plugins}")
             print(f"  Enabled plugins: {self.plugin_statistics.enabled_plugins}")
