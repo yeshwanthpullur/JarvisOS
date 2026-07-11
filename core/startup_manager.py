@@ -21,6 +21,7 @@ from memory import MemoryManager, MemoryStatistics
 from plugins import PluginFrameworkStatistics, PluginManager
 from provider_execution import ExecutionManager, ProviderExecutionContext, ProviderExecutionStatistics
 from providers import ProviderManager, ProviderRouter, ProviderRouterStatistics
+from personal_intelligence import PersonalIntelligenceManager, PersonalIntelligenceStatistics
 from retrieval import RetrievalManager, RetrievalStatistics
 from research import ResearchManager, ResearchStatistics
 from reasoning import ReasoningManager, ReasoningStatistics
@@ -53,6 +54,7 @@ class StartupManager:
         self.task_manager: TaskManager | None = None
         self.workflow_manager: WorkflowManager | None = None
         self.retrieval_manager: RetrievalManager | None = None
+        self.personal_intelligence_manager: PersonalIntelligenceManager | None = None
         self.task_intelligence_manager: TaskIntelligenceManager | None = None
         self.research_manager: ResearchManager | None = None
         self.reasoning_manager: ReasoningManager | None = None
@@ -66,6 +68,7 @@ class StartupManager:
         self.task_statistics: TaskEngineStatistics | None = None
         self.workflow_statistics: WorkflowStatistics | None = None
         self.retrieval_statistics: RetrievalStatistics | None = None
+        self.personal_intelligence_statistics: PersonalIntelligenceStatistics | None = None
         self.research_statistics: ResearchStatistics | None = None
         self.reasoning_statistics: ReasoningStatistics | None = None
         self.reflection_statistics: ReflectionStatistics | None = None
@@ -163,6 +166,14 @@ class StartupManager:
         self.retrieval_statistics = self.retrieval_manager.initialize()
         self.status.mark_module_loaded("retrieval")
 
+        self.personal_intelligence_manager = PersonalIntelligenceManager(
+            memory_manager=self.memory_manager,
+            retrieval_manager=self.retrieval_manager,
+            logger=logging.getLogger("personal_intelligence"),
+        )
+        self.personal_intelligence_statistics = self.personal_intelligence_manager.initialize()
+        self.status.mark_module_loaded("personal_intelligence")
+
         self.task_intelligence_manager = TaskIntelligenceManager(logger=logging.getLogger("task_intelligence"))
         self.task_intelligence_statistics = self.task_intelligence_manager.initialize()
         self.status.mark_module_loaded("task_intelligence")
@@ -239,6 +250,7 @@ class StartupManager:
                 "reasoning_manager": self.reasoning_manager,
                 "reflection_manager": self.reflection_manager,
                 "adaptive_manager": self.adaptive_manager,
+                "personal_intelligence_manager": self.personal_intelligence_manager,
             },
         )
         self.jarvis_core = JarvisCore(context=jarvis_context)
@@ -412,6 +424,19 @@ class StartupManager:
                 "retrieval_diagnostics": lambda: (
                     self.retrieval_manager is not None
                     and self.retrieval_manager.diagnostics.initialized
+                ),
+                "personal_intelligence": lambda: (
+                    self.personal_intelligence_manager is not None
+                    and self.personal_intelligence_manager.initialized
+                ),
+                "personal_memory": lambda: (
+                    self.personal_intelligence_manager is not None
+                    and self.personal_intelligence_manager.memory_manager is not None
+                    and self.personal_intelligence_manager.memory_manager.initialized
+                ),
+                "personal_retrieval": lambda: (
+                    self.personal_intelligence_manager is not None
+                    and self.personal_intelligence_manager.retrieval_manager is not None
                 ),
                 "task_intelligence": lambda: (
                     self.task_intelligence_manager is not None
@@ -913,6 +938,14 @@ class StartupManager:
             print(f"    Cache Status: {retrieval_stats.cache_status}")
             print(f"    Ranking Status: {retrieval_stats.ranking_status}")
             print(f"    Overall Retrieval Health: {retrieval_stats.overall_retrieval_health}")
+        if self.personal_intelligence_manager is not None:
+            personal_stats = self.personal_intelligence_manager.statistics()
+            print("  Personal Intelligence Initialized")
+            print(f"    Personal Intelligence Status: {personal_stats.personal_intelligence_status}")
+            print(f"    Personal Memory Readiness: {personal_stats.personal_memory_readiness}")
+            print(f"    Personal Retrieval Readiness: {personal_stats.personal_retrieval_readiness}")
+            print(f"    Active Personal Items: {personal_stats.active_personal_items}")
+            print(f"    Overall Personal Intelligence Health: {personal_stats.overall_personal_intelligence_health}")
         if self.task_intelligence_manager is not None:
             task_intel_stats = self.task_intelligence_manager.statistics()
             print("  Task Intelligence Initialized")
@@ -1069,6 +1102,8 @@ class StartupManager:
             self.workflow_statistics = self.workflow_manager.statistics()
         if self.retrieval_manager is not None and self.retrieval_manager.initialized:
             self.retrieval_statistics = self.retrieval_manager.statistics()
+        if self.personal_intelligence_manager is not None and self.personal_intelligence_manager.initialized:
+            self.personal_intelligence_statistics = self.personal_intelligence_manager.statistics()
         if self.plugin_manager is not None and self.plugin_manager.initialized:
             self.plugin_statistics = self.plugin_manager.statistics()
         if self.task_manager is not None and self.task_manager.initialized:

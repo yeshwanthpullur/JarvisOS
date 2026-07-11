@@ -4,6 +4,8 @@ Memory remains the permanent structured store for JARVIS OS. Reflection does not
 
 Adaptive Intelligence also does not duplicate memory storage. It prepares learning recommendations and reference metadata for Executive review.
 
+Personal Intelligence stores only durable user-specific facts, preferences, and explainable inferences through the same Memory Engine records and metadata. It is a service layer over memory, not a separate database.
+
 The Memory Engine stores persistent structured memory in SQLite.
 
 It is the storage layer for memories, sessions, projects, tags, and relationships.

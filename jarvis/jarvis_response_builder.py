@@ -32,6 +32,8 @@ class JarvisResponseBuilder:
                 "strategy": decision.strategy.value,
                 "department": dispatch.selected_department,
                 "plan_steps": len(plan.steps),
+                "personal_context_applied": bool(request.metadata.get("personal_context"))
+                and not bool(request.metadata.get("personal_context", {}).get("override_current_instruction")),
+                "personal_preferences": len(request.metadata.get("personal_context", {}).get("active_preferences", ())),
             },
         )
-

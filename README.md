@@ -21,6 +21,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 - Agent Creator Framework for future blueprint-driven agent manufacturing
 - Reflection and Learning Framework for post-execution evaluation and improvement
 - Adaptive Intelligence Loop for executive-approved learning recommendations
+- Personal Intelligence layer for evidence-based user preferences and context
 
 ## Folder Structure
 
@@ -45,6 +46,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 | `provider_execution/` | Intelligent provider execution framework for provider/model selection, health, metrics, fallback, recovery, diagnostics, and execution history. |
 | `workflow/` | Workflow and orchestration engine for workflow creation, validation, scheduling, execution, checkpoints, recovery, history, metrics, and diagnostics. |
 | `retrieval/` | Retrieval layer for memory, knowledge, Obsidian, history, cache, ranking, diagnostics, and context-aware lookup. |
+| `personal_intelligence/` | Evidence-based personal context layer built on top of Memory and Retrieval. |
 | `task_intelligence/` | Project, goal, milestone, priority, scheduling, progress, dashboard, and reporting intelligence above the task engine. |
 | `research/` | Research intelligence and learning engine for structured research, knowledge building, and learning plans. |
 | `reasoning/` | Executive reasoning and decision engine for evaluating alternatives, plans, confidence, and decisions before execution. |
@@ -104,6 +106,8 @@ Retrieval is the precision layer above storage. JARVIS decides what information 
 Reflection is the post-execution counterpart to reasoning. Reasoning decides before execution; reflection evaluates afterward and prepares learning metadata for future executive judgment. It never replaces Executive JARVIS or the Provider Router.
 
 Adaptive Intelligence sits after reflection. It prepares validated learning recommendations and keeps Executive JARVIS as the only authority that can approve adaptation.
+
+Personal Intelligence sits on top of Memory and Retrieval. It captures durable user preferences and explainable context, but it does not create a second profile store or override current explicit instructions.
 
 ## Conversation And Commands
 

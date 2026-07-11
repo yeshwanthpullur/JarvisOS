@@ -25,6 +25,17 @@ class ConversationEngine:
         validation = self.validator.validate_request(request)
         if not validation.valid:
             return ConversationResponse(response=validation.errors[0], warnings=validation.errors, conversation_state=ConversationState.FAILED)
+        personal_manager = context.metadata.get("personal_intelligence_manager")
+        if personal_manager is not None and hasattr(personal_manager, "detect_candidates"):
+            try:
+                personal_manager.detect_candidates(
+                    request.user_input,
+                    source_reference=context.session.conversation_id,
+                    conversation_id=context.session.conversation_id,
+                    request_id=request.timestamp.isoformat() if hasattr(request.timestamp, "isoformat") else None,
+                )
+            except Exception:
+                pass
         if context.command_manager is not None:
             parsed = context.command_manager.parser.parse(request.normalized_input)
             if context.command_manager.registry.lookup(parsed.name) is not None:
@@ -34,7 +45,14 @@ class ConversationEngine:
             return context.command_manager.execute(request.normalized_input.lstrip("/"), context)
         if context.jarvis_core is None:
             return ConversationResponse(response="Executive JARVIS is not available.", conversation_state=ConversationState.FAILED)
-        jarvis_response = context.jarvis_core.handle(JarvisRequest(content=request.user_input, conversation_id=context.session.conversation_id))
+        metadata = dict(context.metadata)
+        jarvis_response = context.jarvis_core.handle(
+            JarvisRequest(
+                content=request.user_input,
+                conversation_id=context.session.conversation_id,
+                metadata=metadata,
+            )
+        )
         return ConversationResponse(
             response=jarvis_response.content,
             execution_summary=jarvis_response.execution_summary,

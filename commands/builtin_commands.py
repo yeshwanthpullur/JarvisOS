@@ -18,6 +18,14 @@ def _text_response(text: str, **metadata: object) -> ConversationResponse:
     return ConversationResponse(response=text, metadata=metadata)
 
 
+def _personal_manager(context: CommandContext):
+    conversation = context.conversation_context
+    if conversation is None:
+        return None
+    metadata = getattr(conversation, "metadata", {}) or {}
+    return metadata.get("personal_intelligence_manager")
+
+
 def register_builtin_commands(registry: CommandRegistry) -> None:
     """Register built-in commands."""
     commands: tuple[tuple[str, str, str, tuple[str, ...], CommandPermission], ...] = (
@@ -56,6 +64,14 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("workflow list", "List workflows", "workflow", (), CommandPermission.WORKFLOW),
         ("config", "Show config summary", "configuration", (), CommandPermission.CONFIGURATION),
         ("config show", "Show configuration metadata", "configuration", (), CommandPermission.CONFIGURATION),
+        ("profile", "Show personal intelligence summary", "personal", (), CommandPermission.CONVERSATION),
+        ("profile show", "Show personal intelligence summary", "personal", (), CommandPermission.CONVERSATION),
+        ("profile list", "List personal intelligence items", "personal", (), CommandPermission.CONVERSATION),
+        ("profile explain", "Explain a personal intelligence item", "personal", (), CommandPermission.CONVERSATION),
+        ("profile update", "Update a personal intelligence item", "personal", (), CommandPermission.CONVERSATION),
+        ("profile forget", "Forget a personal intelligence item", "personal", (), CommandPermission.CONVERSATION),
+        ("profile confirm", "Confirm a personal intelligence item", "personal", (), CommandPermission.CONVERSATION),
+        ("profile reject", "Reject a personal intelligence item", "personal", (), CommandPermission.CONVERSATION),
         ("logs", "Show logs summary", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("logs recent", "Show recent logs metadata", "diagnostic", (), CommandPermission.DIAGNOSTIC),
     )
@@ -85,6 +101,44 @@ def _handler_for(name: str):
             return _text_response(f"Command history: {len(manager.history.list_history())} entries")
         if name == "metrics" and manager is not None:
             return _text_response(f"Commands executed: {manager.metrics.commands_executed}")
+        if name in {"profile", "profile show", "profile list"}:
+            personal = _personal_manager(context)
+            if personal is None:
+                return _text_response("Personal intelligence is not available.")
+            return _text_response(personal.summarize(" ".join(context.arguments) if context.arguments else None))
+        if name == "profile explain":
+            personal = _personal_manager(context)
+            if personal is None:
+                return _text_response("Personal intelligence is not available.")
+            item_id = context.arguments[0] if context.arguments else ""
+            explanation = personal.explain(item_id)
+            return _text_response(str(explanation) if explanation is not None else "Personal item not found.")
+        if name == "profile update":
+            personal = _personal_manager(context)
+            if personal is None:
+                return _text_response("Personal intelligence is not available.")
+            if len(context.arguments) < 2:
+                return _text_response("Usage: profile update <item-id> <new-value>")
+            updated = personal.update(context.arguments[0], value=" ".join(context.arguments[1:]))
+            return _text_response("Personal item updated." if updated is not None else "Personal item not found.")
+        if name == "profile forget":
+            personal = _personal_manager(context)
+            if personal is None:
+                return _text_response("Personal intelligence is not available.")
+            item_id = context.arguments[0] if context.arguments else ""
+            return _text_response("Personal item forgotten." if personal.forget(item_id) else "Personal item not found.")
+        if name == "profile confirm":
+            personal = _personal_manager(context)
+            if personal is None:
+                return _text_response("Personal intelligence is not available.")
+            item_id = context.arguments[0] if context.arguments else ""
+            return _text_response("Personal item confirmed." if personal.confirm(item_id) is not None else "Personal item not found.")
+        if name == "profile reject":
+            personal = _personal_manager(context)
+            if personal is None:
+                return _text_response("Personal intelligence is not available.")
+            item_id = context.arguments[0] if context.arguments else ""
+            return _text_response("Personal item rejected." if personal.reject(item_id) is not None else "Personal item not found.")
         return _text_response(f"{name} command acknowledged.", command=name)
 
     return handler

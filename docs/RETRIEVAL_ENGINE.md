@@ -4,6 +4,8 @@ The Retrieval Engine is the precision lookup layer above storage.
 
 It does not store memory or knowledge. Instead, it decides how to retrieve the exact information required for a request.
 
+Personal Intelligence uses this layer to pull only the relevant preferences, project references, and supporting evidence instead of injecting the full user profile into every request.
+
 Responsibilities:
 - receive retrieval requests
 - determine retrieval strategy

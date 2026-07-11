@@ -105,7 +105,30 @@ class RetrievalEngine:
     ) -> tuple[dict[str, Any], ...]:
         results: list[dict[str, Any]] = []
         if "memory" in sources:
-            results.append({"source": "memory", "reference": "memory:1", "priority": 2, "content": request.query})
+            if context.memory_manager is not None:
+                try:
+                    memories = context.memory_manager.search_memory(
+                        request.query,
+                        tags=("personal-intelligence",),
+                        limit=5,
+                    )
+                    for memory in memories:
+                        results.append(
+                            {
+                                "source": "memory",
+                                "reference": f"memory:{memory.id}",
+                                "priority": memory.importance,
+                                "confidence": memory.metadata.get("personal_intelligence", {}).get("confidence", 0.5),
+                                "classification": memory.metadata.get("personal_intelligence", {}).get("classification", "derived"),
+                                "active": memory.metadata.get("personal_intelligence", {}).get("active", True),
+                                "content": memory.content,
+                                "metadata": memory.metadata,
+                            }
+                        )
+                except Exception:
+                    results.append({"source": "memory", "reference": "memory:1", "priority": 2, "content": request.query})
+            else:
+                results.append({"source": "memory", "reference": "memory:1", "priority": 2, "content": request.query})
         if "knowledge" in sources:
             results.append({"source": "knowledge", "reference": "knowledge:1", "priority": 2, "content": request.query})
         if "conversation" in sources and context.conversation_history is not None:

@@ -33,6 +33,7 @@ from jarvis.jarvis_validator import JarvisValidator
 from reasoning import ReasoningManager
 from reflection import ReflectionManager
 from adaptive import AdaptiveManager
+from personal_intelligence import PersonalIntelligenceManager
 from retrieval import RetrievalManager
 from workflow import WorkflowManager
 
@@ -51,6 +52,7 @@ class JarvisExecutiveStatistics:
     reasoning_status: str
     reflection_status: str
     adaptive_status: str
+    personal_intelligence_status: str
     providers_status: str
     memory_status: str
     knowledge_status: str
@@ -85,6 +87,10 @@ class JarvisManager:
         self.reflection = reflection_manager if isinstance(reflection_manager, ReflectionManager) else ReflectionManager()
         adaptive_manager = context.metadata.get("adaptive_manager") if context else None
         self.adaptive = adaptive_manager if isinstance(adaptive_manager, AdaptiveManager) else AdaptiveManager()
+        personal_manager = context.metadata.get("personal_intelligence_manager") if context else None
+        self.personal_intelligence = (
+            personal_manager if isinstance(personal_manager, PersonalIntelligenceManager) else None
+        )
         self.controller = JarvisController(reasoning_manager=self.reasoning)
         self.memory = JarvisMemory(context.memory_manager if context else None)
         self.knowledge = JarvisKnowledge(
@@ -143,6 +149,7 @@ class JarvisManager:
             "reasoning": self.reasoning,
             "reflection": self.reflection,
             "adaptive": self.adaptive,
+            "personal_intelligence": self.personal_intelligence,
             "departments": self.department_registry,
         }.items():
             self.registry.register(key, component, "executive")
@@ -176,6 +183,7 @@ class JarvisManager:
             reasoning_status="ready" if self.reasoning.initialized else "unavailable",
             reflection_status="ready" if self.reflection.initialized else "unavailable",
             adaptive_status="ready" if self.adaptive.initialized else "unavailable",
+            personal_intelligence_status="ready" if self.personal_intelligence and self.personal_intelligence.initialized else "unavailable",
             providers_status="ready" if self.providers.initialized else "unavailable",
             memory_status="ready" if self.memory.initialized else "unavailable",
             knowledge_status="ready" if self.knowledge.initialized else "unavailable",

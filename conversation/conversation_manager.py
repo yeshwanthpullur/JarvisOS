@@ -15,6 +15,7 @@ from conversation.conversation_request import ConversationRequest
 from conversation.conversation_response import ConversationResponse
 from conversation.conversation_session import ConversationSession
 from conversation.conversation_summary import ConversationSummary
+from personal_intelligence import PersonalIntelligenceManager
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,6 +46,7 @@ class ConversationManager:
         provider_router: object | None = None,
         agent_manager: object | None = None,
         agent_creator: object | None = None,
+        personal_intelligence_manager: PersonalIntelligenceManager | None = None,
         logger: logging.Logger | None = None,
     ) -> None:
         self.jarvis_core = jarvis_core
@@ -60,6 +62,7 @@ class ConversationManager:
         self.provider_router = provider_router
         self.agent_manager = agent_manager
         self.agent_creator = agent_creator
+        self.personal_intelligence = personal_intelligence_manager
         self.logger = logger or logging.getLogger(__name__)
         self.initialized = False
 
@@ -87,6 +90,10 @@ class ConversationManager:
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,
+            metadata={
+                "personal_intelligence_manager": self.personal_intelligence,
+                "personal_context": self.personal_intelligence.apply_context(user_input, conversation_id=self.active_session.conversation_id) if self.personal_intelligence is not None else {},
+            },
         )
         response = self.engine.handle(request, context)
         self.history.append(request, response)
@@ -120,4 +127,3 @@ class ConversationManager:
             session_status="active",
             health_status="healthy",
         )
-

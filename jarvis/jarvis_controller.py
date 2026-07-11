@@ -59,6 +59,7 @@ class JarvisController:
                     "conversation_id": request.conversation_id,
                     "strategy_hint": request.strategy_hint.value if request.strategy_hint else None,
                     "metadata": dict(request.metadata),
+                    "personal_context": request.metadata.get("personal_context", {}),
                 },
             ),
             None,
