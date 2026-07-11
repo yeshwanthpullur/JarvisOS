@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
 from dataclasses import asdict, dataclass
 from typing import Any
 
 from providers.provider_types import ProviderCapability
+from providers.provider_types import ProviderTaskType
 from provider_execution.execution_context import ProviderExecutionContext
 from provider_execution.execution_request import ProviderExecutionRequest
 from provider_execution.execution_response import ProviderExecutionResponse
@@ -211,7 +213,74 @@ class ExecutionManager:
 
     def execute_through_provider_router(self, request: ProviderExecutionRequest) -> ProviderExecutionResponse:
         """Compatibility method naming the only allowed execution gateway."""
-        return self.execute(request)
+        provider_router = getattr(self.context, "provider_router", None)
+        if provider_router is None and getattr(self.context, "provider_manager", None) is not None:
+            provider_router = getattr(self.context.provider_manager, "router", None)
+        if provider_router is None:
+            return self.execute(request)
+        provider_request = self._to_provider_request(request)
+        provider_response = asyncio.run(provider_router.execute_with_failover(provider_request))
+        normalized = ProviderExecutionResponse(
+            response=provider_response.content,
+            provider=provider_response.provider_id,
+            model=provider_response.model,
+            execution_time_ms=0.0,
+            latency_ms=float(provider_response.metadata.get("latency_ms", 0.0)) if isinstance(provider_response.metadata, dict) else 0.0,
+            estimated_cost=request.estimated_cost,
+            token_metadata={
+                "prompt_tokens": provider_response.usage.prompt_tokens,
+                "completion_tokens": provider_response.usage.completion_tokens,
+                "total_tokens": provider_response.usage.total_tokens,
+            },
+            warnings=tuple(provider_response.metadata.get("warnings", ())) if isinstance(provider_response.metadata, dict) else (),
+            diagnostics=dict(provider_response.metadata) if isinstance(provider_response.metadata, dict) else {},
+            statistics=asdict(self.statistics()),
+            success=not bool(provider_response.error),
+        )
+        self._record_history(
+            request,
+            normalized,
+            failure=provider_response.error,
+            recovery=provider_response.metadata.get("recovery") if isinstance(provider_response.metadata, dict) else None,
+        )
+        return normalized
+
+    def _to_provider_request(self, request: ProviderExecutionRequest):
+        from providers.provider_types import ProviderRequest
+
+        return ProviderRequest(
+            prompt=request.goal,
+            goal=request.goal,
+            task_type=self._task_type_for_request(request),
+            model=request.model,
+            request_id=request.request_id,
+            conversation_id=request.conversation_id,
+            system_instructions=str(request.metadata.get("system_instructions", "")),
+            selected_context=dict(request.context),
+            retrieved_evidence=tuple(request.metadata.get("retrieved_evidence", ()) or ()),
+            preferred_provider=request.provider,
+            local_only=bool(request.metadata.get("local_only")),
+            streaming=bool(request.metadata.get("streaming", False)),
+            temperature=request.metadata.get("temperature"),
+            max_output_tokens=request.metadata.get("max_output_tokens"),
+            stop_conditions=tuple(request.metadata.get("stop_conditions", ()) or ()),
+            timeout_seconds=int(request.metadata.get("timeout_seconds", 0) or 0) or None,
+            cancellation_token=request.metadata.get("cancellation_token"),
+            response_schema=request.metadata.get("response_schema"),
+            required_capabilities=request.capabilities,
+            metadata=dict(request.metadata),
+        )
+
+    def _task_type_for_request(self, request: ProviderExecutionRequest) -> ProviderTaskType:
+        task_type = request.metadata.get("task_type")
+        if isinstance(task_type, ProviderTaskType):
+            return task_type
+        if isinstance(task_type, str):
+            try:
+                return ProviderTaskType(task_type)
+            except ValueError:
+                pass
+        return ProviderTaskType.CHAT
 
     def handle_failures(self, request: ProviderExecutionRequest, message: str) -> ProviderExecutionResponse:
         """Create recovery metadata for a provider failure."""

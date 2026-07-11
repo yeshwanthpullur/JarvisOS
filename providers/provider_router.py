@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping
@@ -110,17 +111,20 @@ class ProviderRouter:
         )
 
     async def execute_with_failover(self, request: ProviderRequest) -> ProviderResponse:
-        """Future execution path with failover; no provider calls are made yet."""
+        """Execute through the selected provider adapter with bounded failover."""
         context = ProviderSelectionContext(
             goal=request.goal,
             task_type=request.task_type,
             preferred_model=request.model,
             required_capabilities=request.required_capabilities,
+            preferred_provider=request.preferred_provider,
+            local_only=bool(request.local_only or request.metadata.get("local_only")),
+            metadata=request.metadata,
         )
         provider = self.select_provider(context)
-        raise NotImplementedError(
-            f"Provider execution is not implemented yet. Selected provider: {provider.provider_id}"
-        )
+        if provider is None:
+            raise LookupError("No provider matches the requested capabilities.")
+        return await provider.execute(request)
 
     def _candidate_providers(
         self,
@@ -129,7 +133,9 @@ class ProviderRouter:
         required = set(context.required_capabilities)
         required.add(TASK_CAPABILITY_MAP[context.task_type])
         providers = [
-            provider for provider in self._providers.values() if provider.is_available()
+            provider
+            for provider in self._providers.values()
+            if provider.enabled and provider.initialized
         ]
         if context.preferred_provider:
             providers.sort(key=lambda provider: provider.provider_id != context.preferred_provider)

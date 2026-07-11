@@ -12,6 +12,8 @@ Context Intelligence is the continuity layer supplied through the existing conve
 
 Goal Intelligence sits between context and execution for goal-related requests. It clarifies goals, evaluates quality, interprets progress, and recommends grounded next steps, while Task Intelligence remains the authority for goal and milestone records.
 
+Local AI is routed only through the Provider Router. Executive JARVIS may request local-only execution or model selection, but it never talks to local runtimes directly and it never treats local model output as authority.
+
 Reflection is the post-execution counterpart to reasoning. It evaluates completed work, prepares learning metadata, and supports future reasoning improvements. It remains advisory only.
 
 Adaptive Intelligence reviews reflection and learning metadata after execution. It prepares validated recommendations for Executive JARVIS, which remains the only authority that can approve adaptation.

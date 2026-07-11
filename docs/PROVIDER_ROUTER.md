@@ -66,6 +66,8 @@ Routing is capability based. A request declares a task type such as coding, reas
 
 If the preferred provider is unavailable or incapable, the router falls back to another matching provider.
 
+Local AI support is provider-neutral and adapter-backed. The router can discover and select local providers such as Ollama or a trusted local OpenAI-compatible endpoint, but only when locality and capability checks succeed.
+
 ## Provider Lifecycle
 
 Provider lifecycle is managed through `ProviderManager`:
@@ -80,6 +82,8 @@ Provider lifecycle is managed through `ProviderManager`:
 - shutdown
 
 Health checks in this foundation are local adapter checks only. They do not contact external services.
+
+Local-only policy must be enforced in the router, not in Executive JARVIS or the conversation layer. If a request requires local execution and no verified local provider is available, the router must fail truthfully instead of silently falling back elsewhere.
 
 ## Configuration
 

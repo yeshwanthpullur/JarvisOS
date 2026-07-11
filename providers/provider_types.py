@@ -100,6 +100,20 @@ class ProviderRequest:
     goal: str = ""
     task_type: ProviderTaskType = ProviderTaskType.CHAT
     model: str | None = None
+    request_id: str | None = None
+    conversation_id: str | None = None
+    system_instructions: str = ""
+    selected_context: Mapping[str, Any] = field(default_factory=dict)
+    retrieved_evidence: tuple[str, ...] = ()
+    preferred_provider: str | None = None
+    local_only: bool = False
+    streaming: bool = False
+    temperature: float | None = None
+    max_output_tokens: int | None = None
+    stop_conditions: tuple[str, ...] = ()
+    timeout_seconds: int | None = None
+    cancellation_token: str | None = None
+    response_schema: Mapping[str, Any] | None = None
     required_capabilities: tuple[ProviderCapability, ...] = ()
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
@@ -124,6 +138,11 @@ class ProviderResponse:
     content: str
     usage: ProviderUsage = field(default_factory=ProviderUsage)
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    request_id: str | None = None
+    finish_reason: str | None = None
+    error: str | None = None
+    retryable: bool = False
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass(frozen=True, slots=True)

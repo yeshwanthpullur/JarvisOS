@@ -307,6 +307,7 @@ class StartupManager:
             research_manager=self.research_manager,
             goal_intelligence_manager=self.goal_intelligence_manager,
             plugin_manager=self.plugin_manager,
+            provider_manager=self.provider_manager,
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,
@@ -366,6 +367,51 @@ class StartupManager:
                 "provider_execution": lambda: (
                     self.provider_execution_manager is not None
                     and self.provider_execution_manager.initialized
+                ),
+                "local_ai": lambda: (
+                    self.provider_manager is not None
+                    and any(
+                        getattr(getattr(record, "config", None), "local_only", False)
+                        or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+                        for record in self.provider_manager.registry.all()
+                    )
+                ),
+                "local_runtime": lambda: (
+                    self.provider_manager is not None
+                    and any(
+                        getattr(record, "provider", None) is not None
+                        and getattr(record.provider, "health", None) is not None
+                        and getattr(record.provider.health, "available", False)
+                        for record in self.provider_manager.registry.all()
+                        if getattr(getattr(record, "config", None), "local_only", False)
+                        or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+                    )
+                ),
+                "local_models": lambda: (
+                    self.provider_manager is not None
+                    and sum(
+                        len(record.provider.list_models())
+                        for record in self.provider_manager.registry.all()
+                        if getattr(record, "provider", None) is not None
+                        and (
+                            getattr(getattr(record, "config", None), "local_only", False)
+                            or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+                        )
+                    )
+                    > 0
+                ),
+                "local_execution_ready": lambda: (
+                    self.provider_execution_manager is not None
+                    and self.provider_execution_manager.initialized
+                    and self.provider_manager is not None
+                    and any(
+                        getattr(getattr(record, "provider", None), "health", None) is not None
+                        and getattr(record.provider.health, "available", False)
+                        and len(record.provider.list_models()) > 0
+                        for record in self.provider_manager.registry.all()
+                        if getattr(getattr(record, "config", None), "local_only", False)
+                        or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+                    )
                 ),
                 "provider_selector": lambda: (
                     self.provider_execution_manager is not None
@@ -1006,6 +1052,28 @@ class StartupManager:
             print(f"    Executions: {self.provider_execution_statistics.executions}")
             print(f"    Status: {self.provider_execution_statistics.status}")
             print("    Execution Components: provider_execution_manager, provider_execution_context, provider_execution_request, provider_execution_response, execution_strategy, provider_selector, model_selector, provider_capabilities, provider_metrics, provider_benchmark, provider_execution_registry, provider_execution_history, provider_execution_cache, provider_recovery, provider_diagnostics, provider_validator")
+        if self.provider_manager is not None:
+            local_records = tuple(
+                record
+                for record in self.provider_manager.registry.all()
+                if getattr(getattr(record, "config", None), "local_only", False)
+                or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+            )
+            local_models = sum(
+                len(record.provider.list_models())
+                for record in local_records
+                if getattr(record, "provider", None) is not None
+            )
+            local_available = sum(
+                1
+                for record in local_records
+                if getattr(record, "provider", None) is not None and getattr(record.provider.health, "available", False)
+            )
+            print("  Local AI Initialized")
+            print(f"    Local Providers: {len(local_records)}")
+            print(f"    Available Local Providers: {local_available}")
+            print(f"    Discovered Local Models: {local_models}")
+            print(f"    Local Execution Ready: {'yes' if local_models > 0 and local_available > 0 else 'no'}")
         if self.workflow_manager is not None:
             workflow_stats = self.workflow_manager.statistics()
             print("  Workflow Engine Initialized")

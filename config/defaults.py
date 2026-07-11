@@ -42,7 +42,28 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "timeout_seconds": 30,
         "max_retries": 2,
         "track_costs": True,
-        "definitions": {},
+        "definitions": {
+            "local": {
+                "kind": "local",
+                "enabled": False,
+                "local_only": True,
+                "base_url": "http://127.0.0.1:11434",
+                "metadata": {
+                    "local": True,
+                    "runtime": "openai-compatible",
+                },
+            },
+            "ollama": {
+                "kind": "ollama",
+                "enabled": False,
+                "local_only": True,
+                "base_url": "http://127.0.0.1:11434",
+                "metadata": {
+                    "local": True,
+                    "runtime": "ollama",
+                },
+            },
+        },
     },
     "agents": {
         "enabled": True,

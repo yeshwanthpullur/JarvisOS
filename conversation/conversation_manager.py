@@ -50,6 +50,7 @@ class ConversationManager:
         research_manager: object | None = None,
         goal_intelligence_manager: GoalIntelligenceManager | None = None,
         plugin_manager: object | None = None,
+        provider_manager: object | None = None,
         provider_router: object | None = None,
         agent_manager: object | None = None,
         agent_creator: object | None = None,
@@ -72,6 +73,7 @@ class ConversationManager:
         self.research_manager = research_manager
         self.goal_intelligence = goal_intelligence_manager
         self.plugin_manager = plugin_manager
+        self.provider_manager = provider_manager
         self.provider_router = provider_router
         self.agent_manager = agent_manager
         self.agent_creator = agent_creator
@@ -111,6 +113,7 @@ class ConversationManager:
             research_manager=self.research_manager,
             goal_intelligence_manager=self.goal_intelligence,
             plugin_manager=self.plugin_manager,
+            provider_manager=self.provider_manager,
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,

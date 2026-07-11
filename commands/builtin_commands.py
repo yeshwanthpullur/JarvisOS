@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
+
 from commands.command_context import CommandContext
 from commands.command_permissions import CommandPermission
 from commands.command_registry import CommandRecord, CommandRegistry
 from conversation.conversation_response import ConversationResponse
+from providers import ProviderRequest
 
 
 def _manager(context: CommandContext):
@@ -42,6 +45,14 @@ def _goal_manager(context: CommandContext):
     return metadata.get("goal_intelligence_manager")
 
 
+def _provider_manager(context: CommandContext):
+    conversation = context.conversation_context
+    if conversation is None:
+        return None
+    metadata = getattr(conversation, "metadata", {}) or {}
+    return metadata.get("provider_manager")
+
+
 def register_builtin_commands(registry: CommandRegistry) -> None:
     """Register built-in commands."""
     commands: tuple[tuple[str, str, str, tuple[str, ...], CommandPermission], ...] = (
@@ -61,6 +72,15 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("provider list", "List providers", "provider", (), CommandPermission.PROVIDER),
         ("provider status", "Show provider status", "provider", (), CommandPermission.PROVIDER),
         ("provider health", "Show provider health", "provider", (), CommandPermission.PROVIDER),
+        ("local", "Show local AI summary", "provider", (), CommandPermission.PROVIDER),
+        ("local status", "Show local AI status", "provider", (), CommandPermission.PROVIDER),
+        ("local providers", "List local providers", "provider", (), CommandPermission.PROVIDER),
+        ("local models", "List local models", "provider", (), CommandPermission.PROVIDER),
+        ("local refresh", "Refresh local model inventory", "provider", (), CommandPermission.PROVIDER),
+        ("local test", "Test the selected local model", "provider", (), CommandPermission.PROVIDER),
+        ("local explain-selection", "Explain local model selection", "provider", (), CommandPermission.PROVIDER),
+        ("local only on", "Enable local-only mode", "provider", (), CommandPermission.PROVIDER),
+        ("local only off", "Disable local-only mode", "provider", (), CommandPermission.PROVIDER),
         ("plugins", "Show plugin summary", "plugin", (), CommandPermission.PLUGIN),
         ("plugin list", "List plugins", "plugin", (), CommandPermission.PLUGIN),
         ("plugin status", "Show plugin status", "plugin", (), CommandPermission.PLUGIN),
@@ -139,6 +159,87 @@ def _handler_for(name: str):
             return _text_response(f"Command history: {len(manager.history.list_history())} entries")
         if name == "metrics" and manager is not None:
             return _text_response(f"Commands executed: {manager.metrics.commands_executed}")
+        if name in {"local", "local status", "local providers", "local models", "local refresh", "local test", "local explain-selection", "local only on", "local only off"}:
+            provider_manager = _provider_manager(context)
+            if provider_manager is None:
+                return _text_response("Local AI is not available.")
+            local_records = tuple(
+                record for record in provider_manager.registry.all()
+                if getattr(getattr(record, "config", None), "local_only", False)
+                or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+            )
+            if name in {"local", "local status"}:
+                health = provider_manager.health_check()
+                stats = provider_manager.statistics()
+                models = sum(len(record.provider.list_models()) for record in local_records if getattr(record, "provider", None) is not None)
+                return _text_response(
+                    f"Local AI status: configured={len(local_records)} available={stats.healthy_providers} models={models}",
+                    configured=len(local_records),
+                    healthy=stats.healthy_providers,
+                    models=models,
+                    health=health,
+                )
+            if name == "local providers":
+                if not local_records:
+                    return _text_response("No local providers are configured.")
+                return _text_response("Local providers: " + ", ".join(record.config.provider_id for record in local_records))
+            if name == "local models":
+                models: list[str] = []
+                for record in local_records:
+                    provider = getattr(record, "provider", None)
+                    if provider is None:
+                        continue
+                    for model in provider.list_models():
+                        models.append(f"{record.config.provider_id}:{model.model_id}")
+                return _text_response("Local models: " + (", ".join(models) if models else "none discovered"))
+            if name == "local refresh":
+                for record in local_records:
+                    provider = getattr(record, "provider", None)
+                    if provider is not None and hasattr(provider, "refresh_inventory"):
+                        provider.refresh_inventory()
+                return _text_response("Local model inventory refreshed.")
+            if name == "local test":
+                provider_router = getattr(provider_manager, "router", None)
+                if provider_router is None:
+                    return _text_response("Local AI is not available.")
+                candidate = next((record for record in local_records if getattr(record, "provider", None) is not None and record.provider.list_models()), None)
+                if candidate is None:
+                    return _text_response("No usable local model is available.")
+                model_id = candidate.provider.list_models()[0].identifier
+                try:
+                    result = asyncio.run(
+                        provider_router.execute_with_failover(
+                            ProviderRequest(
+                                prompt="Reply with ok.",
+                                goal="Test local AI",
+                                model=model_id,
+                                request_id="command-local-test",
+                                local_only=True,
+                            )
+                        )
+                    )
+                except Exception as exc:  # pragma: no cover - defensive command surface
+                    return _text_response(f"Local model test failed: {exc}")
+                if result.error:
+                    return _text_response(f"Local model test failed: {result.error}", provider=result.provider_id, model=result.model, retryable=result.retryable)
+                return _text_response(
+                    "Local model test succeeded.",
+                    provider=result.provider_id,
+                    model=result.model,
+                    content=result.content,
+                )
+            if name == "local explain-selection":
+                return _text_response("Local model selection is based on locality, health, availability, and capability match.")
+            if name == "local only on":
+                conversation = context.conversation_context
+                if conversation is not None:
+                    conversation.session.metadata["local_only"] = True
+                return _text_response("Local-only mode enabled.")
+            if name == "local only off":
+                conversation = context.conversation_context
+                if conversation is not None:
+                    conversation.session.metadata["local_only"] = False
+                return _text_response("Local-only mode disabled.")
         if name in {"profile", "profile show", "profile list"}:
             personal = _personal_manager(context)
             if personal is None:

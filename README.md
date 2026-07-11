@@ -12,7 +12,8 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 - Simple extension points for future agents, skills, plugins, and services
 - Permission-aware plugin framework for future external capabilities
 - Provider-neutral AI routing foundation for future model integrations
-- Intelligent provider execution architecture for future provider/model selection, fallback, metrics, and recovery
+- Intelligent provider execution architecture for provider/model selection, fallback, metrics, and recovery
+- Local AI integration for real local-runtime discovery, model inventory, and execution through Provider Router
 - Provider-independent agent framework for future execution workflows
 - Workflow and orchestration engine for structured execution across conversation, planning, memory, knowledge, tasks, plugins, providers, agents, and departments
 - Retrieval layer for precise memory, knowledge, Obsidian, task, workflow, and history lookup
@@ -75,6 +76,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 | `docs/PLUGIN_FRAMEWORK.md` | Plugin framework lifecycle, manifest, permissions, and dependency guide. |
 | `docs/PROVIDER_ROUTER.md` | Provider router architecture, lifecycle, capabilities, and implementation guide. |
 | `docs/PROVIDER_EXECUTION.md` | Provider execution framework architecture, provider/model selection, fallback, recovery, diagnostics, and extension guide. |
+| `docs/LOCAL_AI_INTEGRATION.md` | Local runtime discovery, local model inventory, local-only policy, and Provider Router integration guide. |
 | `docs/WORKFLOW_ENGINE.md` | Workflow engine architecture, workflow types, scheduling, checkpoints, recovery, execution graph, and extension guide. |
 | `docs/RETRIEVAL_ENGINE.md` | Retrieval architecture, strategies, selector, ranker, cache, diagnostics, and extension guide. |
 | `docs/AGENT_FRAMEWORK.md` | Agent framework architecture, lifecycle, communication, scheduling, health, and extension guide. |
@@ -114,6 +116,8 @@ Adaptive Intelligence sits after reflection. It prepares validated learning reco
 Personal Intelligence sits on top of Memory and Retrieval. It captures durable user preferences and explainable context, but it does not create a second profile store or override current explicit instructions.
 
 Goal Intelligence sits above Task Intelligence. It analyzes goals, milestones, progress, blockers, and next steps, but Task Intelligence remains the authoritative record owner for goals, milestones, and task state.
+
+Local AI executes only through Provider Router. It discovers real local runtimes, inventories available local models, and preserves local-only policy without introducing a second provider gateway.
 
 ## Conversation And Commands
 
