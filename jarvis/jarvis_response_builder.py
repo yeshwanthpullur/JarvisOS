@@ -37,6 +37,9 @@ class JarvisResponseBuilder:
                 "active_objective": request.metadata.get("resolved_context", {}).get("active_objective"),
                 "continuation_next_step": request.metadata.get("resolved_context", {}).get("next_step"),
                 "context_ambiguity": request.metadata.get("resolved_context", {}).get("ambiguity", False),
+                "goal_context_applied": bool(request.metadata.get("goal_analysis")),
+                "goal_analysis_type": request.metadata.get("goal_analysis", {}).get("analysis_type"),
+                "goal_summary": request.metadata.get("goal_analysis", {}).get("summary"),
                 "personal_context_applied": bool(request.metadata.get("personal_context"))
                 and not bool(request.metadata.get("personal_context", {}).get("override_current_instruction")),
                 "personal_preferences": len(request.metadata.get("personal_context", {}).get("active_preferences", ())),

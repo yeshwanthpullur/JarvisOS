@@ -16,6 +16,7 @@ from config.schema import AppSettings
 from core.banner import display_banner
 from core.health_checker import HealthChecker, HealthResult, HealthStatus
 from core.system_status import APP_VERSION, SystemState, SystemStatus
+from goal_intelligence import GoalIntelligenceManager, GoalIntelligenceStatistics
 from knowledge import KnowledgeManager, KnowledgeStatistics
 from jarvis import JarvisContext, JarvisCore, JarvisExecutiveStatistics
 from memory import MemoryManager, MemoryStatistics
@@ -57,6 +58,7 @@ class StartupManager:
         self.retrieval_manager: RetrievalManager | None = None
         self.personal_intelligence_manager: PersonalIntelligenceManager | None = None
         self.context_intelligence_manager: ContextIntelligenceManager | None = None
+        self.goal_intelligence_manager: GoalIntelligenceManager | None = None
         self.task_intelligence_manager: TaskIntelligenceManager | None = None
         self.research_manager: ResearchManager | None = None
         self.reasoning_manager: ReasoningManager | None = None
@@ -72,6 +74,7 @@ class StartupManager:
         self.retrieval_statistics: RetrievalStatistics | None = None
         self.personal_intelligence_statistics: PersonalIntelligenceStatistics | None = None
         self.context_intelligence_statistics: ContextIntelligenceStatistics | None = None
+        self.goal_intelligence_statistics: GoalIntelligenceStatistics | None = None
         self.research_statistics: ResearchStatistics | None = None
         self.reasoning_statistics: ReasoningStatistics | None = None
         self.reflection_statistics: ReflectionStatistics | None = None
@@ -201,6 +204,21 @@ class StartupManager:
             self.context_intelligence_manager.research_manager = self.research_manager
         self.status.mark_module_loaded("research")
 
+        self.goal_intelligence_manager = GoalIntelligenceManager(
+            task_intelligence_manager=self.task_intelligence_manager,
+            task_manager=self.task_manager,
+            context_intelligence_manager=self.context_intelligence_manager,
+            retrieval_manager=self.retrieval_manager,
+            personal_intelligence_manager=self.personal_intelligence_manager,
+            workflow_manager=self.workflow_manager,
+            research_manager=self.research_manager,
+            memory_manager=self.memory_manager,
+            knowledge_manager=self.knowledge_manager,
+            logger=logging.getLogger("goal_intelligence"),
+        )
+        self.goal_intelligence_statistics = self.goal_intelligence_manager.initialize()
+        self.status.mark_module_loaded("goal_intelligence")
+
         self.reasoning_manager = ReasoningManager(logger=logging.getLogger("reasoning"))
         self.reasoning_statistics = self.reasoning_manager.initialize()
         self.status.mark_module_loaded("reasoning")
@@ -271,6 +289,7 @@ class StartupManager:
                 "adaptive_manager": self.adaptive_manager,
                 "personal_intelligence_manager": self.personal_intelligence_manager,
                 "context_intelligence_manager": self.context_intelligence_manager,
+                "goal_intelligence_manager": self.goal_intelligence_manager,
             },
         )
         self.jarvis_core = JarvisCore(context=jarvis_context)
@@ -286,6 +305,7 @@ class StartupManager:
             workflow_manager=self.workflow_manager,
             retrieval_manager=self.retrieval_manager,
             research_manager=self.research_manager,
+            goal_intelligence_manager=self.goal_intelligence_manager,
             plugin_manager=self.plugin_manager,
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
@@ -483,6 +503,26 @@ class StartupManager:
                 "continuation_readiness": lambda: (
                     self.context_intelligence_manager is not None
                     and self.context_intelligence_manager.initialized
+                ),
+                "goal_intelligence": lambda: (
+                    self.goal_intelligence_manager is not None
+                    and self.goal_intelligence_manager.initialized
+                ),
+                "goal_analysis": lambda: (
+                    self.goal_intelligence_manager is not None
+                    and self.goal_intelligence_manager.initialized
+                ),
+                "goal_decomposition": lambda: (
+                    self.goal_intelligence_manager is not None
+                    and self.goal_intelligence_manager.initialized
+                ),
+                "goal_progress": lambda: (
+                    self.goal_intelligence_manager is not None
+                    and self.goal_intelligence_manager.initialized
+                ),
+                "goal_reference_resolution": lambda: (
+                    self.goal_intelligence_manager is not None
+                    and self.goal_intelligence_manager.initialized
                 ),
                 "task_intelligence": lambda: (
                     self.task_intelligence_manager is not None
@@ -1001,6 +1041,15 @@ class StartupManager:
             print(f"    Reference Resolution Readiness: {context_stats.reference_resolution_readiness}")
             print(f"    Continuation Readiness: {context_stats.continuation_readiness}")
             print(f"    Overall Context Intelligence Health: {context_stats.overall_context_intelligence_health}")
+        if self.goal_intelligence_manager is not None:
+            goal_stats = self.goal_intelligence_manager.statistics()
+            print("  Goal Intelligence Initialized")
+            print(f"    Goal Intelligence Status: {goal_stats.goal_intelligence_status}")
+            print(f"    Goal Analysis Readiness: {goal_stats.goal_analysis_readiness}")
+            print(f"    Goal Decomposition Readiness: {goal_stats.goal_decomposition_readiness}")
+            print(f"    Goal Progress Readiness: {goal_stats.goal_progress_readiness}")
+            print(f"    Goal Reference Resolution Readiness: {goal_stats.goal_reference_resolution_readiness}")
+            print(f"    Overall Goal Intelligence Health: {goal_stats.overall_goal_intelligence_health}")
         if self.task_intelligence_manager is not None:
             task_intel_stats = self.task_intelligence_manager.statistics()
             print("  Task Intelligence Initialized")
@@ -1161,6 +1210,8 @@ class StartupManager:
             self.personal_intelligence_statistics = self.personal_intelligence_manager.statistics()
         if self.context_intelligence_manager is not None and self.context_intelligence_manager.initialized:
             self.context_intelligence_statistics = self.context_intelligence_manager.statistics()
+        if self.goal_intelligence_manager is not None and self.goal_intelligence_manager.initialized:
+            self.goal_intelligence_statistics = self.goal_intelligence_manager.statistics()
         if self.plugin_manager is not None and self.plugin_manager.initialized:
             self.plugin_statistics = self.plugin_manager.statistics()
         if self.task_manager is not None and self.task_manager.initialized:
@@ -1228,6 +1279,13 @@ class StartupManager:
             print(f"  Context retrieval readiness: {ci.context_retrieval_readiness}")
             print(f"  Reference resolution readiness: {ci.reference_resolution_readiness}")
             print(f"  Continuation readiness: {ci.continuation_readiness}")
+        if self.goal_intelligence_manager is not None:
+            gi = self.goal_intelligence_statistics or self.goal_intelligence_manager.statistics()
+            print(f"  Goal intelligence status: {gi.goal_intelligence_status}")
+            print(f"  Goal analysis readiness: {gi.goal_analysis_readiness}")
+            print(f"  Goal decomposition readiness: {gi.goal_decomposition_readiness}")
+            print(f"  Goal progress readiness: {gi.goal_progress_readiness}")
+            print(f"  Goal reference resolution readiness: {gi.goal_reference_resolution_readiness}")
         if self.task_intelligence_manager is not None:
             ti = self.task_intelligence_manager.statistics()
             print(f"  Task intelligence status: {ti.status}")

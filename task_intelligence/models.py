@@ -48,14 +48,33 @@ class GoalRecord:
 
     goal_id: str = field(default_factory=lambda: str(uuid4()))
     project_id: str | None = None
+    parent_goal_id: str | None = None
     name: str = ""
     description: str = ""
+    purpose: str = ""
+    desired_outcome: str = ""
+    success_criteria: tuple[str, ...] = ()
     priority: TaskPriorityLevel = TaskPriorityLevel.NORMAL
     status: str = "created"
+    target_date: str | None = None
+    start_date: str | None = None
+    completion_date: str | None = None
     progress: float = 0.0
     dependencies: tuple[str, ...] = ()
+    blocker_references: tuple[str, ...] = ()
+    related_goal_references: tuple[str, ...] = ()
     milestones: tuple[str, ...] = ()
+    task_references: tuple[str, ...] = ()
     history: tuple[str, ...] = ()
+    confidence: float = 0.5
+    risk: str = ""
+    feasibility: str = "unknown"
+    time_horizon: str = "open_ended"
+    review_frequency: str = "manual"
+    last_reviewed: datetime | None = None
+    next_review: datetime | None = None
+    source: str = "task_intelligence"
+    audit_metadata: dict[str, object] = field(default_factory=dict)
     created_at: datetime = field(default_factory=utc_now)
     updated_at: datetime = field(default_factory=utc_now)
 

@@ -2,6 +2,8 @@
 
 Task Intelligence is the project-management layer above the existing Task Engine. The legacy Task Engine remains the persistence and lifecycle surface for individual tasks. Task Intelligence adds higher-level structure for projects, goals, milestones, priorities, schedules, progress, dashboards, and reporting.
 
+Goal Intelligence sits above Task Intelligence and analyzes goals, decomposition, progress, and next steps, but it does not replace Task Intelligence as the authoritative record owner.
+
 ## Boundary
 
 - Task Engine: owns task records, queueing, history, and lifecycle primitives.

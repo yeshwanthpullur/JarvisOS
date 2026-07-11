@@ -88,6 +88,31 @@ class ConversationEngine:
                     )
             except Exception:
                 pass
+        goal_manager = context.metadata.get("goal_intelligence_manager")
+        if goal_manager is not None and hasattr(goal_manager, "prepare_request"):
+            normalized = request.normalized_input
+            if self._is_goal_related(normalized):
+                try:
+                    goal_report = goal_manager.prepare_request(request.user_input, context.session)
+                    context.metadata["goal_analysis"] = {
+                        "analysis_type": getattr(goal_report, "analysis_type", "goal"),
+                        "summary": getattr(goal_report, "summary", ""),
+                        "confidence": getattr(goal_report, "confidence", 0.0),
+                        "metadata": dict(getattr(goal_report, "metadata", {})),
+                    }
+                    if getattr(goal_report, "immediate_response", None):
+                        return ConversationResponse(
+                            response=goal_report.immediate_response,
+                            execution_summary={
+                                "goal_analysis_type": getattr(goal_report, "analysis_type", "goal"),
+                                "goal_summary": getattr(goal_report, "summary", ""),
+                                "goal_confidence": getattr(goal_report, "confidence", 0.0),
+                                "goal_metadata": dict(getattr(goal_report, "metadata", {})),
+                            },
+                            metadata={"goal_analysis": context.metadata["goal_analysis"]},
+                        )
+                except Exception:
+                    pass
         if context.command_manager is not None:
             parsed = context.command_manager.parser.parse(request.normalized_input)
             if context.command_manager.registry.lookup(parsed.name) is not None:
@@ -113,4 +138,27 @@ class ConversationEngine:
             diagnostics=jarvis_response.diagnostics,
             metadata=jarvis_response.streaming_metadata,
             conversation_state=ConversationState.RESPONDING,
+        )
+
+    def _is_goal_related(self, normalized: str) -> bool:
+        return any(
+            marker in normalized
+            for marker in (
+                "goal",
+                "goals",
+                "milestone",
+                "progress",
+                "blocker",
+                "conflict",
+                "next step",
+                "what should i do next",
+                "review",
+                "complete",
+                "pause this goal",
+                "resume the goal",
+                "what goals",
+                "portfolio",
+                "align task",
+                "why am i doing this task",
+            )
         )

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 
-from task_intelligence.models import MilestoneRecord
+from task_intelligence.models import MilestoneRecord, utc_now
 
 
 class MilestoneManager:
@@ -30,6 +30,26 @@ class MilestoneManager:
         milestone = MilestoneRecord(name=name, description=description, project_id=project_id, goal_id=goal_id)
         self._milestones[milestone.milestone_id] = milestone
         self._logger.info("milestone_created milestone_id=%s", milestone.milestone_id)
+        return milestone
+
+    def list_milestones(self) -> tuple[MilestoneRecord, ...]:
+        self._ensure_initialized()
+        return tuple(self._milestones.values())
+
+    def get_milestone(self, milestone_id: str) -> MilestoneRecord | None:
+        self._ensure_initialized()
+        return self._milestones.get(milestone_id)
+
+    def update_milestone(self, milestone_id: str, **changes: object) -> MilestoneRecord | None:
+        self._ensure_initialized()
+        milestone = self._milestones.get(milestone_id)
+        if milestone is None:
+            return None
+        for field_name, value in changes.items():
+            if hasattr(milestone, field_name):
+                setattr(milestone, field_name, value)
+        milestone.updated_at = utc_now()
+        self._logger.info("milestone_updated milestone_id=%s", milestone_id)
         return milestone
 
     def statistics(self) -> dict[str, object]:

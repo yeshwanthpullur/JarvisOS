@@ -34,6 +34,7 @@ from reasoning import ReasoningManager
 from reflection import ReflectionManager
 from adaptive import AdaptiveManager
 from personal_intelligence import PersonalIntelligenceManager
+from goal_intelligence import GoalIntelligenceManager
 from context_intelligence import ContextIntelligenceManager
 from retrieval import RetrievalManager
 from workflow import WorkflowManager
@@ -55,6 +56,7 @@ class JarvisExecutiveStatistics:
     adaptive_status: str
     personal_intelligence_status: str
     context_intelligence_status: str
+    goal_intelligence_status: str
     providers_status: str
     memory_status: str
     knowledge_status: str
@@ -97,6 +99,8 @@ class JarvisManager:
         self.context_intelligence = (
             context_manager if isinstance(context_manager, ContextIntelligenceManager) else None
         )
+        goal_manager = context.metadata.get("goal_intelligence_manager") if context else None
+        self.goal_intelligence = goal_manager if isinstance(goal_manager, GoalIntelligenceManager) else None
         self.controller = JarvisController(reasoning_manager=self.reasoning)
         self.memory = JarvisMemory(context.memory_manager if context else None)
         self.knowledge = JarvisKnowledge(
@@ -157,6 +161,7 @@ class JarvisManager:
             "adaptive": self.adaptive,
             "personal_intelligence": self.personal_intelligence,
             "context_intelligence": self.context_intelligence,
+            "goal_intelligence": self.goal_intelligence,
             "departments": self.department_registry,
         }.items():
             self.registry.register(key, component, "executive")
@@ -192,6 +197,7 @@ class JarvisManager:
             adaptive_status="ready" if self.adaptive.initialized else "unavailable",
             personal_intelligence_status="ready" if self.personal_intelligence and self.personal_intelligence.initialized else "unavailable",
             context_intelligence_status="ready" if self.context_intelligence and self.context_intelligence.initialized else "unavailable",
+            goal_intelligence_status="ready" if self.goal_intelligence and self.goal_intelligence.initialized else "unavailable",
             providers_status="ready" if self.providers.initialized else "unavailable",
             memory_status="ready" if self.memory.initialized else "unavailable",
             knowledge_status="ready" if self.knowledge.initialized else "unavailable",

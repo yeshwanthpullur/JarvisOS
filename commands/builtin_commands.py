@@ -34,6 +34,14 @@ def _context_manager(context: CommandContext):
     return metadata.get("context_intelligence_manager")
 
 
+def _goal_manager(context: CommandContext):
+    conversation = context.conversation_context
+    if conversation is None:
+        return None
+    metadata = getattr(conversation, "metadata", {}) or {}
+    return metadata.get("goal_intelligence_manager")
+
+
 def register_builtin_commands(registry: CommandRegistry) -> None:
     """Register built-in commands."""
     commands: tuple[tuple[str, str, str, tuple[str, ...], CommandPermission], ...] = (
@@ -88,6 +96,20 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("context resume", "Resume previous context", "conversation", (), CommandPermission.CONVERSATION),
         ("context previous", "Return to previous context", "conversation", (), CommandPermission.CONVERSATION),
         ("objective show", "Show the current objective", "conversation", (), CommandPermission.CONVERSATION),
+        ("goal", "Show goal intelligence summary", "goal", (), CommandPermission.CONVERSATION),
+        ("goal show", "Show the active goal", "goal", (), CommandPermission.CONVERSATION),
+        ("goal list", "List goals", "goal", (), CommandPermission.CONVERSATION),
+        ("goal review", "Review a goal", "goal", (), CommandPermission.CONVERSATION),
+        ("goal progress", "Show goal progress", "goal", (), CommandPermission.CONVERSATION),
+        ("goal next", "Show next meaningful goal step", "goal", (), CommandPermission.CONVERSATION),
+        ("goal blockers", "Show goal blockers", "goal", (), CommandPermission.CONVERSATION),
+        ("goal evaluate", "Evaluate goal completion", "goal", (), CommandPermission.CONVERSATION),
+        ("goal conflicts", "Show goal conflicts", "goal", (), CommandPermission.CONVERSATION),
+        ("goal align", "Explain goal-task alignment", "goal", (), CommandPermission.CONVERSATION),
+        ("goal portfolio", "Show goal portfolio", "goal", (), CommandPermission.CONVERSATION),
+        ("goal pause", "Pause a goal", "goal", (), CommandPermission.CONVERSATION),
+        ("goal resume", "Resume a goal", "goal", (), CommandPermission.CONVERSATION),
+        ("goal complete", "Complete a goal", "goal", (), CommandPermission.CONVERSATION),
         ("logs", "Show logs summary", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("logs recent", "Show recent logs metadata", "diagnostic", (), CommandPermission.DIAGNOSTIC),
     )
@@ -203,6 +225,55 @@ def _handler_for(name: str):
             if not objective:
                 return _text_response("There is no active objective right now.")
             return _text_response(f"Current objective: {objective}")
+        if name in {"goal", "goal show", "goal review", "goal progress", "goal next", "goal blockers", "goal evaluate", "goal conflicts", "goal align", "goal portfolio", "goal pause", "goal resume", "goal complete"}:
+            goal_intel = _goal_manager(context)
+            conversation = context.conversation_context
+            if goal_intel is None or conversation is None:
+                return _text_response("Goal intelligence is not available.")
+            argument_text = " ".join(context.arguments).strip()
+            if name == "goal":
+                return _text_response(goal_intel.prepare_request("Show the current goal portfolio.", conversation.session).immediate_response)
+            if name == "goal show":
+                return _text_response(goal_intel.prepare_request("Show the active goal.", conversation.session).immediate_response)
+            if name == "goal list":
+                return _text_response(goal_intel.goal_portfolio().immediate_response)
+            if name == "goal review":
+                goal = goal_intel.resolve_goal_reference(argument_text or "goal", conversation.session).goal
+                return _text_response(goal_intel.review_goal(goal).immediate_response if goal else "I could not find a goal to review.")
+            if name == "goal progress":
+                goal = goal_intel.resolve_goal_reference(argument_text or "goal", conversation.session).goal
+                return _text_response(goal_intel.evaluate_progress(goal).immediate_response if goal else "I could not find a goal to evaluate.")
+            if name == "goal next":
+                goal = goal_intel.resolve_goal_reference(argument_text or "goal", conversation.session).goal
+                return _text_response(goal_intel.recommend_next_step(goal).immediate_response if goal else "I could not find a goal to continue.")
+            if name == "goal blockers":
+                goal = goal_intel.resolve_goal_reference(argument_text or "goal", conversation.session).goal
+                if goal is None:
+                    return _text_response("I could not find a goal to inspect.")
+                blockers = goal_intel.detect_blockers(goal)
+                return _text_response("Goal blockers: " + (", ".join(blockers) if blockers else "none"))
+            if name == "goal evaluate":
+                goal = goal_intel.resolve_goal_reference(argument_text or "goal", conversation.session).goal
+                return _text_response(goal_intel.evaluate_completion(goal).immediate_response if goal else "I could not find a goal to evaluate.")
+            if name == "goal conflicts":
+                goals = goal_intel.task_intelligence_manager.goal_manager.list_goals() if goal_intel.task_intelligence_manager else ()
+                return _text_response(goal_intel.detect_conflicts(goals).immediate_response)
+            if name == "goal align":
+                goal = goal_intel.resolve_goal_reference(argument_text or "goal", conversation.session).goal
+                if goal is None:
+                    return _text_response("I could not find a goal to align.")
+                return _text_response(goal_intel.decompose_goal(goal).immediate_response)
+            if name == "goal portfolio":
+                return _text_response(goal_intel.goal_portfolio().immediate_response)
+            if name == "goal pause":
+                goal = goal_intel.resolve_goal_reference(argument_text or "goal", conversation.session).goal
+                return _text_response(goal_intel.pause_goal(goal.goal_id).immediate_response if goal else "I could not find a goal to pause.")
+            if name == "goal resume":
+                goal = goal_intel.resolve_goal_reference(argument_text or "goal", conversation.session).goal
+                return _text_response(goal_intel.resume_goal(goal.goal_id).immediate_response if goal else "I could not find a goal to resume.")
+            if name == "goal complete":
+                goal = goal_intel.resolve_goal_reference(argument_text or "goal", conversation.session).goal
+                return _text_response(goal_intel.evaluate_completion(goal).immediate_response if goal else "I could not find a goal to complete.")
         return _text_response(f"{name} command acknowledged.", command=name)
 
     return handler

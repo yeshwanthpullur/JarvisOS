@@ -18,6 +18,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 - Retrieval layer for precise memory, knowledge, Obsidian, task, workflow, and history lookup
 - Executive JARVIS Core as the permanent request entry point
 - Conversation and Command engines for the interactive operating interface
+- Goal Intelligence layer for goal clarification, decomposition, progress interpretation, conflict detection, and grounded next steps
 - Agent Creator Framework for future blueprint-driven agent manufacturing
 - Reflection and Learning Framework for post-execution evaluation and improvement
 - Adaptive Intelligence Loop for executive-approved learning recommendations
@@ -53,6 +54,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 | `reasoning/` | Executive reasoning and decision engine for evaluating alternatives, plans, confidence, and decisions before execution. |
 | `reflection/` | Reflection and learning engine for post-execution analysis, improvement metadata, and pattern capture. |
 | `adaptive/` | Adaptive intelligence loop for executive-approved learning recommendations and adaptation queues. |
+| `goal_intelligence/` | Goal intelligence layer for goal clarification, quality evaluation, decomposition, progress, conflicts, and next-step recommendations. |
 | `plugins/` | Official extension framework, plugin manifests, lifecycle, permissions, and example plugins. |
 | `server/` | Future API server, background services, and network interfaces. |
 | `skills/` | Reusable abilities that future agents can call. |
@@ -110,6 +112,8 @@ Reflection is the post-execution counterpart to reasoning. Reasoning decides bef
 Adaptive Intelligence sits after reflection. It prepares validated learning recommendations and keeps Executive JARVIS as the only authority that can approve adaptation.
 
 Personal Intelligence sits on top of Memory and Retrieval. It captures durable user preferences and explainable context, but it does not create a second profile store or override current explicit instructions.
+
+Goal Intelligence sits above Task Intelligence. It analyzes goals, milestones, progress, blockers, and next steps, but Task Intelligence remains the authoritative record owner for goals, milestones, and task state.
 
 ## Conversation And Commands
 

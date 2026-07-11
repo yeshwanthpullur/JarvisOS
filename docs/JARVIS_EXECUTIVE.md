@@ -1,6 +1,6 @@
 # Executive JARVIS Core
 
-JARVIS is the permanent Executive Intelligence layer of JARVIS OS. It is not an agent. Every future request enters JARVIS first, then flows through intent detection, decision metadata, reasoning, retrieval planning, task intelligence, research intelligence, personal intelligence, planning, workflow orchestration, dispatch, reflection, adaptive intelligence, existing managers, response building, and history.
+JARVIS is the permanent Executive Intelligence layer of JARVIS OS. It is not an agent. Every future request enters JARVIS first, then flows through intent detection, decision metadata, reasoning, retrieval planning, goal intelligence, task intelligence, research intelligence, personal intelligence, planning, workflow orchestration, dispatch, reflection, adaptive intelligence, existing managers, response building, and history.
 
 JARVIS never talks directly to AI providers. Provider work must route through the existing Provider Router.
 
@@ -9,6 +9,8 @@ The Conversation Engine and Command Engine now provide the user-facing operating
 Personal Intelligence is advisory context that can be supplied to Executive JARVIS through existing memory and retrieval paths. It can improve personalization, but it cannot override the current explicit instruction or act as a separate decision layer.
 
 Context Intelligence is the continuity layer supplied through the existing conversation path. It can provide the active objective, active work reference, continuation metadata, recent compatible context, and ambiguity status. Executive JARVIS remains the decision authority and does not treat low-confidence context as unquestionable truth.
+
+Goal Intelligence sits between context and execution for goal-related requests. It clarifies goals, evaluates quality, interprets progress, and recommends grounded next steps, while Task Intelligence remains the authority for goal and milestone records.
 
 Reflection is the post-execution counterpart to reasoning. It evaluates completed work, prepares learning metadata, and supports future reasoning improvements. It remains advisory only.
 

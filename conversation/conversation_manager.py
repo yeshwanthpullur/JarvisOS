@@ -16,6 +16,7 @@ from conversation.conversation_response import ConversationResponse
 from conversation.conversation_session import ConversationSession
 from conversation.conversation_summary import ConversationSummary
 from context_intelligence import ContextIntelligenceManager
+from goal_intelligence import GoalIntelligenceManager
 from personal_intelligence import PersonalIntelligenceManager
 
 
@@ -47,6 +48,7 @@ class ConversationManager:
         workflow_manager: object | None = None,
         retrieval_manager: object | None = None,
         research_manager: object | None = None,
+        goal_intelligence_manager: GoalIntelligenceManager | None = None,
         plugin_manager: object | None = None,
         provider_router: object | None = None,
         agent_manager: object | None = None,
@@ -68,6 +70,7 @@ class ConversationManager:
         self.workflow_manager = workflow_manager
         self.retrieval_manager = retrieval_manager
         self.research_manager = research_manager
+        self.goal_intelligence = goal_intelligence_manager
         self.plugin_manager = plugin_manager
         self.provider_router = provider_router
         self.agent_manager = agent_manager
@@ -106,6 +109,7 @@ class ConversationManager:
             workflow_manager=self.workflow_manager,
             retrieval_manager=self.retrieval_manager,
             research_manager=self.research_manager,
+            goal_intelligence_manager=self.goal_intelligence,
             plugin_manager=self.plugin_manager,
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
@@ -114,6 +118,7 @@ class ConversationManager:
                 "personal_intelligence_manager": self.personal_intelligence,
                 "personal_context": personal_context,
                 "context_intelligence_manager": self.context_intelligence,
+                "goal_intelligence_manager": self.goal_intelligence,
             },
         )
         response = self.engine.handle(request, context)

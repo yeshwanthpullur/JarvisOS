@@ -19,6 +19,7 @@ class ConversationContext:
     knowledge_manager: Any | None = None
     task_manager: Any | None = None
     task_intelligence_manager: Any | None = None
+    goal_intelligence_manager: Any | None = None
     workflow_manager: Any | None = None
     retrieval_manager: Any | None = None
     research_manager: Any | None = None

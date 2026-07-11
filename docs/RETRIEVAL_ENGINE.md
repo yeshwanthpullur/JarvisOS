@@ -8,6 +8,8 @@ Personal Intelligence uses this layer to pull only the relevant preferences, pro
 
 Context Intelligence uses Retrieval only as a selective support layer when active session state is insufficient. Active continuity remains conversation-scoped first, while Retrieval remains responsible for bounded relevance-based recovery rather than full-history injection.
 
+Goal Intelligence uses Retrieval to gather only the goal, milestone, task, workflow, research, memory, knowledge, and personal evidence relevant to the current goal analysis.
+
 Responsibilities:
 - receive retrieval requests
 - determine retrieval strategy

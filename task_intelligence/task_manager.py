@@ -72,8 +72,8 @@ class TaskIntelligenceManager:
         self._ensure_initialized()
         return TaskIntelligenceStatistics(
             projects=len(self.project_manager.list_projects()),
-            goals=0,
-            milestones=0,
+            goals=len(self.goal_manager.list_goals()),
+            milestones=len(self.milestone_manager.list_milestones()),
             status="ready",
         )
 
