@@ -26,6 +26,14 @@ def _personal_manager(context: CommandContext):
     return metadata.get("personal_intelligence_manager")
 
 
+def _context_manager(context: CommandContext):
+    conversation = context.conversation_context
+    if conversation is None:
+        return None
+    metadata = getattr(conversation, "metadata", {}) or {}
+    return metadata.get("context_intelligence_manager")
+
+
 def register_builtin_commands(registry: CommandRegistry) -> None:
     """Register built-in commands."""
     commands: tuple[tuple[str, str, str, tuple[str, ...], CommandPermission], ...] = (
@@ -72,6 +80,14 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("profile forget", "Forget a personal intelligence item", "personal", (), CommandPermission.CONVERSATION),
         ("profile confirm", "Confirm a personal intelligence item", "personal", (), CommandPermission.CONVERSATION),
         ("profile reject", "Reject a personal intelligence item", "personal", (), CommandPermission.CONVERSATION),
+        ("context", "Show current context", "conversation", (), CommandPermission.CONVERSATION),
+        ("context show", "Show current context", "conversation", (), CommandPermission.CONVERSATION),
+        ("context recent", "Show recent context history", "conversation", (), CommandPermission.CONVERSATION),
+        ("context clear", "Clear active context", "conversation", (), CommandPermission.CONVERSATION),
+        ("context pause", "Pause active context", "conversation", (), CommandPermission.CONVERSATION),
+        ("context resume", "Resume previous context", "conversation", (), CommandPermission.CONVERSATION),
+        ("context previous", "Return to previous context", "conversation", (), CommandPermission.CONVERSATION),
+        ("objective show", "Show the current objective", "conversation", (), CommandPermission.CONVERSATION),
         ("logs", "Show logs summary", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("logs recent", "Show recent logs metadata", "diagnostic", (), CommandPermission.DIAGNOSTIC),
     )
@@ -139,6 +155,54 @@ def _handler_for(name: str):
                 return _text_response("Personal intelligence is not available.")
             item_id = context.arguments[0] if context.arguments else ""
             return _text_response("Personal item rejected." if personal.reject(item_id) is not None else "Personal item not found.")
+        if name in {"context", "context show"}:
+            context_manager = _context_manager(context)
+            conversation = context.conversation_context
+            if context_manager is None or conversation is None:
+                return _text_response("Context intelligence is not available.")
+            resolution = context_manager.describe_current_context(conversation.session)
+            return _text_response(resolution.immediate_response or "There is no active context.")
+        if name == "context recent":
+            context_manager = _context_manager(context)
+            conversation = context.conversation_context
+            if context_manager is None or conversation is None:
+                return _text_response("Context intelligence is not available.")
+            recent = context_manager.list_recent_context(conversation.session)
+            if not recent:
+                return _text_response("There is no recent context history yet.")
+            return _text_response("Recent context: " + "; ".join(f"{item.context_type}: {item.value}" for item in recent[:5]))
+        if name == "context clear":
+            context_manager = _context_manager(context)
+            conversation = context.conversation_context
+            if context_manager is None or conversation is None:
+                return _text_response("Context intelligence is not available.")
+            context_manager.clear_active_context(conversation.session)
+            return _text_response("Active context cleared.")
+        if name == "context pause":
+            context_manager = _context_manager(context)
+            conversation = context.conversation_context
+            if context_manager is None or conversation is None:
+                return _text_response("Context intelligence is not available.")
+            suspended = context_manager.suspend_current_context(conversation.session)
+            if suspended is None:
+                return _text_response("There is no active context to pause.")
+            return _text_response(f"Paused {suspended.context_type}: {suspended.value}.")
+        if name in {"context resume", "context previous"}:
+            context_manager = _context_manager(context)
+            conversation = context.conversation_context
+            if context_manager is None or conversation is None:
+                return _text_response("Context intelligence is not available.")
+            resolution = context_manager.resume_previous_context(conversation.session)
+            return _text_response(resolution.immediate_response or "I could not restore a previous context.")
+        if name == "objective show":
+            context_manager = _context_manager(context)
+            conversation = context.conversation_context
+            if context_manager is None or conversation is None:
+                return _text_response("Context intelligence is not available.")
+            objective = context_manager.current_objective(conversation.session)
+            if not objective:
+                return _text_response("There is no active objective right now.")
+            return _text_response(f"Current objective: {objective}")
         return _text_response(f"{name} command acknowledged.", command=name)
 
     return handler

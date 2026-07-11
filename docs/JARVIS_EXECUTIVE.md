@@ -8,6 +8,8 @@ The Conversation Engine and Command Engine now provide the user-facing operating
 
 Personal Intelligence is advisory context that can be supplied to Executive JARVIS through existing memory and retrieval paths. It can improve personalization, but it cannot override the current explicit instruction or act as a separate decision layer.
 
+Context Intelligence is the continuity layer supplied through the existing conversation path. It can provide the active objective, active work reference, continuation metadata, recent compatible context, and ambiguity status. Executive JARVIS remains the decision authority and does not treat low-confidence context as unquestionable truth.
+
 Reflection is the post-execution counterpart to reasoning. It evaluates completed work, prepares learning metadata, and supports future reasoning improvements. It remains advisory only.
 
 Adaptive Intelligence reviews reflection and learning metadata after execution. It prepares validated recommendations for Executive JARVIS, which remains the only authority that can approve adaptation.

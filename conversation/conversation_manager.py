@@ -15,6 +15,7 @@ from conversation.conversation_request import ConversationRequest
 from conversation.conversation_response import ConversationResponse
 from conversation.conversation_session import ConversationSession
 from conversation.conversation_summary import ConversationSummary
+from context_intelligence import ContextIntelligenceManager
 from personal_intelligence import PersonalIntelligenceManager
 
 
@@ -42,11 +43,16 @@ class ConversationManager:
         memory_manager: object | None = None,
         knowledge_manager: object | None = None,
         task_manager: object | None = None,
+        task_intelligence_manager: object | None = None,
+        workflow_manager: object | None = None,
+        retrieval_manager: object | None = None,
+        research_manager: object | None = None,
         plugin_manager: object | None = None,
         provider_router: object | None = None,
         agent_manager: object | None = None,
         agent_creator: object | None = None,
         personal_intelligence_manager: PersonalIntelligenceManager | None = None,
+        context_intelligence_manager: ContextIntelligenceManager | None = None,
         logger: logging.Logger | None = None,
     ) -> None:
         self.jarvis_core = jarvis_core
@@ -58,11 +64,16 @@ class ConversationManager:
         self.active_session = ConversationSession()
         self.knowledge_manager = knowledge_manager
         self.task_manager = task_manager
+        self.task_intelligence_manager = task_intelligence_manager
+        self.workflow_manager = workflow_manager
+        self.retrieval_manager = retrieval_manager
+        self.research_manager = research_manager
         self.plugin_manager = plugin_manager
         self.provider_router = provider_router
         self.agent_manager = agent_manager
         self.agent_creator = agent_creator
         self.personal_intelligence = personal_intelligence_manager
+        self.context_intelligence = context_intelligence_manager
         self.logger = logger or logging.getLogger(__name__)
         self.initialized = False
 
@@ -79,6 +90,11 @@ class ConversationManager:
     def handle_input(self, user_input: str) -> ConversationResponse:
         """Handle user input through conversation, command, and executive layers."""
         request = ConversationRequest(user_input=user_input, normalized_input=user_input.strip().lower(), goal=user_input.strip())
+        personal_context = (
+            self.personal_intelligence.apply_context(user_input, conversation_id=self.active_session.conversation_id)
+            if self.personal_intelligence is not None
+            else {}
+        )
         context = ConversationContext(
             session=self.active_session,
             jarvis_core=self.jarvis_core,
@@ -86,16 +102,23 @@ class ConversationManager:
             memory_manager=self.memory.memory_manager,
             knowledge_manager=self.knowledge_manager,
             task_manager=self.task_manager,
+            task_intelligence_manager=self.task_intelligence_manager,
+            workflow_manager=self.workflow_manager,
+            retrieval_manager=self.retrieval_manager,
+            research_manager=self.research_manager,
             plugin_manager=self.plugin_manager,
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,
             metadata={
                 "personal_intelligence_manager": self.personal_intelligence,
-                "personal_context": self.personal_intelligence.apply_context(user_input, conversation_id=self.active_session.conversation_id) if self.personal_intelligence is not None else {},
+                "personal_context": personal_context,
+                "context_intelligence_manager": self.context_intelligence,
             },
         )
         response = self.engine.handle(request, context)
+        if self.context_intelligence is not None:
+            self.context_intelligence.record_interaction(self.active_session, user_input, response)
         self.history.append(request, response)
         self.active_session.record(user_input, response.response)
         self.metrics.requests += 1

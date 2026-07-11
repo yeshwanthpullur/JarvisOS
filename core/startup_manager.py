@@ -11,6 +11,7 @@ from agent_creator import AgentCreator, AgentCreatorContext, AgentCreatorStatist
 from brain import BrainManager, BrainStatistics
 from config import configure_logging, load_settings
 from conversation import ConversationManager, ConversationStatistics
+from context_intelligence import ContextIntelligenceManager, ContextIntelligenceStatistics
 from config.schema import AppSettings
 from core.banner import display_banner
 from core.health_checker import HealthChecker, HealthResult, HealthStatus
@@ -55,6 +56,7 @@ class StartupManager:
         self.workflow_manager: WorkflowManager | None = None
         self.retrieval_manager: RetrievalManager | None = None
         self.personal_intelligence_manager: PersonalIntelligenceManager | None = None
+        self.context_intelligence_manager: ContextIntelligenceManager | None = None
         self.task_intelligence_manager: TaskIntelligenceManager | None = None
         self.research_manager: ResearchManager | None = None
         self.reasoning_manager: ReasoningManager | None = None
@@ -69,6 +71,7 @@ class StartupManager:
         self.workflow_statistics: WorkflowStatistics | None = None
         self.retrieval_statistics: RetrievalStatistics | None = None
         self.personal_intelligence_statistics: PersonalIntelligenceStatistics | None = None
+        self.context_intelligence_statistics: ContextIntelligenceStatistics | None = None
         self.research_statistics: ResearchStatistics | None = None
         self.reasoning_statistics: ReasoningStatistics | None = None
         self.reflection_statistics: ReflectionStatistics | None = None
@@ -174,12 +177,28 @@ class StartupManager:
         self.personal_intelligence_statistics = self.personal_intelligence_manager.initialize()
         self.status.mark_module_loaded("personal_intelligence")
 
+        self.context_intelligence_manager = ContextIntelligenceManager(
+            retrieval_manager=self.retrieval_manager,
+            personal_intelligence_manager=self.personal_intelligence_manager,
+            task_manager=self.task_manager,
+            workflow_manager=self.workflow_manager,
+            research_manager=self.research_manager,
+            memory_manager=self.memory_manager,
+            logger=logging.getLogger("context_intelligence"),
+        )
+        self.context_intelligence_statistics = self.context_intelligence_manager.initialize()
+        self.status.mark_module_loaded("context_intelligence")
+
         self.task_intelligence_manager = TaskIntelligenceManager(logger=logging.getLogger("task_intelligence"))
         self.task_intelligence_statistics = self.task_intelligence_manager.initialize()
+        if self.context_intelligence_manager is not None:
+            self.context_intelligence_manager.task_intelligence_manager = self.task_intelligence_manager
         self.status.mark_module_loaded("task_intelligence")
 
         self.research_manager = ResearchManager(logger=logging.getLogger("research"))
         self.research_statistics = self.research_manager.initialize()
+        if self.context_intelligence_manager is not None:
+            self.context_intelligence_manager.research_manager = self.research_manager
         self.status.mark_module_loaded("research")
 
         self.reasoning_manager = ReasoningManager(logger=logging.getLogger("reasoning"))
@@ -251,6 +270,7 @@ class StartupManager:
                 "reflection_manager": self.reflection_manager,
                 "adaptive_manager": self.adaptive_manager,
                 "personal_intelligence_manager": self.personal_intelligence_manager,
+                "context_intelligence_manager": self.context_intelligence_manager,
             },
         )
         self.jarvis_core = JarvisCore(context=jarvis_context)
@@ -262,10 +282,16 @@ class StartupManager:
             memory_manager=self.memory_manager,
             knowledge_manager=self.knowledge_manager,
             task_manager=self.task_manager,
+            task_intelligence_manager=self.task_intelligence_manager,
+            workflow_manager=self.workflow_manager,
+            retrieval_manager=self.retrieval_manager,
+            research_manager=self.research_manager,
             plugin_manager=self.plugin_manager,
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,
+            personal_intelligence_manager=self.personal_intelligence_manager,
+            context_intelligence_manager=self.context_intelligence_manager,
             logger=logging.getLogger("conversation"),
         )
         self.conversation_statistics = self.conversation_manager.initialize()
@@ -437,6 +463,26 @@ class StartupManager:
                 "personal_retrieval": lambda: (
                     self.personal_intelligence_manager is not None
                     and self.personal_intelligence_manager.retrieval_manager is not None
+                ),
+                "context_intelligence": lambda: (
+                    self.context_intelligence_manager is not None
+                    and self.context_intelligence_manager.initialized
+                ),
+                "conversation_context": lambda: (
+                    self.conversation_manager is not None
+                    and self.conversation_manager.active_session is not None
+                ),
+                "context_retrieval": lambda: (
+                    self.context_intelligence_manager is not None
+                    and self.context_intelligence_manager.retrieval_manager is not None
+                ),
+                "reference_resolution": lambda: (
+                    self.context_intelligence_manager is not None
+                    and self.context_intelligence_manager.initialized
+                ),
+                "continuation_readiness": lambda: (
+                    self.context_intelligence_manager is not None
+                    and self.context_intelligence_manager.initialized
                 ),
                 "task_intelligence": lambda: (
                     self.task_intelligence_manager is not None
@@ -946,6 +992,15 @@ class StartupManager:
             print(f"    Personal Retrieval Readiness: {personal_stats.personal_retrieval_readiness}")
             print(f"    Active Personal Items: {personal_stats.active_personal_items}")
             print(f"    Overall Personal Intelligence Health: {personal_stats.overall_personal_intelligence_health}")
+        if self.context_intelligence_manager is not None:
+            context_stats = self.context_intelligence_manager.statistics()
+            print("  Context Intelligence Initialized")
+            print(f"    Context Intelligence Status: {context_stats.context_intelligence_status}")
+            print(f"    Conversation Context Readiness: {context_stats.conversation_context_readiness}")
+            print(f"    Context Retrieval Readiness: {context_stats.context_retrieval_readiness}")
+            print(f"    Reference Resolution Readiness: {context_stats.reference_resolution_readiness}")
+            print(f"    Continuation Readiness: {context_stats.continuation_readiness}")
+            print(f"    Overall Context Intelligence Health: {context_stats.overall_context_intelligence_health}")
         if self.task_intelligence_manager is not None:
             task_intel_stats = self.task_intelligence_manager.statistics()
             print("  Task Intelligence Initialized")
@@ -1104,6 +1159,8 @@ class StartupManager:
             self.retrieval_statistics = self.retrieval_manager.statistics()
         if self.personal_intelligence_manager is not None and self.personal_intelligence_manager.initialized:
             self.personal_intelligence_statistics = self.personal_intelligence_manager.statistics()
+        if self.context_intelligence_manager is not None and self.context_intelligence_manager.initialized:
+            self.context_intelligence_statistics = self.context_intelligence_manager.statistics()
         if self.plugin_manager is not None and self.plugin_manager.initialized:
             self.plugin_statistics = self.plugin_manager.statistics()
         if self.task_manager is not None and self.task_manager.initialized:
@@ -1164,6 +1221,13 @@ class StartupManager:
             print(f"  Retrieval cache status: {rs.cache_status}")
             print(f"  Retrieval ranking status: {rs.ranking_status}")
             print(f"  Overall retrieval health: {rs.overall_retrieval_health}")
+        if self.context_intelligence_manager is not None:
+            ci = self.context_intelligence_manager.statistics()
+            print(f"  Context intelligence status: {ci.context_intelligence_status}")
+            print(f"  Conversation context readiness: {ci.conversation_context_readiness}")
+            print(f"  Context retrieval readiness: {ci.context_retrieval_readiness}")
+            print(f"  Reference resolution readiness: {ci.reference_resolution_readiness}")
+            print(f"  Continuation readiness: {ci.continuation_readiness}")
         if self.task_intelligence_manager is not None:
             ti = self.task_intelligence_manager.statistics()
             print(f"  Task intelligence status: {ti.status}")

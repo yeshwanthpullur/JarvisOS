@@ -18,9 +18,12 @@ class ConversationContext:
     memory_manager: Any | None = None
     knowledge_manager: Any | None = None
     task_manager: Any | None = None
+    task_intelligence_manager: Any | None = None
+    workflow_manager: Any | None = None
+    retrieval_manager: Any | None = None
+    research_manager: Any | None = None
     plugin_manager: Any | None = None
     provider_router: Any | None = None
     agent_manager: Any | None = None
     agent_creator: Any | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
-

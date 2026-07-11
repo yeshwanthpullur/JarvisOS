@@ -6,6 +6,8 @@ It does not store memory or knowledge. Instead, it decides how to retrieve the e
 
 Personal Intelligence uses this layer to pull only the relevant preferences, project references, and supporting evidence instead of injecting the full user profile into every request.
 
+Context Intelligence uses Retrieval only as a selective support layer when active session state is insufficient. Active continuity remains conversation-scoped first, while Retrieval remains responsible for bounded relevance-based recovery rather than full-history injection.
+
 Responsibilities:
 - receive retrieval requests
 - determine retrieval strategy

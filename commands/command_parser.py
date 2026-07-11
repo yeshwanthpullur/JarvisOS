@@ -40,6 +40,6 @@ class CommandParser:
             else:
                 args.append(part)
         name = parts[0]
-        if args and f"{name} {args[0]}" in {"provider list", "provider status", "provider health", "plugin list", "plugin status", "agent list", "agent status", "department list", "memory search", "knowledge search", "task list", "task status", "workflow list", "config show", "logs recent", "profile show", "profile list", "profile explain", "profile update", "profile forget", "profile confirm", "profile reject"}:
+        if args and f"{name} {args[0]}" in {"provider list", "provider status", "provider health", "plugin list", "plugin status", "agent list", "agent status", "department list", "memory search", "knowledge search", "task list", "task status", "workflow list", "config show", "logs recent", "profile show", "profile list", "profile explain", "profile update", "profile forget", "profile confirm", "profile reject", "context show", "context recent", "context clear", "context pause", "context resume", "context previous", "objective show"}:
             name = f"{name} {args.pop(0)}"
         return ParsedCommand(name=name.lower(), arguments=tuple(args), flags=flags, raw=text)

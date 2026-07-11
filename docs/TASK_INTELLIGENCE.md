@@ -28,5 +28,7 @@ Task Intelligence is the project-management layer above the existing Task Engine
 - Do not duplicate task persistence.
 - Do not bypass the Workflow Engine.
 - Do not bypass Executive JARVIS.
+
+Context Intelligence may reference an active project or task for continuity, but Task Intelligence remains authoritative for project, goal, and milestone state.
 - Keep behavior configuration-driven.
 - Extend through interfaces instead of rewriting the base Task Engine.

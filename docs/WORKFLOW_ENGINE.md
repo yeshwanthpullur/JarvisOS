@@ -17,6 +17,8 @@ It is responsible for:
 
 The Workflow Engine is orchestration-only. It does not replace the Executive Core, the Task Engine, or the Provider Router.
 
+Context Intelligence may keep an active workflow reference so requests like `resume the workflow` can reconnect the user to the right orchestration state. Workflow remains the authoritative source of execution state.
+
 ## Workflow Types
 
 Supported workflow types are metadata labels:

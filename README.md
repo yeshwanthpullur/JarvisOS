@@ -22,6 +22,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 - Reflection and Learning Framework for post-execution evaluation and improvement
 - Adaptive Intelligence Loop for executive-approved learning recommendations
 - Personal Intelligence layer for evidence-based user preferences and context
+- Context Intelligence layer for active continuity, reference resolution, and grounded continuation
 
 ## Folder Structure
 
@@ -77,6 +78,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 | `docs/AGENT_FRAMEWORK.md` | Agent framework architecture, lifecycle, communication, scheduling, health, and extension guide. |
 | `docs/JARVIS_EXECUTIVE.md` | Executive JARVIS architecture and responsibilities. |
 | `docs/AGENT_CREATOR.md` | Agent Creator Framework overview and extension model. |
+| `docs/CONTEXT_INTELLIGENCE.md` | Context continuity, ambiguity handling, active objectives, and continuation behavior. |
 
 ## Quick Start
 
