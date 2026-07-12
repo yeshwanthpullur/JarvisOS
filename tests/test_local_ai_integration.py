@@ -6,6 +6,7 @@ import asyncio
 import json
 import threading
 import unittest
+import urllib.request
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -242,6 +243,21 @@ class LocalAIIntegrationTests(unittest.TestCase):
             commands.initialize()
             conversation = ConversationContext(
                 session=ConversationSession(),
+                provider_manager=manager,
+                metadata={},
+            )
+            response = commands.execute("local status", conversation)
+            self.assertIn("Local AI status", response.response)
+            self.assertNotIn("unavailable", response.response.lower())
+
+    def test_provider_manager_falls_back_to_metadata(self) -> None:
+        with local_ai_server() as base_url:
+            manager = self._providers_config("local", base_url, ProviderKind.LOCAL)
+            manager.initialize()
+            commands = CommandManager()
+            commands.initialize()
+            conversation = ConversationContext(
+                session=ConversationSession(),
                 metadata={"provider_manager": manager},
             )
             response = commands.execute("local status", conversation)
@@ -255,10 +271,60 @@ class LocalAIIntegrationTests(unittest.TestCase):
             commands.initialize()
             conversation = ConversationContext(
                 session=ConversationSession(),
-                metadata={"provider_manager": manager},
+                provider_manager=manager,
             )
             response = commands.execute("local models", conversation)
             self.assertIn("ollama:ollama-mini", response.response)
+
+    def test_local_use_command_parses_and_applies_model(self) -> None:
+        with local_ai_server() as base_url:
+            manager = self._providers_config("ollama", base_url, ProviderKind.OLLAMA)
+            manager.initialize()
+            commands = CommandManager()
+            commands.initialize()
+            conversation = ConversationContext(
+                session=ConversationSession(),
+                provider_manager=manager,
+            )
+            response = commands.execute("local use ollama-mini", conversation)
+            self.assertIn("Local model selected", response.response)
+            self.assertEqual(conversation.session.metadata.get("local_model"), "ollama-mini")
+            self.assertEqual(conversation.session.metadata.get("local_provider"), "ollama")
+
+    def test_local_test_uses_model_id(self) -> None:
+        with local_ai_server() as base_url:
+            manager = self._providers_config("ollama", base_url, ProviderKind.OLLAMA)
+            manager.initialize()
+            commands = CommandManager()
+            commands.initialize()
+            conversation = ConversationContext(
+                session=ConversationSession(),
+                provider_manager=manager,
+            )
+            response = commands.execute("local test", conversation)
+            self.assertIn("Local model test succeeded", response.response)
+
+    def test_real_ollama_command_path_uses_installed_model(self) -> None:
+        try:
+            models = json.loads(
+                urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=5).read().decode("utf-8")
+            ).get("models", [])
+        except Exception as exc:  # pragma: no cover - environment dependent
+            self.skipTest(f"Ollama runtime unavailable: {exc}")
+        if not any(model.get("name") == "llama3.2:1b" for model in models):
+            self.skipTest("llama3.2:1b is not installed in this environment.")
+        manager = self._providers_config("ollama", "http://127.0.0.1:11434", ProviderKind.OLLAMA)
+        manager.initialize()
+        commands = CommandManager()
+        commands.initialize()
+        conversation = ConversationContext(
+            session=ConversationSession(),
+            provider_manager=manager,
+        )
+        use_response = commands.execute("local use llama3.2:1b", conversation)
+        self.assertIn("Local model selected", use_response.response)
+        test_response = commands.execute("local test", conversation)
+        self.assertIn("Local model test succeeded", test_response.response)
 
     def test_startup_includes_local_ai_framework(self) -> None:
         startup = StartupManager()
@@ -268,6 +334,25 @@ class LocalAIIntegrationTests(unittest.TestCase):
             self.assertIn("local_ai", {result.name for result in startup.health_results})
         finally:
             startup.shutdown()
+
+    def test_command_parser_recognizes_local_use(self) -> None:
+        from commands.command_parser import CommandParser
+
+        parsed = CommandParser().parse("local use llama3.2:1b")
+        self.assertEqual(parsed.name, "local use")
+        self.assertEqual(parsed.arguments, ("llama3.2:1b",))
+
+    def test_existing_local_commands_still_parse(self) -> None:
+        from commands.command_parser import CommandParser
+
+        parser = CommandParser()
+        self.assertEqual(parser.parse("local status").name, "local status")
+        self.assertEqual(parser.parse("local providers").name, "local providers")
+        self.assertEqual(parser.parse("local models").name, "local models")
+        self.assertEqual(parser.parse("local refresh").name, "local refresh")
+        self.assertEqual(parser.parse("local test").name, "local test")
+        self.assertEqual(parser.parse("local only on").name, "local only on")
+        self.assertEqual(parser.parse("local only off").name, "local only off")
 
     def test_disabled_local_only_mode_is_truthful(self) -> None:
         with local_ai_server() as base_url:

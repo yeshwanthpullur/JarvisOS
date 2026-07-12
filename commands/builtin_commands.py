@@ -49,6 +49,9 @@ def _provider_manager(context: CommandContext):
     conversation = context.conversation_context
     if conversation is None:
         return None
+    direct = getattr(conversation, "provider_manager", None)
+    if direct is not None:
+        return direct
     metadata = getattr(conversation, "metadata", {}) or {}
     return metadata.get("provider_manager")
 
@@ -77,6 +80,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("local providers", "List local providers", "provider", (), CommandPermission.PROVIDER),
         ("local models", "List local models", "provider", (), CommandPermission.PROVIDER),
         ("local refresh", "Refresh local model inventory", "provider", (), CommandPermission.PROVIDER),
+        ("local use", "Select a local model", "provider", (), CommandPermission.PROVIDER),
         ("local test", "Test the selected local model", "provider", (), CommandPermission.PROVIDER),
         ("local explain-selection", "Explain local model selection", "provider", (), CommandPermission.PROVIDER),
         ("local only on", "Enable local-only mode", "provider", (), CommandPermission.PROVIDER),
@@ -159,7 +163,7 @@ def _handler_for(name: str):
             return _text_response(f"Command history: {len(manager.history.list_history())} entries")
         if name == "metrics" and manager is not None:
             return _text_response(f"Commands executed: {manager.metrics.commands_executed}")
-        if name in {"local", "local status", "local providers", "local models", "local refresh", "local test", "local explain-selection", "local only on", "local only off"}:
+        if name in {"local", "local status", "local providers", "local models", "local refresh", "local use", "local test", "local explain-selection", "local only on", "local only off"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:
                 return _text_response("Local AI is not available.")
@@ -198,6 +202,32 @@ def _handler_for(name: str):
                     if provider is not None and hasattr(provider, "refresh_inventory"):
                         provider.refresh_inventory()
                 return _text_response("Local model inventory refreshed.")
+            if name == "local use":
+                if not context.arguments:
+                    return _text_response("Please provide a local model id.")
+                model_id = context.arguments[0]
+                selected = None
+                for record in local_records:
+                    provider = getattr(record, "provider", None)
+                    if provider is None:
+                        continue
+                    for model in provider.list_models():
+                        if model.model_id == model_id:
+                            selected = record
+                            break
+                    if selected is not None:
+                        break
+                if selected is None:
+                    return _text_response(f"Local model not found: {model_id}")
+                conversation = context.conversation_context
+                if conversation is not None:
+                    conversation.session.metadata["local_model"] = model_id
+                    conversation.session.metadata["local_provider"] = selected.config.provider_id
+                return _text_response(
+                    f"Local model selected: {selected.config.provider_id}:{model_id}",
+                    provider=selected.config.provider_id,
+                    model=model_id,
+                )
             if name == "local test":
                 provider_router = getattr(provider_manager, "router", None)
                 if provider_router is None:
@@ -205,7 +235,7 @@ def _handler_for(name: str):
                 candidate = next((record for record in local_records if getattr(record, "provider", None) is not None and record.provider.list_models()), None)
                 if candidate is None:
                     return _text_response("No usable local model is available.")
-                model_id = candidate.provider.list_models()[0].identifier
+                model_id = candidate.provider.list_models()[0].model_id
                 try:
                     result = asyncio.run(
                         provider_router.execute_with_failover(

@@ -24,17 +24,39 @@ brain:
   daily_note_format: "%Y-%m-%d"
 
 models:
-  default_model: ""
+  default_model: "llama3.2:1b"
   fallback_model: ""
   allow_local_models: true
 
 providers:
-  default_provider: ""
-  enabled_providers: []
-  timeout_seconds: 30
-  max_retries: 2
-  track_costs: true
-  definitions: {}
+  default_provider: "ollama"
+  enabled_providers:
+    - "ollama"
+  timeout_seconds: 60
+  max_retries: 1
+  track_costs: false
+  definitions:
+    local:
+      kind: "local"
+      enabled: false
+      local_only: true
+      base_url: "http://127.0.0.1:11434"
+      metadata:
+        local: true
+        runtime: "openai-compatible"
+
+    ollama:
+      kind: "ollama"
+      enabled: true
+      local_only: true
+      base_url: "http://127.0.0.1:11434"
+      preferred_model: "llama3.2:1b"
+      default_model: "llama3.2:1b"
+      timeout_seconds: 60
+      max_retries: 1
+      metadata:
+        local: true
+        runtime: "ollama"
 
 agents:
   enabled: true
