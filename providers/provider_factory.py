@@ -18,6 +18,7 @@ from providers.mistral_provider import MistralProvider
 from providers.ollama_provider import OllamaProvider
 from providers.openai_provider import OpenAIProvider
 from providers.openrouter_provider import OpenRouterProvider
+from providers.zenmux_provider import ZenMuxProvider
 from providers.provider_config import ProviderConfig
 from providers.provider_context import ProviderContext
 from providers.provider_permissions import ProviderPermission, ProviderPermissionSet
@@ -34,6 +35,7 @@ PROVIDER_CLASSES: dict[ProviderKind, type[BaseProvider]] = {
     ProviderKind.MISTRAL: MistralProvider,
     ProviderKind.GROQ: GroqProvider,
     ProviderKind.OPENROUTER: OpenRouterProvider,
+    ProviderKind.ZENMUX: ZenMuxProvider,
     ProviderKind.LM_STUDIO: LMStudioProvider,
     ProviderKind.CUSTOM: CustomProvider,
     ProviderKind.FUTURE: FutureProvider,

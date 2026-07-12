@@ -223,6 +223,7 @@ class JarvisManager:
             brain_manager=base.brain_manager if base else None,
             task_manager=base.task_manager if base else None,
             plugin_manager=base.plugin_manager if base else None,
+            provider_execution_manager=base.metadata.get("provider_execution_manager") if base else None,
             provider_router=base.provider_router if base else None,
             agent_manager=base.agent_manager if base else None,
             agent_creator=base.agent_creator if base else None,

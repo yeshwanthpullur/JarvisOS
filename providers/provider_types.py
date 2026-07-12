@@ -36,6 +36,7 @@ class ProviderKind(StrEnum):
     MISTRAL = "mistral"
     GROQ = "groq"
     OPENROUTER = "openrouter"
+    ZENMUX = "zenmux"
     LM_STUDIO = "lm_studio"
     CUSTOM = "custom"
     FUTURE = "future"

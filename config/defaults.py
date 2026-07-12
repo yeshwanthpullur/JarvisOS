@@ -32,13 +32,13 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "daily_note_format": "%Y-%m-%d",
     },
     "models": {
-        "default_model": "",
+        "default_model": "llama3.2:1b",
         "fallback_model": "",
         "allow_local_models": True,
     },
     "providers": {
-        "default_provider": "",
-        "enabled_providers": [],
+        "default_provider": "ollama",
+        "enabled_providers": ["ollama"],
         "timeout_seconds": 30,
         "max_retries": 2,
         "track_costs": True,
@@ -113,6 +113,16 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
                     "provider_family": "openrouter",
                 },
             },
+            "zenmux": {
+                "kind": "zenmux",
+                "enabled": True,
+                "local_only": False,
+                "base_url": "https://api.zenmux.ai",
+                "api_key_env": "ZENMUX_API_KEY",
+                "metadata": {
+                    "provider_family": "zenmux",
+                },
+            },
             "local": {
                 "kind": "local",
                 "enabled": False,
@@ -125,9 +135,13 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
             },
             "ollama": {
                 "kind": "ollama",
-                "enabled": False,
+                "enabled": True,
                 "local_only": True,
                 "base_url": "http://127.0.0.1:11434",
+                "preferred_model": "llama3.2:1b",
+                "default_model": "llama3.2:1b",
+                "timeout_seconds": 60,
+                "max_retries": 1,
                 "metadata": {
                     "local": True,
                     "runtime": "ollama",

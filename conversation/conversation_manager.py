@@ -118,6 +118,7 @@ class ConversationManager:
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,
             metadata={
+                "session_metadata": dict(self.active_session.metadata),
                 "personal_intelligence_manager": self.personal_intelligence,
                 "personal_context": personal_context,
                 "context_intelligence_manager": self.context_intelligence,
@@ -125,6 +126,21 @@ class ConversationManager:
             },
         )
         response = self.engine.handle(request, context)
+        exact_response = context.metadata.get("exact_response")
+        if isinstance(exact_response, str) and exact_response.strip():
+            response = ConversationResponse(
+                response=exact_response,
+                execution_summary=response.execution_summary,
+                references=response.references,
+                warnings=response.warnings,
+                diagnostics=response.diagnostics,
+                timing=response.timing,
+                metadata={**response.metadata, "exact_response": exact_response},
+                conversation_state=response.conversation_state,
+                execution_state=response.execution_state,
+                should_exit=response.should_exit,
+                should_clear=response.should_clear,
+            )
         if self.context_intelligence is not None:
             self.context_intelligence.record_interaction(self.active_session, user_input, response)
         self.history.append(request, response)

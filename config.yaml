@@ -99,6 +99,15 @@ providers:
       metadata:
         provider_family: "openrouter"
 
+    zenmux:
+      kind: "zenmux"
+      enabled: true
+      local_only: false
+      base_url: "https://api.zenmux.ai"
+      api_key_env: "ZENMUX_API_KEY"
+      metadata:
+        provider_family: "zenmux"
+
     local:
       kind: "local"
       enabled: false

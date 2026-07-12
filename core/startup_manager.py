@@ -277,6 +277,7 @@ class StartupManager:
             brain_manager=self.brain_manager,
             task_manager=self.task_manager,
             plugin_manager=self.plugin_manager,
+            provider_execution_manager=self.provider_execution_manager,
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,
@@ -985,7 +986,7 @@ class StartupManager:
         print("Type 'help' for available commands.")
         while True:
             try:
-                command = input("Jarvis > ").strip().lower()
+                command = input("Jarvis > ").strip()
             except EOFError:
                 print()
                 LOGGER.info("command_loop_eof received")
@@ -993,6 +994,7 @@ class StartupManager:
             if not command:
                 continue
 
+            command_lower = command.lower()
             if self.conversation_manager is None:
                 print("Conversation Engine is not available.")
                 continue
@@ -1000,10 +1002,10 @@ class StartupManager:
             if response.should_clear:
                 self._handle_clear()
                 continue
-            if command == "status":
+            if command_lower == "status":
                 self._handle_status()
                 continue
-            if command == "help":
+            if command_lower == "help":
                 print(response.response)
                 continue
             if response.response:

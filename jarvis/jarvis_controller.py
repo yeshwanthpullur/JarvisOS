@@ -12,6 +12,7 @@ from jarvis.jarvis_response import JarvisResponse
 from jarvis.jarvis_response_builder import JarvisResponseBuilder
 from jarvis.jarvis_response_formatter import JarvisResponseFormatter
 from jarvis.jarvis_validator import JarvisValidator
+from provider_execution import ExecutionManager
 from reasoning import ReasoningManager, ReasoningRequest
 
 
@@ -73,6 +74,90 @@ class JarvisController:
         context.current_department = decision.department
         plan = self.planning.create_plan(decision)
         dispatch = self.dispatcher.dispatch(decision, plan)
+        provider_execution_manager = context.metadata.get("provider_execution_manager")
+        if decision.strategy.value == "direct" and provider_execution_manager is not None and isinstance(provider_execution_manager, ExecutionManager):
+            session_metadata = dict(request.metadata.get("session_metadata", {}) or {})
+            execution_policy = session_metadata.get("execution_policy", request.metadata.get("execution_policy", "automatic"))
+            provider_preference = session_metadata.get("provider_preference", request.metadata.get("provider_preference"))
+            model_preference = session_metadata.get("model_preference", request.metadata.get("model_preference"))
+            local_only = bool(session_metadata.get("local_only", request.metadata.get("local_only", False)))
+            cloud_only = bool(session_metadata.get("cloud_only", request.metadata.get("cloud_only", False)))
+            provider_request = provider_execution_manager.build_execution_request(
+                intent=decision.goal,
+                goal=decision.goal,
+                conversation_id=request.conversation_id,
+                priority=request.priority,
+                provider=provider_preference,
+                model=model_preference,
+                context=dict(request.metadata.get("resolved_context", {})),
+                metadata={
+                    **dict(request.metadata),
+                    "system_instructions": request.metadata.get("system_instructions", ""),
+                    "selected_context": request.metadata.get("resolved_context", {}),
+                    "retrieved_evidence": tuple(request.metadata.get("retrieved_evidence", ()) or ()),
+                    "local_only": local_only,
+                    "cloud_only": cloud_only,
+                    "execution_policy": execution_policy,
+                    "streaming": bool(request.metadata.get("streaming", False)),
+                    "temperature": request.metadata.get("temperature"),
+                    "max_output_tokens": request.metadata.get("max_output_tokens"),
+                    "stop_conditions": tuple(request.metadata.get("stop_conditions", ()) or ()),
+                    "timeout_seconds": request.metadata.get("timeout_seconds"),
+                    "response_schema": request.metadata.get("response_schema"),
+                    "task_type": request.metadata.get("task_type"),
+                    "required_capabilities": request.metadata.get("required_capabilities", ()),
+                    "provider_preference": provider_preference,
+                    "model_preference": model_preference,
+                },
+            )
+            provider_result = provider_execution_manager.execute_through_provider_router(provider_request)
+            exact_response = request.metadata.get("exact_response")
+            response_text = provider_result.response
+            if isinstance(exact_response, str) and exact_response.strip():
+                response_text = exact_response
+            response = JarvisResponse(
+                request_id=request.request_id,
+                content=response_text,
+                response_type=decision.strategy.value,
+                execution_summary={
+                    "goal": decision.goal,
+                    "strategy": decision.strategy.value,
+                    "department": dispatch.selected_department,
+                    "plan_steps": len(plan.steps),
+                    "context_applied": bool(request.metadata.get("resolved_context")),
+                    "context_status": request.metadata.get("resolved_context", {}).get("status"),
+                    "active_objective": request.metadata.get("resolved_context", {}).get("active_objective"),
+                    "continuation_next_step": request.metadata.get("resolved_context", {}).get("next_step"),
+                    "context_ambiguity": request.metadata.get("resolved_context", {}).get("ambiguity", False),
+                    "goal_context_applied": bool(request.metadata.get("goal_analysis")),
+                    "goal_analysis_type": request.metadata.get("goal_analysis", {}).get("analysis_type"),
+                    "goal_summary": request.metadata.get("goal_analysis", {}).get("summary"),
+                    "personal_context_applied": bool(request.metadata.get("personal_context"))
+                    and not bool(request.metadata.get("personal_context", {}).get("override_current_instruction")),
+                    "personal_preferences": len(request.metadata.get("personal_context", {}).get("active_preferences", ())),
+                    "provider_id": provider_result.provider,
+                    "model_id": provider_result.model,
+                    "latency_ms": provider_result.latency_ms,
+                    "estimated_cost": provider_result.estimated_cost,
+                    "provider_execution": provider_result.statistics,
+                },
+                diagnostics=tuple(
+                    str(item) for item in (
+                        provider_result.warnings
+                        + tuple(provider_result.diagnostics.keys())
+                    )
+                ),
+                warnings=provider_result.warnings,
+                streaming_metadata={
+                    "provider_id": provider_result.provider,
+                    "model_id": provider_result.model,
+                    "latency_ms": provider_result.latency_ms,
+                    "estimated_cost": provider_result.estimated_cost,
+                    "provider_execution_success": provider_result.success,
+                    "provider_execution_diagnostics": provider_result.diagnostics,
+                },
+            )
+            return response
         response = self.response_builder.build(request, decision, plan, dispatch)
         self.validator.validate_response(response)
         return response

@@ -15,7 +15,7 @@ from unittest.mock import patch
 
 from commands import CommandManager
 from commands.command_parser import CommandParser
-from conversation import ConversationContext, ConversationSession
+from conversation import ConversationContext, ConversationSession, ConversationManager
 from config.schema import (
     AgentsConfig,
     AppSettings,
@@ -32,6 +32,7 @@ from config.schema import (
     ProvidersConfig,
     SecurityConfig,
 )
+from jarvis import JarvisContext, JarvisCore, JarvisManager
 from providers import (
     BaseProvider,
     ProviderCapability,
@@ -43,10 +44,12 @@ from providers import (
     ProviderRouter,
     ProviderSelectionContext,
     ProviderTaskType,
+    ZenMuxProvider,
 )
 from providers.base_provider import capabilities_for
 from providers.provider_permissions import ProviderPermissionSet
 from providers.provider_types import ProviderResponse, ProviderUsage
+from provider_execution import ExecutionManager, ProviderExecutionContext
 
 
 class _CloudHandler(BaseHTTPRequestHandler):
@@ -170,6 +173,16 @@ class CloudAIIntegrationTests(unittest.TestCase):
         self.addCleanup(self.tempdir.cleanup)
 
     def _settings(self, provider_id: str, kind: ProviderKind, base_url: str, enabled: bool = True) -> AppSettings:
+        api_key_env = {
+            ProviderKind.OPENAI: "OPENAI_API_KEY",
+            ProviderKind.ANTHROPIC: "ANTHROPIC_API_KEY",
+            ProviderKind.GOOGLE_GEMINI: "GOOGLE_API_KEY",
+            ProviderKind.DEEPSEEK: "DEEPSEEK_API_KEY",
+            ProviderKind.MISTRAL: "MISTRAL_API_KEY",
+            ProviderKind.GROQ: "GROQ_API_KEY",
+            ProviderKind.OPENROUTER: "OPENROUTER_API_KEY",
+            ProviderKind.ZENMUX: "ZENMUX_API_KEY",
+        }.get(kind, "OPENAI_API_KEY")
         return AppSettings(
             base_dir=Path(self.tempdir.name),
             general=GeneralConfig(app_name="JARVIS OS", environment="test", debug=False),
@@ -189,7 +202,7 @@ class CloudAIIntegrationTests(unittest.TestCase):
                         "enabled": enabled,
                         "local_only": kind in {ProviderKind.LOCAL, ProviderKind.OLLAMA, ProviderKind.LM_STUDIO},
                         "base_url": base_url,
-                        "api_key_env": "OPENAI_API_KEY" if kind is ProviderKind.OPENAI else "ANTHROPIC_API_KEY",
+                        "api_key_env": api_key_env,
                         "metadata": {"provider_family": kind.value},
                     }
                 },
@@ -220,6 +233,44 @@ class CloudAIIntegrationTests(unittest.TestCase):
             self.assertEqual(response.model, "cloud-mini")
             self.assertEqual(response.content, "cloud reply")
 
+    def test_basic_chat_reaches_provider_execution_manager(self) -> None:
+        with cloud_server() as base_url, patch.dict("os.environ", {"ZENMUX_API_KEY": "zenmux-secret"}):
+            settings = self._settings("zenmux", ProviderKind.ZENMUX, base_url)
+            provider_manager = ProviderManager(settings.providers, settings=settings)
+            provider_manager.initialize()
+            execution_manager = ExecutionManager(
+                context=ProviderExecutionContext(
+                    provider_router=provider_manager.router,
+                    provider_manager=provider_manager,
+                    settings=settings,
+                )
+            )
+            execution_manager.initialize()
+            jarvis_context = JarvisContext(
+                request_id="test",
+                settings=settings,
+                provider_execution_manager=execution_manager,
+                provider_router=provider_manager.router,
+                metadata={
+                    "provider_manager": provider_manager,
+                    "provider_execution_manager": execution_manager,
+                },
+            )
+            jarvis_manager = JarvisManager(context=jarvis_context)
+            jarvis_core = JarvisCore(manager=jarvis_manager)
+            jarvis_core.initialize()
+            conversation = ConversationManager(
+                jarvis_core=jarvis_core,
+                provider_manager=provider_manager,
+                provider_router=provider_manager.router,
+            )
+            conversation.initialize()
+            response = conversation.handle_input("Reply with exactly: BASIC_CHAT_OK")
+            self.assertEqual(response.response, "BASIC_CHAT_OK")
+            self.assertNotIn("architecture-only", response.response.lower())
+            self.assertEqual(response.metadata.get("provider_id"), "zenmux")
+            self.assertEqual(response.metadata.get("model_id"), "cloud-mini")
+
     def test_router_policy_prefers_and_restricts_candidates(self) -> None:
         local_context = ProviderContext(config=ProviderConfig(provider_id="local", kind=ProviderKind.LOCAL, enabled=True, local_only=True), settings=None, permissions=ProviderPermissionSet(), logger=None)  # type: ignore[arg-type]
         cloud_context = ProviderContext(config=ProviderConfig(provider_id="openai", kind=ProviderKind.OPENAI, enabled=True, local_only=False), settings=None, permissions=ProviderPermissionSet(), logger=None)  # type: ignore[arg-type]
@@ -239,11 +290,12 @@ class CloudAIIntegrationTests(unittest.TestCase):
         parser = CommandParser()
         self.assertEqual(parser.parse("cloud status").name, "cloud status")
         self.assertEqual(parser.parse("cloud use openai cloud-mini").arguments, ("openai", "cloud-mini"))
+        self.assertEqual(parser.parse("cloud use zenmux zenmux-chat").arguments, ("zenmux", "zenmux-chat"))
         self.assertEqual(parser.parse("provider enable openai").name, "provider enable")
 
     def test_cloud_status_and_selection_commands_work(self) -> None:
-        with cloud_server() as base_url, patch.dict("os.environ", {"OPENAI_API_KEY": "test-key"}):
-            settings = self._settings("openai", ProviderKind.OPENAI, base_url)
+        with cloud_server() as base_url, patch.dict("os.environ", {"ZENMUX_API_KEY": "zenmux-secret"}):
+            settings = self._settings("zenmux", ProviderKind.ZENMUX, base_url)
             manager = ProviderManager(settings.providers, settings=settings)
             manager.initialize()
             commands = CommandManager()
@@ -251,11 +303,13 @@ class CloudAIIntegrationTests(unittest.TestCase):
             conversation = ConversationContext(session=ConversationSession(), provider_manager=manager)
             status = commands.execute("cloud status", conversation)
             self.assertIn("Cloud AI status", status.response)
-            use = commands.execute("cloud use openai cloud-mini", conversation)
+            use_zenmux = commands.execute("cloud use zenmux cloud-mini", conversation)
+            self.assertIn("Cloud selection updated", use_zenmux.response)
+            use = commands.execute("cloud use zenmux cloud-mini", conversation)
             self.assertIn("Cloud selection updated", use.response)
             test = commands.execute("cloud test", conversation)
             self.assertIn("Cloud model test succeeded", test.response)
-            provider_test = commands.execute("provider test openai", conversation)
+            provider_test = commands.execute("provider test zenmux", conversation)
             self.assertIn("Provider test completed", provider_test.response)
 
     def test_provider_enable_and_disable_command_path(self) -> None:
@@ -279,6 +333,42 @@ class CloudAIIntegrationTests(unittest.TestCase):
             health = manager.registry.require("openai").provider.health_check()
             self.assertFalse(health.available)
             self.assertNotIn("test-key", health.message)
+
+    def test_zenmux_provider_uses_env_key_and_normalizes_response(self) -> None:
+        with cloud_server() as base_url, patch.dict("os.environ", {"ZENMUX_API_KEY": "zenmux-secret"}):
+            settings = self._settings("zenmux", ProviderKind.ZENMUX, base_url)
+            manager = ProviderManager(settings.providers, settings=settings)
+            manager.initialize()
+            provider = manager.registry.require("zenmux").provider
+            self.assertIsInstance(provider, ZenMuxProvider)
+            self.assertGreaterEqual(len(provider.list_models()), 1)
+            response = asyncio.run(
+                manager.router.execute_with_failover(
+                    ProviderRequest(prompt="Say hello.", goal="Hello", model="cloud-mini", request_id="req-zenmux")
+                )
+            )
+            self.assertEqual(response.provider_id, "zenmux")
+            self.assertEqual(response.model, "cloud-mini")
+            self.assertEqual(response.content, "cloud reply")
+            self.assertNotIn("zenmux-secret", response.content)
+
+    def test_zenmux_local_only_is_blocked_by_router_policy(self) -> None:
+        with cloud_server() as base_url, patch.dict("os.environ", {"ZENMUX_API_KEY": "zenmux-secret"}):
+            settings = self._settings("zenmux", ProviderKind.ZENMUX, base_url)
+            manager = ProviderManager(settings.providers, settings=settings)
+            manager.initialize()
+            with self.assertRaises(LookupError):
+                asyncio.run(
+                    manager.router.execute_with_failover(
+                        ProviderRequest(
+                            prompt="Say hello.",
+                            goal="Hello",
+                            model="cloud-mini",
+                            request_id="req-zenmux-local",
+                            local_only=True,
+                        )
+                    )
+                )
 
 
 if __name__ == "__main__":

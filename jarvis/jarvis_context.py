@@ -50,8 +50,8 @@ class JarvisContext:
     brain_manager: Any | None = None
     task_manager: Any | None = None
     plugin_manager: Any | None = None
+    provider_execution_manager: Any | None = None
     provider_router: Any | None = None
     agent_manager: Any | None = None
     agent_creator: Any | None = None
     logger: logging.Logger | None = None
-
