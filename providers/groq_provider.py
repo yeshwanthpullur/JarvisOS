@@ -1,24 +1,13 @@
-"""Groq provider interface placeholder."""
+"""Groq provider interface."""
 
 from __future__ import annotations
 
-from providers.base_provider import BaseProvider, capabilities_for
+from providers.cloud_provider_base import CloudProviderBase
 from providers.provider_context import ProviderContext
-from providers.provider_types import ProviderCapability
 
 
-class GroqProvider(BaseProvider):
-    """Provider contract for future Groq integration."""
+class GroqProvider(CloudProviderBase):
+    """Provider contract for Groq."""
 
-    def __init__(self, context: ProviderContext) -> None:
-        super().__init__(
-            context,
-            capabilities_for(
-                (
-                    ProviderCapability.CHAT,
-                    ProviderCapability.REASONING,
-                    ProviderCapability.CODING,
-                    ProviderCapability.STREAMING,
-                )
-            ),
-        )
+    api_key_envs = ("GROQ_API_KEY",)
+    default_base_url = "https://api.groq.com"

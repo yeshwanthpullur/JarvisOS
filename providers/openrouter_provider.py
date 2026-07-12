@@ -1,27 +1,13 @@
-"""OpenRouter provider interface placeholder."""
+"""OpenRouter provider interface."""
 
 from __future__ import annotations
 
-from providers.base_provider import BaseProvider, capabilities_for
+from providers.cloud_provider_base import CloudProviderBase
 from providers.provider_context import ProviderContext
-from providers.provider_types import ProviderCapability
 
 
-class OpenRouterProvider(BaseProvider):
-    """Provider contract for future OpenRouter integration."""
+class OpenRouterProvider(CloudProviderBase):
+    """Provider contract for OpenRouter."""
 
-    def __init__(self, context: ProviderContext) -> None:
-        super().__init__(
-            context,
-            capabilities_for(
-                (
-                    ProviderCapability.CHAT,
-                    ProviderCapability.REASONING,
-                    ProviderCapability.CODING,
-                    ProviderCapability.VISION,
-                    ProviderCapability.FUNCTION_CALLING,
-                    ProviderCapability.STREAMING,
-                    ProviderCapability.JSON_MODE,
-                )
-            ),
-        )
+    api_key_envs = ("OPENROUTER_API_KEY",)
+    default_base_url = "https://openrouter.ai/api"

@@ -984,7 +984,12 @@ class StartupManager:
         """Run the interactive command loop until the user exits."""
         print("Type 'help' for available commands.")
         while True:
-            command = input("Jarvis > ").strip().lower()
+            try:
+                command = input("Jarvis > ").strip().lower()
+            except EOFError:
+                print()
+                LOGGER.info("command_loop_eof received")
+                break
             if not command:
                 continue
 

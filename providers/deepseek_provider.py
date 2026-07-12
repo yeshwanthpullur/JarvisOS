@@ -1,24 +1,13 @@
-"""DeepSeek provider interface placeholder."""
+"""DeepSeek provider interface."""
 
 from __future__ import annotations
 
-from providers.base_provider import BaseProvider, capabilities_for
+from providers.cloud_provider_base import CloudProviderBase
 from providers.provider_context import ProviderContext
-from providers.provider_types import ProviderCapability
 
 
-class DeepSeekProvider(BaseProvider):
-    """Provider contract for future DeepSeek integration."""
+class DeepSeekProvider(CloudProviderBase):
+    """Provider contract for DeepSeek."""
 
-    def __init__(self, context: ProviderContext) -> None:
-        super().__init__(
-            context,
-            capabilities_for(
-                (
-                    ProviderCapability.CHAT,
-                    ProviderCapability.REASONING,
-                    ProviderCapability.CODING,
-                    ProviderCapability.JSON_MODE,
-                )
-            ),
-        )
+    api_key_envs = ("DEEPSEEK_API_KEY",)
+    default_base_url = "https://api.deepseek.com"

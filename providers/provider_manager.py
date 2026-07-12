@@ -91,10 +91,11 @@ class ProviderManager:
         """Return provider router statistics."""
         records = self.registry.all()
         enabled = self.registry.enabled_providers()
+        healthy = sum(1 for record in records if record.provider is not None and record.provider.is_available())
         return ProviderRouterStatistics(
             registered_providers=len(records),
             enabled_providers=len(enabled),
-            healthy_providers=len(enabled),
+            healthy_providers=healthy,
         )
 
     def shutdown(self) -> None:

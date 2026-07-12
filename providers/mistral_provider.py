@@ -1,25 +1,13 @@
-"""Mistral provider interface placeholder."""
+"""Mistral provider interface."""
 
 from __future__ import annotations
 
-from providers.base_provider import BaseProvider, capabilities_for
+from providers.cloud_provider_base import CloudProviderBase
 from providers.provider_context import ProviderContext
-from providers.provider_types import ProviderCapability
 
 
-class MistralProvider(BaseProvider):
-    """Provider contract for future Mistral integration."""
+class MistralProvider(CloudProviderBase):
+    """Provider contract for Mistral."""
 
-    def __init__(self, context: ProviderContext) -> None:
-        super().__init__(
-            context,
-            capabilities_for(
-                (
-                    ProviderCapability.CHAT,
-                    ProviderCapability.REASONING,
-                    ProviderCapability.CODING,
-                    ProviderCapability.FUNCTION_CALLING,
-                    ProviderCapability.JSON_MODE,
-                )
-            ),
-        )
+    api_key_envs = ("MISTRAL_API_KEY",)
+    default_base_url = "https://api.mistral.ai"

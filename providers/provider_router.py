@@ -41,6 +41,7 @@ class ProviderSelectionContext:
     required_capabilities: tuple[ProviderCapability, ...] = ()
     local_only: bool = False
     offline: bool = False
+    execution_policy: str = "automatic"
     max_cost: float | None = None
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
@@ -119,12 +120,70 @@ class ProviderRouter:
             required_capabilities=request.required_capabilities,
             preferred_provider=request.preferred_provider,
             local_only=bool(request.local_only or request.metadata.get("local_only")),
+            execution_policy=str(request.metadata.get("execution_policy", "automatic")),
             metadata=request.metadata,
         )
-        provider = self.select_provider(context)
-        if provider is None:
+        candidates = self._candidate_providers(context)
+        if not candidates:
             raise LookupError("No provider matches the requested capabilities.")
-        return await provider.execute(request)
+        attempts: list[dict[str, Any]] = []
+        last_response: ProviderResponse | None = None
+        for provider in candidates:
+            try:
+                response = await provider.execute(request)
+                if response.error:
+                    attempts.append(
+                        {
+                            "provider": provider.provider_id,
+                            "error": response.error,
+                            "retryable": response.retryable,
+                        }
+                    )
+                    last_response = response
+                    if not response.retryable:
+                        break
+                    continue
+                if attempts:
+                    return ProviderResponse(
+                        provider_id=response.provider_id,
+                        model=response.model,
+                        content=response.content,
+                        usage=response.usage,
+                        metadata={**dict(response.metadata), "fallback": tuple(attempts)},
+                        request_id=response.request_id,
+                        finish_reason=response.finish_reason,
+                        error=response.error,
+                        retryable=response.retryable,
+                        created_at=response.created_at,
+                    )
+                return response
+            except Exception as exc:  # pragma: no cover - defensive routing
+                attempts.append({"provider": provider.provider_id, "error": str(exc), "retryable": True})
+                last_response = ProviderResponse(
+                    provider_id=provider.provider_id,
+                    model=request.model or "",
+                    content="",
+                    metadata={"fallback": tuple(attempts)},
+                    request_id=request.request_id,
+                    finish_reason="error",
+                    error=str(exc),
+                    retryable=True,
+                )
+                continue
+        if last_response is not None:
+            return ProviderResponse(
+                provider_id=last_response.provider_id,
+                model=last_response.model,
+                content=last_response.content,
+                usage=last_response.usage,
+                metadata={**dict(last_response.metadata), "fallback": tuple(attempts)},
+                request_id=last_response.request_id,
+                finish_reason=last_response.finish_reason,
+                error=last_response.error,
+                retryable=last_response.retryable,
+                created_at=last_response.created_at,
+            )
+        raise LookupError("No provider could execute the request.")
 
     def _candidate_providers(
         self,
@@ -139,8 +198,15 @@ class ProviderRouter:
         ]
         if context.preferred_provider:
             providers.sort(key=lambda provider: provider.provider_id != context.preferred_provider)
-        if context.local_only or context.offline:
+        policy = context.execution_policy.lower()
+        if context.local_only or context.offline or policy == "local_only":
             providers = [provider for provider in providers if provider.context.config.local_only]
+        elif policy == "cloud_only":
+            providers = [provider for provider in providers if not provider.context.config.local_only]
+        elif policy == "prefer_local":
+            providers.sort(key=lambda provider: not provider.context.config.local_only)
+        elif policy == "prefer_cloud":
+            providers.sort(key=lambda provider: provider.context.config.local_only)
         return [
             provider
             for provider in providers

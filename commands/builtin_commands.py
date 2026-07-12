@@ -56,6 +56,13 @@ def _provider_manager(context: CommandContext):
     return metadata.get("provider_manager")
 
 
+def _cloud_policy(session: object | None, default: str = "automatic") -> str:
+    if session is None:
+        return default
+    metadata = getattr(session, "metadata", {}) or {}
+    return str(metadata.get("execution_policy") or metadata.get("provider_policy") or default)
+
+
 def register_builtin_commands(registry: CommandRegistry) -> None:
     """Register built-in commands."""
     commands: tuple[tuple[str, str, str, tuple[str, ...], CommandPermission], ...] = (
@@ -75,6 +82,9 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("provider list", "List providers", "provider", (), CommandPermission.PROVIDER),
         ("provider status", "Show provider status", "provider", (), CommandPermission.PROVIDER),
         ("provider health", "Show provider health", "provider", (), CommandPermission.PROVIDER),
+        ("provider enable", "Enable a provider", "provider", (), CommandPermission.PROVIDER),
+        ("provider disable", "Disable a provider", "provider", (), CommandPermission.PROVIDER),
+        ("provider test", "Test a provider", "provider", (), CommandPermission.PROVIDER),
         ("local", "Show local AI summary", "provider", (), CommandPermission.PROVIDER),
         ("local status", "Show local AI status", "provider", (), CommandPermission.PROVIDER),
         ("local providers", "List local providers", "provider", (), CommandPermission.PROVIDER),
@@ -85,6 +95,16 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("local explain-selection", "Explain local model selection", "provider", (), CommandPermission.PROVIDER),
         ("local only on", "Enable local-only mode", "provider", (), CommandPermission.PROVIDER),
         ("local only off", "Disable local-only mode", "provider", (), CommandPermission.PROVIDER),
+        ("cloud", "Show cloud AI summary", "provider", (), CommandPermission.PROVIDER),
+        ("cloud status", "Show cloud AI status", "provider", (), CommandPermission.PROVIDER),
+        ("cloud providers", "List cloud providers", "provider", (), CommandPermission.PROVIDER),
+        ("cloud models", "List cloud models", "provider", (), CommandPermission.PROVIDER),
+        ("cloud refresh", "Refresh cloud model inventory", "provider", (), CommandPermission.PROVIDER),
+        ("cloud use", "Select a cloud provider or model", "provider", (), CommandPermission.PROVIDER),
+        ("cloud test", "Test the selected cloud provider", "provider", (), CommandPermission.PROVIDER),
+        ("cloud explain-selection", "Explain cloud selection", "provider", (), CommandPermission.PROVIDER),
+        ("cloud only on", "Enable cloud-only mode", "provider", (), CommandPermission.PROVIDER),
+        ("cloud only off", "Disable cloud-only mode", "provider", (), CommandPermission.PROVIDER),
         ("plugins", "Show plugin summary", "plugin", (), CommandPermission.PLUGIN),
         ("plugin list", "List plugins", "plugin", (), CommandPermission.PLUGIN),
         ("plugin status", "Show plugin status", "plugin", (), CommandPermission.PLUGIN),
@@ -163,7 +183,7 @@ def _handler_for(name: str):
             return _text_response(f"Command history: {len(manager.history.list_history())} entries")
         if name == "metrics" and manager is not None:
             return _text_response(f"Commands executed: {manager.metrics.commands_executed}")
-        if name in {"local", "local status", "local providers", "local models", "local refresh", "local use", "local test", "local explain-selection", "local only on", "local only off"}:
+        if name in {"local", "local status", "local providers", "local models", "local refresh", "local use", "local test", "local explain-selection", "local only on", "local only off", "cloud", "cloud status", "cloud providers", "cloud models", "cloud refresh", "cloud use", "cloud test", "cloud explain-selection", "cloud only on", "cloud only off", "provider enable", "provider disable", "provider test"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:
                 return _text_response("Local AI is not available.")
@@ -264,12 +284,193 @@ def _handler_for(name: str):
                 conversation = context.conversation_context
                 if conversation is not None:
                     conversation.session.metadata["local_only"] = True
+                    conversation.session.metadata["execution_policy"] = "local_only"
                 return _text_response("Local-only mode enabled.")
             if name == "local only off":
                 conversation = context.conversation_context
                 if conversation is not None:
                     conversation.session.metadata["local_only"] = False
+                    conversation.session.metadata["execution_policy"] = "automatic"
                 return _text_response("Local-only mode disabled.")
+            if name in {"cloud", "cloud status"}:
+                health = provider_manager.health_check()
+                stats = provider_manager.statistics()
+                cloud_records = tuple(
+                    record for record in provider_manager.registry.all()
+                    if not (
+                        getattr(getattr(record, "config", None), "local_only", False)
+                        or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+                    )
+                )
+                models = sum(len(record.provider.list_models()) for record in cloud_records if getattr(record, "provider", None) is not None)
+                return _text_response(
+                    f"Cloud AI status: configured={len(cloud_records)} available={stats.healthy_providers} models={models}",
+                    configured=len(cloud_records),
+                    healthy=stats.healthy_providers,
+                    models=models,
+                    health=health,
+                )
+            if name == "cloud providers":
+                cloud_records = tuple(
+                    record for record in provider_manager.registry.all()
+                    if not (
+                        getattr(getattr(record, "config", None), "local_only", False)
+                        or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+                    )
+                )
+                if not cloud_records:
+                    return _text_response("No cloud providers are configured.")
+                return _text_response("Cloud providers: " + ", ".join(record.config.provider_id for record in cloud_records))
+            if name == "cloud models":
+                models: list[str] = []
+                for record in provider_manager.registry.all():
+                    if getattr(getattr(record, "config", None), "local_only", False):
+                        continue
+                    if str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}:
+                        continue
+                    provider = getattr(record, "provider", None)
+                    if provider is None:
+                        continue
+                    for model in provider.list_models():
+                        models.append(f"{record.config.provider_id}:{model.model_id}")
+                return _text_response("Cloud models: " + (", ".join(models) if models else "none discovered"))
+            if name == "cloud refresh":
+                for record in provider_manager.registry.all():
+                    if getattr(getattr(record, "config", None), "local_only", False):
+                        continue
+                    provider = getattr(record, "provider", None)
+                    if provider is not None and hasattr(provider, "refresh_inventory"):
+                        provider.refresh_inventory()
+                return _text_response("Cloud model inventory refreshed.")
+            if name == "cloud use":
+                if not context.arguments:
+                    return _text_response("Please provide a cloud provider or model id.")
+                selected_provider = None
+                selected_model = None
+                choice = context.arguments[0]
+                for record in provider_manager.registry.all():
+                    if getattr(getattr(record, "config", None), "local_only", False):
+                        continue
+                    provider = getattr(record, "provider", None)
+                    if provider is None:
+                        continue
+                    if record.config.provider_id == choice:
+                        selected_provider = record
+                        selected_model = context.arguments[1] if len(context.arguments) > 1 else record.config.preferred_model or record.config.default_model
+                        break
+                    for model in provider.list_models():
+                        if model.model_id == choice:
+                            selected_provider = record
+                            selected_model = model.model_id
+                            break
+                    if selected_provider is not None:
+                        break
+                if selected_provider is None:
+                    return _text_response(f"Cloud provider or model not found: {choice}")
+                conversation = context.conversation_context
+                if conversation is not None:
+                    conversation.session.metadata["provider_preference"] = selected_provider.config.provider_id
+                    if selected_model:
+                        conversation.session.metadata["model_preference"] = selected_model
+                    conversation.session.metadata["execution_policy"] = "prefer_cloud"
+                label = selected_provider.config.provider_id if not selected_model else f"{selected_provider.config.provider_id}:{selected_model}"
+                return _text_response(f"Cloud selection updated: {label}", provider=selected_provider.config.provider_id, model=selected_model)
+            if name == "cloud test":
+                provider_router = getattr(provider_manager, "router", None)
+                if provider_router is None:
+                    return _text_response("Cloud AI is not available.")
+                conversation = context.conversation_context
+                policy = _cloud_policy(getattr(conversation, "session", None), "prefer_cloud")
+                preferred_provider = None
+                preferred_model = None
+                if conversation is not None:
+                    metadata = getattr(conversation.session, "metadata", {}) or {}
+                    preferred_provider = metadata.get("provider_preference") or metadata.get("cloud_provider")
+                    preferred_model = metadata.get("model_preference") or metadata.get("cloud_model")
+                candidates = tuple(
+                    record for record in provider_manager.registry.all()
+                    if not (
+                        getattr(getattr(record, "config", None), "local_only", False)
+                        or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+                    )
+                )
+                candidate = next((record for record in candidates if getattr(record, "provider", None) is not None), None)
+                if candidate is None:
+                    return _text_response("No usable cloud provider is available.")
+                candidate_models = candidate.provider.list_models() if getattr(candidate, "provider", None) is not None else ()
+                model_id = preferred_model or (candidate_models[0].model_id if candidate_models else candidate.config.preferred_model or candidate.config.default_model or "cloud-mini")
+                try:
+                    result = asyncio.run(
+                        provider_router.execute_with_failover(
+                            ProviderRequest(
+                                prompt="Reply with ok.",
+                                goal="Test cloud AI",
+                                model=model_id or None,
+                                request_id="command-cloud-test",
+                                preferred_provider=preferred_provider or candidate.config.provider_id,
+                                metadata={"execution_policy": policy},
+                            )
+                        )
+                    )
+                except Exception as exc:  # pragma: no cover - defensive command surface
+                    return _text_response(f"Cloud model test failed: {exc}")
+                if result.error:
+                    return _text_response(f"Cloud model test failed: {result.error}", provider=result.provider_id, model=result.model, retryable=result.retryable)
+                return _text_response(
+                    "Cloud model test succeeded.",
+                    provider=result.provider_id,
+                    model=result.model,
+                    content=result.content,
+                )
+            if name == "cloud explain-selection":
+                return _text_response("Cloud model selection is based on policy, credentials, health, availability, and capability match.")
+            if name == "cloud only on":
+                conversation = context.conversation_context
+                if conversation is not None:
+                    conversation.session.metadata["cloud_only"] = True
+                    conversation.session.metadata["execution_policy"] = "cloud_only"
+                return _text_response("Cloud-only mode enabled.")
+            if name == "cloud only off":
+                conversation = context.conversation_context
+                if conversation is not None:
+                    conversation.session.metadata["cloud_only"] = False
+                    conversation.session.metadata["execution_policy"] = "automatic"
+                return _text_response("Cloud-only mode disabled.")
+            if name == "provider enable":
+                if not context.arguments:
+                    return _text_response("Please provide a provider id to enable.")
+                try:
+                    provider_manager.enable_provider(context.arguments[0])
+                    return _text_response(f"Provider enabled: {context.arguments[0]}")
+                except Exception as exc:
+                    return _text_response(f"Unable to enable provider: {exc}")
+            if name == "provider disable":
+                if not context.arguments:
+                    return _text_response("Please provide a provider id to disable.")
+                try:
+                    provider_manager.disable_provider(context.arguments[0])
+                    return _text_response(f"Provider disabled: {context.arguments[0]}")
+                except Exception as exc:
+                    return _text_response(f"Unable to disable provider: {exc}")
+            if name == "provider test":
+                if not context.arguments:
+                    return _text_response("Please provide a provider id to test.")
+                provider_id = context.arguments[0]
+                try:
+                    record = provider_manager.registry.require(provider_id)
+                except Exception as exc:
+                    return _text_response(f"Provider not found: {exc}")
+                provider = getattr(record, "provider", None)
+                if provider is None:
+                    return _text_response("Provider is not initialized.")
+                health = provider.health_check()
+                models = provider.list_models()
+                return _text_response(
+                    f"Provider test completed for {provider_id}.",
+                    provider=provider_id,
+                    healthy=health.available,
+                    models=len(models),
+                )
         if name in {"profile", "profile show", "profile list"}:
             personal = _personal_manager(context)
             if personal is None:

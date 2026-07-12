@@ -43,6 +43,76 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "max_retries": 2,
         "track_costs": True,
         "definitions": {
+            "openai": {
+                "kind": "openai",
+                "enabled": False,
+                "local_only": False,
+                "base_url": "https://api.openai.com",
+                "api_key_env": "OPENAI_API_KEY",
+                "metadata": {
+                    "provider_family": "openai",
+                },
+            },
+            "anthropic": {
+                "kind": "anthropic",
+                "enabled": False,
+                "local_only": False,
+                "base_url": "https://api.anthropic.com",
+                "api_key_env": "ANTHROPIC_API_KEY",
+                "metadata": {
+                    "provider_family": "anthropic",
+                },
+            },
+            "google": {
+                "kind": "google_gemini",
+                "enabled": False,
+                "local_only": False,
+                "base_url": "https://generativelanguage.googleapis.com",
+                "api_key_env": "GOOGLE_API_KEY",
+                "metadata": {
+                    "provider_family": "gemini",
+                },
+            },
+            "deepseek": {
+                "kind": "deepseek",
+                "enabled": False,
+                "local_only": False,
+                "base_url": "https://api.deepseek.com",
+                "api_key_env": "DEEPSEEK_API_KEY",
+                "metadata": {
+                    "provider_family": "deepseek",
+                },
+            },
+            "mistral": {
+                "kind": "mistral",
+                "enabled": False,
+                "local_only": False,
+                "base_url": "https://api.mistral.ai",
+                "api_key_env": "MISTRAL_API_KEY",
+                "metadata": {
+                    "provider_family": "mistral",
+                },
+            },
+            "groq": {
+                "kind": "groq",
+                "enabled": False,
+                "local_only": False,
+                "base_url": "https://api.groq.com",
+                "api_key_env": "GROQ_API_KEY",
+                "metadata": {
+                    "provider_family": "groq",
+                },
+            },
+            "openrouter": {
+                "kind": "openrouter",
+                "enabled": False,
+                "local_only": False,
+                "base_url": "https://openrouter.ai/api",
+                "api_key_env": "OPENROUTER_API_KEY",
+                "metadata": {
+                    "provider_family": "openrouter",
+                },
+            },
             "local": {
                 "kind": "local",
                 "enabled": False,

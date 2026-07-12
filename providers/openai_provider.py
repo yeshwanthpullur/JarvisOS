@@ -1,31 +1,17 @@
-"""OpenAI provider interface placeholder."""
+"""OpenAI provider interface."""
 
 from __future__ import annotations
 
-from providers.base_provider import BaseProvider, capabilities_for
+from providers.cloud_provider_base import CloudProviderBase
 from providers.provider_context import ProviderContext
-from providers.provider_types import ProviderCapability
 
 
-class OpenAIProvider(BaseProvider):
-    """Provider contract for future OpenAI integration."""
+class OpenAIProvider(CloudProviderBase):
+    """Provider contract for OpenAI."""
 
-    def __init__(self, context: ProviderContext) -> None:
-        super().__init__(
-            context,
-            capabilities_for(
-                (
-                    ProviderCapability.CHAT,
-                    ProviderCapability.REASONING,
-                    ProviderCapability.CODING,
-                    ProviderCapability.VISION,
-                    ProviderCapability.EMBEDDING,
-                    ProviderCapability.SPEECH,
-                    ProviderCapability.TRANSCRIPTION,
-                    ProviderCapability.IMAGE_GENERATION,
-                    ProviderCapability.FUNCTION_CALLING,
-                    ProviderCapability.STREAMING,
-                    ProviderCapability.JSON_MODE,
-                )
-            ),
-        )
+    api_key_envs = ("OPENAI_API_KEY",)
+    default_base_url = "https://api.openai.com"
+    supports_embeddings = True
+    supports_vision = True
+    supports_streaming = True
+    supports_json_mode = True

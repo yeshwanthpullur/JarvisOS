@@ -172,15 +172,17 @@ class ProviderRouterTests(unittest.TestCase):
         manager = ProviderManager(
             ProvidersConfig(
                 default_provider="",
-                enabled_providers=("openai",),
+                enabled_providers=("future",),
                 timeout_seconds=30,
                 max_retries=2,
                 track_costs=True,
-                definitions=MappingProxyType({}),
+                definitions=MappingProxyType(
+                    {"future": {"kind": "future", "enabled": True}}
+                ),
             )
         )
         manager.initialize()
-        provider = manager.registry.require("openai").provider
+        provider = manager.registry.require("future").provider
         self.assertIsInstance(provider, BaseProvider)
 
         with self.assertRaises(NotImplementedError):
