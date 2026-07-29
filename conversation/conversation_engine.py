@@ -88,9 +88,6 @@ class ConversationEngine:
                     )
             except Exception:
                 pass
-        exact_response = self._exact_response(request.user_input)
-        if exact_response is not None:
-            context.metadata["exact_response"] = exact_response
         goal_manager = context.metadata.get("goal_intelligence_manager")
         if goal_manager is not None and hasattr(goal_manager, "prepare_request"):
             normalized = request.normalized_input
@@ -133,22 +130,13 @@ class ConversationEngine:
                 metadata=metadata,
             )
         )
-        exact_response = context.metadata.get("exact_response")
-        response_text = jarvis_response.content
-        response_metadata = dict(jarvis_response.streaming_metadata)
-        if isinstance(exact_response, str) and exact_response.strip():
-            response_text = exact_response
-            response_metadata = {
-                **response_metadata,
-                "exact_response": exact_response,
-            }
         return ConversationResponse(
-            response=response_text,
+            response=jarvis_response.content,
             execution_summary=jarvis_response.execution_summary,
             references=jarvis_response.references,
             warnings=jarvis_response.warnings,
             diagnostics=jarvis_response.diagnostics,
-            metadata=response_metadata,
+            metadata=dict(jarvis_response.streaming_metadata),
             conversation_state=ConversationState.RESPONDING,
         )
 
@@ -174,13 +162,3 @@ class ConversationEngine:
                 "why am i doing this task",
             )
         )
-
-    def _exact_response(self, text: str) -> str | None:
-        stripped = text.strip()
-        lowered = stripped.lower()
-        prefixes = ("reply with exactly:", "respond with exactly:")
-        for prefix in prefixes:
-            if lowered.startswith(prefix):
-                value = stripped[len(prefix):].strip()
-                return value or None
-        return None

@@ -7,6 +7,7 @@ import logging
 import time
 from dataclasses import asdict, dataclass
 from typing import Any
+from uuid import uuid4
 
 from providers.provider_types import ProviderCapability
 from providers.provider_types import ProviderTaskType
@@ -88,6 +89,7 @@ class ExecutionManager:
         request = ProviderExecutionRequest(
             intent=intent,
             goal=goal,
+            request_id=str(metadata.get("request_id")) if metadata.get("request_id") else str(uuid4()),
             conversation_id=metadata.get("conversation_id"),
             priority=int(metadata.get("priority", 5)),
             complexity=float(metadata.get("complexity", self.estimate_complexity(goal))),
@@ -219,7 +221,28 @@ class ExecutionManager:
         if provider_router is None:
             return self.execute(request)
         provider_request = self._to_provider_request(request)
-        provider_response = asyncio.run(provider_router.execute_with_failover(provider_request))
+        execution_policy = str(request.metadata.get("execution_policy", "automatic"))
+        task_type = self._task_type_for_request(request).value
+        self.logger.info(
+            "provider_request_started request_id=%s provider_id=%s model_id=%s task_type=%s execution_policy=%s",
+            request.request_id,
+            request.provider or "automatic",
+            request.model or "automatic",
+            task_type,
+            execution_policy,
+        )
+        try:
+            provider_response = asyncio.run(provider_router.execute_with_failover(provider_request))
+        except Exception:
+            self.logger.exception(
+                "provider_request_failed request_id=%s provider_id=%s model_id=%s task_type=%s execution_policy=%s",
+                request.request_id,
+                request.provider or "automatic",
+                request.model or "automatic",
+                task_type,
+                execution_policy,
+            )
+            raise
         normalized = ProviderExecutionResponse(
             response=provider_response.content,
             provider=provider_response.provider_id,
@@ -242,6 +265,26 @@ class ExecutionManager:
             normalized,
             failure=provider_response.error,
             recovery=provider_response.metadata.get("recovery") if isinstance(provider_response.metadata, dict) else None,
+        )
+        event = "provider_request_completed" if normalized.success else "provider_request_failed"
+        self.logger.info(
+            "%s request_id=%s provider_id=%s model_id=%s task_type=%s execution_policy=%s latency_ms=%s",
+            event,
+            request.request_id,
+            normalized.provider,
+            normalized.model,
+            task_type,
+            execution_policy,
+            normalized.latency_ms,
+        )
+        self.logger.info(
+            "provider_response_normalized request_id=%s provider_id=%s model_id=%s task_type=%s execution_policy=%s success=%s",
+            request.request_id,
+            normalized.provider,
+            normalized.model,
+            task_type,
+            execution_policy,
+            normalized.success,
         )
         return normalized
 

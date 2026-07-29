@@ -265,11 +265,24 @@ class CloudAIIntegrationTests(unittest.TestCase):
                 provider_router=provider_manager.router,
             )
             conversation.initialize()
-            response = conversation.handle_input("Reply with exactly: BASIC_CHAT_OK")
-            self.assertEqual(response.response, "BASIC_CHAT_OK")
+            with self.assertLogs(level="INFO") as captured:
+                response = conversation.handle_input("Reply with exactly: BASIC_CHAT_OK")
+            self.assertEqual(response.response, "cloud reply")
             self.assertNotIn("architecture-only", response.response.lower())
             self.assertEqual(response.metadata.get("provider_id"), "zenmux")
             self.assertEqual(response.metadata.get("model_id"), "cloud-mini")
+            log_output = "\n".join(captured.output)
+            self.assertIn("provider_request_started request_id=", log_output)
+            self.assertIn("provider_selected request_id=", log_output)
+            self.assertIn("provider_request_completed request_id=", log_output)
+            self.assertIn("provider_response_normalized request_id=", log_output)
+            request_ids = {
+                part.split("=", 1)[1]
+                for line in captured.output
+                for part in line.split()
+                if part.startswith("request_id=")
+            }
+            self.assertEqual(len(request_ids), 1)
 
     def test_router_policy_prefers_and_restricts_candidates(self) -> None:
         local_context = ProviderContext(config=ProviderConfig(provider_id="local", kind=ProviderKind.LOCAL, enabled=True, local_only=True), settings=None, permissions=ProviderPermissionSet(), logger=None)  # type: ignore[arg-type]

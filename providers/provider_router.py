@@ -129,6 +129,14 @@ class ProviderRouter:
         attempts: list[dict[str, Any]] = []
         last_response: ProviderResponse | None = None
         for provider in candidates:
+            self._logger.info(
+                "provider_selected request_id=%s provider_id=%s model_id=%s task_type=%s execution_policy=%s",
+                request.request_id,
+                provider.provider_id,
+                request.model or provider.context.config.preferred_model or provider.context.config.default_model,
+                request.task_type.value,
+                context.execution_policy,
+            )
             try:
                 response = await provider.execute(request)
                 if response.error:

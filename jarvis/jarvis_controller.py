@@ -85,6 +85,7 @@ class JarvisController:
             provider_request = provider_execution_manager.build_execution_request(
                 intent=decision.goal,
                 goal=decision.goal,
+                request_id=request.request_id,
                 conversation_id=request.conversation_id,
                 priority=request.priority,
                 provider=provider_preference,
@@ -111,13 +112,9 @@ class JarvisController:
                 },
             )
             provider_result = provider_execution_manager.execute_through_provider_router(provider_request)
-            exact_response = request.metadata.get("exact_response")
-            response_text = provider_result.response
-            if isinstance(exact_response, str) and exact_response.strip():
-                response_text = exact_response
             response = JarvisResponse(
                 request_id=request.request_id,
-                content=response_text,
+                content=provider_result.response,
                 response_type=decision.strategy.value,
                 execution_summary={
                     "goal": decision.goal,
