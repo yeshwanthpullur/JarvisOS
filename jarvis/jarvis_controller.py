@@ -74,6 +74,26 @@ class JarvisController:
         context.current_department = decision.department
         plan = self.planning.create_plan(decision)
         dispatch = self.dispatcher.dispatch(decision, plan)
+        autonomous = context.autonomous_planning or context.metadata.get("autonomous_planning")
+        if autonomous is not None:
+            session_metadata = dict(request.metadata.get("session_metadata", {}) or {})
+            configured_mode = session_metadata.get("plan_mode")
+            if configured_mode:
+                try: autonomous.set_mode(str(configured_mode))
+                except ValueError: pass
+            assessment = autonomous.assess(request.content)
+            context.metadata["planning_assessment"] = assessment
+            (context.logger or __import__("logging").getLogger("autonomous_planning")).info("planning_need_assessed request_id=%s requires_plan=%s mode=%s",request.request_id,assessment.requires_plan,assessment.recommended_planning_mode)
+            if assessment.requires_plan and autonomous.mode.value != "off":
+                constraints = tuple(sentence.strip() for sentence in request.content.split(".") if sentence.strip().lower().startswith(("do not","must not","without")))
+                objective = autonomous.create_objective(request.request_id,request.content,constraints)
+                execution_manager = context.provider_execution_manager or context.metadata.get("provider_execution_manager")
+                try:
+                    generated = autonomous.generate_with_provider(objective,execution_manager,{**dict(request.metadata),**session_metadata}) if execution_manager else autonomous.generate(objective)
+                except RuntimeError:
+                    return JarvisResponse(request_id=request.request_id,content="Planning could not be completed because no permitted provider produced a valid response.",response_type="planning",success=False)
+                content = generated.summary + "\n\n" + "\n".join(f"{step.sequence}. {step.title}" for step in generated.steps)
+                return JarvisResponse(request_id=request.request_id,content=content,response_type="planning",execution_summary={"objective_id":objective.objective_id,"plan_id":generated.plan_id,"version":generated.version,"status":generated.status.value,"validation":generated.validation.valid if generated.validation else False,"risk":generated.risk_summary,"constraints":generated.constraints,"required_permissions":generated.required_permissions,"required_approvals":generated.required_approvals})
         tool_manager = context.tool_manager or context.metadata.get("tool_manager")
         if tool_manager is not None:
             session_metadata = dict(request.metadata.get("session_metadata", {}) or {})

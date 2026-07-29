@@ -55,4 +55,5 @@ class JarvisContext:
     agent_manager: Any | None = None
     agent_creator: Any | None = None
     tool_manager: Any | None = None
+    autonomous_planning: Any | None = None
     logger: logging.Logger | None = None

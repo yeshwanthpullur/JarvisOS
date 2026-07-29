@@ -77,6 +77,11 @@ def _tool_manager(context: CommandContext):
     metadata = getattr(conversation, "metadata", {}) or {}
     return metadata.get("tool_manager")
 
+def _planning_manager(context: CommandContext):
+    conversation=context.conversation_context
+    if conversation is None:return None
+    return getattr(conversation,"autonomous_planning",None) or (getattr(conversation,"metadata",{}) or {}).get("autonomous_planning")
+
 
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
     if session is None:
@@ -150,6 +155,21 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("tool cancel", "Cancel a tool invocation", "tool", (), CommandPermission.UTILITY),
         ("tool mode", "Set tool execution mode", "tool", (), CommandPermission.UTILITY),
         ("tool limits", "Show tool limits", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("plan status", "Show planning status", "planning", (), CommandPermission.UTILITY),
+        ("plan list", "List plans", "planning", (), CommandPermission.UTILITY),
+        ("plan show", "Show a plan", "planning", (), CommandPermission.UTILITY),
+        ("plan steps", "Show plan steps", "planning", (), CommandPermission.UTILITY),
+        ("plan validate", "Validate a plan", "planning", (), CommandPermission.UTILITY),
+        ("plan alternatives", "Show plan alternatives", "planning", (), CommandPermission.UTILITY),
+        ("plan approve", "Approve a plan", "planning", (), CommandPermission.UTILITY),
+        ("plan reject", "Reject a plan", "planning", (), CommandPermission.UTILITY),
+        ("plan pause", "Pause a plan", "planning", (), CommandPermission.UTILITY),
+        ("plan resume", "Resume a plan", "planning", (), CommandPermission.UTILITY),
+        ("plan cancel", "Cancel a plan", "planning", (), CommandPermission.UTILITY),
+        ("plan replan", "Create a revised plan", "planning", (), CommandPermission.UTILITY),
+        ("plan history", "Show plan history", "planning", (), CommandPermission.DIAGNOSTIC),
+        ("plan mode", "Set planning mode", "planning", (), CommandPermission.UTILITY),
+        ("plan limits", "Show planning limits", "planning", (), CommandPermission.DIAGNOSTIC),
         ("departments", "Show department summary", "department", (), CommandPermission.DEPARTMENT),
         ("department list", "List departments", "department", (), CommandPermission.DEPARTMENT),
         ("memory", "Show memory summary", "memory", (), CommandPermission.MEMORY),
@@ -305,6 +325,39 @@ def _handler_for(name: str):
             if name == "tool limits":
                 values = {field: getattr(tools.limits, field) for field in tools.limits.__slots__}
                 return _text_response("Tool limits: " + ", ".join(f"{key}={value}" for key, value in values.items()))
+        if name.startswith("plan "):
+            planner=_planning_manager(context); args=context.arguments
+            if planner is None:return _text_response("Autonomous Planning is not available.")
+            if name=="plan status":return _text_response(f"Planning status: mode={planner.mode.value} plans={len(planner.plans)}")
+            if name=="plan list":return _text_response("Plans: "+(", ".join(f"{p.plan_id}:{p.status.value}" for p in planner.plans.values()) or "none"))
+            pid=args[0] if args else ""; plan=planner.plans.get(pid)
+            if name=="plan mode":
+                if not args:return _text_response(f"Planning mode: {planner.mode.value}")
+                try:selected=planner.set_mode(args[0])
+                except ValueError:return _text_response("Mode must be off, suggest, confirm, or automatic-safe.")
+                context.conversation_context.session.metadata["plan_mode"]=selected.value; return _text_response(f"Planning mode set to {selected.value}.")
+            if name=="plan limits":return _text_response("Planning limits: "+", ".join(f"{k}={getattr(planner.limits,k)}" for k in planner.limits.__slots__))
+            if plan is None:return _text_response("Plan not found.")
+            if name=="plan show":return _text_response(f"Plan {pid}: {plan.title} status={plan.status.value} version={plan.version}")
+            if name=="plan steps":return _text_response("Plan steps: "+", ".join(f"{s.sequence}:{s.title}" for s in plan.steps))
+            if name=="plan validate":
+                result=planner.validate(plan); return _text_response(f"Plan validation: {'valid' if result.valid else 'invalid'}"+(" errors="+",".join(result.errors) if result.errors else ""))
+            if name=="plan approve":
+                try: approved=planner.approve(pid,f"command:{context.request_id}")
+                except ValueError as exc:return _text_response(f"Plan approval failed: {exc}")
+                return _text_response(f"Plan approved: {approved.plan_id}. Execution has not started.")
+            if name=="plan reject": planner.cancel(pid); return _text_response("Plan rejected.")
+            if name=="plan pause": planner.pause(pid); return _text_response("Plan paused.")
+            if name=="plan resume":
+                try:planner.resume(pid)
+                except ValueError as exc:return _text_response(f"Plan resume failed: {exc}")
+                return _text_response("Plan resumed for review.")
+            if name=="plan cancel":planner.cancel(pid); return _text_response("Plan cancelled.")
+            if name=="plan replan":
+                try:new=planner.replan(pid,"user request")
+                except ValueError as exc:return _text_response(f"Replanning failed: {exc}")
+                return _text_response(f"Replanned as {new.plan_id} version={new.version}.")
+            if name in {"plan alternatives","plan history"}:return _text_response(f"Plan {pid} has version {plan.version}; alternatives are bounded and advisory.")
         if name in {"local", "local status", "local providers", "local models", "local refresh", "local use", "local test", "local explain-selection", "local only on", "local only off", "cloud", "cloud status", "cloud providers", "cloud models", "cloud refresh", "cloud use", "cloud test", "cloud explain-selection", "cloud only on", "cloud only off", "provider enable", "provider disable", "provider test"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:

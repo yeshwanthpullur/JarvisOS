@@ -2,6 +2,8 @@
 
 Tool Intelligence provides governed capability matching, schema validation, risk and approval checks, dry runs, bounded execution, normalized results, and command access through the existing Executive path. See [docs/TOOL_INTELLIGENCE.md](docs/TOOL_INTELLIGENCE.md).
 
+Autonomous Planning produces provider-backed, validated, reviewable plans without executing them. See [docs/AUTONOMOUS_PLANNING.md](docs/AUTONOMOUS_PLANNING.md).
+
 JARVIS OS is the foundation for a modular AI Operating System written in Python 3.12+. This repository currently provides architecture, configuration, logging, memory, knowledge, task, Obsidian Brain, plugin, provider-routing, provider-execution, agent-framework, agent-creator, and Executive JARVIS infrastructure. AI behavior is intentionally not implemented yet.
 
 ## Goals

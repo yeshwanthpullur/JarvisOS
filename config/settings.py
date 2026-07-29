@@ -26,6 +26,7 @@ from config.schema import (
     ProvidersConfig,
     SecurityConfig,
     ToolsConfig,
+    PlanningConfig,
 )
 
 
@@ -186,6 +187,7 @@ def load_settings(
             api_enabled=_coerce_bool(raw_config["mobile"]["api_enabled"]),
         ),
         tools=ToolsConfig(**{key: int(value) for key, value in raw_config["tools"].items()}),
+        planning=PlanningConfig(**{key: int(value) for key, value in raw_config["planning"].items()}),
     )
 
 

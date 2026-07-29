@@ -316,6 +316,7 @@ class StartupManager:
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,
             tool_manager=self.jarvis_core.manager.tools,
+            autonomous_planning=self.jarvis_core.manager.autonomous_planning,
             personal_intelligence_manager=self.personal_intelligence_manager,
             context_intelligence_manager=self.context_intelligence_manager,
             logger=logging.getLogger("conversation"),

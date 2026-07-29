@@ -29,6 +29,7 @@ from jarvis.jarvis_runtime import JarvisRuntime
 from jarvis.jarvis_skills import JarvisSkills
 from jarvis.jarvis_tasks import JarvisTasks
 from jarvis.jarvis_tools import JarvisTools, ToolLimits
+from jarvis.autonomous_planning import AutonomousPlanning, PlanningLimits
 from jarvis.jarvis_validator import JarvisValidator
 from reasoning import ReasoningManager
 from reflection import ReflectionManager
@@ -119,6 +120,13 @@ class JarvisManager:
             logger=self.logger,
             limits=ToolLimits(**{key: getattr(context.settings.tools, key) for key in context.settings.tools.__slots__}) if context and context.settings else None,
         )
+        self.autonomous_planning = AutonomousPlanning(
+            storage_dir=(context.settings.data_dir / "autonomous-planning") if context and context.settings else None,
+            tool_manager=self.tools,
+            agent_manager=context.agent_manager if context else None,
+            logger=self.logger,
+            limits=PlanningLimits(**{key:getattr(context.settings.planning,key) for key in context.settings.planning.__slots__}) if context and context.settings else None,
+        )
         self.skills = JarvisSkills()
         self.workflow = WorkflowManager()
         self.retrieval = RetrievalManager()
@@ -157,6 +165,7 @@ class JarvisManager:
             "plugins": self.plugins,
             "providers": self.providers,
             "tools": self.tools,
+            "autonomous_planning": self.autonomous_planning,
             "skills": self.skills,
             "workflow": self.workflow,
             "retrieval": self.retrieval,
@@ -232,6 +241,7 @@ class JarvisManager:
             agent_manager=base.agent_manager if base else None,
             agent_creator=base.agent_creator if base else None,
             tool_manager=self.tools,
+            autonomous_planning=self.autonomous_planning,
             logger=self.logger,
             metadata={**(base.metadata if base else {}), **request.metadata},
         )

@@ -101,6 +101,10 @@ class ToolsConfig:
     maximum_dry_run_seconds: int = 5
     maximum_history: int = 200
 
+@dataclass(frozen=True, slots=True)
+class PlanningConfig:
+    maximum_steps:int=12; maximum_milestones:int=5; maximum_alternatives:int=3; maximum_dependencies_per_step:int=4; maximum_plan_depth:int=2; maximum_retries:int=1; maximum_replans:int=3; maximum_concurrent:int=2; maximum_agents:int=3; maximum_tools:int=4; maximum_timeout_seconds:int=90; maximum_versions:int=10; maximum_output_bytes:int=100000; maximum_assumptions:int=8
+
 
 @dataclass(frozen=True, slots=True)
 class PluginsConfig:
@@ -178,6 +182,7 @@ class AppSettings:
     desktop: DesktopConfig
     mobile: MobileConfig
     tools: ToolsConfig = field(default_factory=ToolsConfig)
+    planning: PlanningConfig = field(default_factory=PlanningConfig)
 
     @property
     def app_name(self) -> str:
