@@ -87,6 +87,22 @@ class AgentsConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class ToolsConfig:
+    """Governed tool execution limits."""
+
+    maximum_per_request: int = 3
+    maximum_per_coordination: int = 6
+    maximum_retries: int = 1
+    maximum_timeout_seconds: int = 30
+    maximum_concurrent: int = 2
+    maximum_output_bytes: int = 64000
+    maximum_argument_bytes: int = 16000
+    maximum_chained_depth: int = 1
+    maximum_dry_run_seconds: int = 5
+    maximum_history: int = 200
+
+
+@dataclass(frozen=True, slots=True)
 class PluginsConfig:
     """Plugin loading policy and location."""
 
@@ -161,6 +177,7 @@ class AppSettings:
     security: SecurityConfig
     desktop: DesktopConfig
     mobile: MobileConfig
+    tools: ToolsConfig = field(default_factory=ToolsConfig)
 
     @property
     def app_name(self) -> str:

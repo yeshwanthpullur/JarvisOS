@@ -28,7 +28,7 @@ from jarvis.jarvis_response import JarvisResponse
 from jarvis.jarvis_runtime import JarvisRuntime
 from jarvis.jarvis_skills import JarvisSkills
 from jarvis.jarvis_tasks import JarvisTasks
-from jarvis.jarvis_tools import JarvisTools
+from jarvis.jarvis_tools import JarvisTools, ToolLimits
 from jarvis.jarvis_validator import JarvisValidator
 from reasoning import ReasoningManager
 from reflection import ReflectionManager
@@ -114,7 +114,11 @@ class JarvisManager:
             context.metadata.get("provider_manager") if context else None,
             context.metadata.get("provider_execution_manager") if context else None,
         )
-        self.tools = JarvisTools()
+        self.tools = JarvisTools(
+            storage_dir=(context.settings.data_dir / "tool-intelligence") if context and context.settings else None,
+            logger=self.logger,
+            limits=ToolLimits(**{key: getattr(context.settings.tools, key) for key in context.settings.tools.__slots__}) if context and context.settings else None,
+        )
         self.skills = JarvisSkills()
         self.workflow = WorkflowManager()
         self.retrieval = RetrievalManager()
@@ -227,6 +231,7 @@ class JarvisManager:
             provider_router=base.provider_router if base else None,
             agent_manager=base.agent_manager if base else None,
             agent_creator=base.agent_creator if base else None,
+            tool_manager=self.tools,
             logger=self.logger,
             metadata={**(base.metadata if base else {}), **request.metadata},
         )

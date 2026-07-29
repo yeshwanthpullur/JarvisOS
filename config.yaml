@@ -140,6 +140,18 @@ agents:
   max_retries_per_subtask: 1
   max_total_timeout_seconds: 180
 
+tools:
+  maximum_per_request: 3
+  maximum_per_coordination: 6
+  maximum_retries: 1
+  maximum_timeout_seconds: 30
+  maximum_concurrent: 2
+  maximum_output_bytes: 64000
+  maximum_argument_bytes: 16000
+  maximum_chained_depth: 1
+  maximum_dry_run_seconds: 5
+  maximum_history: 200
+
 plugins:
   enabled: true
   plugin_dir: plugins

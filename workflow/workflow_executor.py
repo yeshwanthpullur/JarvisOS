@@ -27,6 +27,13 @@ class WorkflowExecutor:
     def execute(self, definition: WorkflowDefinition, context: WorkflowContext) -> WorkflowExecutionResult:
         return WorkflowExecutionResult(workflow_id=definition.workflow_id, execution_id=context.execution_id, state=WorkflowState.RUNNING)
 
+    def execute_tool(self, tool_manager: Any, plan: Any, context: WorkflowContext) -> Any:
+        """Delegate a validated workflow tool step to Tool Intelligence."""
+        request = getattr(plan, "request", None)
+        if request is None or request.workflow_id not in {None, context.workflow_id}:
+            raise ValueError("Tool plan does not belong to this workflow.")
+        return tool_manager.execute(plan, executive_approved=True)
+
     def pause(self) -> None: return None
     def resume(self) -> None: return None
     def cancel(self) -> None: return None

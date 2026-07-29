@@ -297,6 +297,7 @@ class StartupManager:
         )
         self.jarvis_core = JarvisCore(context=jarvis_context)
         self.jarvis_statistics = self.jarvis_core.initialize()
+        self.agent_manager.orchestrator.tool_manager = self.jarvis_core.manager.tools
         self.status.mark_module_loaded("jarvis")
 
         self.conversation_manager = ConversationManager(
@@ -314,6 +315,7 @@ class StartupManager:
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,
+            tool_manager=self.jarvis_core.manager.tools,
             personal_intelligence_manager=self.personal_intelligence_manager,
             context_intelligence_manager=self.context_intelligence_manager,
             logger=logging.getLogger("conversation"),

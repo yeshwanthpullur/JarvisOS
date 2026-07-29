@@ -54,6 +54,7 @@ class ConversationManager:
         provider_router: object | None = None,
         agent_manager: object | None = None,
         agent_creator: object | None = None,
+        tool_manager: object | None = None,
         personal_intelligence_manager: PersonalIntelligenceManager | None = None,
         context_intelligence_manager: ContextIntelligenceManager | None = None,
         logger: logging.Logger | None = None,
@@ -77,6 +78,7 @@ class ConversationManager:
         self.provider_router = provider_router
         self.agent_manager = agent_manager
         self.agent_creator = agent_creator
+        self.tool_manager = tool_manager
         self.personal_intelligence = personal_intelligence_manager
         self.context_intelligence = context_intelligence_manager
         self.logger = logger or logging.getLogger(__name__)
@@ -117,6 +119,7 @@ class ConversationManager:
             provider_router=self.provider_router,
             agent_manager=self.agent_manager,
             agent_creator=self.agent_creator,
+            tool_manager=self.tool_manager,
             metadata={
                 "session_metadata": dict(self.active_session.metadata),
                 "personal_intelligence_manager": self.personal_intelligence,

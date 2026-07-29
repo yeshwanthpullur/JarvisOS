@@ -74,6 +74,57 @@ class JarvisController:
         context.current_department = decision.department
         plan = self.planning.create_plan(decision)
         dispatch = self.dispatcher.dispatch(decision, plan)
+        tool_manager = context.tool_manager or context.metadata.get("tool_manager")
+        if tool_manager is not None:
+            session_metadata = dict(request.metadata.get("session_metadata", {}) or {})
+            configured_mode = session_metadata.get("tool_mode")
+            if configured_mode:
+                try:
+                    tool_manager.set_mode(str(configured_mode))
+                except ValueError:
+                    pass
+            assessment = tool_manager.assess(request.content)
+            context.metadata["tool_assessment"] = assessment
+            (context.logger or __import__("logging").getLogger("tool_intelligence")).info(
+                "tool_need_assessed request_id=%s requires_tool=%s capability=%s confidence=%s",
+                request.request_id,
+                assessment.requires_tool,
+                assessment.requested_capability,
+                assessment.confidence,
+            )
+            if assessment.requires_tool and assessment.requested_capability:
+                selection = tool_manager.match(assessment.requested_capability)
+                if selection.selected_tool_id:
+                    execution_plan = tool_manager.prepare(
+                        request.request_id,
+                        selection.selected_tool_id,
+                        assessment.requested_capability,
+                        assessment.arguments,
+                    )
+                    result = tool_manager.execute(execution_plan, executive_approved=True)
+                    if result.success:
+                        return JarvisResponse(
+                            request_id=request.request_id,
+                            content=result.content,
+                            response_type="tool",
+                            execution_summary={
+                                "invocation_id": result.invocation_id,
+                                "tool_id": result.tool_id,
+                                "operation": result.operation,
+                                "risk_class": selection.risk_class.value,
+                                "latency": result.latency,
+                                "task_id": result.task_id,
+                                "workflow_id": result.workflow_id,
+                            },
+                        )
+                    return JarvisResponse(
+                        request_id=request.request_id,
+                        content="The requested tool operation could not be completed: " + ", ".join(result.errors),
+                        response_type="tool",
+                        success=False,
+                        warnings=result.errors,
+                    )
+                return JarvisResponse(request_id=request.request_id, content="No permitted healthy tool matched the requested capability.", response_type="tool", success=False)
         agent_manager = context.agent_manager or context.metadata.get("agent_manager")
         orchestrator = getattr(agent_manager, "orchestrator", None)
         if orchestrator is not None:

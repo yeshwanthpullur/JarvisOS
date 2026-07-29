@@ -67,6 +67,17 @@ def _agent_manager(context: CommandContext):
     return metadata.get("agent_manager")
 
 
+def _tool_manager(context: CommandContext):
+    conversation = context.conversation_context
+    if conversation is None:
+        return None
+    direct = getattr(conversation, "tool_manager", None)
+    if direct is not None:
+        return direct
+    metadata = getattr(conversation, "metadata", {}) or {}
+    return metadata.get("tool_manager")
+
+
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
     if session is None:
         return default
@@ -128,6 +139,17 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("multiagent cancel", "Cancel a coordination", "agent", (), CommandPermission.AGENT),
         ("multiagent limits", "Show coordination limits", "agent", (), CommandPermission.AGENT),
         ("multiagent mode", "Set multi-agent mode", "agent", (), CommandPermission.AGENT),
+        ("tool list", "List registered tools", "tool", (), CommandPermission.UTILITY),
+        ("tool show", "Show a tool definition", "tool", (), CommandPermission.UTILITY),
+        ("tool health", "Show tool health", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("tool match", "Match a capability to a tool", "tool", (), CommandPermission.UTILITY),
+        ("tool permissions", "Show tool permissions", "tool", (), CommandPermission.UTILITY),
+        ("tool dry-run", "Validate without side effects", "tool", (), CommandPermission.UTILITY),
+        ("tool history", "Show tool invocation history", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("tool invocation", "Show a tool invocation", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("tool cancel", "Cancel a tool invocation", "tool", (), CommandPermission.UTILITY),
+        ("tool mode", "Set tool execution mode", "tool", (), CommandPermission.UTILITY),
+        ("tool limits", "Show tool limits", "tool", (), CommandPermission.DIAGNOSTIC),
         ("departments", "Show department summary", "department", (), CommandPermission.DEPARTMENT),
         ("department list", "List departments", "department", (), CommandPermission.DEPARTMENT),
         ("memory", "Show memory summary", "memory", (), CommandPermission.MEMORY),
@@ -243,6 +265,46 @@ def _handler_for(name: str):
                 if conversation is not None:
                     conversation.session.metadata["multiagent_mode"] = selected.value
                 return _text_response(f"Multi-agent mode set to {selected.value}.", mode=selected.value)
+        if name.startswith("tool "):
+            tools = _tool_manager(context)
+            if tools is None:
+                return _text_response("Tool Intelligence is not available.")
+            args = context.arguments
+            if name == "tool list":
+                return _text_response("Tools: " + ", ".join(item.tool_id for item in tools.list_tools()))
+            if name in {"tool show", "tool permissions"}:
+                record = tools.lookup(args[0] if args else "")
+                if record is None: return _text_response("Tool not found.")
+                if name == "tool permissions": return _text_response(f"Tool permissions for {record.tool_id}: " + ", ".join(record.permissions))
+                return _text_response(f"Tool {record.tool_id}: {record.description} risk={record.risk_class.value} enabled={record.enabled} healthy={record.healthy}")
+            if name == "tool health":
+                records = tools.list_tools()
+                if args: records = tuple(item for item in records if item.tool_id == args[0])
+                return _text_response("Tool health: " + (", ".join(f"{item.tool_id}={'healthy' if item.healthy and item.available else 'unavailable'}" for item in records) or "none"))
+            if name == "tool match":
+                selection = tools.match(args[0] if args else "")
+                return _text_response(f"Tool match: {selection.selected_tool_id or 'none'} ({selection.selection_reason})")
+            if name == "tool dry-run":
+                if len(args) < 2: return _text_response("Usage: tool dry-run <tool_id> <operation> [key=value ...]")
+                values = dict(item.split("=", 1) for item in args[2:] if "=" in item)
+                result = tools.execute(tools.prepare("command-tool-dry-run", args[0], args[1], values, dry_run=True), executive_approved=True)
+                return _text_response(result.content or ", ".join(result.errors), invocation_id=result.invocation_id, status=result.status.value)
+            if name == "tool history":
+                records = tools.history()
+                return _text_response("Tool history: " + (", ".join(f"{item.invocation_id}:{item.status.value}" for item in records[:10]) or "none"))
+            if name == "tool invocation":
+                record = tools.invocation(args[0] if args else "")
+                return _text_response(f"Tool invocation: {record.status.value} tool={record.tool_id}" if record else "Tool invocation not found.")
+            if name == "tool cancel": return _text_response("Tool cancellation requested." if tools.cancel(args[0] if args else "") else "Tool invocation not found or no longer active.")
+            if name == "tool mode":
+                if not args: return _text_response(f"Tool mode: {tools.mode.value}")
+                try: selected = tools.set_mode(args[0])
+                except ValueError: return _text_response("Mode must be off, confirm, automatic-safe, or automatic.")
+                context.conversation_context.session.metadata["tool_mode"] = selected.value
+                return _text_response(f"Tool mode set to {selected.value}.")
+            if name == "tool limits":
+                values = {field: getattr(tools.limits, field) for field in tools.limits.__slots__}
+                return _text_response("Tool limits: " + ", ".join(f"{key}={value}" for key, value in values.items()))
         if name in {"local", "local status", "local providers", "local models", "local refresh", "local use", "local test", "local explain-selection", "local only on", "local only off", "cloud", "cloud status", "cloud providers", "cloud models", "cloud refresh", "cloud use", "cloud test", "cloud explain-selection", "cloud only on", "cloud only off", "provider enable", "provider disable", "provider test"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:

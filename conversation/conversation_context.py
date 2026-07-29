@@ -28,4 +28,5 @@ class ConversationContext:
     provider_router: Any | None = None
     agent_manager: Any | None = None
     agent_creator: Any | None = None
+    tool_manager: Any | None = None
     metadata: dict[str, Any] = field(default_factory=dict)

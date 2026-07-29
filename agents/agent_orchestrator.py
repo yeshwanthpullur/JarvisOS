@@ -282,9 +282,11 @@ class AgentOrchestrator:
         limits: MultiAgentLimits | None = None,
         max_parallel: int | None = None,
         logger: logging.Logger | None = None,
+        tool_manager: Any | None = None,
     ) -> None:
         self.registry = registry or AgentRegistry()
         self.execution_manager = execution_manager
+        self.tool_manager = tool_manager
         base_limits = limits or MultiAgentLimits()
         self.limits = replace(
             base_limits,
@@ -437,8 +439,15 @@ class AgentOrchestrator:
             errors.append("maximum_agents_exceeded")
         if len(plan.subtasks) > self.limits.maximum_subtasks:
             errors.append("maximum_subtasks_exceeded")
-        if plan.tool_policy != "none" or any(subtask.allowed_tools for subtask in plan.subtasks):
+        requested_tools = tuple(tool_id for subtask in plan.subtasks for tool_id in subtask.allowed_tools)
+        if plan.tool_policy not in {"none", "governed"}:
             errors.append("tools_not_authorized")
+        elif plan.tool_policy == "governed" and self.tool_manager is None:
+            errors.append("tools_not_authorized")
+        if requested_tools and self.tool_manager is None:
+            errors.append("tools_not_authorized")
+        elif any(self.tool_manager.lookup(tool_id) is None for tool_id in requested_tools):
+            errors.append("unknown_tool")
         subtask_ids = {subtask.subtask_id for subtask in plan.subtasks}
         if len(subtask_ids) != len(plan.subtasks):
             errors.append("duplicate_subtask_id")
