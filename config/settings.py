@@ -137,6 +137,11 @@ def load_settings(
             enabled=_coerce_bool(raw_config["agents"]["enabled"]),
             max_concurrent_agents=int(raw_config["agents"]["max_concurrent_agents"]),
             workspace_dir=_resolve_path(raw_config["agents"]["workspace_dir"]),
+            max_agents_per_coordination=int(raw_config["agents"]["max_agents_per_coordination"]),
+            max_subtasks_per_coordination=int(raw_config["agents"]["max_subtasks_per_coordination"]),
+            max_recursion_depth=int(raw_config["agents"]["max_recursion_depth"]),
+            max_retries_per_subtask=int(raw_config["agents"]["max_retries_per_subtask"]),
+            max_total_timeout_seconds=int(raw_config["agents"]["max_total_timeout_seconds"]),
         ),
         plugins=PluginsConfig(
             enabled=_coerce_bool(raw_config["plugins"]["enabled"]),

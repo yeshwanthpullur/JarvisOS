@@ -100,7 +100,7 @@ Plugins may later register agent definitions through `AgentManager.add_definitio
 
 ## Provider Integration
 
-Agents receive `provider_router` through `AgentContext`. Direct provider dependencies are not allowed.
+Agents receive `provider_router` and the Provider Execution Manager through `AgentContext`. Multi-agent model work is prepared by `AgentOrchestrator` and executed only through the Provider Execution Manager and Provider Router. Agents never invoke provider adapters directly.
 
 ## Memory Integration
 
@@ -122,9 +122,23 @@ Agents receive `task_manager` through `AgentContext`. `AgentTask` models future 
 
 `HealthChecker` verifies the Agent Framework, registry, manager, scheduler, router, supervisor, orchestrator, metrics, health, and bus. Results include status, message, timestamp, and future recommendation fields.
 
+## Multi-Agent Intelligence
+
+Executive JARVIS may invoke bounded collaboration after Reasoning when a request genuinely benefits from specialization or independent review. Simple requests stay on the ordinary provider-backed chat path.
+
+Supported collaboration modes are sequential, parallel, review, debate, specialist panel, planner/executor, and research/verification. Every coordination has a parent request ID, coordination ID, unique subtask IDs, a validated delegation plan, minimum required context, provider and tool policy, bounded limits, normalized results, conflict records, and synthesis metadata.
+
+The built-in planner and reviewer are provider-only, non-mutating roles. Their output is untrusted content. They cannot execute tools, mutate memory, goals, tasks, workflows, or configuration, grant permissions, or recursively create work. Provider-backed synthesis runs through the same provider gateway and discloses partial failure or unresolved disagreement.
+
+Coordination metadata is stored under the configured agent workspace using bounded JSON records. Interrupted running records are retained as incomplete metadata and are never resumed automatically.
+
+Commands include `multiagent status`, `multiagent list`, `multiagent show <coordination_id>`, `multiagent cancel <coordination_id>`, `multiagent limits`, and `multiagent mode off|confirm|automatic-safe|automatic`.
+
+`confirm` requires explicit approval metadata before assessment can dispatch. `automatic-safe` is the default and permits only low-risk, non-mutating provider collaboration. No mode overrides Executive, permission, provider, workflow, or user-approval controls.
+
 ## Future Roadmap
 
-Future releases can add plugin-provided agents, persisted checkpoints, distributed message transports, permission enforcement, provider-backed execution, recovery policies, workflow DAGs, and remote workers.
+Future releases can add plugin-provided specialist agents, richer evidence schemas, distributed message transports, and workflow-backed execution after separate authorization. Recursive autonomous delegation and unrestricted workers are intentionally unsupported.
 
 ## Extension Guide
 
@@ -143,8 +157,8 @@ Keep agents small and capability-focused. Prefer composition through context ref
 
 ## Examples
 
-Example agents live in `agents/examples/`. They inherit `BaseAgent`, define profiles, and intentionally perform no AI, automation, network, browser, voice, vision, or operating-system actions.
+Example agents live in `agents/examples/`. The core planner and reviewer can perform provider-backed text collaboration through the governed coordinator. They perform no automation, browser, voice, vision, tool, filesystem, or operating-system actions.
 
 ## Known Limitations
 
-This version provides architecture only. Permission enforcement, distributed transport, persisted checkpoints, automatic recovery, true scheduling execution, and provider-backed reasoning are future work.
+Multi-agent dispatch is synchronous and bounded; cancellation is cooperative between provider calls. Agent results carry observable provider metadata, but no hidden provider reasoning is stored. Debate conflict detection preserves differing conclusions but does not perform semantic fact verification without explicit research evidence. Distributed execution and autonomous mutation are intentionally unsupported.

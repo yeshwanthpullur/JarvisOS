@@ -13,7 +13,7 @@ from agents.agent_factory import AgentFactory
 from agents.agent_health import AgentHealth
 from agents.agent_loader import AgentLoader
 from agents.agent_metrics import AgentMetrics
-from agents.agent_orchestrator import AgentOrchestrator
+from agents.agent_orchestrator import AgentOrchestrator, MultiAgentLimits
 from agents.agent_profile import AgentProfile
 from agents.agent_registry import AgentRegistry
 from agents.agent_router import AgentRouter
@@ -22,6 +22,8 @@ from agents.agent_state import AgentState
 from agents.agent_status import AgentStatus
 from agents.agent_supervisor import AgentSupervisor
 from agents.base_agent import BaseAgent
+from agents.examples.planner_agent import PROFILE as PLANNER_PROFILE, PlannerAgent
+from agents.examples.reviewer_agent import PROFILE as REVIEWER_PROFILE, ReviewerAgent
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,7 +62,25 @@ class AgentManager:
         self.scheduler = AgentScheduler()
         self.executor = AgentExecutor()
         self.supervisor = AgentSupervisor(self.registry)
-        self.orchestrator = AgentOrchestrator()
+        self.orchestrator = AgentOrchestrator(
+            registry=self.registry,
+            execution_manager=self.context.provider_execution_manager,
+            workspace_dir=(self.context.settings.agents.workspace_dir if self.context.settings else None),
+            max_parallel=(self.context.settings.agents.max_concurrent_agents if self.context.settings else 2),
+            limits=(
+                MultiAgentLimits(
+                    maximum_agents=self.context.settings.agents.max_agents_per_coordination,
+                    maximum_subtasks=self.context.settings.agents.max_subtasks_per_coordination,
+                    maximum_recursion_depth=self.context.settings.agents.max_recursion_depth,
+                    maximum_retries=self.context.settings.agents.max_retries_per_subtask,
+                    maximum_parallel_executions=self.context.settings.agents.max_concurrent_agents,
+                    maximum_total_timeout_seconds=self.context.settings.agents.max_total_timeout_seconds,
+                )
+                if self.context.settings
+                else None
+            ),
+            logger=self._logger,
+        )
         self.metrics = AgentMetrics()
         self.health = AgentHealth()
         self.initialized = False
@@ -69,10 +89,22 @@ class AgentManager:
         """Initialize the Agent Framework."""
         for agent in self.loader.load(self.context):
             self.register_agent(agent)
+        if self.context.provider_execution_manager is not None:
+            self._register_builtin_collaborators()
         self.initialized = True
         self.health.heartbeat()
         self._logger.info("agent_framework_initialized registered=%s", len(self.registry.list_agents()))
         return self.statistics()
+
+    def _register_builtin_collaborators(self) -> None:
+        """Register safe provider-only collaborators through the normal registry."""
+        for agent_class, profile in ((PlannerAgent, PLANNER_PROFILE), (ReviewerAgent, REVIEWER_PROFILE)):
+            if self.registry.get(profile.agent_id) is not None:
+                continue
+            agent = self.factory.create_agent(agent_class, profile, self.context)
+            self.register_agent(agent)
+            agent.initialize()
+            agent.start()
 
     def add_definition(self, definition: AgentDefinition) -> None:
         """Add an agent definition for loading."""

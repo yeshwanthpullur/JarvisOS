@@ -14,6 +14,10 @@ Goal Intelligence sits between context and execution for goal-related requests. 
 
 Local AI is routed only through the Provider Router. Executive JARVIS may request local-only execution or model selection, but it never talks to local runtimes directly and it never treats local model output as authority.
 
+Multi-Agent Intelligence is invoked only after Executive JARVIS and Reasoning determine that bounded specialization or independent review is useful. Executive remains the approval authority. The Agent Framework validates a delegation plan, dispatches provider-only subtasks through the Provider Execution Manager and Provider Router, and returns normalized results and synthesis metadata. Simple requests remain on the ordinary basic-chat path.
+
+Agent output cannot authorize tools or state changes. Any action derived from an agent result must re-enter Executive JARVIS and the relevant authoritative subsystem controls.
+
 Reflection is the post-execution counterpart to reasoning. It evaluates completed work, prepares learning metadata, and supports future reasoning improvements. It remains advisory only.
 
 Adaptive Intelligence reviews reflection and learning metadata after execution. It prepares validated recommendations for Executive JARVIS, which remains the only authority that can approve adaptation.

@@ -28,14 +28,26 @@ from agents.agent_manager import AgentFrameworkStatistics, AgentManager
 from agents.agent_memory import AgentMemoryInterface
 from agents.agent_message import AgentMessage, AgentMessageStatus, AgentMessageType
 from agents.agent_metrics import AgentMetrics
-from agents.agent_orchestrator import AgentOrchestrationPlan, AgentOrchestrator
+from agents.agent_orchestrator import (
+    AgentConflict,
+    AgentOrchestrationPlan,
+    AgentOrchestrator,
+    CollaborationMode,
+    CoordinationRecord,
+    CoordinationStatus,
+    DelegatedSubtask,
+    DelegationPlan,
+    MultiAgentAssessment,
+    MultiAgentLimits,
+    MultiAgentMode,
+)
 from agents.agent_permissions import AgentPermission, AgentPermissionSet
 from agents.agent_planning import AgentPlanningInterface
 from agents.agent_profile import AgentProfile, AgentType, TrustLevel
 from agents.agent_reasoning import AgentReasoningInterface
 from agents.agent_reflection import AgentReflectionInterface
 from agents.agent_registry import AgentRecord, AgentRegistry
-from agents.agent_result import AgentResult
+from agents.agent_result import AgentResult, AgentResultStatus
 from agents.agent_router import AgentRouter
 from agents.agent_runtime import AgentRuntime, AgentRuntimeState
 from agents.agent_scheduler import AgentScheduler, ScheduledAgentWork
@@ -75,6 +87,7 @@ __all__ = [
     "AgentMetrics",
     "AgentOrchestrationPlan",
     "AgentOrchestrator",
+    "AgentConflict",
     "AgentPermission",
     "AgentPermissionSet",
     "AgentPlanningInterface",
@@ -84,6 +97,7 @@ __all__ = [
     "AgentReflectionInterface",
     "AgentRegistry",
     "AgentResult",
+    "AgentResultStatus",
     "AgentRouter",
     "AgentRuntime",
     "AgentRuntimeState",
@@ -100,12 +114,20 @@ __all__ = [
     "AgentValidationResult",
     "AgentValidator",
     "BaseAgent",
+    "CollaborationMode",
+    "CoordinationRecord",
+    "CoordinationStatus",
     "CapabilityCache",
     "CheckpointCache",
     "ConfigurationCache",
     "ContextCache",
     "PermissionCache",
     "RuntimeCache",
+    "DelegatedSubtask",
+    "DelegationPlan",
+    "MultiAgentAssessment",
+    "MultiAgentLimits",
+    "MultiAgentMode",
     "ScheduledAgentWork",
     "SessionCache",
     "TrustLevel",

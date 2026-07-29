@@ -74,6 +74,69 @@ class JarvisController:
         context.current_department = decision.department
         plan = self.planning.create_plan(decision)
         dispatch = self.dispatcher.dispatch(decision, plan)
+        agent_manager = context.agent_manager or context.metadata.get("agent_manager")
+        orchestrator = getattr(agent_manager, "orchestrator", None)
+        if orchestrator is not None:
+            session_metadata = dict(request.metadata.get("session_metadata", {}) or {})
+            configured_mode = session_metadata.get("multiagent_mode")
+            if configured_mode:
+                try:
+                    orchestrator.set_mode(str(configured_mode))
+                except ValueError:
+                    pass
+            assessment = orchestrator.assess(
+                request.content,
+                {**dict(request.metadata), "request_id": request.request_id},
+            )
+            context.metadata["multiagent_assessment"] = assessment
+            if assessment.requires_multi_agent:
+                coordination = orchestrator.coordinate(
+                    objective=request.content,
+                    parent_request_id=request.request_id,
+                    assessment=assessment,
+                    metadata={
+                        **dict(request.metadata),
+                        "conversation_id": request.conversation_id,
+                        "selected_context": request.metadata.get("resolved_context", {}),
+                        "execution_policy": session_metadata.get("execution_policy", request.metadata.get("execution_policy", "automatic")),
+                        "provider_preference": session_metadata.get("provider_preference", request.metadata.get("provider_preference")),
+                        "model_preference": session_metadata.get("model_preference", request.metadata.get("model_preference")),
+                        "local_only": bool(session_metadata.get("local_only", request.metadata.get("local_only", False))),
+                        "cloud_only": bool(session_metadata.get("cloud_only", request.metadata.get("cloud_only", False))),
+                    },
+                    executive_approved=True,
+                )
+                if coordination.synthesis:
+                    return JarvisResponse(
+                        request_id=request.request_id,
+                        content=coordination.synthesis,
+                        response_type="multiagent",
+                        execution_summary={
+                            "coordination_id": coordination.coordination_id,
+                            "collaboration_mode": coordination.mode.value,
+                            "coordination_status": coordination.status.value,
+                            "participating_agents": coordination.plan.participating_agents,
+                            "subtask_ids": tuple(item.subtask_id for item in coordination.plan.subtasks),
+                            "completed_results": sum(item.success for item in coordination.results),
+                            "conflicts": len(coordination.conflicts),
+                        },
+                        warnings=coordination.warnings,
+                        streaming_metadata={
+                            "coordination_id": coordination.coordination_id,
+                            "parent_request_id": coordination.parent_request_id,
+                            "collaboration_mode": coordination.mode.value,
+                            "agent_results": tuple(
+                                {
+                                    "agent_id": item.agent_id,
+                                    "subtask_id": item.subtask_id,
+                                    "status": item.status.value,
+                                    "provider_id": item.provider_metadata.get("provider_id"),
+                                    "model_id": item.provider_metadata.get("model_id"),
+                                }
+                                for item in coordination.results
+                            ),
+                        },
+                    )
         provider_execution_manager = context.metadata.get("provider_execution_manager")
         if decision.strategy.value == "direct" and provider_execution_manager is not None and isinstance(provider_execution_manager, ExecutionManager):
             session_metadata = dict(request.metadata.get("session_metadata", {}) or {})

@@ -119,6 +119,8 @@ Goal Intelligence sits above Task Intelligence. It analyzes goals, milestones, p
 
 Local AI executes only through Provider Router. It discovers real local runtimes, inventories available local models, and preserves local-only policy without introducing a second provider gateway.
 
+Multi-Agent Intelligence extends the existing Agent Framework with Executive-approved planner/reviewer collaboration, bounded parallel or sequential dispatch, evidence-aware synthesis, cancellation, persistence, and user-visible status. Simple conversation continues through the normal provider path, and agent output has no tool or mutation authority.
+
 ## Conversation And Commands
 
 The `Jarvis >` prompt now routes through the Conversation Engine and Command Engine. Commands are registered through `CommandRegistry`, while normal text requests continue into Executive JARVIS.
@@ -127,7 +129,7 @@ The `Jarvis >` prompt now routes through the Conversation Engine and Command Eng
 
 The Agent Creator Framework is the official manufacturing system for future JARVIS OS agents. It uses blueprints, templates, manifests, validators, installers, rollback metadata, catalogs, departments, security policies, and audit records to create provider-independent agents that conform to the Agent Framework.
 
-The current implementation is architecture-only. It does not implement AI-assisted generation, autonomous code editing, marketplace networking, browser automation, desktop automation, voice, vision, or provider calls.
+Agent creation remains architecture-focused and separate from Multi-Agent Intelligence. It does not autonomously generate code, install agents, browse, automate the desktop, or grant execution authority.
 
 ## Configuration
 

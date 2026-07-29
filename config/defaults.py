@@ -153,6 +153,11 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "enabled": True,
         "max_concurrent_agents": 4,
         "workspace_dir": "data/agent-workspaces",
+        "max_agents_per_coordination": 4,
+        "max_subtasks_per_coordination": 8,
+        "max_recursion_depth": 1,
+        "max_retries_per_subtask": 1,
+        "max_total_timeout_seconds": 180,
     },
     "plugins": {
         "enabled": True,

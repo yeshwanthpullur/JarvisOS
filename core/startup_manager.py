@@ -251,6 +251,7 @@ class StartupManager:
             brain_manager=self.brain_manager,
             plugin_manager=self.plugin_manager,
             provider_router=self.provider_router,
+            provider_execution_manager=self.provider_execution_manager,
             logger=logging.getLogger("agents"),
         )
         self.agent_manager = AgentManager(context=agent_context)
@@ -291,6 +292,7 @@ class StartupManager:
                 "personal_intelligence_manager": self.personal_intelligence_manager,
                 "context_intelligence_manager": self.context_intelligence_manager,
                 "goal_intelligence_manager": self.goal_intelligence_manager,
+                "agent_manager": self.agent_manager,
             },
         )
         self.jarvis_core = JarvisCore(context=jarvis_context)

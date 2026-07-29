@@ -56,6 +56,17 @@ def _provider_manager(context: CommandContext):
     return metadata.get("provider_manager")
 
 
+def _agent_manager(context: CommandContext):
+    conversation = context.conversation_context
+    if conversation is None:
+        return None
+    direct = getattr(conversation, "agent_manager", None)
+    if direct is not None:
+        return direct
+    metadata = getattr(conversation, "metadata", {}) or {}
+    return metadata.get("agent_manager")
+
+
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
     if session is None:
         return default
@@ -111,6 +122,12 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("agents", "Show agent summary", "agent", (), CommandPermission.AGENT),
         ("agent list", "List agents", "agent", (), CommandPermission.AGENT),
         ("agent status", "Show agent status", "agent", (), CommandPermission.AGENT),
+        ("multiagent status", "Show multi-agent status", "agent", (), CommandPermission.AGENT),
+        ("multiagent list", "List recent coordinations", "agent", (), CommandPermission.AGENT),
+        ("multiagent show", "Show a coordination", "agent", (), CommandPermission.AGENT),
+        ("multiagent cancel", "Cancel a coordination", "agent", (), CommandPermission.AGENT),
+        ("multiagent limits", "Show coordination limits", "agent", (), CommandPermission.AGENT),
+        ("multiagent mode", "Set multi-agent mode", "agent", (), CommandPermission.AGENT),
         ("departments", "Show department summary", "department", (), CommandPermission.DEPARTMENT),
         ("department list", "List departments", "department", (), CommandPermission.DEPARTMENT),
         ("memory", "Show memory summary", "memory", (), CommandPermission.MEMORY),
@@ -183,6 +200,49 @@ def _handler_for(name: str):
             return _text_response(f"Command history: {len(manager.history.list_history())} entries")
         if name == "metrics" and manager is not None:
             return _text_response(f"Commands executed: {manager.metrics.commands_executed}")
+        if name.startswith("multiagent "):
+            agent_manager = _agent_manager(context)
+            orchestrator = getattr(agent_manager, "orchestrator", None)
+            if orchestrator is None:
+                return _text_response("Multi-agent intelligence is not available.")
+            if name == "multiagent status":
+                status = orchestrator.status()
+                return _text_response(
+                    f"Multi-agent status: mode={status['mode']} coordinations={status['coordinations']} active={status['active']}",
+                    **status,
+                )
+            if name == "multiagent list":
+                records = orchestrator.store.list()
+                if not records:
+                    return _text_response("No multi-agent coordinations have been recorded.")
+                return _text_response("Multi-agent coordinations: " + ", ".join(f"{item.coordination_id}:{item.status.value}" for item in records[:10]))
+            if name == "multiagent limits":
+                limits = orchestrator.status()["limits"]
+                return _text_response("Multi-agent limits: " + ", ".join(f"{key}={value}" for key, value in limits.items()), limits=limits)
+            if name == "multiagent show":
+                coordination_id = context.arguments[0] if context.arguments else ""
+                record = orchestrator.store.get(coordination_id)
+                if record is None:
+                    return _text_response("Coordination not found.")
+                return _text_response(
+                    f"Coordination {record.coordination_id}: status={record.status.value} mode={record.mode.value} agents={len(record.plan.participating_agents)} results={len(record.results)}",
+                    coordination_id=record.coordination_id,
+                    status=record.status.value,
+                )
+            if name == "multiagent cancel":
+                coordination_id = context.arguments[0] if context.arguments else ""
+                return _text_response("Coordination cancellation requested." if orchestrator.cancel(coordination_id) else "Coordination not found or no longer cancellable.")
+            if name == "multiagent mode":
+                if not context.arguments:
+                    return _text_response(f"Multi-agent mode: {orchestrator.mode.value}")
+                try:
+                    selected = orchestrator.set_mode(context.arguments[0])
+                except ValueError:
+                    return _text_response("Mode must be off, confirm, automatic-safe, or automatic.")
+                conversation = context.conversation_context
+                if conversation is not None:
+                    conversation.session.metadata["multiagent_mode"] = selected.value
+                return _text_response(f"Multi-agent mode set to {selected.value}.", mode=selected.value)
         if name in {"local", "local status", "local providers", "local models", "local refresh", "local use", "local test", "local explain-selection", "local only on", "local only off", "cloud", "cloud status", "cloud providers", "cloud models", "cloud refresh", "cloud use", "cloud test", "cloud explain-selection", "cloud only on", "cloud only off", "provider enable", "provider disable", "provider test"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:

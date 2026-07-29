@@ -74,11 +74,16 @@ class ProvidersConfig:
 
 @dataclass(frozen=True, slots=True)
 class AgentsConfig:
-    """Future agent orchestration limits and paths."""
+    """Agent framework paths and governed coordination limits."""
 
     enabled: bool
     max_concurrent_agents: int
     workspace_dir: Path
+    max_agents_per_coordination: int = 4
+    max_subtasks_per_coordination: int = 8
+    max_recursion_depth: int = 1
+    max_retries_per_subtask: int = 1
+    max_total_timeout_seconds: int = 180
 
 
 @dataclass(frozen=True, slots=True)

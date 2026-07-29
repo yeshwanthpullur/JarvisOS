@@ -44,6 +44,7 @@ class AgentFactory:
             brain_manager=base_context.brain_manager,
             plugin_manager=base_context.plugin_manager,
             provider_router=base_context.provider_router,
+            provider_execution_manager=base_context.provider_execution_manager,
             logger=logger,
             metrics=base_context.metrics or AgentMetrics(),
             health=base_context.health or AgentHealth(),

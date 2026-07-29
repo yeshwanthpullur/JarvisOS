@@ -25,6 +25,7 @@ class AgentContext:
     brain_manager: Any | None = None
     plugin_manager: Any | None = None
     provider_router: Any | None = None
+    provider_execution_manager: Any | None = None
     logger: logging.Logger | None = None
     metrics: AgentMetrics | None = None
     health: AgentHealth | None = None
