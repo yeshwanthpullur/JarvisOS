@@ -8,6 +8,7 @@ import json
 import logging
 import re
 import secrets
+import socket
 import threading
 import time
 import webbrowser
@@ -35,6 +36,17 @@ SECRET_PATTERN = re.compile(
 AUTHORIZATION_PATTERN = re.compile(r"(?i)authorization\s*[:=]\s*(?:bearer\s+)?[^\s,;]+")
 BEARER_PATTERN = re.compile(r"(?i)bearer\s+[a-z0-9._~+/-]+")
 HIDDEN_REASONING_PATTERN = re.compile(r"(?i)(chain[- ]of[- ]thought|hidden reasoning|private scratch)")
+
+
+class LoopbackThreadingHTTPServer(ThreadingHTTPServer):
+    """Prevent multiple desktop-interface processes from sharing one port."""
+
+    allow_reuse_address = False
+
+    def server_bind(self) -> None:
+        if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
 
 
 def utc_now() -> str:
@@ -179,7 +191,7 @@ class LocalInterfaceService:
         self._stopped.clear()
         self.logger.info("interface_starting host=%s port=%s", self.config.host, self.config.port)
         handler = self._handler_class()
-        self._server = ThreadingHTTPServer((self.config.host, self.config.port), handler)
+        self._server = LoopbackThreadingHTTPServer((self.config.host, self.config.port), handler)
         self._server.daemon_threads = True
         self._server.service = self  # type: ignore[attr-defined]
         self._record("interface_started", "completed", None, f"Interface ready at {self.url}")

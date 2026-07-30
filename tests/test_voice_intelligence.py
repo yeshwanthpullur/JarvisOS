@@ -77,6 +77,9 @@ class VoiceTests(unittest.TestCase):
  def test_persistence_summary(self):
   with tempfile.TemporaryDirectory() as d:v=VoiceIntelligence(storage_dir=Path(d));v.enabled=True;v.create_session();v.cancel();self.assertTrue((Path(d)/"sessions.json").exists())
  def test_parser_command_separation(self):self.assertEqual(CommandParser().parse("voice say hello").name,"voice say")
+ def test_parser_preserves_windows_audio_path(self):
+  parsed=CommandParser().parse(r"voice transcribe C:\voice-input\sample.wav")
+  self.assertEqual(parsed.arguments,(r"C:\voice-input\sample.wav",))
  def test_health(self):self.assertIn("windows-sapi",self.v.health())
  def test_strict_privacy_local(self):self.v.privacy_mode="strict";self.v.enabled=True;self.assertTrue(self.v.create_session().local_only)
  def test_wake_word_no_approval(self):self.assertNotIn("approval",self.v.health())

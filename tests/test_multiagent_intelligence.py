@@ -31,8 +31,8 @@ from agents.agent_registry import AgentRegistry
 from agents.agent_status import AgentStatus
 from agents.base_agent import BaseAgent
 from commands import CommandManager
-from conversation import ConversationContext, ConversationSession
-from jarvis import JarvisContext, JarvisRequest
+from conversation import ConversationContext, ConversationManager, ConversationSession
+from jarvis import JarvisContext, JarvisRequest, JarvisResponse
 from jarvis.jarvis_controller import JarvisController
 from provider_execution import ProviderExecutionResponse
 
@@ -116,6 +116,22 @@ class MultiAgentIntelligenceTests(unittest.TestCase):
         result = make_orchestrator().assess("Use a planner and reviewer to independently review this architecture.")
         self.assertTrue(result.requires_multi_agent)
         self.assertEqual(result.collaboration_mode, CollaborationMode.REVIEW)
+
+    def test_planner_reviewer_request_is_not_intercepted_as_goal_review(self) -> None:
+        class GoalManager:
+            def prepare_request(self, *_args: object) -> SimpleNamespace:
+                return SimpleNamespace(immediate_response="goal interception", metadata={})
+
+        class Executive:
+            def handle(self, request: JarvisRequest) -> JarvisResponse:
+                return JarvisResponse(request_id=request.request_id, content="multi-agent path")
+
+        manager = ConversationManager(jarvis_core=Executive(), goal_intelligence_manager=GoalManager())
+        manager.initialize()
+        response = manager.handle_input(
+            "Use a planner and reviewer to produce and review a short checklist."
+        )
+        self.assertEqual(response.response, "multi-agent path")
 
     def test_multiagent_off_rejects_coordination(self) -> None:
         orchestrator = make_orchestrator()

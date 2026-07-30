@@ -38,7 +38,11 @@ class CommandParser:
         stripped = text.strip()
         if stripped.startswith("/"): stripped = stripped[1:]
         if not stripped: return ParsedCommand(name="", raw=text, valid=False)
-        parts = tuple(shlex.split(stripped))
+        lexer = shlex.shlex(stripped, posix=True)
+        lexer.whitespace_split = True
+        lexer.commenters = ""
+        lexer.escape = ""
+        parts = tuple(lexer)
         flags: dict[str, str | bool] = {}
         args: list[str] = []
         for part in parts[1:]:

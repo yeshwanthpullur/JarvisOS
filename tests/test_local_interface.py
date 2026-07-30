@@ -218,6 +218,15 @@ class LocalInterfaceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             LocalInterfaceService(self.startup, replace(self.config, allow_remote=True))
 
+    def test_duplicate_interface_instance_is_rejected(self):
+        self.start()
+        duplicate = LocalInterfaceService(self.startup, self.config)
+        try:
+            with self.assertRaises(OSError):
+                duplicate.start(background=True, open_browser=False)
+        finally:
+            duplicate.stop()
+
     def test_bootstrap_endpoint(self):
         self.start(); status, headers, body = self.get("/api/bootstrap")
         data = json.loads(body)

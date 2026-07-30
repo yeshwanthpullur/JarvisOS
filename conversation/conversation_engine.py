@@ -156,7 +156,6 @@ class ConversationEngine:
                 "conflict",
                 "next step",
                 "what should i do next",
-                "review",
                 "complete",
                 "pause this goal",
                 "resume the goal",
