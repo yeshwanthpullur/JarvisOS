@@ -1,3 +1,3 @@
-# No runtime dependencies are required for the empty foundation.
-# Python 3.12+ standard library modules provide configuration, logging, and paths.
-
+# No runtime dependencies are required for the current local-first runtime.
+# Python 3.12+ standard library modules provide configuration, logging, paths,
+# and the localhost desktop interface service.

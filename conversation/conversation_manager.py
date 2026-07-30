@@ -87,6 +87,9 @@ class ConversationManager:
         self.context_intelligence = context_intelligence_manager
         self.logger = logger or logging.getLogger(__name__)
         self.initialized = False
+        self._conversations: dict[str, tuple[ConversationSession, ConversationHistory]] = {
+            self.active_session.conversation_id: (self.active_session, self.history)
+        }
 
     def initialize(self) -> ConversationStatistics:
         """Initialize conversation and command engines."""
@@ -98,9 +101,15 @@ class ConversationManager:
         self.logger.info("conversation_manager_initialized commands=%s", len(self.command_manager.registry.list_commands()))
         return self.statistics()
 
-    def handle_input(self, user_input: str) -> ConversationResponse:
+    def handle_input(self, user_input: str, request_id: str | None = None) -> ConversationResponse:
         """Handle user input through conversation, command, and executive layers."""
-        request = ConversationRequest(user_input=user_input, normalized_input=user_input.strip().lower(), goal=user_input.strip())
+        self.active_session.request_id = request_id
+        request = ConversationRequest(
+            user_input=user_input,
+            normalized_input=user_input.strip().lower(),
+            goal=user_input.strip(),
+            metadata={"request_id": request_id} if request_id else {},
+        )
         personal_context = (
             self.personal_intelligence.apply_context(user_input, conversation_id=self.active_session.conversation_id)
             if self.personal_intelligence is not None
@@ -145,6 +154,58 @@ class ConversationManager:
         if response.warnings:
             self.metrics.failures += 1
         return response
+
+    def create_conversation(self) -> ConversationSession:
+        """Create and activate a new conversation using existing session/history models."""
+        self._conversations[self.active_session.conversation_id] = (self.active_session, self.history)
+        self.active_session = ConversationSession()
+        self.history = ConversationHistory()
+        self._conversations[self.active_session.conversation_id] = (self.active_session, self.history)
+        self.metrics.sessions += 1
+        self.metrics.conversations += 1
+        return self.active_session
+
+    def activate_conversation(self, conversation_id: str) -> bool:
+        """Activate a known in-memory conversation without duplicating its history."""
+        record = self._conversations.get(conversation_id)
+        if record is None:
+            return False
+        self.active_session, self.history = record
+        return True
+
+    def list_conversations(self) -> tuple[dict[str, object], ...]:
+        """Return bounded safe summaries of existing conversation sessions."""
+        self._conversations[self.active_session.conversation_id] = (self.active_session, self.history)
+        records = sorted(
+            self._conversations.values(),
+            key=lambda item: str(item[0].updated_at),
+            reverse=True,
+        )
+        return tuple(
+            {
+                "conversation_id": session.conversation_id,
+                "title": session.current_topic or (session.previous_requests[0][:64] if session.previous_requests else "New conversation"),
+                "turns": history.statistics()["turns"],
+                "updated_at": str(session.updated_at),
+                "active": session.conversation_id == self.active_session.conversation_id,
+            }
+            for session, history in records
+        )
+
+    def conversation_messages(self, conversation_id: str, limit: int = 200) -> tuple[dict[str, object], ...] | None:
+        """Return safe visible messages for a known conversation."""
+        self._conversations[self.active_session.conversation_id] = (self.active_session, self.history)
+        record = self._conversations.get(conversation_id)
+        if record is None:
+            return None
+        _, history = record
+        messages: list[dict[str, object]] = []
+        for request, response in history.export()[-max(1, limit):]:
+            messages.extend((
+                {"role": "user", "content": request.user_input, "timestamp": str(request.timestamp)},
+                {"role": "assistant", "content": response.response, "timestamp": str(request.timestamp), "status": response.execution_state, "metadata": dict(response.metadata)},
+            ))
+        return tuple(messages)
 
     def summary(self) -> ConversationSummary:
         """Return active conversation summary."""

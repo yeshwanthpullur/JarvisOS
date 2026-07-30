@@ -198,6 +198,29 @@ voice:
   temp_directory: data/voice-temp
   allowed_audio_directories: [data/voice-input]
 
+interface:
+  enabled: false
+  host: 127.0.0.1
+  port: 8765
+  open_browser: true
+  theme: system
+  default_view: chat
+  event_transport: sse
+  max_request_size: 65536
+  max_response_size: 262144
+  max_log_entries: 200
+  max_activity_entries: 200
+  max_history_messages: 200
+  request_timeout: 120
+  event_timeout: 30
+  allow_remote: false
+  allowed_origins: [http://127.0.0.1:8765, http://localhost:8765]
+  session_token_lifetime: 14400
+  safe_markdown: true
+  show_provider_metadata: true
+  show_activity_panel: true
+  compact_mode: false
+
 plugins:
   enabled: true
   plugin_dir: plugins

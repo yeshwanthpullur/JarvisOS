@@ -6,6 +6,8 @@ Autonomous Planning produces provider-backed, validated, reviewable plans withou
 
 Voice Intelligence adds disabled-by-default local Windows speech output, safe audio-file validation, and governed voice sessions without changing text-mode authority. See [docs/VOICE_INTELLIGENCE.md](docs/VOICE_INTELLIGENCE.md).
 
+The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
+
 JARVIS OS is the foundation for a modular AI Operating System written in Python 3.12+. This repository currently provides architecture, configuration, logging, memory, knowledge, task, Obsidian Brain, plugin, provider-routing, provider-execution, agent-framework, agent-creator, and Executive JARVIS infrastructure. AI behavior is intentionally not implemented yet.
 
 ## Goals
@@ -46,7 +48,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 | `brain/` | Future high-level orchestration and reasoning coordination. |
 | `config/` | Settings loading and application logging configuration. |
 | `data/` | Local runtime data that should not be committed by default. |
-| `desktop/` | Desktop integrations, with Windows support as the first priority. |
+| `desktop/` | Dependency-free responsive browser interface assets for local Windows use. |
 | `docs/` | Project documentation and architectural notes. |
 | `logs/` | Runtime log output. Log files are ignored by Git. |
 | `memory/` | Future memory storage, indexing, and recall services. |
@@ -63,7 +65,7 @@ JARVIS OS is the foundation for a modular AI Operating System written in Python 
 | `adaptive/` | Adaptive intelligence loop for executive-approved learning recommendations and adaptation queues. |
 | `goal_intelligence/` | Goal intelligence layer for goal clarification, quality evaluation, decomposition, progress, conflicts, and next-step recommendations. |
 | `plugins/` | Official extension framework, plugin manifests, lifecycle, permissions, and example plugins. |
-| `server/` | Future API server, background services, and network interfaces. |
+| `server/` | Localhost-only interface service and future bounded network interfaces. |
 | `skills/` | Reusable abilities that future agents can call. |
 | `tests/` | Automated tests for the foundation and future modules. |
 | `utils/` | Shared helpers that are truly cross-cutting. |
@@ -99,7 +101,17 @@ python -m venv .venv
 python main.py
 ```
 
-No packages are required yet. When dependencies become necessary, add only production-required packages to `requirements.txt`.
+Start the local desktop interface at `http://127.0.0.1:8765`:
+
+```powershell
+python main.py --ui
+# or
+.\start_jarvis_ui.ps1
+```
+
+Use `--no-browser` to print the URL without opening a browser. The interface is disabled unless explicitly started and does not enable remote access.
+
+No additional packages are required for the interface or core runtime. When dependencies become necessary, add only production-required packages to `requirements.txt`.
 
 ## Agent Framework
 

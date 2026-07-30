@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="jarvis-session" content="__JARVIS_SESSION_TOKEN__">
+  <title>JARVIS OS</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">J</div>
+        <div><strong>JARVIS</strong><span>Local intelligence</span></div>
+      </div>
+      <button class="button primary full" id="new-conversation" type="button">New conversation</button>
+      <nav class="nav-list" aria-label="Workspace">
+        <button class="nav-item active" type="button" data-view="chat">Chat</button>
+        <button class="nav-item" type="button" data-view="activity">Activity</button>
+        <button class="nav-item" type="button" data-view="plans">Plans</button>
+        <button class="nav-item" type="button" data-view="tools">Tools</button>
+        <button class="nav-item" type="button" data-view="multiagent">Multi-Agent</button>
+        <button class="nav-item" type="button" data-view="voice">Voice</button>
+        <button class="nav-item" type="button" data-view="health">Health</button>
+        <button class="nav-item" type="button" data-view="logs">Logs</button>
+        <button class="nav-item" type="button" data-view="settings">Settings</button>
+      </nav>
+      <section class="history-block" aria-labelledby="history-heading">
+        <div class="section-heading"><h2 id="history-heading">Recent</h2><button class="text-button" id="refresh-history" type="button">Refresh</button></div>
+        <div class="history-list" id="conversation-list"><p class="empty-copy">No conversations yet.</p></div>
+      </section>
+      <div class="sidebar-foot"><span class="status-dot" id="runtime-dot"></span><span id="runtime-label">Starting</span></div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <button class="button icon mobile-only" id="sidebar-toggle" type="button" aria-label="Toggle navigation">Menu</button>
+        <div class="title-group">
+          <h1 id="view-title">Conversation</h1>
+          <p id="view-subtitle">Local JARVIS session</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="policy-badge" id="policy-badge">automatic</span>
+          <span class="model-label" id="model-label">Provider pending</span>
+          <button class="button secondary" id="activity-toggle" type="button">Activity</button>
+          <button class="button icon" id="theme-toggle" type="button" aria-label="Toggle color theme">Theme</button>
+        </div>
+      </header>
+
+      <div class="content-grid">
+        <main id="main-content" class="main-content">
+          <section class="view active" id="view-chat" data-view-panel="chat" aria-labelledby="view-title">
+            <div class="messages" id="messages" aria-live="polite" aria-label="Conversation messages">
+              <div class="welcome-state">
+                <span class="welcome-mark" aria-hidden="true">J</span>
+                <h2>Ready when you are</h2>
+                <p>Chat normally or enter an existing JARVIS command.</p>
+                <div class="quick-actions" aria-label="Suggested commands">
+                  <button type="button" data-prompt="local status">Local status</button>
+                  <button type="button" data-prompt="voice status">Voice status</button>
+                  <button type="button" data-prompt="tool list">Tool list</button>
+                  <button type="button" data-prompt="health">Health</button>
+                </div>
+              </div>
+            </div>
+            <div class="pending-strip" id="pending-strip" hidden>
+              <span class="spinner" aria-hidden="true"></span><span id="pending-label">JARVIS is working</span>
+            </div>
+            <form class="composer" id="composer">
+              <label class="sr-only" for="message-input">Message JARVIS</label>
+              <textarea id="message-input" rows="3" maxlength="16000" placeholder="Message JARVIS or enter a command" required></textarea>
+              <div class="composer-foot">
+                <span class="composer-hint">Enter to send, Shift+Enter for a new line</span>
+                <div class="composer-actions">
+                  <button class="button secondary" id="cancel-request" type="button" disabled>Cancel</button>
+                  <button class="button primary" id="send-message" type="submit">Send</button>
+                </div>
+              </div>
+            </form>
+          </section>
+
+          <section class="view" id="view-activity" data-view-panel="activity"><header class="view-header"><div><h2>System activity</h2><p>Safe observable execution stages.</p></div><button class="button secondary" data-refresh="activity" type="button">Refresh</button></header><div class="record-list" id="activity-list"></div></section>
+          <section class="view" id="view-plans" data-view-panel="plans"><header class="view-header"><div><h2>Autonomous plans</h2><p>Advisory plans and review state.</p></div><button class="button secondary" data-refresh="plans" type="button">Refresh</button></header><div class="record-list" id="plans-list"></div></section>
+          <section class="view" id="view-tools" data-view-panel="tools"><header class="view-header"><div><h2>Tool Intelligence</h2><p>Registered capabilities and governed availability.</p></div><button class="button secondary" data-refresh="tools" type="button">Refresh</button></header><div class="record-list" id="tools-list"></div></section>
+          <section class="view" id="view-multiagent" data-view-panel="multiagent"><header class="view-header"><div><h2>Multi-Agent</h2><p>Coordinations, participants, and synthesis status.</p></div><button class="button secondary" data-refresh="multiagent" type="button">Refresh</button></header><div class="record-list" id="multiagent-list"></div></section>
+          <section class="view" id="view-voice" data-view-panel="voice"><header class="view-header"><div><h2>Voice</h2><p>Local speech output and honest input readiness.</p></div><button class="button secondary" data-refresh="voice" type="button">Refresh</button></header><div id="voice-content"></div></section>
+          <section class="view" id="view-health" data-view-panel="health"><header class="view-header"><div><h2>Health</h2><p>Safe readiness across JARVIS subsystems.</p></div><button class="button secondary" data-refresh="health" type="button">Refresh</button></header><div class="health-grid" id="health-grid"></div></section>
+          <section class="view" id="view-logs" data-view-panel="logs">
+            <header class="view-header"><div><h2>Safe logs</h2><p>Bounded and redacted application events.</p></div><button class="button secondary" data-refresh="logs" type="button">Refresh</button></header>
+            <form class="filter-row" id="log-filters"><label>Level<select id="log-level"><option value="">All</option><option>INFO</option><option>WARNING</option><option>ERROR</option></select></label><label>Subsystem<input id="log-subsystem" type="text" maxlength="80"></label><label>Request ID<input id="log-request" type="text" maxlength="80"></label><button class="button secondary" type="submit">Apply</button></form>
+            <div class="log-list" id="logs-list"></div>
+          </section>
+          <section class="view" id="view-settings" data-view-panel="settings"><header class="view-header"><div><h2>Settings</h2><p>Validated session and display preferences.</p></div><button class="button secondary" data-refresh="settings" type="button">Refresh</button></header><div id="settings-content"></div></section>
+        </main>
+
+        <aside class="activity-panel" id="activity-panel" aria-label="Current system activity">
+          <div class="panel-heading"><h2>Now</h2><button class="text-button" id="close-activity" type="button">Close</button></div>
+          <dl class="status-list">
+            <div><dt>Stage</dt><dd id="stage-value">Idle</dd></div>
+            <div><dt>Provider</dt><dd id="provider-value">None</dd></div>
+            <div><dt>Model</dt><dd id="model-value">None</dd></div>
+            <div><dt>Tool</dt><dd id="tool-value">None</dd></div>
+            <div><dt>Coordination</dt><dd id="coordination-value">None</dd></div>
+            <div><dt>Plan</dt><dd id="plan-value">None</dd></div>
+            <div><dt>Voice</dt><dd id="voice-value">Checking</dd></div>
+          </dl>
+          <section class="approval-section" aria-labelledby="approval-heading"><div class="section-heading"><h2 id="approval-heading">Approvals</h2><button class="text-button" id="refresh-approvals" type="button">Refresh</button></div><div id="approval-list"><p class="empty-copy">No pending approvals.</p></div></section>
+          <section class="recent-activity" aria-labelledby="recent-heading"><h2 id="recent-heading">Recent activity</h2><div id="activity-compact"></div></section>
+        </aside>
+      </div>
+    </div>
+  </div>
+  <div class="toast-region" id="toast-region" aria-live="assertive"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

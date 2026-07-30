@@ -111,6 +111,36 @@ class VoiceConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class InterfaceConfig:
+    """Local desktop interface security, display, and bounded API settings."""
+
+    enabled: bool = False
+    host: str = "127.0.0.1"
+    port: int = 8765
+    open_browser: bool = True
+    theme: str = "system"
+    default_view: str = "chat"
+    event_transport: str = "sse"
+    max_request_size: int = 65536
+    max_response_size: int = 262144
+    max_log_entries: int = 200
+    max_activity_entries: int = 200
+    max_history_messages: int = 200
+    request_timeout: int = 120
+    event_timeout: int = 30
+    allow_remote: bool = False
+    allowed_origins: tuple[str, ...] = (
+        "http://127.0.0.1:8765",
+        "http://localhost:8765",
+    )
+    session_token_lifetime: int = 14400
+    safe_markdown: bool = True
+    show_provider_metadata: bool = True
+    show_activity_panel: bool = True
+    compact_mode: bool = False
+
+
+@dataclass(frozen=True, slots=True)
 class PluginsConfig:
     """Plugin loading policy and location."""
 
@@ -188,6 +218,7 @@ class AppSettings:
     tools: ToolsConfig = field(default_factory=ToolsConfig)
     planning: PlanningConfig = field(default_factory=PlanningConfig)
     voice: VoiceConfig = field(default_factory=VoiceConfig)
+    interface: InterfaceConfig = field(default_factory=InterfaceConfig)
 
     @property
     def app_name(self) -> str:

@@ -28,6 +28,7 @@ from config.schema import (
     ToolsConfig,
     PlanningConfig,
     VoiceConfig,
+    InterfaceConfig,
 )
 
 
@@ -190,6 +191,17 @@ def load_settings(
         tools=ToolsConfig(**{key: int(value) for key, value in raw_config["tools"].items()}),
         planning=PlanningConfig(**{key: int(value) for key, value in raw_config["planning"].items()}),
         voice=VoiceConfig(**{**raw_config["voice"],"enabled":_coerce_bool(raw_config["voice"]["enabled"]),"local_only":_coerce_bool(raw_config["voice"]["local_only"]),"input_enabled":_coerce_bool(raw_config["voice"]["input_enabled"]),"output_enabled":_coerce_bool(raw_config["voice"]["output_enabled"]),"raw_audio_persistence":_coerce_bool(raw_config["voice"]["raw_audio_persistence"]),"wake_word_enabled":_coerce_bool(raw_config["voice"]["wake_word_enabled"]),"interruption_enabled":_coerce_bool(raw_config["voice"]["interruption_enabled"]),"temp_directory":_optional_path(raw_config["voice"]["temp_directory"]),"allowed_audio_directories":tuple(_resolve_path(x) for x in raw_config["voice"]["allowed_audio_directories"])}),
+        interface=InterfaceConfig(**{
+            **raw_config["interface"],
+            "enabled": _coerce_bool(raw_config["interface"]["enabled"]),
+            "open_browser": _coerce_bool(raw_config["interface"]["open_browser"]),
+            "allow_remote": _coerce_bool(raw_config["interface"]["allow_remote"]),
+            "safe_markdown": _coerce_bool(raw_config["interface"]["safe_markdown"]),
+            "show_provider_metadata": _coerce_bool(raw_config["interface"]["show_provider_metadata"]),
+            "show_activity_panel": _coerce_bool(raw_config["interface"]["show_activity_panel"]),
+            "compact_mode": _coerce_bool(raw_config["interface"]["compact_mode"]),
+            "allowed_origins": tuple(str(item) for item in raw_config["interface"]["allowed_origins"]),
+        }),
     )
 
 

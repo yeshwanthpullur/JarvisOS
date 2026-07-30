@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from uuid import uuid4
+
 from jarvis import JarvisRequest
 
 from conversation.conversation_context import ConversationContext
@@ -123,8 +125,10 @@ class ConversationEngine:
         if context.jarvis_core is None:
             return ConversationResponse(response="Executive JARVIS is not available.", conversation_state=ConversationState.FAILED)
         metadata = dict(context.metadata)
+        jarvis_request_id = str(request.metadata.get("request_id") or context.session.request_id or uuid4())
         jarvis_response = context.jarvis_core.handle(
             JarvisRequest(
+                request_id=jarvis_request_id,
                 content=request.user_input,
                 conversation_id=context.session.conversation_id,
                 metadata=metadata,
@@ -136,7 +140,7 @@ class ConversationEngine:
             references=jarvis_response.references,
             warnings=jarvis_response.warnings,
             diagnostics=jarvis_response.diagnostics,
-            metadata=dict(jarvis_response.streaming_metadata),
+            metadata={"jarvis_request_id": jarvis_response.request_id, **dict(jarvis_response.streaming_metadata)},
             conversation_state=ConversationState.RESPONDING,
         )
 
