@@ -30,4 +30,5 @@ class ConversationContext:
     agent_creator: Any | None = None
     tool_manager: Any | None = None
     autonomous_planning: Any | None = None
+    voice_intelligence: Any | None = None
     metadata: dict[str, Any] = field(default_factory=dict)

@@ -168,6 +168,36 @@ planning:
   maximum_output_bytes: 100000
   maximum_assumptions: 8
 
+voice:
+  enabled: false
+  mode: off
+  language: en-US
+  local_only: true
+  privacy_mode: standard
+  input_enabled: false
+  output_enabled: false
+  input_backend: offline-stt
+  output_backend: windows-sapi
+  input_device:
+  output_device:
+  confidence_threshold: 0.75
+  confirmation_threshold: 0.60
+  max_capture_seconds: 30
+  silence_timeout_seconds: 3
+  max_audio_size: 20000000
+  max_transcript_length: 4000
+  max_spoken_response_length: 500
+  rate: 0
+  volume: 100
+  raw_audio_persistence: false
+  retention_limit: 0
+  wake_word_enabled: false
+  wake_word_backend:
+  activation_phrase: jarvis
+  interruption_enabled: true
+  temp_directory: data/voice-temp
+  allowed_audio_directories: [data/voice-input]
+
 plugins:
   enabled: true
   plugin_dir: plugins

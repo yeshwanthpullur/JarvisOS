@@ -4,6 +4,8 @@ Tool Intelligence provides governed capability matching, schema validation, risk
 
 Autonomous Planning produces provider-backed, validated, reviewable plans without executing them. See [docs/AUTONOMOUS_PLANNING.md](docs/AUTONOMOUS_PLANNING.md).
 
+Voice Intelligence adds disabled-by-default local Windows speech output, safe audio-file validation, and governed voice sessions without changing text-mode authority. See [docs/VOICE_INTELLIGENCE.md](docs/VOICE_INTELLIGENCE.md).
+
 JARVIS OS is the foundation for a modular AI Operating System written in Python 3.12+. This repository currently provides architecture, configuration, logging, memory, knowledge, task, Obsidian Brain, plugin, provider-routing, provider-execution, agent-framework, agent-creator, and Executive JARVIS infrastructure. AI behavior is intentionally not implemented yet.
 
 ## Goals

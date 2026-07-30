@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 
 from commands.command_context import CommandContext
 from commands.command_permissions import CommandPermission
@@ -81,6 +82,9 @@ def _planning_manager(context: CommandContext):
     conversation=context.conversation_context
     if conversation is None:return None
     return getattr(conversation,"autonomous_planning",None) or (getattr(conversation,"metadata",{}) or {}).get("autonomous_planning")
+def _voice_manager(context:CommandContext):
+    conversation=context.conversation_context
+    return None if conversation is None else getattr(conversation,"voice_intelligence",None) or (getattr(conversation,"metadata",{}) or {}).get("voice_intelligence")
 
 
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
@@ -170,6 +174,29 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("plan history", "Show plan history", "planning", (), CommandPermission.DIAGNOSTIC),
         ("plan mode", "Set planning mode", "planning", (), CommandPermission.UTILITY),
         ("plan limits", "Show planning limits", "planning", (), CommandPermission.DIAGNOSTIC),
+        ("voice status", "Show voice status", "voice", (), CommandPermission.UTILITY),
+        ("voice on", "Enable voice sessions", "voice", (), CommandPermission.UTILITY),
+        ("voice off", "Disable voice", "voice", (), CommandPermission.UTILITY),
+        ("voice listen", "Start explicit listening", "voice", (), CommandPermission.UTILITY),
+        ("voice stop", "Stop listening", "voice", (), CommandPermission.UTILITY),
+        ("voice cancel", "Cancel voice session", "voice", (), CommandPermission.UTILITY),
+        ("voice interrupt", "Interrupt voice output", "voice", (), CommandPermission.UTILITY),
+        ("voice session", "Show voice session", "voice", (), CommandPermission.UTILITY),
+        ("voice devices", "List audio devices", "voice", (), CommandPermission.UTILITY),
+        ("voice backend", "Configure voice backend", "voice", (), CommandPermission.UTILITY),
+        ("voice device", "Configure audio device", "voice", (), CommandPermission.UTILITY),
+        ("voice input", "Configure voice input", "voice", (), CommandPermission.UTILITY),
+        ("voice output", "Configure voice output", "voice", (), CommandPermission.UTILITY),
+        ("voice say", "Speak with local TTS", "voice", (), CommandPermission.UTILITY),
+        ("voice transcribe", "Transcribe an audio file", "voice", (), CommandPermission.UTILITY),
+        ("voice mode", "Set voice mode", "voice", (), CommandPermission.UTILITY),
+        ("voice privacy", "Set voice privacy", "voice", (), CommandPermission.UTILITY),
+        ("voice language", "Set voice language", "voice", (), CommandPermission.UTILITY),
+        ("voice rate", "Set speech rate", "voice", (), CommandPermission.UTILITY),
+        ("voice volume", "Set speech volume", "voice", (), CommandPermission.UTILITY),
+        ("voice raw-audio", "Set raw audio retention", "voice", (), CommandPermission.UTILITY),
+        ("voice limits", "Show voice limits", "voice", (), CommandPermission.DIAGNOSTIC),
+        ("voice health", "Show voice health", "voice", (), CommandPermission.DIAGNOSTIC),
         ("departments", "Show department summary", "department", (), CommandPermission.DEPARTMENT),
         ("department list", "List departments", "department", (), CommandPermission.DEPARTMENT),
         ("memory", "Show memory summary", "memory", (), CommandPermission.MEMORY),
@@ -358,6 +385,67 @@ def _handler_for(name: str):
                 except ValueError as exc:return _text_response(f"Replanning failed: {exc}")
                 return _text_response(f"Replanned as {new.plan_id} version={new.version}.")
             if name in {"plan alternatives","plan history"}:return _text_response(f"Plan {pid} has version {plan.version}; alternatives are bounded and advisory.")
+        if name.startswith("voice "):
+            voice=_voice_manager(context);args=context.arguments
+            if voice is None:return _text_response("Voice Intelligence is unavailable; text mode remains active.")
+            if name=="voice status":return _text_response(f"Voice status: enabled={voice.enabled} mode={voice.mode.value} input={voice.input_enabled} output={voice.output_enabled} privacy={voice.privacy_mode}")
+            if name=="voice on":voice.enabled=True;return _text_response("Voice enabled. Microphone capture remains disabled until explicitly activated.")
+            if name=="voice off":voice.enabled=False;voice.input_enabled=False;voice.mode=type(voice.mode).OFF;voice.cancel();return _text_response("Voice disabled. Text mode remains active.")
+            if name=="voice input":
+                if args and args[0] in {"on","off"}:voice.input_enabled=args[0]=="on";return _text_response(f"Voice input {'enabled' if voice.input_enabled else 'disabled'}.")
+                return _text_response(f"Voice input: {voice.input_enabled}")
+            if name=="voice output":
+                if args and args[0] in {"on","off"}:voice.output_enabled=args[0]=="on";voice.enabled=voice.enabled or voice.output_enabled;return _text_response(f"Voice output {'enabled' if voice.output_enabled else 'disabled'}.")
+                return _text_response(f"Voice output: {voice.output_enabled}")
+            if name=="voice say":
+                if not args:return _text_response("Please provide text to speak.")
+                try:r=voice.say(" ".join(args),parent_request_id="command-voice-say")
+                except ValueError as exc:return _text_response(f"Voice synthesis blocked: {exc}")
+                return _text_response(f"Voice synthesis {r.status.value}. Audio reference: {r.audio_reference or 'playback'}",synthesis_id=r.synthesis_id,backend_id=r.backend_id,audio_reference=r.audio_reference)
+            if name=="voice transcribe":
+                if not args:return _text_response("Please provide an allowed WAV file path.")
+                try:r=voice.transcribe_file(args[0])
+                except ValueError as exc:return _text_response(f"Transcription rejected: {exc}")
+                return _text_response("Offline speech recognition is unavailable on this machine." if r.status.value=="unavailable" else r.text,status=r.status.value)
+            if name=="voice devices":
+                direction=args[0] if args and args[0] in {"input","output"} else None;items=voice.devices(direction);return _text_response("Voice devices: "+(", ".join(f"{x.device_id}:{x.name}" for x in items) or "none discovered"))
+            if name=="voice backend":
+                if not args or args[0]=="list":return _text_response("Voice backends: "+", ".join(f"{x.adapter_id}:{x.health_check()['status']}" for x in voice.registry.list()))
+                if len(args)<2:return _text_response("Specify input or output and a backend id.")
+                if voice.registry.get(args[1]) is None:return _text_response("Voice backend not found.")
+                if args[0]=="input":voice.selected_input_backend=args[1]
+                elif args[0]=="output":voice.selected_output_backend=args[1]
+                else:return _text_response("Backend direction must be input or output.")
+                return _text_response(f"Voice {args[0]} backend set to {args[1]}.")
+            if name=="voice mode":
+                if not args:return _text_response(f"Voice mode: {voice.mode.value}")
+                try:voice.mode=type(voice.mode)(args[0])
+                except ValueError:return _text_response("Unsupported voice mode.")
+                return _text_response(f"Voice mode set to {voice.mode.value}. No background listening was started.")
+            if name=="voice privacy":
+                if not args or args[0] not in {"strict","standard","diagnostic"}:return _text_response("Privacy must be strict, standard, or diagnostic.")
+                voice.privacy_mode=args[0];return _text_response(f"Voice privacy set to {voice.privacy_mode}.")
+            if name=="voice language":voice.language=args[0] if args else voice.language;return _text_response(f"Voice language: {voice.language}")
+            if name in {"voice rate","voice volume"}:
+                try:value=int(args[0])
+                except (IndexError,ValueError):return _text_response("A numeric value is required.")
+                if name=="voice rate" and -10<=value<=10:voice.rate=value
+                elif name=="voice volume" and 0<=value<=100:voice.volume=value
+                else:return _text_response("Value is outside the supported range.")
+                return _text_response(f"{name.title()} set to {value}.")
+            if name=="voice raw-audio":
+                if not args or args[0] not in {"on","off"}:return _text_response("Specify on or off.")
+                voice.raw_audio_persistence=args[0]=="on";return _text_response(f"Raw audio retention {'enabled with explicit consent' if voice.raw_audio_persistence else 'disabled'}.")
+            if name in {"voice stop","voice interrupt"}:return _text_response("Voice interruption requested." if voice.interrupt() else "No active voice operation.")
+            if name=="voice cancel":voice.cancel();return _text_response("Voice session cancelled.")
+            if name=="voice listen":
+                if not voice.enabled or not voice.input_enabled:return _text_response("Voice input is disabled; no microphone was activated.")
+                return _text_response("No available microphone capture adapter is configured.")
+            if name=="voice session":
+                sessions=tuple(voice.sessions.values());return _text_response(f"Voice session: {sessions[-1].voice_session_id}:{sessions[-1].state.value}" if sessions else "No voice session exists.")
+            if name=="voice limits":return _text_response("Voice limits: "+", ".join(f"{k}={getattr(voice.limits,k)}" for k in voice.limits.__slots__))
+            if name=="voice health":return _text_response("Voice health: "+json.dumps(voice.health(),default=str))
+            if name=="voice device":return _text_response("Explicit device selection is unavailable until a matching capture/output adapter exposes device IDs.")
         if name in {"local", "local status", "local providers", "local models", "local refresh", "local use", "local test", "local explain-selection", "local only on", "local only off", "cloud", "cloud status", "cloud providers", "cloud models", "cloud refresh", "cloud use", "cloud test", "cloud explain-selection", "cloud only on", "cloud only off", "provider enable", "provider disable", "provider test"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:

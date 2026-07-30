@@ -317,6 +317,7 @@ class StartupManager:
             agent_creator=self.agent_creator,
             tool_manager=self.jarvis_core.manager.tools,
             autonomous_planning=self.jarvis_core.manager.autonomous_planning,
+            voice_intelligence=self.jarvis_core.manager.voice_intelligence,
             personal_intelligence_manager=self.personal_intelligence_manager,
             context_intelligence_manager=self.context_intelligence_manager,
             logger=logging.getLogger("conversation"),
@@ -935,6 +936,10 @@ class StartupManager:
                 "jarvis_health": lambda: (
                     self.jarvis_core is not None
                     and self.jarvis_core.manager.health.status.value == "healthy"
+                ),
+                "voice_intelligence": lambda: (
+                    self.jarvis_core is not None
+                    and self.jarvis_core.manager.voice_intelligence.initialized
                 ),
                 "conversation_engine": lambda: (
                     self.conversation_manager is not None

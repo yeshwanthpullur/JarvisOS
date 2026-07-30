@@ -30,6 +30,7 @@ from jarvis.jarvis_skills import JarvisSkills
 from jarvis.jarvis_tasks import JarvisTasks
 from jarvis.jarvis_tools import JarvisTools, ToolLimits
 from jarvis.autonomous_planning import AutonomousPlanning, PlanningLimits
+from jarvis.voice_intelligence import VoiceIntelligence
 from jarvis.jarvis_validator import JarvisValidator
 from reasoning import ReasoningManager
 from reflection import ReflectionManager
@@ -127,6 +128,7 @@ class JarvisManager:
             logger=self.logger,
             limits=PlanningLimits(**{key:getattr(context.settings.planning,key) for key in context.settings.planning.__slots__}) if context and context.settings else None,
         )
+        self.voice_intelligence = VoiceIntelligence(context.settings if context else None,(context.settings.data_dir / "voice") if context and context.settings else None,self.logger)
         self.skills = JarvisSkills()
         self.workflow = WorkflowManager()
         self.retrieval = RetrievalManager()
@@ -166,6 +168,7 @@ class JarvisManager:
             "providers": self.providers,
             "tools": self.tools,
             "autonomous_planning": self.autonomous_planning,
+            "voice_intelligence": self.voice_intelligence,
             "skills": self.skills,
             "workflow": self.workflow,
             "retrieval": self.retrieval,
@@ -242,6 +245,7 @@ class JarvisManager:
             agent_creator=base.agent_creator if base else None,
             tool_manager=self.tools,
             autonomous_planning=self.autonomous_planning,
+            voice_intelligence=self.voice_intelligence,
             logger=self.logger,
             metadata={**(base.metadata if base else {}), **request.metadata},
         )

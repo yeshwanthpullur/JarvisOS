@@ -206,6 +206,7 @@ class HealthChecker:
             self.check_module("jarvis_diagnostics", "JARVIS Diagnostics"),
             self.check_module("jarvis_recovery", "JARVIS Recovery"),
             self.check_module("jarvis_health", "Overall Executive Health"),
+            self.check_module("voice_intelligence", "Voice Intelligence Framework"),
             self.check_module("conversation_engine", "Conversation Engine"),
             self.check_module("command_engine", "Command Engine"),
             self.check_module("cli", "CLI"),

@@ -105,6 +105,10 @@ class ToolsConfig:
 class PlanningConfig:
     maximum_steps:int=12; maximum_milestones:int=5; maximum_alternatives:int=3; maximum_dependencies_per_step:int=4; maximum_plan_depth:int=2; maximum_retries:int=1; maximum_replans:int=3; maximum_concurrent:int=2; maximum_agents:int=3; maximum_tools:int=4; maximum_timeout_seconds:int=90; maximum_versions:int=10; maximum_output_bytes:int=100000; maximum_assumptions:int=8
 
+@dataclass(frozen=True,slots=True)
+class VoiceConfig:
+ enabled:bool=False; mode:str="off"; language:str="en-US"; local_only:bool=True; privacy_mode:str="standard"; input_enabled:bool=False; output_enabled:bool=False; input_backend:str="offline-stt"; output_backend:str="windows-sapi"; input_device:str|None=None; output_device:str|None=None; confidence_threshold:float=.75; confirmation_threshold:float=.6; max_capture_seconds:int=30; silence_timeout_seconds:int=3; max_audio_size:int=20000000; max_transcript_length:int=4000; max_spoken_response_length:int=500; rate:int=0; volume:int=100; raw_audio_persistence:bool=False; retention_limit:int=0; wake_word_enabled:bool=False; wake_word_backend:str|None=None; activation_phrase:str="jarvis"; interruption_enabled:bool=True; temp_directory:Path|None=None; allowed_audio_directories:tuple[Path,...]=()
+
 
 @dataclass(frozen=True, slots=True)
 class PluginsConfig:
@@ -183,6 +187,7 @@ class AppSettings:
     mobile: MobileConfig
     tools: ToolsConfig = field(default_factory=ToolsConfig)
     planning: PlanningConfig = field(default_factory=PlanningConfig)
+    voice: VoiceConfig = field(default_factory=VoiceConfig)
 
     @property
     def app_name(self) -> str:
