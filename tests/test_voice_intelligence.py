@@ -77,9 +77,17 @@ class VoiceTests(unittest.TestCase):
  def test_cancellation_classified(self):self.assertEqual(self.v.classify("stop"),"cancellation")
  def test_conversation_classified(self):self.assertEqual(self.v.classify("hello"),"conversation")
  def test_sensitive_response_blocked(self):self.assertFalse(self.v.response_policy("API key abc",False)["speak"])
+ def test_secret_response_blocked(self):self.v.output_enabled=True;self.assertFalse(self.v.response_policy("Client secret hidden",False)["speak"])
  def test_code_response_blocked(self):self.v.output_enabled=True;self.assertFalse(self.v.response_policy("```python\nx=1\n```")["speak"])
  def test_long_response_summarized(self):self.v.output_enabled=True;self.assertIn("More detail",self.v.response_policy("word "*200)["text"])
  def test_output_must_be_enabled(self):self.assertRaises(ValueError,self.v.say,"hello")
+ def test_playback_does_not_create_a_wav_by_default(self):
+  self.v.output_enabled=True;self.v.enabled=True
+  completed=SpeechSynthesisResult("s","session","parent","windows-sapi",VoiceStatus.COMPLETED,output_mode="playback")
+  with patch.object(self.v.registry.get("windows-sapi"),"synthesize",return_value=completed) as synthesize:
+   result=self.v.say("voice test",playback=True)
+  request=synthesize.call_args.args[0]
+  self.assertEqual(result.status,VoiceStatus.COMPLETED);self.assertEqual(request.output_mode,"playback");self.assertIsNone(request.output_path)
  def test_real_sapi_file_when_available(self):
   if not self.v.registry.get("windows-sapi").available:self.skipTest("Windows SAPI unavailable")
   with tempfile.TemporaryDirectory() as d:self.v.output_enabled=True;r=self.v.say("voice test",output_path=Path(d)/"out.wav");self.assertEqual(r.status,VoiceStatus.COMPLETED);self.assertGreater(r.audio_size,0)

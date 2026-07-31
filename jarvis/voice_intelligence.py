@@ -170,7 +170,7 @@ class VoiceIntelligence:
   if command_manager and command_manager.registry.resolve(low.split()[0]) is not None:return "command"
   return "conversation"
  def response_policy(self,text,sensitive=False):
-  if not self.output_enabled or sensitive or re.search(r"api[_ -]?key|password|authorization",text,re.I):return {"speak":False,"reason":"disabled_or_sensitive"}
+  if not self.output_enabled or sensitive or re.search(r"api[_ -]?key|password|authorization|credential|secret|access[_ -]?token",text,re.I):return {"speak":False,"reason":"disabled_or_sensitive"}
   if "```" in text:return {"speak":False,"reason":"code_text_only"}
   spoken=text if len(text)<=self.limits.max_spoken_response_length else text[:self.limits.max_spoken_response_length].rsplit(" ",1)[0]+". More detail is available on screen."
   return {"speak":True,"text":spoken}
@@ -178,8 +178,10 @@ class VoiceIntelligence:
   if not self.output_enabled:raise ValueError("voice_output_disabled")
   policy=self.response_policy(text)
   if not policy["speak"]:raise ValueError(str(policy["reason"]))
-  session=self.create_session(parent_request_id=parent_request_id);path=output_path or ((self.storage_dir or Path.cwd())/"voice-output"/f"{uuid4()}.wav");path.parent.mkdir(parents=True,exist_ok=True)
-  req=SpeechSynthesisRequest(str(uuid4()),session.voice_session_id,parent_request_id,self.selected_output_backend,str(policy["text"]),self.language,rate=self.rate,volume=self.volume,output_mode="both" if playback else "file",output_path=str(path),local_only=self.local_only,timeout=self.limits.synthesis_timeout)
+  session=self.create_session(parent_request_id=parent_request_id);path=output_path
+  if not playback:
+   path=path or ((self.storage_dir or Path.cwd())/"voice-output"/f"{uuid4()}.wav");path.parent.mkdir(parents=True,exist_ok=True)
+  req=SpeechSynthesisRequest(str(uuid4()),session.voice_session_id,parent_request_id,self.selected_output_backend,str(policy["text"]),self.language,rate=self.rate,volume=self.volume,output_mode="playback" if playback and path is None else "both" if playback else "file",output_path=str(path) if path else None,local_only=self.local_only,timeout=self.limits.synthesis_timeout)
   self.logger.info("synthesis_started request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s",parent_request_id,session.voice_session_id,req.synthesis_id,req.backend_id)
   result=self.registry.get(req.backend_id).synthesize(req);self.sessions[session.voice_session_id]=replace(session,state=VoiceState.COMPLETED if result.status==VoiceStatus.COMPLETED else VoiceState.FAILED,synthesis_count=1,ended_at=now(),updated_at=now(),last_error=result.errors[0] if result.errors else None);self._save();self.logger.info("synthesis_completed request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s status=%s",parent_request_id,session.voice_session_id,result.synthesis_id,result.backend_id,result.status.value);return result
  def transcribe_file(self,path):

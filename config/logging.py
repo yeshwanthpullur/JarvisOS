@@ -14,6 +14,7 @@ def configure_logging(settings: AppSettings) -> None:
     settings.logs_dir.mkdir(parents=True, exist_ok=True)
     log_path = settings.logging.log_dir / settings.logging.log_file
 
+    console_level = settings.log_level if settings.debug else "WARNING"
     logging.config.dictConfig(
         {
             "version": 1,
@@ -28,7 +29,7 @@ def configure_logging(settings: AppSettings) -> None:
                 "console": {
                     "class": "logging.StreamHandler",
                     "formatter": "standard",
-                    "level": settings.log_level,
+                    "level": console_level,
                 },
                 "file": {
                     "class": "logging.handlers.RotatingFileHandler",

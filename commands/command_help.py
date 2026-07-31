@@ -12,6 +12,22 @@ class CommandHelp:
 
     def render(self, registry: CommandRegistry) -> str:
         """Render help."""
-        names = sorted(record.name for record in registry.list_commands() if record.enabled)
-        return "Available commands: " + ", ".join(names)
-
+        enabled = {record.name for record in registry.list_commands() if record.enabled}
+        primary = (
+            ("local only on/off", "Keep provider requests local or restore automatic routing"),
+            ("local use <model>", "Select an installed local model"),
+            ("voice status", "Show voice and Windows SAPI readiness"),
+            ("voice output on/off", "Enable or disable spoken assistant replies"),
+            ("voice say <text>", "Speak text immediately through local TTS"),
+            ("provider status", "Show provider mode and current selection"),
+            ("tools status", "Show registered tool readiness"),
+            ("help", "Show this guide"),
+            ("exit", "Shut down JARVIS cleanly"),
+        )
+        lines = ["Available commands", ""]
+        for syntax, description in primary:
+            command_name = syntax.replace(" on/off", "").replace(" <model>", "").replace(" <text>", "")
+            if command_name in enabled or syntax in {"local only on/off", "voice output on/off"}:
+                lines.append(f"  {syntax:<24} {description}")
+        lines.extend(("", "Use '<area> status' or '<area> list' for more detail."))
+        return "\n".join(lines)

@@ -94,6 +94,15 @@ def _cloud_policy(session: object | None, default: str = "automatic") -> str:
     return str(metadata.get("execution_policy") or metadata.get("provider_policy") or default)
 
 
+def _is_local_provider(record: object) -> bool:
+    config = getattr(record, "config", None)
+    return bool(getattr(config, "local_only", False)) or str(getattr(config, "kind", "")).lower() in {
+        "local",
+        "ollama",
+        "lm_studio",
+    }
+
+
 def register_builtin_commands(registry: CommandRegistry) -> None:
     """Register built-in commands."""
     commands: tuple[tuple[str, str, str, tuple[str, ...], CommandPermission], ...] = (
@@ -159,6 +168,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("tool cancel", "Cancel a tool invocation", "tool", (), CommandPermission.UTILITY),
         ("tool mode", "Set tool execution mode", "tool", (), CommandPermission.UTILITY),
         ("tool limits", "Show tool limits", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("tools status", "Show tool readiness", "tool", (), CommandPermission.DIAGNOSTIC),
         ("plan status", "Show planning status", "planning", (), CommandPermission.UTILITY),
         ("plan list", "List plans", "planning", (), CommandPermission.UTILITY),
         ("plan show", "Show a plan", "planning", (), CommandPermission.UTILITY),
@@ -312,6 +322,18 @@ def _handler_for(name: str):
                 if conversation is not None:
                     conversation.session.metadata["multiagent_mode"] = selected.value
                 return _text_response(f"Multi-agent mode set to {selected.value}.", mode=selected.value)
+        if name == "tools status":
+            tools = _tool_manager(context)
+            if tools is None:
+                return _text_response("Tools unavailable: Tool Intelligence is not initialized.")
+            records = tools.list_tools()
+            ready = sum(1 for item in records if item.enabled and item.healthy and item.available)
+            return _text_response(
+                f"Tools status: ready={ready}/{len(records)} mode={tools.mode.value}",
+                registered=len(records),
+                ready=ready,
+                mode=tools.mode.value,
+            )
         if name.startswith("tool "):
             tools = _tool_manager(context)
             if tools is None:
@@ -388,20 +410,45 @@ def _handler_for(name: str):
         if name.startswith("voice "):
             voice=_voice_manager(context);args=context.arguments
             if voice is None:return _text_response("Voice Intelligence is unavailable; text mode remains active.")
-            if name=="voice status":return _text_response(f"Voice status: enabled={voice.enabled} mode={voice.mode.value} input={voice.input_enabled} output={voice.output_enabled} privacy={voice.privacy_mode}")
+            if name=="voice status":
+                backend=voice.registry.get(voice.selected_output_backend)
+                available=bool(backend and backend.available)
+                return _text_response(
+                    "Voice status: "
+                    f"output={'on' if voice.output_enabled else 'off'} "
+                    f"backend={voice.selected_output_backend} "
+                    f"playback={'ready' if available else 'unavailable'} "
+                    f"input={'on' if voice.input_enabled else 'off'} "
+                    f"mode={voice.mode.value} privacy={voice.privacy_mode}",
+                    output_enabled=voice.output_enabled,
+                    backend=voice.selected_output_backend,
+                    playback_ready=available,
+                    input_enabled=voice.input_enabled,
+                )
             if name=="voice on":voice.enabled=True;return _text_response("Voice enabled. Microphone capture remains disabled until explicitly activated.")
             if name=="voice off":voice.enabled=False;voice.input_enabled=False;voice.mode=type(voice.mode).OFF;voice.cancel();return _text_response("Voice disabled. Text mode remains active.")
             if name=="voice input":
                 if args and args[0] in {"on","off"}:voice.input_enabled=args[0]=="on";return _text_response(f"Voice input {'enabled' if voice.input_enabled else 'disabled'}.")
                 return _text_response(f"Voice input: {voice.input_enabled}")
             if name=="voice output":
-                if args and args[0] in {"on","off"}:voice.output_enabled=args[0]=="on";voice.enabled=voice.enabled or voice.output_enabled;return _text_response(f"Voice output {'enabled' if voice.output_enabled else 'disabled'}.")
+                if args and args[0] in {"on","off"}:
+                    if args[0]=="on":
+                        backend=voice.registry.get(voice.selected_output_backend)
+                        if backend is None or not backend.available:
+                            voice.output_enabled=False
+                            return _text_response(f"Voice output unavailable: {voice.selected_output_backend} is not ready.")
+                        voice.output_enabled=True;voice.enabled=True
+                        return _text_response(f"Voice output enabled through {voice.selected_output_backend}. Safe assistant replies will be spoken.")
+                    voice.output_enabled=False
+                    return _text_response("Voice output disabled. Replies will remain text-only.")
                 return _text_response(f"Voice output: {voice.output_enabled}")
             if name=="voice say":
                 if not args:return _text_response("Please provide text to speak.")
                 try:r=voice.say(" ".join(args),parent_request_id="command-voice-say",playback=True)
                 except ValueError as exc:return _text_response(f"Voice synthesis blocked: {exc}")
-                return _text_response(f"Voice synthesis {r.status.value}. Audio reference: {r.audio_reference or 'playback'}",synthesis_id=r.synthesis_id,backend_id=r.backend_id,audio_reference=r.audio_reference)
+                if r.status.value != "completed":
+                    return _text_response(f"Voice synthesis failed: {', '.join(r.errors) or r.status.value}",synthesis_id=r.synthesis_id,backend_id=r.backend_id,status=r.status.value)
+                return _text_response(f"Voice synthesis completed through {r.backend_id} playback.",synthesis_id=r.synthesis_id,backend_id=r.backend_id,audio_reference=r.audio_reference)
             if name=="voice transcribe":
                 if not args:return _text_response("Please provide an allowed WAV file path.")
                 try:r=voice.transcribe_file(args[0])
@@ -446,14 +493,46 @@ def _handler_for(name: str):
             if name=="voice limits":return _text_response("Voice limits: "+", ".join(f"{k}={getattr(voice.limits,k)}" for k in voice.limits.__slots__))
             if name=="voice health":return _text_response("Voice health: "+json.dumps(voice.health(),default=str))
             if name=="voice device":return _text_response("Explicit device selection is unavailable until a matching capture/output adapter exposes device IDs.")
+        if name in {"providers", "provider list", "provider status", "provider health"}:
+            provider_manager = _provider_manager(context)
+            if provider_manager is None:
+                return _text_response(f"{name} unavailable: Provider Manager is not initialized.")
+            records = provider_manager.registry.all()
+            conversation = context.conversation_context
+            session = getattr(conversation, "session", None)
+            metadata = getattr(session, "metadata", {}) or {}
+            policy = _cloud_policy(session)
+            preferred_provider = metadata.get("provider_preference") or metadata.get("local_provider") or metadata.get("cloud_provider")
+            preferred_model = metadata.get("model_preference") or metadata.get("local_model") or metadata.get("cloud_model")
+            if name == "provider status":
+                return _text_response(
+                    "Provider status: "
+                    f"mode={policy} "
+                    f"provider={preferred_provider or 'automatic'} "
+                    f"model={preferred_model or 'automatic'} "
+                    f"configured={len(records)}",
+                    execution_policy=policy,
+                    provider=preferred_provider,
+                    model=preferred_model,
+                    configured=len(records),
+                )
+            details = []
+            healthy = 0
+            for record in records:
+                provider = getattr(record, "provider", None)
+                available = bool(provider and getattr(provider.health, "available", False))
+                healthy += int(available)
+                location = "local" if _is_local_provider(record) else "cloud"
+                details.append(f"{record.config.provider_id}={location}/{'ready' if available else 'unavailable'}")
+            label = "Provider health" if name == "provider health" else "Providers"
+            return _text_response(f"{label}: " + (", ".join(details) if details else "none configured"), configured=len(records), healthy=healthy)
         if name in {"local", "local status", "local providers", "local models", "local refresh", "local use", "local test", "local explain-selection", "local only on", "local only off", "cloud", "cloud status", "cloud providers", "cloud models", "cloud refresh", "cloud use", "cloud test", "cloud explain-selection", "cloud only on", "cloud only off", "provider enable", "provider disable", "provider test"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:
                 return _text_response("Local AI is not available.")
             local_records = tuple(
                 record for record in provider_manager.registry.all()
-                if getattr(getattr(record, "config", None), "local_only", False)
-                or str(getattr(getattr(record, "config", None), "kind", "")).lower() in {"local", "ollama", "lm_studio"}
+                if _is_local_provider(record)
             )
             if name in {"local", "local status"}:
                 health = provider_manager.health_check()
@@ -506,6 +585,8 @@ def _handler_for(name: str):
                 if conversation is not None:
                     conversation.session.metadata["local_model"] = model_id
                     conversation.session.metadata["local_provider"] = selected.config.provider_id
+                    conversation.session.metadata["model_preference"] = model_id
+                    conversation.session.metadata["provider_preference"] = selected.config.provider_id
                 return _text_response(
                     f"Local model selected: {selected.config.provider_id}:{model_id}",
                     provider=selected.config.provider_id,
@@ -547,6 +628,7 @@ def _handler_for(name: str):
                 conversation = context.conversation_context
                 if conversation is not None:
                     conversation.session.metadata["local_only"] = True
+                    conversation.session.metadata["cloud_only"] = False
                     conversation.session.metadata["execution_policy"] = "local_only"
                 return _text_response("Local-only mode enabled.")
             if name == "local only off":

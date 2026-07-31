@@ -993,7 +993,7 @@ class StartupManager:
 
     def command_loop(self) -> None:
         """Run the interactive command loop until the user exits."""
-        print("Type 'help' for available commands.")
+        print("Type 'help' for the CLI guide. Type 'exit' to shut down.")
         while True:
             try:
                 command = input("Jarvis > ").strip()
@@ -1008,6 +1008,7 @@ class StartupManager:
             if self.conversation_manager is None:
                 print("Conversation Engine is not available.")
                 continue
+            is_command = self._is_registered_command(command)
             response = self.conversation_manager.handle_input(command)
             if response.should_clear:
                 self._handle_clear()
@@ -1019,12 +1020,97 @@ class StartupManager:
                 print(response.response)
                 continue
             if response.response:
-                print(response.response)
+                print(f"JARVIS: {response.response}")
+                if not is_command:
+                    voice_notice = self._speak_cli_response(response)
+                    if voice_notice:
+                        print(f"Voice: {voice_notice}")
             if response.should_exit:
                 break
 
+    def _is_registered_command(self, text: str) -> bool:
+        """Return whether input belongs to the authoritative command path."""
+        if text.strip().startswith("/"):
+            return True
+        if self.conversation_manager is None:
+            return False
+        manager = self.conversation_manager.command_manager
+        parsed = manager.parser.parse(text)
+        return manager.registry.lookup(parsed.name) is not None
+
+    def _speak_cli_response(self, response: object) -> str | None:
+        """Speak one safe non-command reply when CLI voice output is enabled."""
+        if self.jarvis_core is None:
+            return None
+        voice = self.jarvis_core.manager.voice_intelligence
+        if not voice.output_enabled:
+            return None
+        content = str(getattr(response, "response", "") or "").strip()
+        if not content:
+            return None
+        sensitive = bool(getattr(response, "warnings", ())) or str(getattr(response, "execution_state", "completed")) != "completed"
+        policy = voice.response_policy(content, sensitive=sensitive)
+        if not policy.get("speak"):
+            reason = str(policy.get("reason", "safety_policy"))
+            if reason == "code_text_only":
+                return "Reply kept text-only because it contains code."
+            return "Reply kept text-only by the voice safety policy."
+        request_id = str(getattr(response, "metadata", {}).get("jarvis_request_id") or "cli-response")
+        try:
+            result = voice.say(content, parent_request_id=request_id, playback=True)
+        except (RuntimeError, ValueError) as exc:
+            return f"Playback unavailable ({exc}). Text response is unchanged."
+        if result.status.value != "completed":
+            reason = result.errors[0] if result.errors else result.status.value
+            return f"Playback unavailable ({reason}). Text response is unchanged."
+        return None
+
+    def _display_cli_startup_summary(self) -> None:
+        """Show only the operating state needed for an interactive CLI session."""
+        summary = self.status.summary()
+        metadata = {}
+        if self.conversation_manager is not None:
+            metadata = self.conversation_manager.active_session.metadata
+        policy = str(metadata.get("execution_policy", "automatic"))
+        preferred_provider = metadata.get("provider_preference")
+        preferred_model = metadata.get("model_preference")
+        local_ready = False
+        discovered_model = None
+        discovered_provider = None
+        if self.provider_manager is not None:
+            for record in self.provider_manager.registry.all():
+                config = getattr(record, "config", None)
+                local = bool(getattr(config, "local_only", False)) or str(getattr(config, "kind", "")).lower() in {
+                    "local",
+                    "ollama",
+                    "lm_studio",
+                }
+                if not local or getattr(record, "provider", None) is None:
+                    continue
+                models = record.provider.list_models()
+                available = bool(getattr(record.provider.health, "available", False))
+                local_ready = local_ready or bool(available and models)
+                if discovered_provider is None and available:
+                    discovered_provider = config.provider_id
+                if discovered_model is None and models:
+                    configured = getattr(config, "preferred_model", None) or getattr(config, "default_model", None)
+                    model_ids = {model.model_id for model in models}
+                    discovered_model = configured if configured in model_ids else models[0].model_id
+        voice = self.jarvis_core.manager.voice_intelligence if self.jarvis_core is not None else None
+        backend = voice.registry.get(voice.selected_output_backend) if voice is not None else None
+        print("JARVIS CLI Ready")
+        print(f"  System: {summary['system_state']}")
+        print(f"  Provider mode: {policy}")
+        print(f"  Active provider: {preferred_provider or ('automatic; local ready' if local_ready else 'automatic')}")
+        print(f"  Local-only: {'on' if bool(metadata.get('local_only')) else 'off'}")
+        print(f"  Local model: {preferred_model or discovered_model or 'none available'}")
+        print(f"  Voice output: {'on' if voice and voice.output_enabled else 'off'} ({voice.selected_output_backend if voice else 'unavailable'}: {'ready' if backend and backend.available else 'unavailable'})")
+
     def display_startup_summary(self) -> None:
         """Display a concise startup summary."""
+        if self.settings is not None and not self.settings.debug:
+            self._display_cli_startup_summary()
+            return
         summary = self.status.summary()
         print("Startup Summary")
         print(f"  Version: {summary['application_version']}")
@@ -1276,6 +1362,9 @@ class StartupManager:
         print("  exit    Shut down JARVIS OS")
 
     def _handle_status(self) -> None:
+        if self.settings is not None and not self.settings.debug:
+            self._display_cli_startup_summary()
+            return
         summary = self.status.summary()
         if self.memory_manager is not None and self.memory_manager.initialized:
             self.memory_statistics = self.memory_manager.statistics()
