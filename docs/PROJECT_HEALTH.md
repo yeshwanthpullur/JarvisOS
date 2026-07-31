@@ -23,7 +23,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Web Automation | Not Started | 0% | No governed browser action implementation. | Repository inspection | Implement only after vision and permission foundations. |
 | Mobile Automation | Not Started | 0% | No mobile bridge or device-control implementation. | Repository inspection | Define narrow mobile trust boundary first. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 90% | 1,441 tests pass and `v0.4.0-alpha` is published. | Full suite; release checklist | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 90% | 1,448 tests pass and `v0.4.0-alpha` is published. | Full suite; release checklist | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
@@ -32,3 +32,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 This is not a mathematical average of feature labels. The small increase reflects a real governed local sync queue, not remote sync capability. Unavailable real microphone transcription, incomplete semantic vision, absent encrypted remote transfer, missing automation, and limited real-world breadth remain substantial constraints.
 
 Machine-readable details: [`project_health.json`](project_health.json).
+
+## Limitations
+
+The audited register currently records **26 total**, **12 fixed**, and **14 still open** limitations. Voice Input remains Partial, Vision and Online Sync remain Partial, the Web Interface remains Experimental, and Web/Mobile Automation remain Not Started. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).

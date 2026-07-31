@@ -102,7 +102,8 @@ def _cloud_policy(session: object | None, default: str = "automatic") -> str:
 
 
 def _project_health_summary() -> ConversationResponse:
-    path = Path(__file__).resolve().parents[1] / "docs" / "project_health.json"
+    docs_path = Path(__file__).resolve().parents[1] / "docs"
+    path = docs_path / "project_health.json"
     try:
         health = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError, TypeError):
@@ -110,19 +111,33 @@ def _project_health_summary() -> ConversationResponse:
     categories = tuple(health.get("categories", ()))
     working = sum(1 for item in categories if item.get("status") == "Working")
     experimental = sum(1 for item in categories if item.get("status") == "Experimental")
+    try:
+        limitations = json.loads((docs_path / "limitations_register.json").read_text(encoding="utf-8"))
+        limitation_counts = limitations.get("counts", {})
+    except (OSError, ValueError, TypeError):
+        limitations = {}
+        limitation_counts = {}
+    fixed_limitations = int(limitation_counts.get("fixed", 0))
+    open_limitations = int(limitation_counts.get("still_open", 0))
+    limitation_focus = str(limitations.get("next_major_limitation_id", "unknown"))
     return _text_response(
         "Project status: "
         f"release={health.get('release', 'unknown')} "
         f"primary={health.get('primary_mode', 'unknown')} "
         f"MVP={health.get('overall_mvp_readiness', 0)}% "
         f"working={working} experimental={experimental} "
+        f"limitations=fixed:{fixed_limitations}/open:{open_limitations} "
+        f"focus={limitation_focus} "
         f"next={health.get('next_milestone', 'unknown')}. "
-        "Full details: docs/CURRENT_STATUS.md and docs/PROJECT_HEALTH.md",
+        "Details: docs/PROJECT_HEALTH.md and docs/LIMITATIONS_REGISTER.md",
         release=health.get("release"),
         primary_mode=health.get("primary_mode"),
         overall_mvp_readiness=health.get("overall_mvp_readiness"),
         working_categories=working,
         experimental_categories=experimental,
+        fixed_limitations=fixed_limitations,
+        open_limitations=open_limitations,
+        limitation_focus=limitation_focus,
         next_milestone=health.get("next_milestone"),
     )
 

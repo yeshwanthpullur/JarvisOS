@@ -4,6 +4,10 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 
 ## Unreleased
 
+- Added an evidence-backed limitations register covering Prompts 27 through 33, with internally checked fixed, open, deferred, blocked, and experimental counts.
+- Added concise limitation totals to `project status` and consolidated safe local STT and vision setup guidance.
+- Corrected stale tracking language so the working local sync queue is distinguished from unavailable encrypted remote synchronization.
+
 ### Changed
 
 - Added the disabled-by-default Online Sync foundation with a bounded atomic local queue, summary allowlists, deduplication, conflicts, retention, and manual CLI controls.

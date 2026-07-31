@@ -16,9 +16,11 @@ The Vercel deployment is a deliberately limited online status foundation. Root `
 
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 
-JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, Windows SAPI voice output, and a partial Vision Intelligence foundation. Online sync and web/mobile automation are not implemented yet.
+JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, Windows SAPI voice output, and partial Vision and Online Sync foundations. Encrypted remote sync and web/mobile automation are not implemented.
 
 Online Sync now has an optional, disabled-by-default local foundation: a bounded atomic queue, allowlisted summary schemas, conflict records, audit retention, and manual CLI controls. No real remote backend is configured, and the public Vercel status deployment is not writable sync infrastructure. Raw conversations, databases, audio, images, documents, logs, local paths, and credentials are blocked from the queue.
+
+Verified gaps and their owners are tracked in [docs/LIMITATIONS_REGISTER.md](docs/LIMITATIONS_REGISTER.md); the bounded machine-readable source is [docs/limitations_register.json](docs/limitations_register.json).
 
 ## Goals
 

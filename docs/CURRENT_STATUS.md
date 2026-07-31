@@ -5,7 +5,7 @@ Updated: 2026-08-01
 ## Current Release
 
 - Release: `v0.4.0-alpha - Vision and Deployment Foundation`
-- Commit: `df912e8f67c06503bb0eecb1fa8cbec13095f2b4`
+- Baseline commit: `0ef62db42913de70cf6dcb7c6b92674cc20a11ef`
 - Branch: `main`
 - Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v0.4.0-alpha`
 
@@ -62,12 +62,14 @@ python main.py --ui
 
 ## Known Limitations
 
+The audited register contains **26** limitations: **12 fixed** and **14 still open** across open, deferred, blocked, and experimental states. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
+
 - SAPI playback is synchronous, so the CLI waits while speech is playing.
 - Voice input is architecturally connected but unavailable on this machine; `voice listen` does not fake transcription.
 - Cloud execution depends on user-provided credentials and explicit paid-request approval.
 - The web interface is experimental.
 - Sync is local-queue-only in practice: `sync run` cannot upload until a real authenticated encrypted adapter is configured. The Vercel status endpoint is not a sync backend.
-- No vision, cross-device sync, browser automation, or mobile control exists yet.
+- Semantic vision, cross-device sync, browser automation, and mobile control do not exist yet; safe image metadata and the local sync queue foundation do exist.
 - Runtime state is local and some conversation/interface state is not durable across restarts.
 - The former Vercel failure occurred because automatic detection treated root `main.py` as a Python function even though it is intentionally CLI-only. `vercel.json` now builds only `api/index.py`; the deployed surface remains status-only and is not online JARVIS or sync.
 - The current production deployment for canonical project `jarvis-os` is Ready at commit `df912e8f67c06503bb0eecb1fa8cbec13095f2b4`. Failed deployments shown before commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b` are historical records from before `vercel.json` and `api/index.py` existed; they do not describe current health and may be ignored or deleted.
@@ -80,8 +82,8 @@ Prompt 34 - Web Automation. It must remain permission-gated and build on Vision,
 
 ## Last Verified Tests
 
-- Full suite: 1,441 passed, 0 skipped, 0 failed, 0 errors.
-- Focused sync/configuration/command/CLI/voice/vision/deployment suite: 203 passed.
+- Full suite: 1,448 passed, 0 skipped, 0 failed, 0 errors.
+- Focused limitations/tracking/command/CLI/voice/vision/sync/deployment suite: 207 passed.
 - Real Ollama chat: passed with `llama3.2:1b`.
 - Local-only enforcement: passed.
 - Explicit and automatic Windows SAPI playback paths: passed; audible playback was manually confirmed.

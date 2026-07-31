@@ -18,6 +18,7 @@ Updated: 2026-08-01
 - Prompt 32 - Vision Intelligence Foundation: safe image intake, metadata, CLI, policy, and provider routing.
 - Prompt 32.1 - Safe Vercel status foundation, isolated from the local CLI. This is deployment readiness, not online sync.
 - Prompt 33 - Online Sync Foundation: governed local queue, strict policy, manual CLI, conflict and adapter foundations; remote transfer remains unavailable.
+- Prompt 33.1 - Limitations Audit and Fix Pass: evidence-backed limitations register, concise CLI counts, and consolidated setup guidance.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Prompt 34 - Web Automation
