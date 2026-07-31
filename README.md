@@ -1,5 +1,9 @@
 # JARVIS OS
 
+JARVIS OS is currently at **v0.3.0-alpha - Local Voice and CLI Stability**. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+
+For an evidence-based snapshot, roadmap, and health scorecard, see [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise summary is available from the CLI with `project status`.
+
 Tool Intelligence provides governed capability matching, schema validation, risk and approval checks, dry runs, bounded execution, normalized results, and command access through the existing Executive path. See [docs/TOOL_INTELLIGENCE.md](docs/TOOL_INTELLIGENCE.md).
 
 Autonomous Planning produces provider-backed, validated, reviewable plans without executing them. See [docs/AUTONOMOUS_PLANNING.md](docs/AUTONOMOUS_PLANNING.md).
@@ -8,7 +12,7 @@ Voice Intelligence adds disabled-by-default local Windows speech output, safe au
 
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 
-JARVIS OS is the foundation for a modular AI Operating System written in Python 3.12+. This repository currently provides architecture, configuration, logging, memory, knowledge, task, Obsidian Brain, plugin, provider-routing, provider-execution, agent-framework, agent-creator, and Executive JARVIS infrastructure. AI behavior is intentionally not implemented yet.
+JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, and Windows SAPI voice output. Major capabilities such as vision, online sync, and web/mobile automation are not implemented yet.
 
 ## Goals
 
@@ -101,7 +105,7 @@ python -m venv .venv
 python main.py
 ```
 
-Start the local desktop interface at `http://127.0.0.1:8765`:
+The CLI is the recommended mode. Start the experimental local desktop interface at `http://127.0.0.1:8765` only when needed:
 
 ```powershell
 python main.py --ui

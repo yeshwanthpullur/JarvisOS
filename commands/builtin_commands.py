@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from pathlib import Path
 
 from commands.command_context import CommandContext
 from commands.command_permissions import CommandPermission
@@ -94,6 +95,32 @@ def _cloud_policy(session: object | None, default: str = "automatic") -> str:
     return str(metadata.get("execution_policy") or metadata.get("provider_policy") or default)
 
 
+def _project_health_summary() -> ConversationResponse:
+    path = Path(__file__).resolve().parents[1] / "docs" / "project_health.json"
+    try:
+        health = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return _text_response("Project status unavailable: docs/project_health.json could not be read.")
+    categories = tuple(health.get("categories", ()))
+    working = sum(1 for item in categories if item.get("status") == "Working")
+    experimental = sum(1 for item in categories if item.get("status") == "Experimental")
+    return _text_response(
+        "Project status: "
+        f"release={health.get('release', 'unknown')} "
+        f"primary={health.get('primary_mode', 'unknown')} "
+        f"MVP={health.get('overall_mvp_readiness', 0)}% "
+        f"working={working} experimental={experimental} "
+        f"next={health.get('next_milestone', 'unknown')}. "
+        "Full details: docs/CURRENT_STATUS.md and docs/PROJECT_HEALTH.md",
+        release=health.get("release"),
+        primary_mode=health.get("primary_mode"),
+        overall_mvp_readiness=health.get("overall_mvp_readiness"),
+        working_categories=working,
+        experimental_categories=experimental,
+        next_milestone=health.get("next_milestone"),
+    )
+
+
 def _is_local_provider(record: object) -> bool:
     config = getattr(record, "config", None)
     return bool(getattr(config, "local_only", False)) or str(getattr(config, "kind", "")).lower() in {
@@ -110,6 +137,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("about", "Show JARVIS OS information", "system", (), CommandPermission.SYSTEM),
         ("version", "Show application version", "system", (), CommandPermission.SYSTEM),
         ("status", "Show system status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("project status", "Show project milestone health", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("health", "Show health status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("clear", "Clear the console", "utility", (), CommandPermission.UTILITY),
         ("exit", "Exit the command loop", "utility", ("quit",), CommandPermission.UTILITY),
@@ -271,6 +299,8 @@ def _handler_for(name: str):
         manager = _manager(context)
         if name == "help" and manager is not None:
             return _text_response(manager.help.render(manager.registry))
+        if name == "project status":
+            return _project_health_summary()
         if name == "exit":
             return ConversationResponse(response="Shutting down JARVIS OS.", should_exit=True)
         if name == "clear":

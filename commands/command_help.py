@@ -21,6 +21,7 @@ class CommandHelp:
             ("voice say <text>", "Speak text immediately through local TTS"),
             ("provider status", "Show provider mode and current selection"),
             ("tools status", "Show registered tool readiness"),
+            ("project status", "Show release, MVP health, and next milestone"),
             ("help", "Show this guide"),
             ("exit", "Shut down JARVIS cleanly"),
         )
