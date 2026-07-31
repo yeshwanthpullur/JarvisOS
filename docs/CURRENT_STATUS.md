@@ -69,7 +69,8 @@ python main.py --ui
 - No vision, cross-device sync, browser automation, or mobile control exists yet.
 - Runtime state is local and some conversation/interface state is not durable across restarts.
 - The former Vercel failure occurred because automatic detection treated root `main.py` as a Python function even though it is intentionally CLI-only. `vercel.json` now builds only `api/index.py`; the deployed surface remains status-only and is not online JARVIS or sync.
-- Two Vercel projects (`jarvis-os` and `jarvis-os-6oy2`) are connected. Keep `jarvis-os` as the canonical project after live verification and disconnect or delete the duplicate manually.
+- The current production deployment for canonical project `jarvis-os` is Ready at commit `df912e8f67c06503bb0eecb1fa8cbec13095f2b4`. Failed deployments shown before commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b` are historical records from before `vercel.json` and `api/index.py` existed; they do not describe current health and may be ignored or deleted.
+- `jarvis-os-6oy2` was created as a duplicate and still appears in the Vercel account. It should remain unused and be disconnected or deleted manually; `jarvis-os` is the only canonical project.
 - Verified canonical endpoint: `https://jarvis-221b5o5fc-jj1-e21e.vercel.app/api/status`. Vercel Deployment Protection may redirect anonymous root or health requests to sign-in until the project setting is changed.
 
 ## Next Recommended Prompt
