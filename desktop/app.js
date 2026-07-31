@@ -6,8 +6,17 @@ const state = {
   activeConversationId: null,
   currentView: "chat",
   lastAssistantText: "",
+  lastUserText: "",
   autoScroll: true,
   eventSource: null,
+  eventTimer: null,
+  reconnectAttempt: 0,
+  lastEventSequence: 0,
+  seenEvents: new Set(),
+  connected: false,
+  speaking: false,
+  requestStartedAt: 0,
+  requestTimer: null,
 };
 
 const byId = (id) => document.getElementById(id);
@@ -20,7 +29,9 @@ async function api(path, options = {}) {
     request.headers["X-Jarvis-Session"] = token;
   }
   const response = await fetch(path, request);
-  const payload = await response.json();
+  let payload;
+  try { payload = await response.json(); }
+  catch { throw new Error(`JARVIS returned an unreadable response (${response.status}).`); }
   if (!response.ok) throw new Error(payload.error || `Request failed (${response.status})`);
   return payload;
 }
@@ -41,6 +52,30 @@ function showToast(message) {
   setTimeout(() => toast.remove(), 3500);
 }
 
+function setConnection(mode, message = "") {
+  state.connected = mode === "online";
+  document.body.classList.toggle("offline", mode === "offline");
+  const banner = byId("connection-banner");
+  banner.hidden = mode === "online";
+  byId("connection-message").textContent = message || (mode === "reconnecting" ? "Reconnecting to JARVIS..." : "JARVIS is offline. Your draft is safe.");
+  if (mode === "reconnecting") setAssistantState("starting", "Reconnecting");
+  if (mode === "offline") setAssistantState("offline", "Connection unavailable");
+  if (mode === "online" && !state.activeRequestId && !state.speaking) setAssistantState("idle", "System ready");
+}
+
+function setAssistantState(mode, label) {
+  const allowed = new Set(["starting", "idle", "thinking", "listening", "speaking", "error", "offline"]);
+  const resolved = allowed.has(mode) ? mode : "idle";
+  document.body.dataset.assistantState = resolved;
+  const labels = { starting: "Initializing", idle: "System ready", thinking: "Reasoning", listening: "Listening", speaking: "Speaking", error: "Attention required", offline: "Disconnected" };
+  const value = label || labels[resolved];
+  const presence = byId("presence-state");
+  if (presence) presence.textContent = value;
+  byId("identity-state").textContent = value;
+  byId("composer-state").textContent = value;
+  byId("composer-dot").className = `status-dot ${resolved === "idle" ? "healthy" : resolved === "thinking" || resolved === "speaking" ? "processing" : resolved === "error" || resolved === "offline" ? "failed" : ""}`;
+}
+
 function setTheme(theme) {
   const resolved = theme === "system"
     ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
@@ -48,19 +83,48 @@ function setTheme(theme) {
   document.documentElement.dataset.theme = resolved;
 }
 
+function appendInlineMarkdown(target, text) {
+  const tokens = String(text).split(/(`[^`\n]+`|\*\*[^*\n]+\*\*|\[[^\]\n]+\]\(https?:\/\/[^)\s]+\))/g);
+  tokens.forEach((token) => {
+    if (/^`[^`]+`$/.test(token)) {
+      const code = document.createElement("code"); code.textContent = token.slice(1, -1); target.append(code);
+    } else if (/^\*\*[^*]+\*\*$/.test(token)) {
+      const strong = document.createElement("strong"); strong.textContent = token.slice(2, -2); target.append(strong);
+    } else {
+      const link = token.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
+      if (link) { const anchor = document.createElement("a"); anchor.textContent = link[1]; anchor.href = link[2]; anchor.target = "_blank"; anchor.rel = "noopener noreferrer"; target.append(anchor); }
+      else target.append(document.createTextNode(token));
+    }
+  });
+}
+
 function renderSafeContent(container, content) {
   container.replaceChildren();
-  const parts = String(content).split("```");
-  parts.forEach((part, index) => {
-    if (index % 2 === 1) {
-      const pre = document.createElement("pre");
-      const code = document.createElement("code");
-      code.textContent = part.replace(/^\w+\n/, "");
-      pre.append(code);
-      container.append(pre);
-    } else if (part) {
-      container.append(document.createTextNode(part));
+  const source = String(content || "").replace(/\r\n/g, "\n");
+  const chunks = source.split(/```/);
+  chunks.forEach((chunk, chunkIndex) => {
+    if (chunkIndex % 2 === 1) {
+      const firstBreak = chunk.indexOf("\n");
+      const language = firstBreak >= 0 ? chunk.slice(0, firstBreak).trim().replace(/[^a-z0-9_+-]/gi, "").slice(0, 18) : "code";
+      const codeText = firstBreak >= 0 ? chunk.slice(firstBreak + 1) : chunk;
+      const pre = document.createElement("pre"); pre.dataset.language = language || "code";
+      const code = document.createElement("code"); code.textContent = codeText.trimEnd(); pre.append(code); container.append(pre);
+      return;
     }
+    const lines = chunk.split("\n");
+    let list = null;
+    lines.forEach((line) => {
+      if (!line.trim()) { list = null; return; }
+      const heading = line.match(/^(#{1,3})\s+(.+)$/);
+      const bullet = line.match(/^\s*[-*]\s+(.+)$/);
+      const numbered = line.match(/^\s*\d+\.\s+(.+)$/);
+      if (heading) { list = null; const node = document.createElement(`h${Math.min(3, heading[1].length)}`); appendInlineMarkdown(node, heading[2]); container.append(node); }
+      else if (bullet || numbered) {
+        const kind = bullet ? "ul" : "ol";
+        if (!list || list.tagName.toLowerCase() !== kind) { list = document.createElement(kind); container.append(list); }
+        const item = document.createElement("li"); appendInlineMarkdown(item, (bullet || numbered)[1]); list.append(item);
+      } else { list = null; const paragraph = document.createElement("p"); appendInlineMarkdown(paragraph, line); container.append(paragraph); }
+    });
   });
 }
 
@@ -72,7 +136,8 @@ function appendMessage(role, content, metadata = {}, status = "completed") {
   const head = document.createElement("div");
   head.className = "message-head";
   const author = document.createElement("strong");
-  author.textContent = role === "user" ? "You" : "JARVIS";
+  const labels = { user: "You", assistant: "JARVIS", system: "System", tool: "Tool Intelligence", planning: "Planning" };
+  author.textContent = labels[role] || "JARVIS";
   const timestamp = document.createElement("time");
   timestamp.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   head.append(author, timestamp);
@@ -82,14 +147,15 @@ function appendMessage(role, content, metadata = {}, status = "completed") {
   article.append(head, body);
   const values = [metadata.response_type, metadata.provider_id, metadata.model_id, metadata.command_name].filter(Boolean);
   if (values.length) {
-    const meta = document.createElement("div");
-    meta.className = "message-meta";
+    const meta = document.createElement("details"); meta.className = "message-meta";
+    const summary = document.createElement("summary"); summary.className = "meta-toggle"; summary.textContent = "Execution details";
+    const detail = document.createElement("div"); detail.className = "meta-detail";
     values.forEach((value) => {
       const span = document.createElement("span");
       span.textContent = String(value);
-      meta.append(span);
+      detail.append(span);
     });
-    article.append(meta);
+    meta.append(summary, detail); article.append(meta);
   }
   if (role === "assistant") {
     const actions = document.createElement("div");
@@ -105,47 +171,92 @@ function appendMessage(role, content, metadata = {}, status = "completed") {
     speak.type = "button";
     speak.textContent = "Speak";
     speak.addEventListener("click", () => speakText(String(content)));
-    actions.append(copy, speak);
+    const retry = document.createElement("button"); retry.type = "button"; retry.textContent = "Retry"; retry.disabled = !state.lastUserText; retry.addEventListener("click", () => sendMessage(state.lastUserText));
+    actions.append(copy, speak, retry);
     article.append(actions);
     state.lastAssistantText = String(content);
   }
   byId("messages").append(article);
   if (state.autoScroll) article.scrollIntoView({ block: "end", behavior: "smooth" });
+  else byId("scroll-latest").hidden = false;
+}
+
+function restoreWelcome(title = "How can I assist?", copy = "One channel for conversation, governed tools, plans, and local intelligence.") {
+  const messages = byId("messages"); messages.replaceChildren();
+  const welcome = document.createElement("div"); welcome.className = "welcome-state";
+  const visualizer = document.createElement("div"); visualizer.className = "assistant-visualizer"; visualizer.id = "assistant-visualizer"; visualizer.setAttribute("aria-hidden", "true");
+  ["orbit orbit-outer", "orbit orbit-mid", "orbit orbit-inner"].forEach((className) => { const node = document.createElement("span"); node.className = className; visualizer.append(node); });
+  const core = document.createElement("span"); core.className = "core-light";
+  const waveform = document.createElement("span"); waveform.className = "waveform"; for (let index = 0; index < 7; index += 1) waveform.append(document.createElement("i"));
+  visualizer.append(core, waveform);
+  const presence = document.createElement("div"); presence.className = "presence-label";
+  const left = document.createElement("span"); left.className = "presence-line";
+  const stateLabel = document.createElement("span"); stateLabel.id = "presence-state"; stateLabel.textContent = "System ready";
+  const right = document.createElement("span"); right.className = "presence-line"; presence.append(left, stateLabel, right);
+  const heading = document.createElement("h2"); heading.textContent = title;
+  const paragraph = document.createElement("p"); paragraph.textContent = copy;
+  const actions = document.createElement("div"); actions.className = "quick-actions"; actions.setAttribute("aria-label", "Suggested actions");
+  [["System brief", "What is the current system status?"], ["Resume context", "What were we doing?"], ["Voice status", "voice status"]].forEach(([label, prompt]) => { const button = document.createElement("button"); button.type = "button"; button.textContent = label; button.dataset.prompt = prompt; button.addEventListener("click", () => sendMessage(prompt)); actions.append(button); });
+  welcome.append(visualizer, presence, heading, paragraph, actions); messages.append(welcome);
+}
+
+function resizeComposer() {
+  const input = byId("message-input"); input.style.height = "auto"; input.style.height = `${Math.min(150, Math.max(42, input.scrollHeight))}px`;
 }
 
 function setPending(active, label = "JARVIS is working") {
   byId("pending-strip").hidden = !active;
   byId("pending-label").textContent = label;
   byId("send-message").disabled = active;
+  byId("cancel-request").hidden = !active;
   byId("cancel-request").disabled = !active;
-  byId("message-input").disabled = active;
+  byId("message-input").readOnly = active;
+  if (state.requestTimer) clearInterval(state.requestTimer);
+  if (active) {
+    state.requestStartedAt = Date.now();
+    state.requestTimer = setInterval(() => { const seconds = Math.floor((Date.now() - state.requestStartedAt) / 1000); byId("processing-time").textContent = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`; }, 1000);
+    setAssistantState("thinking", label);
+  } else {
+    state.requestTimer = null; byId("processing-time").textContent = "00:00";
+    if (state.connected && !state.speaking) setAssistantState("idle", "System ready");
+  }
 }
 
 async function sendMessage(message) {
   const text = message.trim();
   if (!text || state.activeRequestId) return;
+  state.lastUserText = text;
   appendMessage("user", text);
-  byId("message-input").value = "";
   setPending(true);
+  let accepted = false;
   try {
-    const accepted = await api("/api/messages", {
+    const response = await api("/api/messages", {
       method: "POST",
       body: JSON.stringify({ message: text, conversation_id: state.activeConversationId }),
     });
-    state.activeRequestId = accepted.interface_request_id;
+    accepted = true;
+    byId("message-input").value = "";
+    resizeComposer();
+    state.activeRequestId = response.interface_request_id;
     byId("stage-value").textContent = "Processing";
-    const result = await waitForRequest(accepted.interface_request_id);
-    appendMessage("assistant", result.content || result.errors?.join("\n") || "No response content.", result, result.status);
+    byId("request-value").textContent = state.activeRequestId;
+    const result = await waitForRequest(response.interface_request_id);
+    const responseRole = result.response_type === "tool" ? "tool" : result.response_type === "planning" ? "planning" : "assistant";
+    const content = String(result.content || "").trim() || (result.errors || []).join("\n") || "JARVIS returned an empty response. Retry or select another provider.";
+    appendMessage(responseRole, content, result, result.status);
     updateExecutionMetadata(result);
     await Promise.all([loadConversations(), loadActivity(), loadApprovals(), loadStatus()]);
     if (result.command_name && result.command_name.startsWith("voice")) await loadVoice();
   } catch (error) {
     appendMessage("assistant", error.message, {}, "failed");
+    if (!accepted || !byId("message-input").value) byId("message-input").value = text;
+    resizeComposer();
+    setAssistantState("error", "Request failed");
     showToast(error.message);
   } finally {
     state.activeRequestId = null;
     setPending(false);
-    byId("message-input").disabled = false;
+    byId("message-input").readOnly = false;
     byId("message-input").focus();
   }
 }
@@ -168,6 +279,9 @@ function updateExecutionMetadata(result) {
   byId("coordination-value").textContent = result.coordination_id || "None";
   byId("plan-value").textContent = result.plan_id || "None";
   byId("model-label").textContent = result.provider_id ? `${result.provider_id} / ${result.model_id || "default"}` : "No provider metadata";
+  byId("provider-dot").className = `status-dot ${result.status === "completed" ? "healthy" : result.status === "failed" ? "failed" : "processing"}`;
+  byId("execution-status").textContent = result.status || "Completed";
+  byId("request-value").textContent = result.jarvis_request_id || result.interface_request_id || "Awaiting input";
 }
 
 async function cancelActive() {
@@ -214,7 +328,7 @@ async function openConversation(conversationId) {
 async function newConversation() {
   const data = await api("/api/conversations", { method: "POST", body: "{}" });
   state.activeConversationId = data.conversation_id;
-  byId("messages").innerHTML = '<div class="welcome-state"><span class="welcome-mark" aria-hidden="true">J</span><h2>New conversation</h2><p>Chat normally or enter an existing JARVIS command.</p></div>';
+  restoreWelcome("New conversation", "A clean intelligence channel is ready.");
   await loadConversations();
   navigate("chat");
 }
@@ -228,6 +342,8 @@ function navigate(view) {
   byId("view-subtitle").textContent = labels[view][1];
   document.body.classList.remove("nav-open");
   byId("sidebar").classList.remove("open");
+  document.body.classList.remove("rail-open");
+  byId("rail-scrim").hidden = true;
   refreshView(view);
 }
 
@@ -275,6 +391,7 @@ function renderRecords(targetId, records, descriptor) {
 async function loadActivity() {
   const data = await api("/api/activity");
   const records = [...data.activity].reverse();
+  data.activity.forEach(ingestActivity);
   renderRecords("activity-list", records, {
     title: (item) => item.event_type.replaceAll("_", " "), status: (item) => item.status,
     summary: (item) => item.summary,
@@ -327,6 +444,11 @@ async function loadMultiagent() {
 async function loadVoice() {
   const voice = await api("/api/voice");
   byId("voice-value").textContent = voice.output_enabled ? "Output enabled" : "Output disabled";
+  byId("rail-voice-label").textContent = voice.output_enabled ? "Enabled" : "Disabled";
+  const microphone = byId("microphone-button");
+  microphone.disabled = !voice.microphone_available || !voice.input_enabled;
+  microphone.title = microphone.disabled ? "Voice input is not available" : "Start voice input";
+  microphone.setAttribute("aria-label", microphone.title);
   const target = byId("voice-content");
   target.replaceChildren();
   const article = document.createElement("article");
@@ -363,15 +485,17 @@ async function loadVoice() {
 
 async function speakText(text) {
   if (!text) return;
+  state.speaking = true; setAssistantState("speaking", "Speaking");
   try {
     const result = await api("/api/voice/speak", { method: "POST", body: JSON.stringify({ text }) });
     showToast(result.status === "completed" ? "Voice synthesis completed" : `Voice: ${result.status}`);
     await loadActivity();
-  } catch (error) { showToast(error.message); }
+  } catch (error) { setAssistantState("error", "Voice output failed"); showToast(error.message); }
+  finally { state.speaking = false; if (state.connected && !state.activeRequestId) setAssistantState("idle", "System ready"); await loadVoice().catch(() => {}); }
 }
 
 async function stopVoice() {
-  try { const result = await api("/api/voice/stop", { method: "POST", body: "{}" }); showToast(result.stopped ? "Voice stopped" : "No active speech output"); }
+  try { const result = await api("/api/voice/stop", { method: "POST", body: "{}" }); state.speaking = false; setAssistantState("idle", "System ready"); showToast(result.stopped ? "Voice stopped" : "No active speech output"); }
   catch (error) { showToast(error.message); }
 }
 
@@ -477,7 +601,13 @@ function selectSetting(label, section, key, current, values) {
 
 function toggleSetting(label, section, key, current) {
   const wrapper = document.createElement("div"); wrapper.className = "setting-field";
-  const button = document.createElement("button"); button.type = "button"; button.className = "button secondary"; button.textContent = `${label}: ${current ? "On" : "Off"}`; button.addEventListener("click", () => updateSetting(section, key, !current)); wrapper.append(button); return wrapper;
+  const fieldLabel = document.createElement("label"); fieldLabel.className = "switch-field";
+  const copy = document.createElement("span"); copy.textContent = label;
+  const control = document.createElement("span"); control.className = "switch-control";
+  const input = document.createElement("input"); input.type = "checkbox"; input.checked = Boolean(current); input.setAttribute("role", "switch");
+  const track = document.createElement("span"); track.className = "switch-track"; track.setAttribute("aria-hidden", "true");
+  input.addEventListener("change", () => updateSetting(section, key, input.checked));
+  control.append(input, track); fieldLabel.append(copy, control); wrapper.append(fieldLabel); return wrapper;
 }
 
 function readOnlySetting(label, value) {
@@ -537,6 +667,7 @@ async function loadStatus() {
   byId("model-label").textContent = provider ? `${provider} / ${model || "default"}` : "Provider automatic";
   byId("provider-value").textContent = provider || "None";
   byId("model-value").textContent = model || "None";
+  byId("provider-dot").className = `status-dot ${status.runtime === "running" ? "healthy" : "unavailable"}`;
 }
 
 function formatDate(value) {
@@ -552,34 +683,78 @@ async function refreshView(view) {
   }
 }
 
+function ingestActivity(record) {
+  const sequence = Number(record.sequence || 0);
+  const key = sequence ? `sequence:${sequence}` : [record.event_type, record.request_id, record.created_at].join(":");
+  if (state.seenEvents.has(key)) return false;
+  state.seenEvents.add(key);
+  if (state.seenEvents.size > 500) state.seenEvents.delete(state.seenEvents.values().next().value);
+  state.lastEventSequence = Math.max(state.lastEventSequence, sequence);
+  byId("stage-value").textContent = record.summary || record.event_type?.replaceAll("_", " ") || "Active";
+  byId("request-value").textContent = record.request_id || "Awaiting input";
+  if (record.provider_id) { byId("provider-value").textContent = record.provider_id; byId("provider-dot").className = "status-dot healthy"; }
+  if (record.model_id) byId("model-value").textContent = record.model_id;
+  if (record.invocation_id) byId("tool-value").textContent = record.invocation_id;
+  if (record.coordination_id) byId("coordination-value").textContent = record.coordination_id;
+  if (record.plan_id) byId("plan-value").textContent = record.plan_id;
+  const eventType = String(record.event_type || "");
+  if (eventType.includes("voice_synthesis_started")) { state.speaking = true; setAssistantState("speaking", "Speaking"); }
+  else if (eventType.includes("voice_synthesis_completed") || eventType.includes("voice_stopped")) { state.speaking = false; if (!state.activeRequestId) setAssistantState("idle", "System ready"); }
+  else if (["accepted", "processing", "running"].includes(record.status) || /(started|selected|validated)$/.test(eventType)) setAssistantState("thinking", record.summary || "Reasoning");
+  else if (["failed", "rejected", "unavailable"].includes(record.status)) setAssistantState("error", record.summary || "Attention required");
+  else if (["completed", "cancelled"].includes(record.status) && !state.activeRequestId && !state.speaking) setAssistantState("idle", "System ready");
+  return true;
+}
+
+function scheduleEventReconnect() {
+  if (state.eventTimer) clearTimeout(state.eventTimer);
+  const delay = Math.min(15000, 1000 * (2 ** Math.min(state.reconnectAttempt, 4)));
+  state.reconnectAttempt += 1;
+  setConnection("reconnecting", `Connection interrupted. Retrying in ${Math.ceil(delay / 1000)}s...`);
+  state.eventTimer = setTimeout(connectEvents, delay);
+}
+
+async function pollEvents() {
+  try {
+    await loadActivity();
+    state.reconnectAttempt = 0; setConnection("online");
+    state.eventTimer = setTimeout(pollEvents, 2500);
+  } catch {
+    if (state.reconnectAttempt >= 6) setConnection("offline");
+    scheduleEventReconnect();
+  }
+}
+
 function connectEvents() {
-  if (!window.EventSource) return;
-  state.eventSource = new EventSource("/api/events");
-  state.eventSource.addEventListener("activity", (event) => {
-    const record = JSON.parse(event.data);
-    byId("stage-value").textContent = record.summary;
-    if (record.provider_id) byId("provider-value").textContent = record.provider_id;
-    if (record.model_id) byId("model-value").textContent = record.model_id;
-    loadActivity().catch(() => {});
+  if (state.eventSource) { state.eventSource.close(); state.eventSource = null; }
+  if (typeof window.EventSource !== "function") { pollEvents(); return; }
+  const source = new EventSource(`/api/events?since=${state.lastEventSequence}`);
+  state.eventSource = source;
+  source.onopen = () => { state.reconnectAttempt = 0; setConnection("online"); };
+  source.addEventListener("activity", (event) => {
+    try { if (ingestActivity(JSON.parse(event.data))) loadActivity().catch(() => {}); }
+    catch { showToast("An activity update could not be read."); }
   });
-  state.eventSource.onerror = () => {
-    state.eventSource.close();
-    state.eventSource = null;
-    setTimeout(() => loadActivity().catch(() => {}), 1000);
-  };
+  source.onerror = () => { source.close(); if (state.eventSource === source) state.eventSource = null; scheduleEventReconnect(); };
 }
 
 function bindEvents() {
   byId("composer").addEventListener("submit", (event) => { event.preventDefault(); sendMessage(byId("message-input").value); });
   byId("message-input").addEventListener("keydown", (event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); byId("composer").requestSubmit(); } });
+  byId("message-input").addEventListener("input", resizeComposer);
+  byId("messages").addEventListener("scroll", () => { const container = byId("messages"); state.autoScroll = container.scrollHeight - container.scrollTop - container.clientHeight < 72; if (state.autoScroll) byId("scroll-latest").hidden = true; });
+  byId("scroll-latest").addEventListener("click", () => { state.autoScroll = true; byId("scroll-latest").hidden = true; byId("messages").scrollTo({ top: byId("messages").scrollHeight, behavior: "smooth" }); });
   byId("cancel-request").addEventListener("click", cancelActive);
   byId("new-conversation").addEventListener("click", newConversation);
   byId("refresh-history").addEventListener("click", loadConversations);
   byId("refresh-approvals").addEventListener("click", loadApprovals);
   byId("theme-toggle").addEventListener("click", () => updateSetting("interface", "theme", document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
-  byId("sidebar-toggle").addEventListener("click", () => byId("sidebar").classList.toggle("open"));
-  byId("activity-toggle").addEventListener("click", () => byId("activity-panel").classList.toggle("open"));
-  byId("close-activity").addEventListener("click", () => byId("activity-panel").classList.remove("open"));
+  byId("sidebar-toggle").addEventListener("click", () => { byId("sidebar").classList.add("open"); document.body.classList.add("rail-open"); byId("rail-scrim").hidden = false; });
+  const closeRail = () => { byId("sidebar").classList.remove("open"); document.body.classList.remove("rail-open"); byId("rail-scrim").hidden = true; };
+  byId("rail-close").addEventListener("click", closeRail); byId("rail-scrim").addEventListener("click", closeRail);
+  byId("activity-toggle").addEventListener("click", () => { const open = !byId("activity-panel").classList.contains("open"); byId("activity-panel").classList.toggle("open", open); document.body.classList.toggle("context-open", open); byId("panel-scrim").hidden = !open; });
+  const closeContext = () => { byId("activity-panel").classList.remove("open"); document.body.classList.remove("context-open"); byId("panel-scrim").hidden = true; };
+  byId("close-activity").addEventListener("click", closeContext); byId("panel-scrim").addEventListener("click", closeContext);
   byId("log-filters").addEventListener("submit", (event) => { event.preventDefault(); loadLogs(); });
   document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => navigate(button.dataset.view)));
   document.querySelectorAll("[data-refresh]").forEach((button) => button.addEventListener("click", () => refreshView(button.dataset.refresh)));
@@ -595,13 +770,21 @@ async function initialize() {
     state.autoScroll = bootstrap.settings.interface.auto_scroll;
     state.activeConversationId = bootstrap.status.conversation_id;
     await Promise.all([loadStatus(), loadConversations(), loadActivity(), loadApprovals(), loadVoice()]);
+    if (state.activeConversationId) {
+      const current = await api(`/api/conversations/${encodeURIComponent(state.activeConversationId)}`);
+      if (current.status === "completed" && current.messages?.length) {
+        byId("messages").replaceChildren(); current.messages.forEach((message) => appendMessage(message.role, message.content, message.metadata || {}, message.status));
+      }
+    }
+    setConnection("online"); setAssistantState("idle", "System ready");
     connectEvents();
   } catch (error) {
     byId("runtime-label").textContent = "Unavailable";
     byId("runtime-dot").className = "status-dot unavailable";
     showToast(`Interface startup failed: ${error.message}`);
+    setConnection("offline", `Interface startup failed: ${error.message}`);
   }
 }
 
-window.addEventListener("beforeunload", () => state.eventSource?.close());
+window.addEventListener("beforeunload", () => { state.eventSource?.close(); if (state.eventTimer) clearTimeout(state.eventTimer); if (state.requestTimer) clearInterval(state.requestTimer); });
 initialize();

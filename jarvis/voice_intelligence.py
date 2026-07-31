@@ -1,7 +1,7 @@
 """Local-first governed voice input and output for JARVIS OS."""
 from __future__ import annotations
 
-import importlib.util, json, logging, re, subprocess, wave
+import base64, importlib.util, json, logging, os, re, subprocess, wave
 from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime
 from enum import StrEnum
@@ -59,22 +59,72 @@ class WindowsSapiAdapter:
  def __init__(self):self.available=self._check()
  def _check(self):
   try:
-   p=subprocess.run(["powershell.exe","-NoProfile","-Command","Add-Type -AssemblyName System.Speech; ([System.Speech.Synthesis.SpeechSynthesizer]::new().GetInstalledVoices().Count)"],capture_output=True,text=True,timeout=5,creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0));return p.returncode==0 and int(p.stdout.strip() or 0)>0
+   script="Add-Type -AssemblyName System.Speech;$s=[System.Speech.Synthesis.SpeechSynthesizer]::new();try{$s.GetInstalledVoices().Count}finally{$s.Dispose()}";encoded=base64.b64encode(script.encode("utf-16le")).decode("ascii")
+   p=subprocess.run(["powershell.exe","-NoProfile","-NonInteractive","-EncodedCommand",encoded],capture_output=True,text=True,timeout=5,creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0));return p.returncode==0 and int(p.stdout.strip() or 0)>0
   except Exception:return False
  def health_check(self):return {"status":"healthy" if self.available else "unavailable","local":True}
+ @staticmethod
+ def _script(output_mode:str)->str:
+  common="""$ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.Speech
+$text = [Environment]::GetEnvironmentVariable('JARVIS_SPEECH_TEXT', 'Process')
+$rate = [int][Environment]::GetEnvironmentVariable('JARVIS_SPEECH_RATE', 'Process')
+$volume = [int][Environment]::GetEnvironmentVariable('JARVIS_SPEECH_VOLUME', 'Process')
+"""
+  file_script="""$path = [Environment]::GetEnvironmentVariable('JARVIS_SPEECH_PATH', 'Process')
+if ([string]::IsNullOrWhiteSpace($path)) { throw 'output_path_required' }
+$directory = [IO.Path]::GetDirectoryName($path)
+if (-not [string]::IsNullOrWhiteSpace($directory)) { [IO.Directory]::CreateDirectory($directory) | Out-Null }
+$fileSynth = [System.Speech.Synthesis.SpeechSynthesizer]::new()
+try {
+    $fileSynth.Rate = $rate
+    $fileSynth.Volume = $volume
+    $fileSynth.SetOutputToWaveFile($path)
+    $fileSynth.Speak($text)
+} finally {
+    $fileSynth.Dispose()
+}
+"""
+  playback_script="""$playbackSynth = [System.Speech.Synthesis.SpeechSynthesizer]::new()
+try {
+    $playbackSynth.Rate = $rate
+    $playbackSynth.Volume = $volume
+    $playbackSynth.SetOutputToDefaultAudioDevice()
+    $playbackSynth.Speak($text)
+} finally {
+    $playbackSynth.Dispose()
+}
+"""
+  return common+(file_script if output_mode in {"file","both"} else "")+(playback_script if output_mode in {"playback","both"} else "")
+ @staticmethod
+ def _safe_error(stderr:str,text:str,path:Path|None)->str:
+  message=" ".join((stderr or "").split())
+  for sensitive in (text,str(path) if path else ""):
+   if sensitive:message=message.replace(sensitive,"[REDACTED]")
+  message=re.sub(r"(?i)(authorization|api[_-]?key|token|password|secret)\s*[:=]\s*\S+",r"\1=[REDACTED]",message)
+  return message[:300]
  def synthesize(self,request:SpeechSynthesisRequest)->SpeechSynthesisResult:
-  if not self.available:return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.UNAVAILABLE,errors=("backend_unavailable",))
-  if request.output_mode not in {"playback","file","both"}:return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.FAILED,errors=("unsupported_output_mode",))
+  if not self.available:return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.UNAVAILABLE,output_mode=request.output_mode,errors=("backend_unavailable",))
+  if request.output_mode not in {"playback","file","both"}:return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.FAILED,output_mode=request.output_mode,errors=("unsupported_output_mode",))
   path=Path(request.output_path).resolve() if request.output_path else None
-  script="Add-Type -AssemblyName System.Speech;$s=New-Object System.Speech.Synthesis.SpeechSynthesizer;$s.Rate="+str(request.rate)+";$s.Volume="+str(request.volume)+";"
-  if path:script+=f"$s.SetOutputToWaveFile('{str(path).replace("'","''")}');"
-  script+=f"$s.Speak('{request.text.replace("'","''")}');$s.Dispose()"
+  if request.output_mode in {"file","both"} and path is None:return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.FAILED,request.output_path,request.output_mode,errors=("output_path_required",))
+  before=(path.stat().st_mtime_ns,path.stat().st_size) if path and path.exists() else None
   try:
-   p=subprocess.run(["powershell.exe","-NoProfile","-Command",script],capture_output=True,text=True,timeout=request.timeout,creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0))
-   if p.returncode:return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.FAILED,errors=("synthesis_failed",))
+   if path:path.parent.mkdir(parents=True,exist_ok=True)
+   encoded=base64.b64encode(self._script(request.output_mode).encode("utf-16le")).decode("ascii")
+   environment=os.environ.copy();environment.update({"JARVIS_SPEECH_TEXT":request.text,"JARVIS_SPEECH_RATE":str(request.rate),"JARVIS_SPEECH_VOLUME":str(request.volume),"JARVIS_SPEECH_PATH":str(path) if path else ""})
+   p=subprocess.run(["powershell.exe","-NoProfile","-NonInteractive","-EncodedCommand",encoded],capture_output=True,text=True,timeout=request.timeout,creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0),env=environment)
+   if p.returncode:
+    detail=self._safe_error(p.stderr,request.text,path);errors=("synthesis_failed",detail) if detail else ("synthesis_failed",)
+    return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.FAILED,output_mode=request.output_mode,errors=errors)
    size=path.stat().st_size if path and path.exists() else 0
+   if path and (size<=0 or (before is not None and before==(path.stat().st_mtime_ns,size))):return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.FAILED,output_mode=request.output_mode,errors=("audio_file_not_created",))
    return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.COMPLETED,str(path) if path else None,request.output_mode,audio_size=size)
-  except subprocess.TimeoutExpired:return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.TIMED_OUT,errors=("synthesis_timeout",))
+  except subprocess.TimeoutExpired:return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.TIMED_OUT,output_mode=request.output_mode,errors=("synthesis_timeout",))
+  except FileNotFoundError:return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.UNAVAILABLE,output_mode=request.output_mode,errors=("powershell_unavailable",))
+  except OSError as exc:
+   detail=self._safe_error(str(exc),request.text,path);errors=("synthesis_error",detail) if detail else ("synthesis_error",)
+   return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.FAILED,output_mode=request.output_mode,errors=errors)
 
 class OfflineSttDiscoveryAdapter:
  adapter_id="offline-stt";name="Offline STT discovery";version="1";local=True;capabilities=("transcription",);supported_languages=("en",);supported_formats=("wav",)

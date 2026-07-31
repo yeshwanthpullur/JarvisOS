@@ -439,7 +439,15 @@ class LocalInterfaceService:
             handler.send_header("Cache-Control", "no-store")
             handler.send_header("Connection", "close")
             handler.end_headers()
-            last_sequence = int(handler.headers.get("Last-Event-ID", "0") or 0)
+            query = parse_qs(urlparse(handler.path).query)
+            requested_sequence = (query.get("since") or ["0"])[0]
+            try:
+                last_sequence = max(
+                    int(handler.headers.get("Last-Event-ID", "0") or 0),
+                    int(requested_sequence or 0),
+                )
+            except (TypeError, ValueError):
+                last_sequence = 0
             deadline = time.monotonic() + self.config.event_timeout
             while not self._stopping.is_set() and time.monotonic() < deadline:
                 events = [item for item in self.activity() if int(item["sequence"]) > last_sequence]
@@ -453,7 +461,7 @@ class LocalInterfaceService:
                     handler.wfile.write(b": heartbeat\n\n")
                     handler.wfile.flush()
                 time.sleep(1)
-        except (BrokenPipeError, ConnectionResetError, TimeoutError):
+        except (BrokenPipeError, ConnectionAbortedError, ConnectionResetError, TimeoutError):
             pass
         finally:
             self._stream_slots.release()
@@ -609,10 +617,15 @@ class LocalInterfaceService:
             elif summary.get("plan_id"):
                 response_type = "planning"
             status = "failed" if response.warnings and not response.response else "completed"
-            content = response.response[: self.config.max_response_size // 2]
+            content = response.response[: self.config.max_response_size // 2].strip()
             if is_command and parsed.name == "voice say" and "Audio reference:" in content:
                 content = content.split("Audio reference:", 1)[0].rstrip() + " Local audio output is available."
             warnings = tuple(response.warnings)
+            errors = tuple(response.diagnostics) if status == "failed" else ()
+            if not content:
+                status = "failed"
+                content = "JARVIS received an empty response. Retry the request or select another provider."
+                errors = (*errors, "empty_response")
             if len(response.response) > len(content):
                 warnings = (*warnings, "response_display_limit_applied")
             normalized = InterfaceResponse(
@@ -632,7 +645,7 @@ class LocalInterfaceService:
                 workflow_id=str(summary.get("workflow_id")) if summary.get("workflow_id") else None,
                 approval_id=str(summary.get("approval_id")) if summary.get("approval_id") else None,
                 warnings=warnings,
-                errors=tuple(response.diagnostics) if status == "failed" else (),
+                errors=errors,
                 created_at=created,
                 completed_at=utc_now(),
                 duration=duration,
@@ -807,7 +820,7 @@ class LocalInterfaceService:
             raise ValueError("voice_output_disabled")
         request_id = str(uuid4())
         self._record("voice_synthesis_started", "processing", request_id, "Voice synthesis started")
-        result = voice.say(text.strip(), parent_request_id=request_id)
+        result = voice.say(text.strip(), parent_request_id=request_id, playback=True)
         self._record("voice_synthesis_completed", result.status.value, request_id, "Voice synthesis completed")
         self.logger.info("interface_voice_requested interface_request_id=%s status=%s", request_id, result.status.value)
         return {"status": result.status.value, "synthesis_id": result.synthesis_id, "backend_id": result.backend_id, "audio_available": bool(result.audio_reference)}

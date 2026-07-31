@@ -399,7 +399,7 @@ def _handler_for(name: str):
                 return _text_response(f"Voice output: {voice.output_enabled}")
             if name=="voice say":
                 if not args:return _text_response("Please provide text to speak.")
-                try:r=voice.say(" ".join(args),parent_request_id="command-voice-say")
+                try:r=voice.say(" ".join(args),parent_request_id="command-voice-say",playback=True)
                 except ValueError as exc:return _text_response(f"Voice synthesis blocked: {exc}")
                 return _text_response(f"Voice synthesis {r.status.value}. Audio reference: {r.audio_reference or 'playback'}",synthesis_id=r.synthesis_id,backend_id=r.backend_id,audio_reference=r.audio_reference)
             if name=="voice transcribe":

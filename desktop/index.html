@@ -7,45 +7,69 @@
   <title>JARVIS OS</title>
   <link rel="stylesheet" href="/app.css">
 </head>
-<body>
-  <a class="skip-link" href="#main-content">Skip to content</a>
+<body data-assistant-state="starting">
+  <a class="skip-link" href="#main-content">Skip to conversation</a>
+  <div class="connection-banner" id="connection-banner" role="status" hidden>
+    <span class="connection-pulse" aria-hidden="true"></span>
+    <span id="connection-message">Reconnecting to JARVIS...</span>
+  </div>
+
   <div class="app-shell">
-    <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
-      <div class="brand-block">
-        <div class="brand-mark" aria-hidden="true">J</div>
-        <div><strong>JARVIS</strong><span>Local intelligence</span></div>
+    <aside class="control-rail" id="sidebar" aria-label="JARVIS controls">
+      <div class="identity">
+        <div class="identity-core" aria-hidden="true"><span></span></div>
+        <div class="identity-copy"><strong>JARVIS</strong><span id="identity-state">Initializing</span></div>
+        <button class="icon-button rail-close mobile-only" id="rail-close" type="button" aria-label="Close navigation" title="Close navigation">&#215;</button>
       </div>
-      <button class="button primary full" id="new-conversation" type="button">New conversation</button>
-      <nav class="nav-list" aria-label="Workspace">
-        <button class="nav-item active" type="button" data-view="chat">Chat</button>
-        <button class="nav-item" type="button" data-view="activity">Activity</button>
-        <button class="nav-item" type="button" data-view="plans">Plans</button>
-        <button class="nav-item" type="button" data-view="tools">Tools</button>
-        <button class="nav-item" type="button" data-view="multiagent">Multi-Agent</button>
-        <button class="nav-item" type="button" data-view="voice">Voice</button>
-        <button class="nav-item" type="button" data-view="health">Health</button>
-        <button class="nav-item" type="button" data-view="logs">Logs</button>
-        <button class="nav-item" type="button" data-view="settings">Settings</button>
+
+      <button class="new-chat-button" id="new-conversation" type="button"><span aria-hidden="true">+</span> New conversation</button>
+
+      <nav class="nav-list" aria-label="Intelligence workspace">
+        <span class="nav-label">Workspace</span>
+        <button class="nav-item active" type="button" data-view="chat"><span class="nav-icon" aria-hidden="true">&#9671;</span><span>Conversation</span></button>
+        <button class="nav-item" type="button" data-view="activity"><span class="nav-icon" aria-hidden="true">&#8635;</span><span>Activity</span></button>
+        <button class="nav-item" type="button" data-view="plans"><span class="nav-icon" aria-hidden="true">&#9783;</span><span>Plans</span></button>
+        <button class="nav-item" type="button" data-view="tools"><span class="nav-icon" aria-hidden="true">&#9678;</span><span>Tools</span></button>
+        <button class="nav-item" type="button" data-view="multiagent"><span class="nav-icon" aria-hidden="true">&#8756;</span><span>Multi-Agent</span></button>
+        <span class="nav-label">System</span>
+        <button class="nav-item" type="button" data-view="voice"><span class="nav-icon" aria-hidden="true">&#8776;</span><span>Voice</span></button>
+        <button class="nav-item" type="button" data-view="health"><span class="nav-icon" aria-hidden="true">&#9673;</span><span>Health</span></button>
+        <button class="nav-item" type="button" data-view="logs"><span class="nav-icon" aria-hidden="true">&#8942;</span><span>Logs</span></button>
+        <button class="nav-item" type="button" data-view="settings"><span class="nav-icon" aria-hidden="true">&#9881;</span><span>Settings</span></button>
       </nav>
+
       <section class="history-block" aria-labelledby="history-heading">
-        <div class="section-heading"><h2 id="history-heading">Recent</h2><button class="text-button" id="refresh-history" type="button">Refresh</button></div>
+        <div class="section-heading"><h2 id="history-heading">Recent threads</h2><button class="icon-button quiet" id="refresh-history" type="button" aria-label="Refresh conversations" title="Refresh conversations">&#8635;</button></div>
         <div class="history-list" id="conversation-list"><p class="empty-copy">No conversations yet.</p></div>
       </section>
-      <div class="sidebar-foot"><span class="status-dot" id="runtime-dot"></span><span id="runtime-label">Starting</span></div>
+
+      <div class="rail-status">
+        <button class="rail-signal" type="button" data-view="health" title="Open system health">
+          <span class="status-dot" id="runtime-dot"></span><span><small>Core</small><strong id="runtime-label">Starting</strong></span>
+        </button>
+        <button class="rail-signal" type="button" data-view="voice" title="Open voice controls">
+          <span class="voice-bars" aria-hidden="true"><i></i><i></i><i></i></span><span><small>Voice</small><strong id="rail-voice-label">Checking</strong></span>
+        </button>
+      </div>
     </aside>
+
+    <div class="rail-scrim" id="rail-scrim" hidden></div>
 
     <div class="workspace">
       <header class="topbar">
-        <button class="button icon mobile-only" id="sidebar-toggle" type="button" aria-label="Toggle navigation">Menu</button>
+        <button class="icon-button mobile-only" id="sidebar-toggle" type="button" aria-label="Open navigation" title="Open navigation">&#9776;</button>
         <div class="title-group">
+          <span class="eyebrow" id="view-eyebrow">Intelligence channel</span>
           <h1 id="view-title">Conversation</h1>
-          <p id="view-subtitle">Local JARVIS session</p>
+          <p id="view-subtitle">Secure local session</p>
         </div>
         <div class="topbar-actions">
-          <span class="policy-badge" id="policy-badge">automatic</span>
-          <span class="model-label" id="model-label">Provider pending</span>
-          <button class="button secondary" id="activity-toggle" type="button">Activity</button>
-          <button class="button icon" id="theme-toggle" type="button" aria-label="Toggle color theme">Theme</button>
+          <div class="provider-chip" id="provider-chip" title="Active provider and model">
+            <span class="status-dot" id="provider-dot"></span>
+            <span><small id="policy-badge">automatic</small><strong id="model-label">Provider automatic</strong></span>
+          </div>
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">&#9788;</button>
+          <button class="icon-button context-toggle" id="activity-toggle" type="button" aria-label="Toggle context panel" title="Toggle context panel">&#9776;</button>
         </div>
       </header>
 
@@ -54,64 +78,70 @@
           <section class="view active" id="view-chat" data-view-panel="chat" aria-labelledby="view-title">
             <div class="messages" id="messages" aria-live="polite" aria-label="Conversation messages">
               <div class="welcome-state">
-                <span class="welcome-mark" aria-hidden="true">J</span>
-                <h2>Ready when you are</h2>
-                <p>Chat normally or enter an existing JARVIS command.</p>
-                <div class="quick-actions" aria-label="Suggested commands">
-                  <button type="button" data-prompt="local status">Local status</button>
+                <div class="assistant-visualizer" id="assistant-visualizer" aria-hidden="true">
+                  <span class="orbit orbit-outer"></span><span class="orbit orbit-mid"></span><span class="orbit orbit-inner"></span>
+                  <span class="core-light"></span>
+                  <span class="waveform"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                </div>
+                <div class="presence-label"><span class="presence-line"></span><span id="presence-state">System ready</span><span class="presence-line"></span></div>
+                <h2>How can I assist?</h2>
+                <p>One channel for conversation, governed tools, plans, and local intelligence.</p>
+                <div class="quick-actions" aria-label="Suggested actions">
+                  <button type="button" data-prompt="What is the current system status?">System brief</button>
+                  <button type="button" data-prompt="What were we doing?">Resume context</button>
                   <button type="button" data-prompt="voice status">Voice status</button>
-                  <button type="button" data-prompt="tool list">Tool list</button>
-                  <button type="button" data-prompt="health">Health</button>
                 </div>
               </div>
             </div>
-            <div class="pending-strip" id="pending-strip" hidden>
-              <span class="spinner" aria-hidden="true"></span><span id="pending-label">JARVIS is working</span>
+
+            <button class="scroll-latest" id="scroll-latest" type="button" hidden>New activity <span aria-hidden="true">&#8595;</span></button>
+
+            <div class="processing-line" id="pending-strip" hidden role="status">
+              <span class="processing-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span id="pending-label">JARVIS is reasoning</span>
+              <span class="processing-time" id="processing-time">00:00</span>
             </div>
+
             <form class="composer" id="composer">
               <label class="sr-only" for="message-input">Message JARVIS</label>
-              <textarea id="message-input" rows="3" maxlength="16000" placeholder="Message JARVIS or enter a command" required></textarea>
-              <div class="composer-foot">
-                <span class="composer-hint">Enter to send, Shift+Enter for a new line</span>
+              <textarea id="message-input" rows="1" maxlength="16000" placeholder="Ask JARVIS anything..." required></textarea>
+              <div class="composer-toolbar">
+                <div class="composer-status"><span class="status-dot" id="composer-dot"></span><span id="composer-state">Ready</span></div>
                 <div class="composer-actions">
-                  <button class="button secondary" id="cancel-request" type="button" disabled>Cancel</button>
-                  <button class="button primary" id="send-message" type="submit">Send</button>
+                  <button class="icon-button" id="microphone-button" type="button" aria-label="Voice input unavailable" title="Voice input unavailable" disabled>&#9835;</button>
+                  <button class="icon-button stop-button" id="cancel-request" type="button" aria-label="Stop current request" title="Stop current request" hidden>&#9632;</button>
+                  <button class="send-button" id="send-message" type="submit" aria-label="Send message" title="Send message"><span>Send</span><b aria-hidden="true">&#8593;</b></button>
                 </div>
               </div>
+              <div class="composer-hint"><span>Enter to send</span><span>Shift + Enter for a new line</span></div>
             </form>
           </section>
 
-          <section class="view" id="view-activity" data-view-panel="activity"><header class="view-header"><div><h2>System activity</h2><p>Safe observable execution stages.</p></div><button class="button secondary" data-refresh="activity" type="button">Refresh</button></header><div class="record-list" id="activity-list"></div></section>
-          <section class="view" id="view-plans" data-view-panel="plans"><header class="view-header"><div><h2>Autonomous plans</h2><p>Advisory plans and review state.</p></div><button class="button secondary" data-refresh="plans" type="button">Refresh</button></header><div class="record-list" id="plans-list"></div></section>
-          <section class="view" id="view-tools" data-view-panel="tools"><header class="view-header"><div><h2>Tool Intelligence</h2><p>Registered capabilities and governed availability.</p></div><button class="button secondary" data-refresh="tools" type="button">Refresh</button></header><div class="record-list" id="tools-list"></div></section>
-          <section class="view" id="view-multiagent" data-view-panel="multiagent"><header class="view-header"><div><h2>Multi-Agent</h2><p>Coordinations, participants, and synthesis status.</p></div><button class="button secondary" data-refresh="multiagent" type="button">Refresh</button></header><div class="record-list" id="multiagent-list"></div></section>
-          <section class="view" id="view-voice" data-view-panel="voice"><header class="view-header"><div><h2>Voice</h2><p>Local speech output and honest input readiness.</p></div><button class="button secondary" data-refresh="voice" type="button">Refresh</button></header><div id="voice-content"></div></section>
-          <section class="view" id="view-health" data-view-panel="health"><header class="view-header"><div><h2>Health</h2><p>Safe readiness across JARVIS subsystems.</p></div><button class="button secondary" data-refresh="health" type="button">Refresh</button></header><div class="health-grid" id="health-grid"></div></section>
-          <section class="view" id="view-logs" data-view-panel="logs">
-            <header class="view-header"><div><h2>Safe logs</h2><p>Bounded and redacted application events.</p></div><button class="button secondary" data-refresh="logs" type="button">Refresh</button></header>
-            <form class="filter-row" id="log-filters"><label>Level<select id="log-level"><option value="">All</option><option>INFO</option><option>WARNING</option><option>ERROR</option></select></label><label>Subsystem<input id="log-subsystem" type="text" maxlength="80"></label><label>Request ID<input id="log-request" type="text" maxlength="80"></label><button class="button secondary" type="submit">Apply</button></form>
-            <div class="log-list" id="logs-list"></div>
-          </section>
-          <section class="view" id="view-settings" data-view-panel="settings"><header class="view-header"><div><h2>Settings</h2><p>Validated session and display preferences.</p></div><button class="button secondary" data-refresh="settings" type="button">Refresh</button></header><div id="settings-content"></div></section>
+          <section class="view" id="view-activity" data-view-panel="activity"><header class="view-header"><div><span class="eyebrow">Observability</span><h2>System activity</h2><p>Correlated execution stages without hidden reasoning.</p></div><button class="icon-button" data-refresh="activity" type="button" aria-label="Refresh activity" title="Refresh activity">&#8635;</button></header><div class="record-list timeline" id="activity-list"></div></section>
+          <section class="view" id="view-plans" data-view-panel="plans"><header class="view-header"><div><span class="eyebrow">Advisory control</span><h2>Plans</h2><p>Validated plans remain governed until approval.</p></div><button class="icon-button" data-refresh="plans" type="button" aria-label="Refresh plans" title="Refresh plans">&#8635;</button></header><div class="record-list" id="plans-list"></div></section>
+          <section class="view" id="view-tools" data-view-panel="tools"><header class="view-header"><div><span class="eyebrow">Governed execution</span><h2>Tool Intelligence</h2><p>Available capabilities, permissions, and health.</p></div><button class="icon-button" data-refresh="tools" type="button" aria-label="Refresh tools" title="Refresh tools">&#8635;</button></header><div class="record-list" id="tools-list"></div></section>
+          <section class="view" id="view-multiagent" data-view-panel="multiagent"><header class="view-header"><div><span class="eyebrow">Coordination</span><h2>Multi-Agent</h2><p>Bounded specialist collaboration and synthesis.</p></div><button class="icon-button" data-refresh="multiagent" type="button" aria-label="Refresh multi-agent activity" title="Refresh multi-agent activity">&#8635;</button></header><div class="record-list" id="multiagent-list"></div></section>
+          <section class="view" id="view-voice" data-view-panel="voice"><header class="view-header"><div><span class="eyebrow">Local speech</span><h2>Voice Intelligence</h2><p>Honest input readiness and local speech output.</p></div><button class="icon-button" data-refresh="voice" type="button" aria-label="Refresh voice status" title="Refresh voice status">&#8635;</button></header><div id="voice-content"></div></section>
+          <section class="view" id="view-health" data-view-panel="health"><header class="view-header"><div><span class="eyebrow">Diagnostics</span><h2>System health</h2><p>Live readiness across authoritative subsystems.</p></div><button class="icon-button" data-refresh="health" type="button" aria-label="Refresh health" title="Refresh health">&#8635;</button></header><div class="health-grid" id="health-grid"></div></section>
+          <section class="view" id="view-logs" data-view-panel="logs"><header class="view-header"><div><span class="eyebrow">Safe telemetry</span><h2>Logs</h2><p>Bounded, redacted, and correlated events.</p></div><button class="icon-button" data-refresh="logs" type="button" aria-label="Refresh logs" title="Refresh logs">&#8635;</button></header><form class="filter-row" id="log-filters"><label>Level<select id="log-level"><option value="">All</option><option>INFO</option><option>WARNING</option><option>ERROR</option></select></label><label>Subsystem<input id="log-subsystem" type="text" maxlength="80"></label><label>Request ID<input id="log-request" type="text" maxlength="80"></label><button class="button secondary" type="submit">Apply filters</button></form><div class="log-list" id="logs-list"></div></section>
+          <section class="view" id="view-settings" data-view-panel="settings"><header class="view-header"><div><span class="eyebrow">Preferences</span><h2>Settings</h2><p>Validated display, provider, and governance controls.</p></div><button class="icon-button" data-refresh="settings" type="button" aria-label="Refresh settings" title="Refresh settings">&#8635;</button></header><div id="settings-content"></div></section>
         </main>
 
-        <aside class="activity-panel" id="activity-panel" aria-label="Current system activity">
-          <div class="panel-heading"><h2>Now</h2><button class="text-button" id="close-activity" type="button">Close</button></div>
-          <dl class="status-list">
-            <div><dt>Stage</dt><dd id="stage-value">Idle</dd></div>
-            <div><dt>Provider</dt><dd id="provider-value">None</dd></div>
-            <div><dt>Model</dt><dd id="model-value">None</dd></div>
-            <div><dt>Tool</dt><dd id="tool-value">None</dd></div>
-            <div><dt>Coordination</dt><dd id="coordination-value">None</dd></div>
-            <div><dt>Plan</dt><dd id="plan-value">None</dd></div>
-            <div><dt>Voice</dt><dd id="voice-value">Checking</dd></div>
-          </dl>
-          <section class="approval-section" aria-labelledby="approval-heading"><div class="section-heading"><h2 id="approval-heading">Approvals</h2><button class="text-button" id="refresh-approvals" type="button">Refresh</button></div><div id="approval-list"><p class="empty-copy">No pending approvals.</p></div></section>
-          <section class="recent-activity" aria-labelledby="recent-heading"><h2 id="recent-heading">Recent activity</h2><div id="activity-compact"></div></section>
+        <aside class="context-panel" id="activity-panel" aria-label="Live context">
+          <div class="panel-heading"><div><span class="eyebrow">Live context</span><h2>Intelligence feed</h2></div><button class="icon-button quiet" id="close-activity" type="button" aria-label="Close context panel" title="Close context panel">&#215;</button></div>
+          <section class="context-section current-state" aria-labelledby="current-state-heading">
+            <div class="context-orb" aria-hidden="true"><span></span></div>
+            <div><small id="current-state-heading">Current state</small><strong id="stage-value">Idle</strong><span id="request-value">Awaiting input</span></div>
+          </section>
+          <section class="context-section" aria-labelledby="execution-heading"><div class="section-heading"><h2 id="execution-heading">Execution</h2><span class="context-status" id="execution-status">Standby</span></div><dl class="status-list"><div><dt>Provider</dt><dd id="provider-value">Automatic</dd></div><div><dt>Model</dt><dd id="model-value">Default</dd></div><div><dt>Tool</dt><dd id="tool-value">None</dd></div><div><dt>Coordination</dt><dd id="coordination-value">None</dd></div><div><dt>Plan</dt><dd id="plan-value">None</dd></div><div><dt>Voice</dt><dd id="voice-value">Checking</dd></div></dl></section>
+          <section class="context-section approval-section" aria-labelledby="approval-heading"><div class="section-heading"><h2 id="approval-heading">Pending decisions</h2><button class="icon-button quiet" id="refresh-approvals" type="button" aria-label="Refresh approvals" title="Refresh approvals">&#8635;</button></div><div id="approval-list"><p class="empty-copy">No pending approvals.</p></div></section>
+          <section class="context-section recent-activity" aria-labelledby="recent-heading"><div class="section-heading"><h2 id="recent-heading">Activity pulse</h2><button class="text-button" type="button" data-view="activity">View all</button></div><div id="activity-compact"></div></section>
+          <section class="context-section context-memory" aria-labelledby="memory-heading"><div class="section-heading"><h2 id="memory-heading">Context</h2><span class="context-status">Scoped</span></div><p id="context-summary">Only information relevant to the current request is delivered.</p></section>
         </aside>
       </div>
     </div>
   </div>
+  <div class="panel-scrim" id="panel-scrim" hidden></div>
   <div class="toast-region" id="toast-region" aria-live="assertive"></div>
   <script src="/app.js" defer></script>
 </body>

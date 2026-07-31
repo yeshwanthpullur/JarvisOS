@@ -1,8 +1,11 @@
-import tempfile,unittest,wave
+import base64,subprocess,tempfile,unittest,wave
 from types import SimpleNamespace
 from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
+from commands import CommandManager
 from commands.command_parser import CommandParser
+from conversation import ConversationContext,ConversationSession
 from jarvis.voice_intelligence import *
 
 class FakeAdapter:
@@ -11,6 +14,16 @@ class FakeAdapter:
 
 class VoiceTests(unittest.TestCase):
  def setUp(self):self.v=VoiceIntelligence()
+ def sapi(self):
+  adapter=object.__new__(WindowsSapiAdapter);adapter.available=True;return adapter
+ def synthesis_request(self,mode,path=None,text="JARVIS voice test"):
+  return SpeechSynthesisRequest("synth","session","parent","windows-sapi",text,output_mode=mode,output_path=str(path) if path else None)
+ def successful_run(self,args,**kwargs):
+  output=kwargs["env"].get("JARVIS_SPEECH_PATH")
+  if output:Path(output).write_bytes(b"RIFF-test-wave")
+  return subprocess.CompletedProcess(args,0,"","")
+ def decoded_script(self,run):
+  args=run.call_args.args[0];return base64.b64decode(args[args.index("-EncodedCommand")+1]).decode("utf-16le")
  def wav(self,root,seconds=.1):
   p=Path(root)/"x.wav"
   with wave.open(str(p),"wb") as w:w.setnchannels(1);w.setsampwidth(2);w.setframerate(16000);w.writeframes(b"\0\0"*int(16000*seconds))
@@ -70,6 +83,34 @@ class VoiceTests(unittest.TestCase):
  def test_real_sapi_file_when_available(self):
   if not self.v.registry.get("windows-sapi").available:self.skipTest("Windows SAPI unavailable")
   with tempfile.TemporaryDirectory() as d:self.v.output_enabled=True;r=self.v.say("voice test",output_path=Path(d)/"out.wav");self.assertEqual(r.status,VoiceStatus.COMPLETED);self.assertGreater(r.audio_size,0)
+ def test_sapi_file_only_mode(self):
+  with tempfile.TemporaryDirectory() as d,patch("jarvis.voice_intelligence.subprocess.run",side_effect=self.successful_run) as run:
+   path=Path(d)/"nested"/"out.wav";result=self.sapi().synthesize(self.synthesis_request("file",path));script=self.decoded_script(run)
+   self.assertEqual(result.status,VoiceStatus.COMPLETED);self.assertGreater(result.audio_size,0);self.assertIn("SetOutputToWaveFile",script);self.assertNotIn("SetOutputToDefaultAudioDevice",script)
+ def test_sapi_playback_only_mode(self):
+  with patch("jarvis.voice_intelligence.subprocess.run",return_value=subprocess.CompletedProcess([],0,"","")) as run:
+   result=self.sapi().synthesize(self.synthesis_request("playback"));script=self.decoded_script(run)
+   self.assertEqual(result.status,VoiceStatus.COMPLETED);self.assertIsNone(result.audio_reference);self.assertIn("SetOutputToDefaultAudioDevice",script);self.assertNotIn("SetOutputToWaveFile",script)
+ def test_sapi_both_mode(self):
+  with tempfile.TemporaryDirectory() as d,patch("jarvis.voice_intelligence.subprocess.run",side_effect=self.successful_run) as run:
+   result=self.sapi().synthesize(self.synthesis_request("both",Path(d)/"out.wav"));script=self.decoded_script(run)
+   self.assertEqual(result.status,VoiceStatus.COMPLETED);self.assertIn("SetOutputToWaveFile",script);self.assertIn("SetOutputToDefaultAudioDevice",script)
+ def test_sapi_file_modes_require_output_path(self):
+  for mode in ("file","both"):
+   with self.subTest(mode=mode):self.assertEqual(self.sapi().synthesize(self.synthesis_request(mode)).errors,("output_path_required",))
+ def test_sapi_powershell_failure_is_bounded_and_redacted(self):
+  spoken="don't expose $secret; \"quoted\""
+  failed=subprocess.CompletedProcess([],1,"",f"device failed while processing {spoken}")
+  with patch("jarvis.voice_intelligence.subprocess.run",return_value=failed):result=self.sapi().synthesize(self.synthesis_request("playback",text=spoken))
+  self.assertEqual(result.status,VoiceStatus.FAILED);self.assertIn("device failed",result.errors[1]);self.assertNotIn(spoken,result.errors[1]);self.assertLessEqual(len(result.errors[1]),300)
+ def test_sapi_timeout(self):
+  with patch("jarvis.voice_intelligence.subprocess.run",side_effect=subprocess.TimeoutExpired("powershell",1)):result=self.sapi().synthesize(self.synthesis_request("playback"))
+  self.assertEqual(result.status,VoiceStatus.TIMED_OUT)
+ def test_sapi_special_text_uses_environment_not_command(self):
+  spoken="O'Brien says $value; \"hello\"\nUnicode: \u0928\u092e\u0938\u094d\u0924\u0947"
+  with patch("jarvis.voice_intelligence.subprocess.run",return_value=subprocess.CompletedProcess([],0,"","")) as run:
+   self.assertEqual(self.sapi().synthesize(self.synthesis_request("playback",text=spoken)).status,VoiceStatus.COMPLETED)
+   self.assertEqual(run.call_args.kwargs["env"]["JARVIS_SPEECH_TEXT"],spoken);self.assertNotIn(spoken," ".join(run.call_args.args[0]));self.assertNotIn(spoken,self.decoded_script(run))
  def test_stt_unavailable_not_fake(self):
   with tempfile.TemporaryDirectory() as d:p=self.wav(d);self.v.settings=SimpleNamespace(base_dir=Path(d));r=self.v.transcribe_file(str(p));self.assertEqual(r.status,VoiceStatus.UNAVAILABLE)
  def test_interrupt_idempotent(self):self.assertFalse(self.v.interrupt())
@@ -77,6 +118,12 @@ class VoiceTests(unittest.TestCase):
  def test_persistence_summary(self):
   with tempfile.TemporaryDirectory() as d:v=VoiceIntelligence(storage_dir=Path(d));v.enabled=True;v.create_session();v.cancel();self.assertTrue((Path(d)/"sessions.json").exists())
  def test_parser_command_separation(self):self.assertEqual(CommandParser().parse("voice say hello").name,"voice say")
+ def test_voice_say_command_requests_playback(self):
+  class CapturingVoice:
+   def __init__(self):self.playback=None
+   def say(self,text,parent_request_id,playback=False):self.playback=playback;return SimpleNamespace(status=VoiceStatus.COMPLETED,audio_reference="out.wav",synthesis_id="s",backend_id="windows-sapi")
+  voice=CapturingVoice();commands=CommandManager();commands.initialize();context=ConversationContext(session=ConversationSession(),voice_intelligence=voice)
+  self.assertIn("completed",commands.execute("voice say hello",context).response);self.assertTrue(voice.playback)
  def test_parser_preserves_windows_audio_path(self):
   parsed=CommandParser().parse(r"voice transcribe C:\voice-input\sample.wav")
   self.assertEqual(parsed.arguments,(r"C:\voice-input\sample.wav",))

@@ -85,6 +85,7 @@ class FakeVoice:
     volume = 80
     raw_audio_persistence = False
     interrupted = False
+    last_playback = False
 
     def health(self):
         return {"windows-sapi": {"status": "healthy"}, "offline-stt": {"status": "unavailable"}}
@@ -92,7 +93,8 @@ class FakeVoice:
     def devices(self, direction=None):
         return () if direction == "input" else (SimpleNamespace(device_id="default-output"),)
 
-    def say(self, text, parent_request_id):
+    def say(self, text, parent_request_id, playback=False):
+        self.last_playback = playback
         return SimpleNamespace(status=SimpleNamespace(value="completed"), synthesis_id="synth-1", backend_id="windows-sapi", audio_reference="local.wav")
 
     def interrupt(self):
@@ -287,6 +289,16 @@ class LocalInterfaceTests(unittest.TestCase):
         result = self.service.submit_message({"message": "hello"})
         self.assertEqual(result.content, "provider-ok"); self.assertEqual(result.provider_id, "mock-local"); self.assertEqual(result.model_id, "mock-model")
 
+    def test_empty_response_is_a_truthful_recoverable_failure(self):
+        self.startup.conversation_manager.handle_input = lambda message, request_id=None: ConversationResponse(
+            response="",
+            metadata={"jarvis_request_id": request_id},
+        )
+        result = self.service.submit_message({"message": "hello"})
+        self.assertEqual(result.status, "failed")
+        self.assertIn("empty response", result.content.lower())
+        self.assertIn("empty_response", result.errors)
+
     def test_command_stays_on_command_path(self):
         result = self.service.submit_message({"message": "voice status"})
         self.assertEqual(result.response_type, "command"); self.assertEqual(result.command_name, "voice status"); self.assertEqual(result.content, "command-ok")
@@ -334,6 +346,7 @@ class LocalInterfaceTests(unittest.TestCase):
     def test_voice_synthesis_uses_voice_intelligence(self):
         result = self.service.speak({"text": "hello"})
         self.assertEqual(result["status"], "completed"); self.assertEqual(result["backend_id"], "windows-sapi")
+        self.assertTrue(self.startup.jarvis_core.manager.voice_intelligence.last_playback)
 
     def test_voice_stop_uses_voice_intelligence(self):
         self.assertTrue(self.service.stop_voice({})["stopped"])
@@ -396,13 +409,58 @@ class LocalInterfaceTests(unittest.TestCase):
             packet = response.readline().decode() + response.readline().decode() + response.readline().decode()
         self.assertIn("event: activity", packet)
 
+    def test_event_stream_resumes_after_the_requested_sequence(self):
+        self.start(); first = self.service._record("first_event", "completed", "r1", "First")
+        second = self.service._record("second_event", "completed", "r2", "Second")
+        request = urllib.request.Request(self.service.url + f"/api/events?since={first.sequence}")
+        with urllib.request.urlopen(request, timeout=4) as response:
+            packet = response.readline().decode() + response.readline().decode() + response.readline().decode()
+        self.assertIn(f"id: {second.sequence}", packet)
+        self.assertIn("second_event", packet)
+        self.assertNotIn("first_event", packet)
+
     def test_port_released_after_shutdown(self):
         self.start(); self.service.stop()
         sock = socket.socket(); sock.bind(("127.0.0.1", self.port)); sock.close()
 
     def test_frontend_has_accessible_live_region(self):
         html = (Path(__file__).parents[1] / "desktop" / "index.html").read_text(encoding="utf-8")
-        self.assertIn('aria-live="polite"', html); self.assertIn('aria-live="assertive"', html); self.assertIn("Shift+Enter", html)
+        self.assertIn('aria-live="polite"', html); self.assertIn('aria-live="assertive"', html); self.assertIn("Shift + Enter", html)
+
+    def test_frontend_uses_three_zone_control_center_layout(self):
+        html = (Path(__file__).parents[1] / "desktop" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('class="control-rail"', html)
+        self.assertIn('class="main-content"', html)
+        self.assertIn('class="context-panel"', html)
+        self.assertIn('class="assistant-visualizer"', html)
+
+    def test_frontend_state_and_event_recovery_are_bounded(self):
+        script = (Path(__file__).parents[1] / "desktop" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("setAssistantState", script)
+        self.assertIn("seenEvents", script)
+        self.assertIn("Math.min(15000", script)
+        self.assertIn('typeof window.EventSource !== "function"', script)
+        self.assertIn("pollEvents", script)
+
+    def test_frontend_restores_input_and_blocks_duplicate_submission(self):
+        script = (Path(__file__).parents[1] / "desktop" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("if (!text || state.activeRequestId) return", script)
+        self.assertIn('byId("message-input").value = text', script)
+        self.assertIn('byId("message-input").readOnly = active', script)
+
+    def test_frontend_safe_markdown_uses_dom_nodes(self):
+        script = (Path(__file__).parents[1] / "desktop" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("appendInlineMarkdown", script)
+        self.assertIn("document.createTextNode", script)
+        self.assertIn('anchor.rel = "noopener noreferrer"', script)
+        self.assertNotIn("marked.parse", script)
+
+    def test_frontend_hidden_and_responsive_controls_remain_stable(self):
+        css = (Path(__file__).parents[1] / "desktop" / "app.css").read_text(encoding="utf-8")
+        self.assertIn("[hidden] { display: none !important; }", css)
+        self.assertIn("@media (max-width: 1180px)", css)
+        self.assertIn("@media (max-width: 760px)", css)
+        self.assertIn("prefers-reduced-motion", css)
 
     def test_frontend_does_not_call_providers_or_sapi(self):
         script = (Path(__file__).parents[1] / "desktop" / "app.js").read_text(encoding="utf-8").lower()

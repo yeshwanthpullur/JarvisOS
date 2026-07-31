@@ -13,7 +13,11 @@ class SettingsTests(unittest.TestCase):
     """Configuration loader tests using only the standard library."""
 
     def test_load_settings_uses_project_defaults(self) -> None:
-        settings = load_settings()
+        with tempfile.TemporaryDirectory() as directory:
+            settings = load_settings(
+                config_file=Path(directory) / "missing-config.yaml",
+                env_file=Path(directory) / "missing.env",
+            )
 
         self.assertEqual(settings.app_name, "JARVIS OS")
         self.assertEqual(settings.environment, "development")
@@ -40,7 +44,10 @@ providers:
                 encoding="utf-8",
             )
 
-            settings = load_settings(config_file=config_file)
+            settings = load_settings(
+                config_file=config_file,
+                env_file=Path(directory) / "missing.env",
+            )
 
         self.assertEqual(settings.environment, "test")
         self.assertEqual(settings.log_level, "DEBUG")
