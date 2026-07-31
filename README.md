@@ -12,7 +12,7 @@ Voice Intelligence adds disabled-by-default local Windows speech output, safe au
 
 Vision Intelligence adds safe CLI image validation, metadata, local-only policy, and provider-neutral routing. Semantic analysis remains unavailable until a model explicitly advertises vision input. See [docs/VISION_INTELLIGENCE.md](docs/VISION_INTELLIGENCE.md).
 
-The Vercel deployment is a deliberately limited online status foundation. Root `main.py` remains the local CLI launcher; `api/index.py` serves only the safe root, `/api/health`, and `/api/status` surfaces. It does not provide remote chat, sync, tools, automation, or access to local-only features.
+The Vercel deployment is a deliberately limited online status foundation. Root `main.py` remains the local CLI launcher; `api/index.py` serves only the safe root, `/api/health`, and `/api/status` surfaces. The canonical deployment is `jarvis-os`; it does not provide remote chat, sync, tools, automation, or access to local-only features.
 
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 

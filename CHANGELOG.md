@@ -8,6 +8,7 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 
 - Isolated Vercel deployment from the root CLI launcher with a status-only Python function and explicit build routes.
 - Added safe root, `/api/health`, and `/api/status` responses without exposing local runtime state or secrets.
+- Verified both connected Vercel projects reached Ready; the canonical `jarvis-os` status endpoint returned the expected bounded JSON.
 - Made direct Windows SAPI playback the default for normal and automatic speech; permanent audio now requires an explicit output path.
 - Added clear CLI voice input/STT/microphone/storage status, safe input enable/disable behavior, and `voice cleanup`.
 - Added bounded temporary-audio retention and local discovery metadata for Vosk, faster-whisper, and configured whisper.cpp-style runtimes.

@@ -44,7 +44,7 @@ python main.py --ui
 - Memory and Knowledge: authoritative local storage exists, but long-term pruning and cross-device policy are not automated.
 - Voice Input: status, explicit enable/disable/listen commands, local STT discovery, privacy limits, and temp cleanup exist; real microphone transcription still needs a configured local engine, model, and capture adapter.
 - Vision Intelligence: CLI path validation, safe metadata, local-only policy, and Provider Router integration work; semantic analysis awaits a model that advertises vision capability.
-- Online deployment foundation: repository routing now isolates the CLI from a safe status-only Vercel function; live project verification is tracked separately from online sync.
+- Online deployment foundation: both connected Vercel projects reached Ready from commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b`; the canonical `jarvis-os` `/api/status` response was verified live.
 
 ## Experimental Features
 
@@ -70,6 +70,7 @@ python main.py --ui
 - Runtime state is local and some conversation/interface state is not durable across restarts.
 - The former Vercel failure occurred because automatic detection treated root `main.py` as a Python function even though it is intentionally CLI-only. `vercel.json` now builds only `api/index.py`; the deployed surface remains status-only and is not online JARVIS or sync.
 - Two Vercel projects (`jarvis-os` and `jarvis-os-6oy2`) are connected. Keep `jarvis-os` as the canonical project after live verification and disconnect or delete the duplicate manually.
+- Verified canonical endpoint: `https://jarvis-221b5o5fc-jj1-e21e.vercel.app/api/status`. Vercel Deployment Protection may redirect anonymous root or health requests to sign-in until the project setting is changed.
 
 ## Next Recommended Prompt
 

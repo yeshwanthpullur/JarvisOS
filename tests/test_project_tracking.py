@@ -42,7 +42,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertLessEqual(health["overall_mvp_readiness"], 100)
         self.assertLess(path.stat().st_size, 20_000)
         deployment = next(item for item in health["categories"] if item["name"] == "Deployment / Online Foundation")
-        self.assertEqual(deployment["status"], "Partial")
+        self.assertEqual(deployment["status"], "Working")
         self.assertEqual(len(health["categories"]), 18)
         allowed = {"Working", "Partial", "Experimental", "Not Started", "Blocked"}
         for category in health["categories"]:
@@ -73,6 +73,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("Online sync", text)
         self.assertIn("automatic detection treated root `main.py`", text)
         self.assertIn("jarvis-os-6oy2", text)
+        self.assertIn("jarvis-221b5o5fc-jj1-e21e.vercel.app/api/status", text)
         self.assertIn("1,408 passed", text)
 
     def test_roadmap_covers_completed_and_next_milestones(self) -> None:
