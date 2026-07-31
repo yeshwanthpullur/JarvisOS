@@ -27,6 +27,10 @@ class ConversationEngine:
         validation = self.validator.validate_request(request)
         if not validation.valid:
             return ConversationResponse(response=validation.errors[0], warnings=validation.errors, conversation_state=ConversationState.FAILED)
+        if context.command_manager is not None:
+            parsed = context.command_manager.parser.parse(request.normalized_input)
+            if context.command_manager.registry.lookup(parsed.name) is not None:
+                return context.command_manager.execute(request.normalized_input, context)
         personal_manager = context.metadata.get("personal_intelligence_manager")
         if personal_manager is not None and hasattr(personal_manager, "detect_candidates"):
             try:
@@ -115,10 +119,6 @@ class ConversationEngine:
                         )
                 except Exception:
                     pass
-        if context.command_manager is not None:
-            parsed = context.command_manager.parser.parse(request.normalized_input)
-            if context.command_manager.registry.lookup(parsed.name) is not None:
-                return context.command_manager.execute(request.normalized_input, context)
         route = self.router.route(request)
         if route == "command" and context.command_manager is not None:
             return context.command_manager.execute(request.normalized_input.lstrip("/"), context)

@@ -22,4 +22,4 @@ class CommandPermission(StrEnum):
     UTILITY = "utility"
     DIAGNOSTIC = "diagnostic"
     DEVELOPER = "developer"
-
+    SYNC = "sync"

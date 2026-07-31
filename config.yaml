@@ -170,7 +170,7 @@ planning:
 
 voice:
   enabled: false
-  mode: off
+  mode: "off"
   language: en-US
   local_only: true
   privacy_mode: standard
@@ -208,6 +208,28 @@ vision:
   max_image_size: 20000000
   timeout_seconds: 60
   allowed_directories: []
+
+sync:
+  enabled: false
+  mode: "off"
+  adapter: local-queue
+  automatic_sync: false
+  remote_endpoint: null
+  maximum_item_size: 8192
+  maximum_queue_items: 100
+  maximum_batch_size: 10
+  maximum_attempts: 3
+  completed_retention_count: 25
+  audit_retention_count: 100
+  maximum_nested_depth: 4
+  maximum_string_length: 1000
+  conflict_strategy: manual
+  encryption_required: true
+  sync_raw_audio: false
+  sync_raw_images: false
+  sync_raw_documents: false
+  sync_conversations: false
+  sync_secrets: false
 
 interface:
   enabled: false

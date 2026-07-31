@@ -243,6 +243,21 @@ class ConversationCommandTests(unittest.TestCase):
         manager.initialize()
         self.assertIn("Available commands", manager.handle_input("help").response)
 
+    def test_registered_command_runs_before_goal_intelligence(self) -> None:
+        class GoalManager:
+            def prepare_request(self, *_args):
+                raise AssertionError("registered commands must not reach goal analysis")
+
+        commands = CommandManager()
+        commands.initialize()
+        context = ConversationContext(
+            ConversationSession(),
+            command_manager=commands,
+            metadata={"goal_intelligence_manager": GoalManager()},
+        )
+        response = ConversationEngine().handle(ConversationRequest("sync conflicts", "sync conflicts"), context)
+        self.assertIn("Sync Intelligence is unavailable", response.response)
+
     def test_conversation_manager_handles_exit(self) -> None:
         manager = ConversationManager(jarvis_core=JarvisCore())
         manager.jarvis_core.initialize()

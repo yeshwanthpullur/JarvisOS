@@ -13,7 +13,7 @@ STATUS: Final[dict[str, str]] = {
     "status": "online",
     "deployment_mode": "status-foundation",
     "primary_mode": "local-cli",
-    "release": "v0.3.0-alpha",
+    "release": "v0.4.0-alpha",
     "vision": "partial",
     "online_sync": "not_started",
     "web_automation": "not_started",
@@ -58,4 +58,3 @@ class handler(BaseHTTPRequestHandler):
 
     def log_message(self, format: str, *args: object) -> None:
         """Avoid emitting request details from this status-only function."""
-

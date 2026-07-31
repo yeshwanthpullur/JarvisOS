@@ -89,6 +89,9 @@ def _voice_manager(context:CommandContext):
 def _vision_manager(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else getattr(conversation,"vision_intelligence",None) or (getattr(conversation,"metadata",{}) or {}).get("vision_intelligence")
+def _sync_manager(context:CommandContext):
+    conversation=context.conversation_context
+    return None if conversation is None else getattr(conversation,"sync_intelligence",None) or (getattr(conversation,"metadata",{}) or {}).get("sync_intelligence")
 
 
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
@@ -122,6 +125,26 @@ def _project_health_summary() -> ConversationResponse:
         experimental_categories=experimental,
         next_milestone=health.get("next_milestone"),
     )
+
+
+def _safe_project_snapshot() -> dict[str, object] | None:
+    path = Path(__file__).resolve().parents[1] / "docs" / "project_health.json"
+    try:
+        health = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return None
+    categories = tuple(health.get("categories", ()))
+    return {
+        "release": health.get("release", "unknown"),
+        "commit": health.get("commit", "unknown"),
+        "primary_mode": health.get("primary_mode", "unknown"),
+        "overall_mvp_readiness": int(health.get("overall_mvp_readiness", 0)),
+        "working_categories": sum(item.get("status") == "Working" for item in categories),
+        "partial_categories": sum(item.get("status") == "Partial" for item in categories),
+        "experimental_categories": sum(item.get("status") == "Experimental" for item in categories),
+        "next_milestone": health.get("next_milestone", "unknown"),
+        "updated_at": health.get("updated_at", "unknown"),
+    }
 
 
 def _is_local_provider(record: object) -> bool:
@@ -242,6 +265,18 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("vision status", "Show vision readiness", "vision", (), CommandPermission.DIAGNOSTIC),
         ("vision describe", "Describe an image", "vision", (), CommandPermission.UTILITY),
         ("vision ask", "Ask a question about an image", "vision", (), CommandPermission.UTILITY),
+        ("sync status", "Show sync and local queue readiness", "sync", (), CommandPermission.SYNC),
+        ("sync on", "Enable manual local queue mode", "sync", (), CommandPermission.SYNC),
+        ("sync off", "Disable sync without deleting queue items", "sync", (), CommandPermission.SYNC),
+        ("sync queue", "List bounded sync queue metadata", "sync", (), CommandPermission.SYNC),
+        ("sync queue summary", "Summarize sync queue", "sync", (), CommandPermission.SYNC),
+        ("sync add", "Queue an approved sanitized summary", "sync", (), CommandPermission.SYNC),
+        ("sync inspect", "Inspect one sanitized sync item", "sync", (), CommandPermission.SYNC),
+        ("sync cancel", "Cancel a queued sync item", "sync", (), CommandPermission.SYNC),
+        ("sync retry", "Retry an eligible failed sync item", "sync", (), CommandPermission.SYNC),
+        ("sync cleanup", "Prune bounded sync history", "sync", (), CommandPermission.SYNC),
+        ("sync run", "Run a manual sync batch", "sync", (), CommandPermission.SYNC),
+        ("sync conflicts", "List unresolved sync conflicts", "sync", (), CommandPermission.SYNC),
         ("departments", "Show department summary", "department", (), CommandPermission.DEPARTMENT),
         ("department list", "List departments", "department", (), CommandPermission.DEPARTMENT),
         ("memory", "Show memory summary", "memory", (), CommandPermission.MEMORY),
@@ -576,6 +611,71 @@ def _handler_for(name: str):
                 guidance=" Configure a local Ollama vision model that advertises vision capability." if result.status.value=="unavailable" else ""
                 detail=(result.error or "analysis did not complete").rstrip(".")
                 return _text_response(f"Vision {result.status.value}: {detail}.{guidance}",vision_status=result.status.value,request_id=result.request_id,image_metadata=dict(result.metadata))
+        if name.startswith("sync "):
+            sync = _sync_manager(context); args = context.arguments
+            if sync is None:
+                return _text_response("Sync Intelligence is unavailable. Local JARVIS remains operational.")
+            if name == "sync status":
+                state = sync.status()
+                return _text_response(
+                    "Sync status: "
+                    f"mode={state['mode']} enabled={'yes' if state['enabled'] else 'no'} "
+                    f"adapter={state['adapter']} remote={'ready' if state['remote_available'] else 'unavailable'} "
+                    f"queued={state['queue_count']} failed={state['failed_count']} conflicts={state['conflict_count']} "
+                    f"last_success={state['last_successful_sync'] or 'never'} policy=allowlisted-summaries-only "
+                    "deployment=status-only-not-sync-backend.",
+                    **state,
+                )
+            if name == "sync on":
+                result = sync.enable_manual(); return _text_response(result.message, sync_status=result.status.value)
+            if name == "sync off":
+                result = sync.disable(); return _text_response(result.message, sync_status=result.status.value)
+            if name in {"sync queue", "sync queue summary"}:
+                summary = sync.summary()
+                if name == "sync queue summary":
+                    return _text_response("Sync queue summary: " + " ".join(f"{key}={value}" for key, value in summary.items()), **summary)
+                items = sync.list_items()
+                text = ", ".join(f"{item.sync_item_id}:{item.item_type}:{item.status}" for item in items[-20:]) or "empty"
+                return _text_response(f"Sync queue ({len(items)}): {text}", **summary)
+            if name == "sync add":
+                if not args:
+                    return _text_response("Usage: sync add <approved_type> [safe JSON]. Example: sync add project_status")
+                item_type = args[0]
+                if item_type == "project_status" and len(args) == 1:
+                    payload = _safe_project_snapshot()
+                    if payload is None:
+                        return _text_response("Project status snapshot is unavailable.")
+                else:
+                    if len(args) < 2:
+                        return _text_response("A small allowlisted JSON object is required for this item type.")
+                    try:
+                        payload = json.loads(" ".join(args[1:]))
+                    except json.JSONDecodeError:
+                        return _text_response("Sync item rejected: payload must be valid JSON.")
+                result = sync.enqueue(item_type, payload)
+                return _text_response(f"Sync add {result.status.value}: {result.message}" + (f" id={result.sync_item_id}" if result.sync_item_id else ""), sync_status=result.status.value, sync_item_id=result.sync_item_id, error_code=result.error_code)
+            if name == "sync inspect":
+                if not args: return _text_response("Usage: sync inspect <sync_item_id>")
+                item = sync.inspect(args[0])
+                if item is None: return _text_response("Sync item was not found.")
+                return _text_response(
+                    f"Sync item: id={item.sync_item_id} type={item.item_type} status={item.status} attempts={item.attempt_count}/{item.maximum_attempts} payload={json.dumps(item.sanitized_payload, sort_keys=True)}",
+                    sync_item_id=item.sync_item_id, item_type=item.item_type, status=item.status,
+                )
+            if name in {"sync cancel", "sync retry"}:
+                if not args: return _text_response(f"Usage: {name} <sync_item_id>")
+                result = sync.cancel(args[0]) if name == "sync cancel" else sync.retry(args[0])
+                return _text_response(result.message, sync_status=result.status.value, sync_item_id=result.sync_item_id, error_code=result.error_code)
+            if name == "sync cleanup":
+                result = sync.cleanup(); return _text_response(f"Sync cleanup: removed={result['removed']} remaining={result['remaining']} audit_events={result['audit_events']}.", **result)
+            if name == "sync run":
+                result = sync.run()
+                message = result.results[0].message if result.results else result.status.value
+                return _text_response(f"Sync run {result.status.value}: {message} processed={result.processed} synced={result.synced} failed={result.failed} conflicts={result.conflicts}.", sync_status=result.status.value, processed=result.processed, synced=result.synced, failed=result.failed, conflicts=result.conflicts)
+            if name == "sync conflicts":
+                conflicts = sync.conflicts()
+                text = ", ".join(f"{item.conflict_id}:{item.sync_item_id}:{item.status}" for item in conflicts[-20:]) or "none"
+                return _text_response(f"Sync conflicts ({len(conflicts)}): {text}", conflict_count=len(conflicts))
         if name in {"providers", "provider list", "provider status", "provider health"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:

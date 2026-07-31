@@ -1,6 +1,6 @@
 # JARVIS OS
 
-JARVIS OS is currently at **v0.3.0-alpha - Local Voice and CLI Stability**. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at **v0.4.0-alpha - Vision and Deployment Foundation**. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
 For an evidence-based snapshot, roadmap, and health scorecard, see [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise summary is available from the CLI with `project status`.
 
@@ -17,6 +17,8 @@ The Vercel deployment is a deliberately limited online status foundation. Root `
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 
 JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, Windows SAPI voice output, and a partial Vision Intelligence foundation. Online sync and web/mobile automation are not implemented yet.
+
+Online Sync now has an optional, disabled-by-default local foundation: a bounded atomic queue, allowlisted summary schemas, conflict records, audit retention, and manual CLI controls. No real remote backend is configured, and the public Vercel status deployment is not writable sync infrastructure. Raw conversations, databases, audio, images, documents, logs, local paths, and credentials are blocked from the queue.
 
 ## Goals
 
@@ -56,6 +58,7 @@ JARVIS OS is a modular local-first AI assistant foundation written in Python 3.1
 | `brain/` | Future high-level orchestration and reasoning coordination. |
 | `config/` | Settings loading and application logging configuration. |
 | `data/` | Local runtime data that should not be committed by default. |
+| `data/sync/` | Ignored local sync queue, anonymous installation identifier, conflicts, and bounded audit state. |
 | `desktop/` | Dependency-free responsive browser interface assets for local Windows use. |
 | `docs/` | Project documentation and architectural notes. |
 | `logs/` | Runtime log output. Log files are ignored by Git. |
@@ -122,6 +125,8 @@ python main.py --ui
 Use `--no-browser` to print the URL without opening a browser. The interface is disabled unless explicitly started and does not enable remote access.
 
 No additional packages are required for the interface or core runtime. When dependencies become necessary, add only production-required packages to `requirements.txt`.
+
+Manual sync-foundation commands include `sync status`, `sync on/off`, `sync add project_status`, `sync queue summary`, `sync run`, `sync conflicts`, and `sync cleanup`. `sync on` enables only manual/local queue mode; it never enables background upload.
 
 ## Agent Framework
 

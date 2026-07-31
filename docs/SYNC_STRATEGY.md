@@ -1,8 +1,18 @@
 # Sync Strategy
 
-This document defines a future direction. Online sync is not implemented.
+This document defines the implemented local foundation and the future encrypted remote direction. Real remote synchronization is not configured.
 
 The Vercel status foundation is not a sync implementation. Its root and API responses are static, safe deployment metadata and accept no JARVIS records. The duplicate `jarvis-os-6oy2` project should be disconnected or deleted manually after `jarvis-os` is confirmed as the canonical deployment.
+
+## Implemented Foundation
+
+- Sync defaults to `off`; `sync on` enables manual local queue mode only.
+- `data/sync/queue.json` uses bounded versioned JSON and atomic replacement. Runtime files remain ignored by Git.
+- Only project/health/release, task/goal/memory/preference summaries, and checkpoints are eligible through explicit field allowlists.
+- Policy runs before enqueue and again before transmission. It rejects secret-shaped fields and values, absolute paths, binary/base64 content, oversized strings/items, deep nesting, and unknown fields.
+- Payload hashes prevent duplicate queue entries. Completed history and audit events are count-bounded.
+- Hash/version mismatch produces an unresolved conflict under the default `manual` strategy; remote records never mutate authoritative local systems.
+- The unavailable remote adapter cannot mark an item synced. No background scheduler or automatic upload exists.
 
 ## Local-First Principle
 
@@ -35,6 +45,7 @@ Only explicit, versioned, allowlisted records should be eligible:
 - Redact and validate every record before queueing.
 - Treat the server and incoming records as untrusted.
 - Maintain an append-only audit receipt for upload, download, conflict, rejection, and deletion events.
+- A future adapter remains disabled unless HTTPS, authenticated requests, encryption at rest, integrity validation, key rotation, and device revocation are supported and verified.
 
 ## Sync Queue
 

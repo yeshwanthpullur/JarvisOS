@@ -5,3 +5,22 @@ The interactive `Jarvis >` prompt is the current primary JARVIS experience. It i
 Start with `python main.py`. Use `help` for the focused command guide and `project status` for the current release, MVP readiness, and next milestone. Common operating commands include `local only on/off`, `local use <model>`, `provider status`, `tools status`, `voice status`, `voice output on/off`, `voice say <text>`, and `exit`.
 
 Vision commands are `vision status`, `vision describe <image_path>`, and `vision ask <image_path> <question>`. Quote paths containing spaces. Image metadata is available after validation; semantic descriptions require a genuinely vision-capable configured model.
+
+## Sync Commands
+
+```text
+sync status
+sync on
+sync off
+sync add project_status
+sync queue
+sync queue summary
+sync inspect <sync_item_id>
+sync cancel <sync_item_id>
+sync retry <sync_item_id>
+sync run
+sync conflicts
+sync cleanup
+```
+
+Sync starts disabled. `sync on` enables a manual local queue only; it does not enable background or remote uploading. `sync add project_status` queues a compact allowlisted health snapshot. `sync run` truthfully returns unavailable until an authenticated encrypted remote adapter exists. The Vercel status endpoint is not a sync backend.

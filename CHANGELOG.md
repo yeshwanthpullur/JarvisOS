@@ -6,6 +6,8 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 
 ### Changed
 
+- Added the disabled-by-default Online Sync foundation with a bounded atomic local queue, summary allowlists, deduplication, conflicts, retention, and manual CLI controls.
+- Added provider-neutral sync adapters while keeping remote synchronization truthfully unavailable until authenticated encrypted infrastructure is configured.
 - Isolated Vercel deployment from the root CLI launcher with a status-only Python function and explicit build routes.
 - Added safe root, `/api/health`, and `/api/status` responses without exposing local runtime state or secrets.
 - Verified both connected Vercel projects reached Ready; the canonical `jarvis-os` status endpoint returned the expected bounded JSON.
@@ -17,6 +19,7 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 
 ### Security
 
+- Sync rejects credentials, secret-shaped values, absolute local paths, raw/binary file content, unsupported fields, oversized payloads, and uncontrolled nesting before queueing and again before transmission.
 - Raw microphone audio remains non-persistent by default, temporary audio stays scoped to the configured directory, and no cloud speech fallback is permitted.
 
 ## v0.3.0-alpha - Local Voice and CLI Stability (2026-07-31)

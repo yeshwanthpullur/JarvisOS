@@ -4,10 +4,10 @@ Updated: 2026-08-01
 
 ## Current Release
 
-- Release: `v0.3.0-alpha - Local Voice and CLI Stability`
-- Commit: `d2bcb28d988b098c73e98199fc646c08b95f248e`
+- Release: `v0.4.0-alpha - Vision and Deployment Foundation`
+- Commit: `df912e8f67c06503bb0eecb1fa8cbec13095f2b4`
 - Branch: `main`
-- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v0.3.0-alpha`
+- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v0.4.0-alpha`
 
 ## Stable Launch
 
@@ -45,6 +45,7 @@ python main.py --ui
 - Voice Input: status, explicit enable/disable/listen commands, local STT discovery, privacy limits, and temp cleanup exist; real microphone transcription still needs a configured local engine, model, and capture adapter.
 - Vision Intelligence: CLI path validation, safe metadata, local-only policy, and Provider Router integration work; semantic analysis awaits a model that advertises vision capability.
 - Online deployment foundation: both connected Vercel projects reached Ready from commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b`; the canonical `jarvis-os` `/api/status` response was verified live.
+- Online Sync foundation: disabled-by-default manual queueing, strict summary schemas, atomic persistence, deduplication, bounded audit/retention, conflict detection, and truthful unavailable remote behavior work. No real encrypted remote adapter is configured.
 
 ## Experimental Features
 
@@ -52,7 +53,6 @@ python main.py --ui
 
 ## Not Started Features
 
-- Online sync.
 - Web automation.
 - Mobile automation.
 
@@ -66,6 +66,7 @@ python main.py --ui
 - Voice input is architecturally connected but unavailable on this machine; `voice listen` does not fake transcription.
 - Cloud execution depends on user-provided credentials and explicit paid-request approval.
 - The web interface is experimental.
+- Sync is local-queue-only in practice: `sync run` cannot upload until a real authenticated encrypted adapter is configured. The Vercel status endpoint is not a sync backend.
 - No vision, cross-device sync, browser automation, or mobile control exists yet.
 - Runtime state is local and some conversation/interface state is not durable across restarts.
 - The former Vercel failure occurred because automatic detection treated root `main.py` as a Python function even though it is intentionally CLI-only. `vercel.json` now builds only `api/index.py`; the deployed surface remains status-only and is not online JARVIS or sync.
@@ -75,12 +76,12 @@ python main.py --ui
 
 ## Next Recommended Prompt
 
-Prompt 33 - Online Sync Foundation. Vision remains separate from web/mobile automation and does not grant screen-control authority.
+Prompt 34 - Web Automation. It must remain permission-gated and build on Vision, Tool Intelligence, and existing approval controls.
 
 ## Last Verified Tests
 
-- Full suite: 1,408 passed, 0 skipped, 0 failed, 0 errors.
-- Focused vision/provider/command/settings/project-health suite: 119 passed.
+- Full suite: 1,441 passed, 0 skipped, 0 failed, 0 errors.
+- Focused sync/configuration/command/CLI/voice/vision/deployment suite: 203 passed.
 - Real Ollama chat: passed with `llama3.2:1b`.
 - Local-only enforcement: passed.
 - Explicit and automatic Windows SAPI playback paths: passed; audible playback was manually confirmed.

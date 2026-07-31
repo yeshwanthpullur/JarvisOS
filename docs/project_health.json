@@ -1,10 +1,10 @@
 {
-  "release": "v0.3.0-alpha",
-  "commit": "c69bcab6a554846c5f2b13299bd11bac207134fd",
+  "release": "v0.4.0-alpha",
+  "commit": "3397bc6038ae18089c207a02492612076004442f",
   "updated_at": "2026-08-01",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 33 - Online Sync Foundation",
-  "overall_mvp_readiness": 62,
+  "next_milestone": "Prompt 34 - Web Automation",
+  "overall_mvp_readiness": 64,
   "categories": [
     {"name": "Core Runtime", "status": "Working", "confidence": 90, "evidence": "Startup, shutdown, health, and full regression suite pass.", "next_action": "Keep startup checks bounded."},
     {"name": "CLI Experience", "status": "Working", "confidence": 88, "evidence": "Prompt 31.7 stable CLI and focused tests pass.", "next_action": "Fix only observed usability defects."},
@@ -19,10 +19,10 @@
     {"name": "Web Interface", "status": "Experimental", "confidence": 55, "evidence": "Loopback UI works but may feel laggy and is not primary.", "next_action": "Use CLI until a dedicated stabilization milestone."},
     {"name": "Vision", "status": "Partial", "confidence": 55, "evidence": "Safe validation, metadata, CLI, local-only policy, and Provider Router integration exist; no installed vision model is available.", "next_action": "Install and verify a local vision-capable Ollama model."},
     {"name": "Deployment / Online Foundation", "status": "Working", "confidence": 90, "evidence": "Both Vercel projects reached Ready and the canonical status endpoint returned safe JSON; Deployment Protection still gates some anonymous paths.", "next_action": "Retain jarvis-os, manually remove the duplicate, and review Deployment Protection."},
-    {"name": "Online Sync", "status": "Not Started", "confidence": 0, "evidence": "No sync protocol, queue, or server exists.", "next_action": "Implement Prompt 33 after Vision."},
+    {"name": "Online Sync", "status": "Partial", "confidence": 55, "evidence": "Bounded atomic local queue, allowlisted summaries, conflict/audit retention, and manual CLI work; no encrypted remote backend exists.", "next_action": "Design and verify an authenticated encrypted remote adapter before enabling transfer."},
     {"name": "Web Automation", "status": "Not Started", "confidence": 0, "evidence": "No governed browser action implementation exists.", "next_action": "Implement after Vision and permissions review."},
     {"name": "Mobile Automation", "status": "Not Started", "confidence": 0, "evidence": "No mobile bridge or device-control implementation exists.", "next_action": "Define a narrow trust boundary first."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 75, "evidence": "Permission, approval, locality, tool, provider, and UI boundaries are tested.", "next_action": "Threat-review every external integration."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 90, "evidence": "1408 tests pass and v0.3.0-alpha is published.", "next_action": "Keep release evidence current."}
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 90, "evidence": "1441 tests pass and v0.4.0-alpha is published.", "next_action": "Keep release evidence current."}
   ]
 }

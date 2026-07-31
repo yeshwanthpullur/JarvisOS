@@ -113,6 +113,29 @@ class VoiceConfig:
 class VisionConfig:
  enabled:bool=True; local_only:bool=True; privacy_mode:str="standard"; max_image_size:int=20000000; timeout_seconds:int=60; allowed_directories:tuple[Path,...]=()
 
+@dataclass(frozen=True, slots=True)
+class SyncConfig:
+    enabled: bool = False
+    mode: str = "off"
+    adapter: str = "local-queue"
+    automatic_sync: bool = False
+    remote_endpoint: str | None = None
+    maximum_item_size: int = 8192
+    maximum_queue_items: int = 100
+    maximum_batch_size: int = 10
+    maximum_attempts: int = 3
+    completed_retention_count: int = 25
+    audit_retention_count: int = 100
+    maximum_nested_depth: int = 4
+    maximum_string_length: int = 1000
+    conflict_strategy: str = "manual"
+    encryption_required: bool = True
+    sync_raw_audio: bool = False
+    sync_raw_images: bool = False
+    sync_raw_documents: bool = False
+    sync_conversations: bool = False
+    sync_secrets: bool = False
+
 
 @dataclass(frozen=True, slots=True)
 class InterfaceConfig:
@@ -223,6 +246,7 @@ class AppSettings:
     planning: PlanningConfig = field(default_factory=PlanningConfig)
     voice: VoiceConfig = field(default_factory=VoiceConfig)
     vision: VisionConfig = field(default_factory=VisionConfig)
+    sync: SyncConfig = field(default_factory=SyncConfig)
     interface: InterfaceConfig = field(default_factory=InterfaceConfig)
 
     @property

@@ -58,4 +58,5 @@ class JarvisContext:
     autonomous_planning: Any | None = None
     voice_intelligence: Any | None = None
     vision_intelligence: Any | None = None
+    sync_intelligence: Any | None = None
     logger: logging.Logger | None = None

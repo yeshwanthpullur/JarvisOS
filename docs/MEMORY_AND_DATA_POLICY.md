@@ -1,5 +1,11 @@
 # Memory and Data Policy
 
+## Sync Data Boundary
+
+The sync queue may contain only small sanitized summaries allowed by `SyncItemType`. It must not contain raw memory records or databases, conversations, prompts, hidden reasoning, logs, audio/transcripts, images/screenshots, video, documents, provider payloads, credentials, environment values, or local paths. The anonymous installation UUID is random and local; it is not derived from a username, hardware identifier, MAC address, or IP address.
+
+Queue and audit histories are bounded by configuration, duplicate summaries are suppressed by hash, completed records are pruned by `sync cleanup`, and malformed queue files are quarantined for local review rather than uploaded. Status output remains concise and never reveals the installation UUID.
+
 ## Purpose
 
 Keep JARVIS useful without turning local storage into an unbounded archive. Authoritative systems own their records; tracking documents summarize project state and must not duplicate runtime databases.

@@ -19,16 +19,16 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Web Interface | Experimental | 55% | Loopback interface works and is tested, but responsiveness may feel laggy. | `python main.py --ui`; browser checks | Keep optional until a separate stabilization milestone. |
 | Vision | Partial | 55% | Safe image validation, metadata, CLI commands, local-only policy, and provider routing exist; no installed model advertises vision. | `vision status`; focused vision tests | Install and verify a local vision-capable Ollama model. |
 | Deployment / Online Foundation | Working | 90% | Canonical `jarvis-os` production is Ready at `df912e8`; older failures predate the deployment entrypoint and are harmless history. The duplicate project still exists. | Deployment tests; Vercel history audit; live canonical `/api/status` check | Keep `jarvis-os`; disconnect or delete `jarvis-os-6oy2`; ignore or delete historical failed deployments; review Deployment Protection. |
-| Online Sync | Not Started | 0% | No sync protocol, queue, server, or cross-device authority. | Repository inspection | Design and implement Prompt 33 after Vision. |
+| Online Sync | Partial | 55% | Bounded atomic local queue, allowlisted summaries, policy checks, conflicts, retention, audit, and manual CLI work; no encrypted remote backend exists. | Sync tests; manual `sync` command sequence | Design and verify an authenticated encrypted remote adapter before enabling transfer. |
 | Web Automation | Not Started | 0% | No governed browser action implementation. | Repository inspection | Implement only after vision and permission foundations. |
 | Mobile Automation | Not Started | 0% | No mobile bridge or device-control implementation. | Repository inspection | Define narrow mobile trust boundary first. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 90% | 1,408 tests pass and `v0.3.0-alpha` is published. | Full suite; release checklist | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 90% | 1,441 tests pass and `v0.4.0-alpha` is published. | Full suite; release checklist | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
-**62%** toward the broader local-first JARVIS MVP described by the roadmap.
+**64%** toward the broader local-first JARVIS MVP described by the roadmap.
 
-This is not a mathematical average of feature labels. The status-only deployment does not raise the estimate: it reflects a usable local CLI assistant balanced against unavailable real microphone transcription, incomplete semantic vision, missing sync/automation, and limited real-world breadth in tools, planning, and multi-agent work.
+This is not a mathematical average of feature labels. The small increase reflects a real governed local sync queue, not remote sync capability. Unavailable real microphone transcription, incomplete semantic vision, absent encrypted remote transfer, missing automation, and limited real-world breadth remain substantial constraints.
 
 Machine-readable details: [`project_health.json`](project_health.json).

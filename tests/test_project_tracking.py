@@ -34,8 +34,8 @@ class ProjectTrackingTests(unittest.TestCase):
     def test_project_health_json_is_valid_and_bounded(self) -> None:
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(health["release"], "v0.3.0-alpha")
-        self.assertEqual(health["commit"], "c69bcab6a554846c5f2b13299bd11bac207134fd")
+        self.assertEqual(health["release"], "v0.4.0-alpha")
+        self.assertEqual(health["commit"], "3397bc6038ae18089c207a02492612076004442f")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Partial")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
@@ -43,6 +43,8 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertLess(path.stat().st_size, 20_000)
         deployment = next(item for item in health["categories"] if item["name"] == "Deployment / Online Foundation")
         self.assertEqual(deployment["status"], "Working")
+        online_sync = next(item for item in health["categories"] if item["name"] == "Online Sync")
+        self.assertEqual(online_sync["status"], "Partial")
         self.assertEqual(len(health["categories"]), 18)
         allowed = {"Working", "Partial", "Experimental", "Not Started", "Blocked"}
         for category in health["categories"]:
@@ -70,11 +72,11 @@ class ProjectTrackingTests(unittest.TestCase):
             self.assertIn(heading, text)
         self.assertIn("normal CLI is the current primary", text)
         self.assertIn("Vision Intelligence", text)
-        self.assertIn("Online sync", text)
+        self.assertIn("Online Sync", text)
         self.assertIn("automatic detection treated root `main.py`", text)
         self.assertIn("jarvis-os-6oy2", text)
         self.assertIn("jarvis-221b5o5fc-jj1-e21e.vercel.app/api/status", text)
-        self.assertIn("1,408 passed", text)
+        self.assertIn("1,441 passed", text)
 
     def test_roadmap_covers_completed_and_next_milestones(self) -> None:
         text = (DOCS / "ROADMAP.md").read_text(encoding="utf-8")
@@ -123,11 +125,21 @@ class ProjectTrackingTests(unittest.TestCase):
         commands = CommandManager()
         commands.initialize()
         response = commands.execute("project status")
-        self.assertIn("release=v0.3.0-alpha", response.response)
-        self.assertIn("MVP=62%", response.response)
-        self.assertIn("Prompt 33", response.response)
+        self.assertIn("release=v0.4.0-alpha", response.response)
+        self.assertIn("MVP=64%", response.response)
+        self.assertIn("Prompt 34", response.response)
         self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 62)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 64)
+
+    def test_sync_tracking_is_honest_and_local_first(self) -> None:
+        status = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
+        strategy = (DOCS / "SYNC_STRATEGY.md").read_text(encoding="utf-8")
+        policy = (DOCS / "MEMORY_AND_DATA_POLICY.md").read_text(encoding="utf-8")
+        self.assertIn("No real encrypted remote adapter", status)
+        self.assertIn("not a sync backend", status)
+        self.assertIn("defaults to `off`", strategy)
+        self.assertIn("unavailable remote adapter cannot mark an item synced", strategy)
+        self.assertIn("must not contain raw memory", policy)
 
 
 if __name__ == "__main__":

@@ -29,6 +29,7 @@ _SUBCOMMANDS = {
     "plan status", "plan list", "plan show", "plan steps", "plan validate", "plan alternatives", "plan approve", "plan reject", "plan pause", "plan resume", "plan cancel", "plan replan", "plan history", "plan mode", "plan limits",
     "voice status", "voice on", "voice off", "voice listen", "voice cleanup", "voice stop", "voice cancel", "voice interrupt", "voice session", "voice devices", "voice backend", "voice device", "voice input", "voice output", "voice say", "voice transcribe", "voice mode", "voice privacy", "voice language", "voice rate", "voice volume", "voice raw-audio", "voice limits", "voice health",
     "vision status", "vision describe", "vision ask",
+    "sync status", "sync on", "sync off", "sync queue", "sync add", "sync inspect", "sync cancel", "sync retry", "sync cleanup", "sync run", "sync conflicts",
 }
 
 
@@ -56,4 +57,7 @@ class CommandParser:
             name = f"{name} {args.pop(0)}"
             if name in {"local only", "cloud only"} and args and args[0] in {"on", "off"}:
                 name = f"{name} {args.pop(0)}"
+            if name == "sync queue" and args and args[0] == "summary":
+                name = "sync queue summary"
+                args.pop(0)
         return ParsedCommand(name=name.lower(), arguments=tuple(args), flags=flags, raw=text)
