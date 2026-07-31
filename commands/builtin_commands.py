@@ -216,6 +216,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("voice on", "Enable voice sessions", "voice", (), CommandPermission.UTILITY),
         ("voice off", "Disable voice", "voice", (), CommandPermission.UTILITY),
         ("voice listen", "Start explicit listening", "voice", (), CommandPermission.UTILITY),
+        ("voice cleanup", "Remove temporary voice audio", "voice", (), CommandPermission.UTILITY),
         ("voice stop", "Stop listening", "voice", (), CommandPermission.UTILITY),
         ("voice cancel", "Cancel voice session", "voice", (), CommandPermission.UTILITY),
         ("voice interrupt", "Interrupt voice output", "voice", (), CommandPermission.UTILITY),
@@ -441,25 +442,45 @@ def _handler_for(name: str):
             voice=_voice_manager(context);args=context.arguments
             if voice is None:return _text_response("Voice Intelligence is unavailable; text mode remains active.")
             if name=="voice status":
-                backend=voice.registry.get(voice.selected_output_backend)
-                available=bool(backend and backend.available)
+                backend=voice.registry.get(voice.selected_output_backend);input_status=voice.input_status()
+                available=bool(backend and backend.available);retained=len(voice.retained_audio_files())
                 return _text_response(
                     "Voice status: "
                     f"output={'on' if voice.output_enabled else 'off'} "
-                    f"backend={voice.selected_output_backend} "
+                    f"output_backend={voice.selected_output_backend} "
                     f"playback={'ready' if available else 'unavailable'} "
                     f"input={'on' if voice.input_enabled else 'off'} "
+                    f"input_backend={voice.selected_input_backend} "
+                    f"stt={'ready' if input_status['stt_available'] else 'unavailable'} "
+                    f"raw_audio_persistence={'on' if voice.raw_audio_persistence else 'off'} "
+                    f"temp_directory={voice.temp_directory} retained_audio={retained} "
                     f"mode={voice.mode.value} privacy={voice.privacy_mode}",
                     output_enabled=voice.output_enabled,
-                    backend=voice.selected_output_backend,
+                    output_backend=voice.selected_output_backend,
                     playback_ready=available,
                     input_enabled=voice.input_enabled,
+                    input_backend=voice.selected_input_backend,
+                    stt_available=input_status["stt_available"],
+                    raw_audio_persistence=voice.raw_audio_persistence,
+                    temp_directory=str(voice.temp_directory),
+                    retained_audio_count=retained,
                 )
             if name=="voice on":voice.enabled=True;return _text_response("Voice enabled. Microphone capture remains disabled until explicitly activated.")
             if name=="voice off":voice.enabled=False;voice.input_enabled=False;voice.mode=type(voice.mode).OFF;voice.cancel();return _text_response("Voice disabled. Text mode remains active.")
             if name=="voice input":
-                if args and args[0] in {"on","off"}:voice.input_enabled=args[0]=="on";return _text_response(f"Voice input {'enabled' if voice.input_enabled else 'disabled'}.")
-                return _text_response(f"Voice input: {voice.input_enabled}")
+                status=voice.input_status()
+                if args and args[0]=="off":voice.input_enabled=False;return _text_response("Voice input disabled. No microphone is active.")
+                if args and args[0]=="on":
+                    if not status["stt_available"]:
+                        voice.input_enabled=False
+                        message="Voice input is not available because no local STT model is configured." if not status["model_ready"] else "Voice input is unavailable because no microphone capture adapter is configured."
+                        return _text_response(message,missing_capabilities=status["missing_capabilities"])
+                    voice.input_enabled=True;voice.enabled=True;return _text_response("Voice input enabled for explicit push-to-talk listening. Continuous listening remains disabled.")
+                return _text_response(
+                    f"Voice input: {'on' if voice.input_enabled else 'off'} backend={status['backend']} "
+                    f"stt={'ready' if status['stt_available'] else 'unavailable'} microphone={'ready' if status['microphone_available'] else 'unavailable'}",
+                    **status,
+                )
             if name=="voice output":
                 if args and args[0] in {"on","off"}:
                     if args[0]=="on":
@@ -516,8 +537,14 @@ def _handler_for(name: str):
             if name in {"voice stop","voice interrupt"}:return _text_response("Voice interruption requested." if voice.interrupt() else "No active voice operation.")
             if name=="voice cancel":voice.cancel();return _text_response("Voice session cancelled.")
             if name=="voice listen":
+                status=voice.input_status()
+                if not status["stt_available"]:return _text_response("Voice input is not available because no local STT model is configured.",missing_capabilities=status["missing_capabilities"])
                 if not voice.enabled or not voice.input_enabled:return _text_response("Voice input is disabled; no microphone was activated.")
-                return _text_response("No available microphone capture adapter is configured.")
+                if not status["microphone_available"]:return _text_response("Voice input is unavailable because no microphone capture adapter is configured.",missing_capabilities=status["missing_capabilities"])
+                return _text_response("Voice input is configured, but this backend does not expose a capture operation.")
+            if name=="voice cleanup":
+                cleanup=voice.cleanup_temp_audio(remove_all=True)
+                return _text_response(f"Voice cleanup complete: removed={cleanup['removed']} remaining={cleanup['remaining']} failed={cleanup['failed']}.",**cleanup)
             if name=="voice session":
                 sessions=tuple(voice.sessions.values());return _text_response(f"Voice session: {sessions[-1].voice_session_id}:{sessions[-1].state.value}" if sessions else "No voice session exists.")
             if name=="voice limits":return _text_response("Voice limits: "+", ".join(f"{k}={getattr(voice.limits,k)}" for k in voice.limits.__slots__))

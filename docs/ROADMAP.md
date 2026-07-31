@@ -13,6 +13,8 @@ Updated: 2026-08-01
 - Prompt 31.5 - Local Desktop Interface MVP.
 - Prompt 31.6 - Interface Redesign and Stabilization.
 - Prompt 31.7 - Stable CLI Voice and Normal JARVIS Mode.
+- Prompt 31.8 - Clean Tracking, Sync-Ready Status, and Project Health Foundation.
+- Prompt 31.9 - Voice Input and Audio Storage Cleanup foundation.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Prompt 32 - Vision Intelligence

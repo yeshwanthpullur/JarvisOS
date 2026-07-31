@@ -128,20 +128,33 @@ try {
 
 class OfflineSttDiscoveryAdapter:
  adapter_id="offline-stt";name="Offline STT discovery";version="1";local=True;capabilities=("transcription",);supported_languages=("en",);supported_formats=("wav",)
- def __init__(self):self.engine="vosk" if importlib.util.find_spec("vosk") else "faster-whisper" if importlib.util.find_spec("faster_whisper") else None;self.available=False
- def health_check(self):return {"status":"unavailable","dependency":self.engine or "none","model_ready":False,"local":True}
+ def __init__(self,config=None):
+  self.engine="vosk" if importlib.util.find_spec("vosk") else "faster-whisper" if importlib.util.find_spec("faster_whisper") else "whisper.cpp" if getattr(config,"stt_executable",None) else None
+  self.model_path=Path(getattr(config,"stt_model_path","")).expanduser() if getattr(config,"stt_model_path",None) else None
+  self.model_ready=bool(self.model_path and self.model_path.exists())
+  self.capture_available=False
+  self.available=bool(self.engine and self.model_ready and self.capture_available)
+ def health_check(self):
+  missing=[]
+  if not self.engine:missing.append("local_stt_engine")
+  if not self.model_ready:missing.append("local_stt_model")
+  if not self.capture_available:missing.append("microphone_capture_adapter")
+  return {"status":"healthy" if self.available else "unavailable","engine":self.engine or "none","model_ready":self.model_ready,"capture_ready":self.capture_available,"missing_capabilities":tuple(missing),"local":True}
 
 class VoiceIntelligence:
  def __init__(self,settings:Any=None,storage_dir:Path|None=None,logger:logging.Logger|None=None):
-  self.settings=settings;self.storage_dir=storage_dir;self.logger=logger or logging.getLogger("voice_intelligence");self.registry=VoiceAdapterRegistry();self.registry.register(WindowsSapiAdapter());self.registry.register(OfflineSttDiscoveryAdapter())
+  self.settings=settings;self.storage_dir=storage_dir;self.logger=logger or logging.getLogger("voice_intelligence");self.registry=VoiceAdapterRegistry();self.registry.register(WindowsSapiAdapter())
   config=getattr(settings,"voice",None)
+  self.registry.register(OfflineSttDiscoveryAdapter(config))
   self.enabled=bool(getattr(config,"enabled",False));self.input_enabled=bool(getattr(config,"input_enabled",False));self.output_enabled=bool(getattr(config,"output_enabled",False))
   try:self.mode=VoiceMode(getattr(config,"mode","off"))
   except ValueError:self.mode=VoiceMode.OFF
   self.privacy_mode=str(getattr(config,"privacy_mode","standard"));self.raw_audio_persistence=bool(getattr(config,"raw_audio_persistence",False));self.local_only=bool(getattr(config,"local_only",True));self.language=str(getattr(config,"language","en-US"));self.rate=int(getattr(config,"rate",0));self.volume=int(getattr(config,"volume",100));self.wake_word_enabled=False
   requested_input=str(getattr(config,"input_backend","offline-stt"));requested_output=str(getattr(config,"output_backend","windows-sapi"));self.selected_input_backend=requested_input if self.registry.get(requested_input) else "offline-stt";self.selected_output_backend=requested_output if self.registry.get(requested_output) else "windows-sapi"
   self.allowed_audio_directories=tuple(getattr(config,"allowed_audio_directories",()) or ())
-  self.sessions:dict[str,VoiceSession]={};self.limits=VoiceLimits(max_capture_seconds=int(getattr(config,"max_capture_seconds",30)),max_audio_size=int(getattr(config,"max_audio_size",20_000_000)),max_transcript_length=int(getattr(config,"max_transcript_length",4000)),max_spoken_response_length=int(getattr(config,"max_spoken_response_length",500)),retained_audio_count=int(getattr(config,"retention_limit",0)));self.initialized=True;self.logger.info("voice_initialized enabled=%s microphone=%s wake_word=false",self.enabled,self.input_enabled)
+  configured_temp=getattr(config,"temp_directory",None);base=Path(getattr(settings,"base_dir",Path.cwd()))
+  self.temp_directory=(Path(configured_temp) if configured_temp else base/"data"/"voice-temp").resolve()
+  self.sessions:dict[str,VoiceSession]={};self.limits=VoiceLimits(max_capture_seconds=int(getattr(config,"max_capture_seconds",30)),max_audio_size=int(getattr(config,"max_audio_size",20_000_000)),max_transcript_length=int(getattr(config,"max_transcript_length",4000)),max_spoken_response_length=int(getattr(config,"max_spoken_response_length",500)),temp_lifetime_seconds=int(getattr(config,"temp_audio_lifetime_seconds",300)),retained_audio_count=max(0,int(getattr(config,"retention_limit",0))));self.initialized=True;self.cleanup_temp_audio(remove_all=False);self.logger.info("voice_initialized enabled=%s microphone=%s wake_word=false",self.enabled,self.input_enabled)
  def create_session(self,user_session_id="default",parent_request_id=None):
   if len([s for s in self.sessions.values() if s.state not in {VoiceState.COMPLETED,VoiceState.CANCELLED,VoiceState.FAILED}])>=self.limits.max_sessions:raise ValueError("voice_session_limit")
   s=VoiceSession(str(uuid4()),user_session_id,self.mode,VoiceState.READY if self.enabled else VoiceState.UNAVAILABLE,parent_request_id, self.selected_input_backend,self.selected_output_backend,language=self.language,privacy_mode=self.privacy_mode,raw_audio_persistence=self.raw_audio_persistence,local_only=self.local_only or self.privacy_mode=="strict");self.sessions[s.voice_session_id]=s;self._save();return s
@@ -174,20 +187,38 @@ class VoiceIntelligence:
   if "```" in text:return {"speak":False,"reason":"code_text_only"}
   spoken=text if len(text)<=self.limits.max_spoken_response_length else text[:self.limits.max_spoken_response_length].rsplit(" ",1)[0]+". More detail is available on screen."
   return {"speak":True,"text":spoken}
- def say(self,text,parent_request_id="voice-command",output_path:Path|None=None,playback=False):
+ def say(self,text,parent_request_id="voice-command",output_path:Path|None=None,playback:bool|None=None):
   if not self.output_enabled:raise ValueError("voice_output_disabled")
   policy=self.response_policy(text)
   if not policy["speak"]:raise ValueError(str(policy["reason"]))
-  session=self.create_session(parent_request_id=parent_request_id);path=output_path
-  if not playback:
-   path=path or ((self.storage_dir or Path.cwd())/"voice-output"/f"{uuid4()}.wav");path.parent.mkdir(parents=True,exist_ok=True)
-  req=SpeechSynthesisRequest(str(uuid4()),session.voice_session_id,parent_request_id,self.selected_output_backend,str(policy["text"]),self.language,rate=self.rate,volume=self.volume,output_mode="playback" if playback and path is None else "both" if playback else "file",output_path=str(path) if path else None,local_only=self.local_only,timeout=self.limits.synthesis_timeout)
+  session=self.create_session(parent_request_id=parent_request_id);path=output_path;playback=path is None if playback is None else playback
+  req=SpeechSynthesisRequest(str(uuid4()),session.voice_session_id,parent_request_id,self.selected_output_backend,str(policy["text"]),self.language,rate=self.rate,volume=self.volume,output_mode="playback" if path is None else "both" if playback else "file",output_path=str(path) if path else None,local_only=self.local_only,timeout=self.limits.synthesis_timeout)
   self.logger.info("synthesis_started request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s",parent_request_id,session.voice_session_id,req.synthesis_id,req.backend_id)
   result=self.registry.get(req.backend_id).synthesize(req);self.sessions[session.voice_session_id]=replace(session,state=VoiceState.COMPLETED if result.status==VoiceStatus.COMPLETED else VoiceState.FAILED,synthesis_count=1,ended_at=now(),updated_at=now(),last_error=result.errors[0] if result.errors else None);self._save();self.logger.info("synthesis_completed request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s status=%s",parent_request_id,session.voice_session_id,result.synthesis_id,result.backend_id,result.status.value);return result
  def transcribe_file(self,path):
   capture=self.validate_audio_file(path);adapter=self.registry.get(self.selected_input_backend)
   if not adapter.available:return TranscriptionResult(str(uuid4()),capture.voice_session_id,None,adapter.adapter_id,VoiceStatus.UNAVAILABLE,errors=("offline_stt_model_unavailable",))
   return TranscriptionResult(str(uuid4()),capture.voice_session_id,None,adapter.adapter_id,VoiceStatus.FAILED,errors=("adapter_execution_not_configured",))
+ def input_status(self):
+  adapter=self.registry.get(self.selected_input_backend);health=adapter.health_check() if adapter else {"status":"unavailable","missing_capabilities":("input_backend",)}
+  return {"enabled":self.input_enabled,"backend":self.selected_input_backend,"stt_available":bool(adapter and adapter.available),"model_ready":bool(health.get("model_ready",False)),"microphone_available":bool(health.get("capture_ready",False)),"missing_capabilities":tuple(health.get("missing_capabilities",()))}
+ def retained_audio_files(self):
+  directories=[self.temp_directory]
+  if self.storage_dir:directories.append((self.storage_dir/"voice-output").resolve())
+  files=[];seen=set()
+  for directory in directories:
+   if not directory.is_dir():continue
+   for path in directory.iterdir():
+    if path.is_file() and path.suffix.lower() in {".wav",".mp3",".flac",".ogg"} and path.resolve() not in seen:files.append(path);seen.add(path.resolve())
+  return tuple(sorted(files,key=lambda p:str(p)))
+ def cleanup_temp_audio(self,remove_all=True):
+  removed=0;failed=0;cutoff=datetime.now(UTC).timestamp()-self.limits.temp_lifetime_seconds
+  files=self.retained_audio_files();keep=max(0,self.limits.retained_audio_count)
+  for index,path in enumerate(sorted(files,key=lambda p:p.stat().st_mtime,reverse=True)):
+   if not remove_all and index<keep and path.stat().st_mtime>=cutoff:continue
+   try:path.unlink();removed+=1
+   except OSError:failed+=1
+  return {"removed":removed,"failed":failed,"remaining":len(self.retained_audio_files())}
  def interrupt(self):
   changed=False
   for sid,s in tuple(self.sessions.items()):
@@ -197,7 +228,7 @@ class VoiceIntelligence:
   for sid,s in tuple(self.sessions.items()):
    if s.state not in {VoiceState.COMPLETED,VoiceState.CANCELLED,VoiceState.FAILED}:self.sessions[sid]=replace(s,state=VoiceState.CANCELLED,ended_at=now(),updated_at=now())
   self._save();return True
- def health(self):return {a.adapter_id:a.health_check() for a in self.registry.list()}|{"enabled":self.enabled,"input_enabled":self.input_enabled,"output_enabled":self.output_enabled,"wake_word_enabled":False}
+ def health(self):return {a.adapter_id:a.health_check() for a in self.registry.list()}|{"enabled":self.enabled,"input_enabled":self.input_enabled,"output_enabled":self.output_enabled,"wake_word_enabled":False,"raw_audio_persistence":self.raw_audio_persistence,"temp_directory":str(self.temp_directory),"retained_audio_count":len(self.retained_audio_files())}
  def _save(self):
   if not self.storage_dir:return
   self.storage_dir.mkdir(parents=True,exist_ok=True);records=list(self.sessions.values())[-self.limits.retained_session_history:];(self.storage_dir/"sessions.json").write_text(json.dumps([asdict(x) for x in records],default=str,indent=2),encoding="utf-8")

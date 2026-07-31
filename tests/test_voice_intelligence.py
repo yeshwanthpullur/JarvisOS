@@ -1,4 +1,4 @@
-import base64,subprocess,tempfile,unittest,wave
+import base64,os,subprocess,tempfile,unittest,wave
 from types import SimpleNamespace
 from dataclasses import replace
 from pathlib import Path
@@ -88,6 +88,18 @@ class VoiceTests(unittest.TestCase):
    result=self.v.say("voice test",playback=True)
   request=synthesize.call_args.args[0]
   self.assertEqual(result.status,VoiceStatus.COMPLETED);self.assertEqual(request.output_mode,"playback");self.assertIsNone(request.output_path)
+ def test_say_defaults_to_playback_without_permanent_audio(self):
+  self.v.output_enabled=True;self.v.enabled=True
+  completed=SpeechSynthesisResult("s","session","parent","windows-sapi",VoiceStatus.COMPLETED,output_mode="playback")
+  with patch.object(self.v.registry.get("windows-sapi"),"synthesize",return_value=completed) as synthesize:self.v.say("voice test")
+  request=synthesize.call_args.args[0]
+  self.assertEqual(request.output_mode,"playback");self.assertIsNone(request.output_path)
+ def test_explicit_output_path_is_required_for_file_creation(self):
+  self.v.output_enabled=True;self.v.enabled=True
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d)/"saved.wav";completed=SpeechSynthesisResult("s","session","parent","windows-sapi",VoiceStatus.COMPLETED,str(path),"file")
+   with patch.object(self.v.registry.get("windows-sapi"),"synthesize",return_value=completed) as synthesize:self.v.say("voice test",output_path=path,playback=False)
+   self.assertEqual(synthesize.call_args.args[0].output_mode,"file");self.assertEqual(synthesize.call_args.args[0].output_path,str(path))
  def test_real_sapi_file_when_available(self):
   if not self.v.registry.get("windows-sapi").available:self.skipTest("Windows SAPI unavailable")
   with tempfile.TemporaryDirectory() as d:self.v.output_enabled=True;r=self.v.say("voice test",output_path=Path(d)/"out.wav");self.assertEqual(r.status,VoiceStatus.COMPLETED);self.assertGreater(r.audio_size,0)
@@ -121,6 +133,42 @@ class VoiceTests(unittest.TestCase):
    self.assertEqual(run.call_args.kwargs["env"]["JARVIS_SPEECH_TEXT"],spoken);self.assertNotIn(spoken," ".join(run.call_args.args[0]));self.assertNotIn(spoken,self.decoded_script(run))
  def test_stt_unavailable_not_fake(self):
   with tempfile.TemporaryDirectory() as d:p=self.wav(d);self.v.settings=SimpleNamespace(base_dir=Path(d));r=self.v.transcribe_file(str(p));self.assertEqual(r.status,VoiceStatus.UNAVAILABLE)
+ def test_input_status_reports_missing_local_capabilities(self):
+  status=self.v.input_status();self.assertFalse(status["stt_available"]);self.assertFalse(status["microphone_available"]);self.assertIn("microphone_capture_adapter",status["missing_capabilities"])
+ def test_temp_audio_cleanup_is_scoped_and_safe(self):
+  with tempfile.TemporaryDirectory() as d:
+   voice=VoiceIntelligence(SimpleNamespace(voice=SimpleNamespace(temp_directory=Path(d)),base_dir=Path(d)))
+   (Path(d)/"capture.wav").write_bytes(b"audio");(Path(d)/"keep.txt").write_text("keep",encoding="utf-8")
+   result=voice.cleanup_temp_audio();self.assertEqual(result,{"removed":1,"failed":0,"remaining":0});self.assertTrue((Path(d)/"keep.txt").exists())
+ def test_temp_audio_retention_policy_keeps_allowed_recent_files(self):
+  with tempfile.TemporaryDirectory() as d:
+   config=SimpleNamespace(temp_directory=Path(d),retention_limit=1,temp_audio_lifetime_seconds=300)
+   voice=VoiceIntelligence(SimpleNamespace(voice=config,base_dir=Path(d)));older=Path(d)/"older.wav";newer=Path(d)/"newer.wav";older.write_bytes(b"a");newer.write_bytes(b"b");os.utime(older,(1,1))
+   result=voice.cleanup_temp_audio(remove_all=False);self.assertEqual(result["remaining"],1);self.assertTrue(newer.exists())
+ def test_voice_status_reports_input_output_and_storage(self):
+  commands=CommandManager();commands.initialize();context=ConversationContext(session=ConversationSession(),voice_intelligence=self.v)
+  response=commands.execute("voice status",context)
+  for value in ("output=off","input=off","stt=unavailable","raw_audio_persistence=off","retained_audio=0"):self.assertIn(value,response.response)
+ def test_voice_input_commands_are_truthful_without_stt(self):
+  commands=CommandManager();commands.initialize();context=ConversationContext(session=ConversationSession(),voice_intelligence=self.v)
+  self.assertIn("stt=unavailable",commands.execute("voice input status",context).response)
+  self.assertIn("no local STT model",commands.execute("voice input on",context).response);self.assertFalse(self.v.input_enabled)
+  self.assertIn("no local STT model",commands.execute("voice listen",context).response)
+  self.assertIn("disabled",commands.execute("voice input off",context).response)
+ def test_voice_cleanup_command(self):
+  with tempfile.TemporaryDirectory() as d:
+   voice=VoiceIntelligence(SimpleNamespace(voice=SimpleNamespace(temp_directory=Path(d)),base_dir=Path(d)));(Path(d)/"capture.wav").write_bytes(b"audio")
+   commands=CommandManager();commands.initialize();context=ConversationContext(session=ConversationSession(),voice_intelligence=voice)
+   response=commands.execute("voice cleanup",context);self.assertIn("removed=1",response.response);self.assertFalse((Path(d)/"capture.wav").exists())
+ def test_cleanup_removes_legacy_generated_output_but_not_input(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=Path(d);temp=root/"temp";output=root/"voice-output";input_dir=root/"voice-input";output.mkdir();input_dir.mkdir()
+   (output/"old.wav").write_bytes(b"audio");(input_dir/"user.wav").write_bytes(b"audio")
+   voice=VoiceIntelligence(SimpleNamespace(voice=SimpleNamespace(temp_directory=temp),base_dir=root),storage_dir=root)
+   self.assertFalse((output/"old.wav").exists());self.assertTrue((input_dir/"user.wav").exists())
+ def test_repository_tracks_no_audio_artifacts(self):
+  tracked=subprocess.run(["git","ls-files","*.wav","*.mp3","*.flac","*.ogg"],capture_output=True,text=True,check=True,cwd=Path(__file__).resolve().parents[1])
+  self.assertEqual(tracked.stdout.strip(),"")
  def test_interrupt_idempotent(self):self.assertFalse(self.v.interrupt())
  def test_cancel(self):self.v.enabled=True;s=self.v.create_session();self.v.cancel();self.assertEqual(self.v.sessions[s.voice_session_id].state,VoiceState.CANCELLED)
  def test_persistence_summary(self):

@@ -31,6 +31,7 @@ python main.py --ui
 - Focused CLI help, provider/tool status, and readable non-debug output.
 - Safe calculator and text-transformation tools through Tool Intelligence.
 - Windows SAPI voice playback through `voice say` and safe automatic spoken replies.
+- Playback-only speech produces no permanent audio file by default; temporary voice audio is bounded and user-cleanable.
 - Conversation, context, retrieval, personal, task, goal, workflow, reflection, and adaptive foundations.
 - Automated regression suite and a published annotated alpha release.
 
@@ -41,6 +42,7 @@ python main.py --ui
 - Autonomous Planning: advisory plans work, but autonomous execution is intentionally not enabled.
 - Multi-Agent Intelligence: governed planner/reviewer coordination exists, but broad specialist coverage is limited.
 - Memory and Knowledge: authoritative local storage exists, but long-term pruning and cross-device policy are not automated.
+- Voice Input: status, explicit enable/disable/listen commands, local STT discovery, privacy limits, and temp cleanup exist; real microphone transcription still needs a configured local engine, model, and capture adapter.
 
 ## Experimental Features
 
@@ -55,11 +57,12 @@ python main.py --ui
 
 ## Blocked Features
 
-- Offline voice input is blocked until a supported local STT runtime and model are explicitly configured. No microphone capture is started automatically.
+- Real offline microphone transcription is blocked until a supported local STT runtime, model, and capture adapter are explicitly configured. No microphone capture is started automatically.
 
 ## Known Limitations
 
 - SAPI playback is synchronous, so the CLI waits while speech is playing.
+- Voice input is architecturally connected but unavailable on this machine; `voice listen` does not fake transcription.
 - Cloud execution depends on user-provided credentials and explicit paid-request approval.
 - The web interface is experimental.
 - No vision, cross-device sync, browser automation, or mobile control exists yet.
@@ -71,8 +74,8 @@ Prompt 32 - Vision Intelligence. It should remain local-first, provider-governed
 
 ## Last Verified Tests
 
-- Full suite: 1,383 passed, 0 skipped, 0 failed, 0 errors.
-- Focused CLI/voice/command/plugin suite: 139 passed.
+- Full suite: 1,393 passed, 0 skipped, 0 failed, 0 errors.
+- Focused voice/CLI/settings/project-health suite: 88 passed.
 - Real Ollama chat: passed with `llama3.2:1b`.
 - Local-only enforcement: passed.
 - Explicit and automatic Windows SAPI playback paths: passed; audible playback was manually confirmed.
@@ -87,6 +90,8 @@ Prompt 32 - Vision Intelligence. It should remain local-first, provider-governed
 - [x] Run `voice status` and confirm Windows SAPI readiness.
 - [x] Run `voice output on` and `voice say JARVIS CLI VOICE CHECK`.
 - [x] Confirm a safe assistant reply is spoken.
+- [x] Confirm normal speech creates no permanent WAV/MP3 and `voice cleanup` is safe.
+- [x] Confirm `voice input status/on/listen` reports unavailable local prerequisites without activating a microphone.
 - [x] Run calculator Tool Intelligence and confirm a real normalized result.
 - [x] Run `voice output off` and `exit`.
 - [ ] Re-verify paid cloud execution only with explicit permission and configured credentials.

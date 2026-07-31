@@ -191,6 +191,9 @@ voice:
   volume: 100
   raw_audio_persistence: false
   retention_limit: 0
+  temp_audio_lifetime_seconds: 300
+  stt_model_path:
+  stt_executable:
   wake_word_enabled: false
   wake_word_backend:
   activation_phrase: jarvis

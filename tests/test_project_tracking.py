@@ -34,7 +34,7 @@ class ProjectTrackingTests(unittest.TestCase):
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(health["release"], "v0.3.0-alpha")
-        self.assertEqual(health["commit"], "d2bcb28d988b098c73e98199fc646c08b95f248e")
+        self.assertEqual(health["commit"], "69d9521cad5266bf5048d2636faeea452774eeab")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
         self.assertLessEqual(health["overall_mvp_readiness"], 100)
         self.assertLess(path.stat().st_size, 20_000)
@@ -66,7 +66,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("normal CLI is the current primary", text)
         self.assertIn("Vision Intelligence", text)
         self.assertIn("Online sync", text)
-        self.assertIn("1,383 passed", text)
+        self.assertIn("1,393 passed", text)
 
     def test_roadmap_covers_completed_and_next_milestones(self) -> None:
         text = (DOCS / "ROADMAP.md").read_text(encoding="utf-8")

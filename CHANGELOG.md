@@ -2,6 +2,18 @@
 
 All notable verified changes to JARVIS OS are recorded here. Unreleased architecture or planned work belongs in `docs/ROADMAP.md`, not in release history.
 
+## Unreleased
+
+### Changed
+
+- Made direct Windows SAPI playback the default for normal and automatic speech; permanent audio now requires an explicit output path.
+- Added clear CLI voice input/STT/microphone/storage status, safe input enable/disable behavior, and `voice cleanup`.
+- Added bounded temporary-audio retention and local discovery metadata for Vosk, faster-whisper, and configured whisper.cpp-style runtimes.
+
+### Security
+
+- Raw microphone audio remains non-persistent by default, temporary audio stays scoped to the configured directory, and no cloud speech fallback is permitted.
+
 ## v0.3.0-alpha - Local Voice and CLI Stability (2026-07-31)
 
 ### Added
