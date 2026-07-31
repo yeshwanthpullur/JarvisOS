@@ -16,6 +16,7 @@ Updated: 2026-08-01
 - Prompt 31.8 - Clean Tracking, Sync-Ready Status, and Project Health Foundation.
 - Prompt 31.9 - Voice Input and Audio Storage Cleanup foundation.
 - Prompt 32 - Vision Intelligence Foundation: safe image intake, metadata, CLI, policy, and provider routing.
+- Prompt 32.1 - Safe Vercel status foundation, isolated from the local CLI. This is deployment readiness, not online sync.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Prompt 33 - Online Sync Foundation
@@ -29,6 +30,8 @@ Updated: 2026-08-01
 **Acceptance criteria:** sync disabled by default, secrets excluded, offline operation preserved, conflicts never silently overwrite authoritative data, bounded queues, revocable devices, and complete audit metadata.
 
 **Release target:** TBD after auditing the existing legacy `v0.5.0` tag to avoid version confusion.
+
+The status-only Vercel endpoint may host future public readiness metadata, but it is not a sync server and must not receive user data, secrets, local state, or assistant requests.
 
 ## Prompt 34 - Web Automation
 

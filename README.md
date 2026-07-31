@@ -12,6 +12,8 @@ Voice Intelligence adds disabled-by-default local Windows speech output, safe au
 
 Vision Intelligence adds safe CLI image validation, metadata, local-only policy, and provider-neutral routing. Semantic analysis remains unavailable until a model explicitly advertises vision input. See [docs/VISION_INTELLIGENCE.md](docs/VISION_INTELLIGENCE.md).
 
+The Vercel deployment is a deliberately limited online status foundation. Root `main.py` remains the local CLI launcher; `api/index.py` serves only the safe root, `/api/health`, and `/api/status` surfaces. It does not provide remote chat, sync, tools, automation, or access to local-only features.
+
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 
 JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, Windows SAPI voice output, and a partial Vision Intelligence foundation. Online sync and web/mobile automation are not implemented yet.
@@ -72,6 +74,7 @@ JARVIS OS is a modular local-first AI assistant foundation written in Python 3.1
 | `goal_intelligence/` | Goal intelligence layer for goal clarification, quality evaluation, decomposition, progress, conflicts, and next-step recommendations. |
 | `plugins/` | Official extension framework, plugin manifests, lifecycle, permissions, and example plugins. |
 | `server/` | Localhost-only interface service and future bounded network interfaces. |
+| `api/` | Status-only Vercel entrypoint; it is separate from the local CLI runtime. |
 | `skills/` | Reusable abilities that future agents can call. |
 | `tests/` | Automated tests for the foundation and future modules. |
 | `utils/` | Shared helpers that are truly cross-cutting. |
@@ -81,6 +84,7 @@ JARVIS OS is a modular local-first AI assistant foundation written in Python 3.1
 | File | Purpose |
 | --- | --- |
 | `main.py` | Application entry point. Loads settings, configures logging, and starts the foundation runtime. |
+| `vercel.json` | Restricts Vercel builds and routes to the status-only `api/index.py` function. |
 | `requirements.txt` | Runtime dependency list. The foundation is standard-library first; optional packages are kept minimal. |
 | `.env.example` | Example environment configuration. Copy to `.env` for local overrides. |
 | `.gitignore` | Professional Python ignore rules for environments, caches, logs, data, and build outputs. |

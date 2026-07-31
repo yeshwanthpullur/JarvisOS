@@ -35,13 +35,15 @@ class ProjectTrackingTests(unittest.TestCase):
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(health["release"], "v0.3.0-alpha")
-        self.assertEqual(health["commit"], "ea3bc871e70e5d3355cb5628a96bbed1da749dbe")
+        self.assertEqual(health["commit"], "c69bcab6a554846c5f2b13299bd11bac207134fd")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Partial")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
         self.assertLessEqual(health["overall_mvp_readiness"], 100)
         self.assertLess(path.stat().st_size, 20_000)
-        self.assertEqual(len(health["categories"]), 17)
+        deployment = next(item for item in health["categories"] if item["name"] == "Deployment / Online Foundation")
+        self.assertEqual(deployment["status"], "Partial")
+        self.assertEqual(len(health["categories"]), 18)
         allowed = {"Working", "Partial", "Experimental", "Not Started", "Blocked"}
         for category in health["categories"]:
             self.assertIn(category["status"], allowed)
@@ -69,7 +71,8 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("normal CLI is the current primary", text)
         self.assertIn("Vision Intelligence", text)
         self.assertIn("Online sync", text)
-        self.assertIn("Vercel detects `main.py`", text)
+        self.assertIn("automatic detection treated root `main.py`", text)
+        self.assertIn("jarvis-os-6oy2", text)
         self.assertIn("1,408 passed", text)
 
     def test_roadmap_covers_completed_and_next_milestones(self) -> None:

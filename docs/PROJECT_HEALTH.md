@@ -18,6 +18,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Memory | Partial | 70% | Local authoritative memory/retrieval foundations exist; retention automation is incomplete. | Memory and retrieval tests | Implement policy-driven compaction and archive review. |
 | Web Interface | Experimental | 55% | Loopback interface works and is tested, but responsiveness may feel laggy. | `python main.py --ui`; browser checks | Keep optional until a separate stabilization milestone. |
 | Vision | Partial | 55% | Safe image validation, metadata, CLI commands, local-only policy, and provider routing exist; no installed model advertises vision. | `vision status`; focused vision tests | Install and verify a local vision-capable Ollama model. |
+| Deployment / Online Foundation | Partial | 70% | Vercel is explicitly isolated to a standard-library status function; live deployment verification is pending. | Deployment tests; live `/api/health` check | Verify both connected Vercel projects and retain one canonical project. |
 | Online Sync | Not Started | 0% | No sync protocol, queue, server, or cross-device authority. | Repository inspection | Design and implement Prompt 33 after Vision. |
 | Web Automation | Not Started | 0% | No governed browser action implementation. | Repository inspection | Implement only after vision and permission foundations. |
 | Mobile Automation | Not Started | 0% | No mobile bridge or device-control implementation. | Repository inspection | Define narrow mobile trust boundary first. |
@@ -28,6 +29,6 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 
 **62%** toward the broader local-first JARVIS MVP described by the roadmap.
 
-This is not a mathematical average of feature labels. It reflects a usable local CLI assistant with real local chat, private playback-only voice output, and a governed voice-input foundation, balanced against unavailable real microphone transcription, missing vision/sync/automation, and limited real-world breadth in tools, planning, and multi-agent work.
+This is not a mathematical average of feature labels. The status-only deployment does not raise the estimate: it reflects a usable local CLI assistant balanced against unavailable real microphone transcription, incomplete semantic vision, missing sync/automation, and limited real-world breadth in tools, planning, and multi-agent work.
 
 Machine-readable details: [`project_health.json`](project_health.json).

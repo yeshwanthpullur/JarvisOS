@@ -2,6 +2,8 @@
 
 This document defines a future direction. Online sync is not implemented.
 
+The Vercel status foundation is not a sync implementation. Its root and API responses are static, safe deployment metadata and accept no JARVIS records. The duplicate `jarvis-os-6oy2` project should be disconnected or deleted manually after `jarvis-os` is confirmed as the canonical deployment.
+
 ## Local-First Principle
 
 The local device remains authoritative by default. JARVIS must start, chat locally, use approved local tools, and access local records while offline. Sync is optional, disabled until configured, and must never become a startup dependency.

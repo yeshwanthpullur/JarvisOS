@@ -1,6 +1,6 @@
 {
   "release": "v0.3.0-alpha",
-  "commit": "ea3bc871e70e5d3355cb5628a96bbed1da749dbe",
+  "commit": "c69bcab6a554846c5f2b13299bd11bac207134fd",
   "updated_at": "2026-08-01",
   "primary_mode": "CLI via python main.py",
   "next_milestone": "Prompt 33 - Online Sync Foundation",
@@ -18,6 +18,7 @@
     {"name": "Memory", "status": "Partial", "confidence": 70, "evidence": "Local memory and retrieval authorities exist; automated retention is incomplete.", "next_action": "Add policy-driven compaction and archive review."},
     {"name": "Web Interface", "status": "Experimental", "confidence": 55, "evidence": "Loopback UI works but may feel laggy and is not primary.", "next_action": "Use CLI until a dedicated stabilization milestone."},
     {"name": "Vision", "status": "Partial", "confidence": 55, "evidence": "Safe validation, metadata, CLI, local-only policy, and Provider Router integration exist; no installed vision model is available.", "next_action": "Install and verify a local vision-capable Ollama model."},
+    {"name": "Deployment / Online Foundation", "status": "Partial", "confidence": 70, "evidence": "Vercel is isolated to a safe status-only Python function; live deployment verification is pending.", "next_action": "Verify both connected projects and retain one canonical Vercel project."},
     {"name": "Online Sync", "status": "Not Started", "confidence": 0, "evidence": "No sync protocol, queue, or server exists.", "next_action": "Implement Prompt 33 after Vision."},
     {"name": "Web Automation", "status": "Not Started", "confidence": 0, "evidence": "No governed browser action implementation exists.", "next_action": "Implement after Vision and permissions review."},
     {"name": "Mobile Automation", "status": "Not Started", "confidence": 0, "evidence": "No mobile bridge or device-control implementation exists.", "next_action": "Define a narrow trust boundary first."},

@@ -26,6 +26,7 @@ Use this checklist for every JARVIS OS release. Record exact results in the rele
 - [ ] Relevant real local acceptance tests pass.
 - [ ] Manual verification is completed and its observable results are recorded.
 - [ ] Paid/external integrations use mocks unless an explicit live test was authorized.
+- [ ] Deployment entrypoints are isolated from local launchers, live health URLs are checked, and duplicate connected projects are reviewed.
 - [ ] Security, permissions, local-only policy, and command separation are verified.
 
 ## Release
