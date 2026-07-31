@@ -43,6 +43,7 @@ python main.py --ui
 - Multi-Agent Intelligence: governed planner/reviewer coordination exists, but broad specialist coverage is limited.
 - Memory and Knowledge: authoritative local storage exists, but long-term pruning and cross-device policy are not automated.
 - Voice Input: status, explicit enable/disable/listen commands, local STT discovery, privacy limits, and temp cleanup exist; real microphone transcription still needs a configured local engine, model, and capture adapter.
+- Vision Intelligence: CLI path validation, safe metadata, local-only policy, and Provider Router integration work; semantic analysis awaits a model that advertises vision capability.
 
 ## Experimental Features
 
@@ -50,7 +51,6 @@ python main.py --ui
 
 ## Not Started Features
 
-- Vision Intelligence.
 - Online sync.
 - Web automation.
 - Mobile automation.
@@ -67,15 +67,16 @@ python main.py --ui
 - The web interface is experimental.
 - No vision, cross-device sync, browser automation, or mobile control exists yet.
 - Runtime state is local and some conversation/interface state is not durable across restarts.
+- Vercel deployment currently fails because Vercel detects `main.py` as a Python entrypoint, while this CLI-first application exports no `app`, `application`, or `handler`. Deployment is intentionally deferred to the online sync/deployment milestone.
 
 ## Next Recommended Prompt
 
-Prompt 32 - Vision Intelligence. It should remain local-first, provider-governed, permission-aware, and separate from web/mobile automation.
+Prompt 33 - Online Sync Foundation. Vision remains separate from web/mobile automation and does not grant screen-control authority.
 
 ## Last Verified Tests
 
-- Full suite: 1,393 passed, 0 skipped, 0 failed, 0 errors.
-- Focused voice/CLI/settings/project-health suite: 88 passed.
+- Full suite: 1,408 passed, 0 skipped, 0 failed, 0 errors.
+- Focused vision/provider/command/settings/project-health suite: 119 passed.
 - Real Ollama chat: passed with `llama3.2:1b`.
 - Local-only enforcement: passed.
 - Explicit and automatic Windows SAPI playback paths: passed; audible playback was manually confirmed.

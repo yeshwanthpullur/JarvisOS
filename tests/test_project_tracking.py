@@ -20,6 +20,7 @@ REQUIRED_DOCS = (
     "SYNC_STRATEGY.md",
     "AUTOMATION_STRATEGY.md",
     "MEMORY_AND_DATA_POLICY.md",
+    "VISION_INTELLIGENCE.md",
 )
 
 
@@ -34,7 +35,9 @@ class ProjectTrackingTests(unittest.TestCase):
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(health["release"], "v0.3.0-alpha")
-        self.assertEqual(health["commit"], "69d9521cad5266bf5048d2636faeea452774eeab")
+        self.assertEqual(health["commit"], "ea3bc871e70e5d3355cb5628a96bbed1da749dbe")
+        vision = next(item for item in health["categories"] if item["name"] == "Vision")
+        self.assertEqual(vision["status"], "Partial")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
         self.assertLessEqual(health["overall_mvp_readiness"], 100)
         self.assertLess(path.stat().st_size, 20_000)
@@ -66,7 +69,8 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("normal CLI is the current primary", text)
         self.assertIn("Vision Intelligence", text)
         self.assertIn("Online sync", text)
-        self.assertIn("1,393 passed", text)
+        self.assertIn("Vercel detects `main.py`", text)
+        self.assertIn("1,408 passed", text)
 
     def test_roadmap_covers_completed_and_next_milestones(self) -> None:
         text = (DOCS / "ROADMAP.md").read_text(encoding="utf-8")
@@ -116,10 +120,10 @@ class ProjectTrackingTests(unittest.TestCase):
         commands.initialize()
         response = commands.execute("project status")
         self.assertIn("release=v0.3.0-alpha", response.response)
-        self.assertIn("MVP=60%", response.response)
-        self.assertIn("Prompt 32", response.response)
+        self.assertIn("MVP=62%", response.response)
+        self.assertIn("Prompt 33", response.response)
         self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 60)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 62)
 
 
 if __name__ == "__main__":

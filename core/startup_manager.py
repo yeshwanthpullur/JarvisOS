@@ -318,6 +318,7 @@ class StartupManager:
             tool_manager=self.jarvis_core.manager.tools,
             autonomous_planning=self.jarvis_core.manager.autonomous_planning,
             voice_intelligence=self.jarvis_core.manager.voice_intelligence,
+            vision_intelligence=self.jarvis_core.manager.vision_intelligence,
             personal_intelligence_manager=self.personal_intelligence_manager,
             context_intelligence_manager=self.context_intelligence_manager,
             logger=logging.getLogger("conversation"),

@@ -86,6 +86,9 @@ def _planning_manager(context: CommandContext):
 def _voice_manager(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else getattr(conversation,"voice_intelligence",None) or (getattr(conversation,"metadata",{}) or {}).get("voice_intelligence")
+def _vision_manager(context:CommandContext):
+    conversation=context.conversation_context
+    return None if conversation is None else getattr(conversation,"vision_intelligence",None) or (getattr(conversation,"metadata",{}) or {}).get("vision_intelligence")
 
 
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
@@ -236,6 +239,9 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("voice raw-audio", "Set raw audio retention", "voice", (), CommandPermission.UTILITY),
         ("voice limits", "Show voice limits", "voice", (), CommandPermission.DIAGNOSTIC),
         ("voice health", "Show voice health", "voice", (), CommandPermission.DIAGNOSTIC),
+        ("vision status", "Show vision readiness", "vision", (), CommandPermission.DIAGNOSTIC),
+        ("vision describe", "Describe an image", "vision", (), CommandPermission.UTILITY),
+        ("vision ask", "Ask a question about an image", "vision", (), CommandPermission.UTILITY),
         ("departments", "Show department summary", "department", (), CommandPermission.DEPARTMENT),
         ("department list", "List departments", "department", (), CommandPermission.DEPARTMENT),
         ("memory", "Show memory summary", "memory", (), CommandPermission.MEMORY),
@@ -550,6 +556,26 @@ def _handler_for(name: str):
             if name=="voice limits":return _text_response("Voice limits: "+", ".join(f"{k}={getattr(voice.limits,k)}" for k in voice.limits.__slots__))
             if name=="voice health":return _text_response("Voice health: "+json.dumps(voice.health(),default=str))
             if name=="voice device":return _text_response("Explicit device selection is unavailable until a matching capture/output adapter exposes device IDs.")
+        if name.startswith("vision "):
+            vision=_vision_manager(context);args=context.arguments
+            if vision is None:return _text_response("Vision Intelligence is unavailable.")
+            session=getattr(context.conversation_context,"session",None);metadata=getattr(session,"metadata",{}) or {}
+            local_only=bool(metadata.get("local_only") or metadata.get("execution_policy")=="local_only" or vision.local_only)
+            if name=="vision status":
+                status=vision.status(local_only);providers=tuple(status["providers"]);provider_text=", ".join(f"{item.provider_id}:{item.model_id}" for item in providers) or "none"
+                return _text_response(f"Vision status: {'ready' if status['available'] else 'unavailable'} local_only={'on' if local_only else 'off'} providers={provider_text} raw_image_persistence=off max_image_size={status['max_image_size']}.",enabled=status["enabled"],available=status["available"],local_only=local_only,privacy_mode=status["privacy_mode"],provider_models=tuple((item.provider_id,item.model_id) for item in providers),raw_image_persistence=False,max_image_size=status["max_image_size"])
+            if name=="vision describe":
+                if not args:return _text_response("Provide an allowed image path: vision describe <image_path>.")
+                result=vision.analyze(args[0],local_only=local_only,preferred_provider=metadata.get("provider_preference"),preferred_model=metadata.get("model_preference"))
+            elif name=="vision ask":
+                if len(args)<2:return _text_response("Provide an image path and question: vision ask <image_path> <question>.")
+                result=vision.analyze(args[0]," ".join(args[1:]),local_only=local_only,preferred_provider=metadata.get("provider_preference"),preferred_model=metadata.get("model_preference"))
+            else:result=None
+            if result is not None:
+                if result.status.value=="completed":return _text_response(result.content,vision_status=result.status.value,provider_id=result.provider_id,model_id=result.model_id,request_id=result.request_id,image_metadata=dict(result.metadata))
+                guidance=" Configure a local Ollama vision model that advertises vision capability." if result.status.value=="unavailable" else ""
+                detail=(result.error or "analysis did not complete").rstrip(".")
+                return _text_response(f"Vision {result.status.value}: {detail}.{guidance}",vision_status=result.status.value,request_id=result.request_id,image_metadata=dict(result.metadata))
         if name in {"providers", "provider list", "provider status", "provider health"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:

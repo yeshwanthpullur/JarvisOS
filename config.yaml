@@ -201,6 +201,14 @@ voice:
   temp_directory: data/voice-temp
   allowed_audio_directories: [data/voice-input]
 
+vision:
+  enabled: true
+  local_only: true
+  privacy_mode: standard
+  max_image_size: 20000000
+  timeout_seconds: 60
+  allowed_directories: []
+
 interface:
   enabled: false
   host: 127.0.0.1

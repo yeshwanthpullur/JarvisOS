@@ -204,6 +204,9 @@ class ProviderRouter:
             for provider in self._providers.values()
             if provider.enabled and provider.initialized
         ]
+        allowed_provider_ids = set(context.metadata.get("allowed_provider_ids", ()))
+        if allowed_provider_ids:
+            providers = [provider for provider in providers if provider.provider_id in allowed_provider_ids]
         if context.preferred_provider:
             providers.sort(key=lambda provider: provider.provider_id != context.preferred_provider)
         policy = context.execution_policy.lower()

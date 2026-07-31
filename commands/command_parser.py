@@ -28,6 +28,7 @@ _SUBCOMMANDS = {
     "tool list", "tool show", "tool health", "tool match", "tool permissions", "tool dry-run", "tool history", "tool invocation", "tool cancel", "tool mode", "tool limits", "tools status",
     "plan status", "plan list", "plan show", "plan steps", "plan validate", "plan alternatives", "plan approve", "plan reject", "plan pause", "plan resume", "plan cancel", "plan replan", "plan history", "plan mode", "plan limits",
     "voice status", "voice on", "voice off", "voice listen", "voice cleanup", "voice stop", "voice cancel", "voice interrupt", "voice session", "voice devices", "voice backend", "voice device", "voice input", "voice output", "voice say", "voice transcribe", "voice mode", "voice privacy", "voice language", "voice rate", "voice volume", "voice raw-audio", "voice limits", "voice health",
+    "vision status", "vision describe", "vision ask",
 }
 
 

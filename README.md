@@ -10,9 +10,11 @@ Autonomous Planning produces provider-backed, validated, reviewable plans withou
 
 Voice Intelligence adds disabled-by-default local Windows speech output, safe audio-file validation, and governed voice sessions without changing text-mode authority. See [docs/VOICE_INTELLIGENCE.md](docs/VOICE_INTELLIGENCE.md).
 
+Vision Intelligence adds safe CLI image validation, metadata, local-only policy, and provider-neutral routing. Semantic analysis remains unavailable until a model explicitly advertises vision input. See [docs/VISION_INTELLIGENCE.md](docs/VISION_INTELLIGENCE.md).
+
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 
-JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, and Windows SAPI voice output. Major capabilities such as vision, online sync, and web/mobile automation are not implemented yet.
+JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, Windows SAPI voice output, and a partial Vision Intelligence foundation. Online sync and web/mobile automation are not implemented yet.
 
 ## Goals
 

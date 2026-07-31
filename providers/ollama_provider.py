@@ -66,8 +66,11 @@ class OllamaProvider(BaseProvider):
         return self.health
 
     def capabilities(self) -> ProviderCapabilities:
+        capabilities = list(self._capabilities.capabilities)
+        if any(ProviderCapability.VISION in model.capabilities for model in self._models):
+            capabilities.append(ProviderCapability.VISION)
         return ProviderCapabilities(
-            capabilities=self._capabilities.capabilities,
+            capabilities=tuple(dict.fromkeys(capabilities)),
             models=self._models,
             context_window=self._capabilities.context_window,
             max_tokens=self._capabilities.max_tokens,
@@ -86,6 +89,9 @@ class OllamaProvider(BaseProvider):
     def chat(self, request: ProviderRequest) -> ProviderResponse:
         return self._execute_chat(request)
 
+    def vision(self, request: ProviderRequest) -> ProviderResponse:
+        return self._execute_chat(request)
+
     async def execute(self, request: ProviderRequest) -> ProviderResponse:
         return self._execute_chat(request)
 
@@ -99,6 +105,10 @@ class OllamaProvider(BaseProvider):
             model = self._first_model_id()
         if not model:
             return self._error_response(request, "", "No usable Ollama models were found.", start)
+        if request.task_type.value == "vision":
+            selected = next((item for item in models if item.model_id == model), None)
+            if selected is None or ProviderCapability.VISION not in selected.capabilities:
+                return self._error_response(request, model, "The selected Ollama model does not advertise vision capability.", start)
         timeout = request.timeout_seconds or self.context.config.timeout_seconds or 30
         payload = self._chat_payload(request, model)
         try:
@@ -140,13 +150,18 @@ class OllamaProvider(BaseProvider):
             model_id = str(item.get("name") or item.get("model") or "").strip()
             if not model_id:
                 continue
+            details: dict[str, Any] = {}
+            try:
+                details = self._request_json(f"{self._base_url()}/api/show", {"model": model_id}, timeout=min(5, self.context.config.timeout_seconds or 5))
+            except Exception:
+                details = {}
             models.append(
                 ModelInfo(
                     model_id=model_id,
                     display_name=str(item.get("name") or model_id),
-                    capabilities=self._model_capabilities(item),
+                    capabilities=self._model_capabilities(details),
                     context_window=int(item.get("context_length") or item.get("context_window") or 0),
-                    metadata={"source": "ollama", "raw": item},
+                    metadata={"source": "ollama", "details_available": bool(details)},
                 )
             )
         return tuple(models or self._configured_models())
@@ -186,6 +201,9 @@ class OllamaProvider(BaseProvider):
         if context_lines:
             messages.append({"role": "system", "content": "\n".join(context_lines)})
         messages.append({"role": "user", "content": request.prompt})
+        images = tuple(request.metadata.get("images", ()))
+        if images:
+            messages[-1]["images"] = list(images)
         payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
@@ -255,6 +273,9 @@ class OllamaProvider(BaseProvider):
 
     def _model_capabilities(self, item: dict[str, Any]) -> tuple[ProviderCapability, ...]:
         capabilities = [ProviderCapability.CHAT, ProviderCapability.REASONING]
+        advertised = {str(value).lower() for value in item.get("capabilities", ())} if isinstance(item, dict) else set()
+        if "vision" in advertised:
+            capabilities.append(ProviderCapability.VISION)
         if item.get("streaming", True):
             capabilities.append(ProviderCapability.STREAMING)
         return tuple(dict.fromkeys(capabilities))

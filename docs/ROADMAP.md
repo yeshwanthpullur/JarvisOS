@@ -15,19 +15,8 @@ Updated: 2026-08-01
 - Prompt 31.7 - Stable CLI Voice and Normal JARVIS Mode.
 - Prompt 31.8 - Clean Tracking, Sync-Ready Status, and Project Health Foundation.
 - Prompt 31.9 - Voice Input and Audio Storage Cleanup foundation.
+- Prompt 32 - Vision Intelligence Foundation: safe image intake, metadata, CLI, policy, and provider routing.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
-
-## Prompt 32 - Vision Intelligence
-
-**Goal:** Add governed understanding of user-supplied images and screenshots without enabling autonomous screen control.
-
-**Expected deliverables:** image intake and validation, local/provider capability routing, OCR or visual analysis where genuinely available, normalized evidence, privacy controls, commands/public flow, health, tests, and documentation.
-
-**Risks:** sensitive image exposure, prompt injection inside images, unsupported capability claims, high memory use, and accidental coupling to automation.
-
-**Acceptance criteria:** real bounded image analysis through Provider Router, truthful unavailable states, source correlation, no hidden actions, selective context, clean startup without a vision runtime, and passing regression tests.
-
-**Candidate release target:** `v0.4.0-alpha` after real local or explicitly authorized provider verification.
 
 ## Prompt 33 - Online Sync Foundation
 

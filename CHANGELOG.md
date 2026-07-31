@@ -9,6 +9,8 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 - Made direct Windows SAPI playback the default for normal and automatic speech; permanent audio now requires an explicit output path.
 - Added clear CLI voice input/STT/microphone/storage status, safe input enable/disable behavior, and `voice cleanup`.
 - Added bounded temporary-audio retention and local discovery metadata for Vosk, faster-whisper, and configured whisper.cpp-style runtimes.
+- Added Vision Intelligence foundation with safe image validation, metadata extraction, CLI commands, local-only enforcement, and Provider Router integration.
+- Added evidence-based Ollama vision capability discovery without changing the existing text model.
 
 ### Security
 

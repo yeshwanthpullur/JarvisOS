@@ -31,6 +31,7 @@ from jarvis.jarvis_tasks import JarvisTasks
 from jarvis.jarvis_tools import JarvisTools, ToolLimits
 from jarvis.autonomous_planning import AutonomousPlanning, PlanningLimits
 from jarvis.voice_intelligence import VoiceIntelligence
+from jarvis.vision_intelligence import VisionIntelligence
 from jarvis.jarvis_validator import JarvisValidator
 from reasoning import ReasoningManager
 from reflection import ReflectionManager
@@ -129,6 +130,7 @@ class JarvisManager:
             limits=PlanningLimits(**{key:getattr(context.settings.planning,key) for key in context.settings.planning.__slots__}) if context and context.settings else None,
         )
         self.voice_intelligence = VoiceIntelligence(context.settings if context else None,(context.settings.data_dir / "voice") if context and context.settings else None,self.logger)
+        self.vision_intelligence = VisionIntelligence(context.settings if context else None,context.metadata.get("provider_manager") if context else None,self.logger)
         self.skills = JarvisSkills()
         self.workflow = WorkflowManager()
         self.retrieval = RetrievalManager()
@@ -169,6 +171,7 @@ class JarvisManager:
             "tools": self.tools,
             "autonomous_planning": self.autonomous_planning,
             "voice_intelligence": self.voice_intelligence,
+            "vision_intelligence": self.vision_intelligence,
             "skills": self.skills,
             "workflow": self.workflow,
             "retrieval": self.retrieval,
@@ -246,6 +249,7 @@ class JarvisManager:
             tool_manager=self.tools,
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,
+            vision_intelligence=self.vision_intelligence,
             logger=self.logger,
             metadata={**(base.metadata if base else {}), **request.metadata},
         )
