@@ -6,9 +6,9 @@ Web Automation provides a governed boundary for future browser work. The CLI, pl
 
 ## Current Capability
 
-The foundation validates HTTP(S) URLs, blocks local/internal and credential-bearing targets by default, classifies action risk, checks scoped permissions, normalizes results, maintains bounded redacted audit history, and exposes read-only CLI commands. The default adapter is intentionally unavailable. No browser is launched and no page is claimed as opened unless a real adapter completes the request.
+The foundation validates HTTPS URLs, resolves public hostnames, blocks local/internal and credential-bearing targets, classifies action risk, checks scoped permissions, normalizes results, maintains bounded redacted audit history, and exposes read-only CLI commands. `ReadOnlyWebInspectionAdapter` performs real text-only public page inspection with the Python standard library. No browser window is launched.
 
-Allowed foundation actions are status, open URL, title/current URL reads, ephemeral snapshot metadata, metadata summary, and session close. Page content and screenshots are not persisted by default.
+Allowed operations are status, bounded URL inspection, title/current URL reads, ephemeral snapshot metadata, metadata summary, and session close. Only title, safe metadata, response size, redirect domains, and a sanitized preview are retained in memory. Raw HTML, page content, cookies, profiles, downloads, and screenshots are never persisted.
 
 ## Blocked Actions
 
@@ -28,24 +28,24 @@ web audit
 web close
 ```
 
-With the default configuration, status and policy remain usable while browser operations return a truthful unavailable or disabled result.
+The default configuration enables HTTPS read-only network inspection. Adapter errors remain truthful and do not fall back to provider-generated page claims.
 
 ## URL Policy
 
-Only `http` and `https` are accepted. User information in URLs, loopback/private/link-local/reserved hosts, unsupported schemes, and policy-sensitive categories are rejected. A future adapter must apply the same policy to every redirect and must not downgrade secure navigation silently.
+Only `http` and `https` syntax is accepted, and normal operation requires HTTPS. Plain HTTP plus local/private targets may be enabled only for deterministic tests. User information, sensitive query fields, loopback/private/link-local/reserved/metadata addresses, unsupported schemes, and policy-sensitive categories are rejected. Hostnames are resolved before fetching, and every redirect and final URL is revalidated. Redirects are limited to five.
 
 ## Audit And Privacy
 
-Audit records contain request/action identifiers, timestamp, risk, safe domain, policy decision, result status, and a bounded summary. They exclude passwords, tokens, cookies, full page content, screenshots, form values, private messages, and sensitive URL query data. Runtime audit state lives under ignored `data/web-automation/` storage.
+Audit records contain request/action identifiers, timestamp, risk, requested/final safe domains, policy decision, result status, redirect count, content type, byte count, error code, and a bounded summary. They exclude passwords, tokens, cookies, full URLs with sensitive queries, raw HTML, page content, screenshots, form values, and private messages. Runtime audit state lives under ignored `data/web-automation/` storage.
 
 ## Limits
 
-Audit retention and action timeout are bounded by configuration. Sessions exist only in runtime memory. No persistent browser profile, cookie jar, download directory, or screenshot store is created by this foundation.
+Default limits are an 8-second timeout, 5 redirects, 512 KiB response, 2,000-character preview, 200-character title, and 100 audit entries. Only HTML, plain text, and XHTML are inspected. Sessions exist only in runtime memory.
 
 ## Known Limitations
 
-- No production browser adapter is configured.
-- No real page is opened in the default environment.
-- Redirect revalidation is an adapter requirement and must be proven before a real adapter is enabled.
+- Read-only inspection is HTTP fetching, not a visual or JavaScript browser.
+- Login-required and dynamically rendered pages are unavailable.
 - Interactive and sensitive actions remain unavailable.
+- No autonomous browsing is enabled.
 - Mobile automation and full remote sync are outside this milestone.

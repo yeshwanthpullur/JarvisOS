@@ -3,10 +3,16 @@
 from __future__ import annotations
 
 import json
+import socket
+import ssl
 import tempfile
+import threading
 import unittest
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
+from urllib.error import URLError
 
 from commands import CommandManager
 from conversation import ConversationContext, ConversationSession
@@ -18,6 +24,10 @@ from jarvis.web_automation import (
     WebAutomationStatus,
     WebPageSnapshot,
     WebPermission,
+    ReadOnlyWebInspectionAdapter,
+    UnavailableBrowserAdapter,
+    _ValidatedRedirectHandler,
+    _WebInspectionError,
 )
 
 
@@ -49,9 +59,53 @@ class FakeReadOnlyAdapter:
         return WebActionResult(request_id, WebActionType.CLOSE_SESSION, WebAutomationStatus.COMPLETED, "Web session closed.", session_id, "example.com")
 
 
-def settings(enabled=False, mode="off", retention=100, allow_local=False):
-    config = SimpleNamespace(enabled=enabled, mode=mode, allow_local_targets=allow_local, audit_retention=retention)
+def settings(enabled=False, mode="off", retention=100, allow_local=False, allow_http=False, max_bytes=524288, redirects=5):
+    config = SimpleNamespace(
+        enabled=enabled, mode=mode, adapter="read-only-http",
+        allow_local_targets=allow_local, allow_http=allow_http,
+        audit_retention=retention, action_timeout_seconds=2,
+        maximum_redirects=redirects, maximum_response_bytes=max_bytes,
+        maximum_preview_characters=2000,
+    )
     return SimpleNamespace(web_automation=config)
+
+
+class InspectionHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/error":
+            self.send_error(503); return
+        if self.path == "/redirect":
+            self.send_response(302); self.send_header("Location", "/page"); self.end_headers(); return
+        if self.path.startswith("/loop"):
+            self.send_response(302); self.send_header("Location", "/loop"); self.end_headers(); return
+        if self.path == "/binary":
+            body = b"\x00\x01binary"; content_type = "application/octet-stream"
+        elif self.path == "/large":
+            body = b"x" * 4096; content_type = "text/plain"
+        elif self.path == "/plain":
+            body = b"Plain public text"; content_type = "text/plain"
+        else:
+            body = b"<html><head><title>Example Safe Page</title><meta name='description' content='A safe description'></head><body>Hello public page<script>hidden()</script> contact@example.com C:\\private\\file.txt AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</body></html>"
+            content_type = "text/html; charset=utf-8"
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers(); self.wfile.write(body)
+
+    def log_message(self, format, *args):
+        return
+
+
+class LocalInspectionServer:
+    def __enter__(self):
+        self.server = ThreadingHTTPServer(("127.0.0.1", 0), InspectionHandler)
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.base_url = f"http://127.0.0.1:{self.server.server_port}"
+        return self
+
+    def __exit__(self, *_):
+        self.server.shutdown(); self.server.server_close(); self.thread.join(timeout=2)
 
 
 class WebAutomationTests(unittest.TestCase):
@@ -62,16 +116,22 @@ class WebAutomationTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def manager(self, enabled=False, mode="off", adapter=None, retention=100, allow_local=False):
-        return WebAutomationManager(self.root, settings(enabled, mode, retention, allow_local), adapter)
+    def manager(self, enabled=False, mode="off", adapter=None, retention=100, allow_local=False, allow_http=False, max_bytes=524288, redirects=5):
+        return WebAutomationManager(self.root, settings(enabled, mode, retention, allow_local, allow_http, max_bytes, redirects), adapter)
 
     def test_initializes_disabled_with_truthful_unavailable_adapter(self):
-        manager = self.manager()
+        manager = WebAutomationManager(self.root, SimpleNamespace(web_automation=SimpleNamespace(enabled=False, mode="off", adapter="unavailable-browser", allow_local_targets=False, allow_http=False, audit_retention=100, action_timeout_seconds=8, maximum_redirects=5, maximum_response_bytes=524288, maximum_preview_characters=2000)))
         status = manager.status()
         self.assertTrue(status["initialized"])
         self.assertFalse(status["enabled"])
         self.assertFalse(status["adapter_available"])
         self.assertEqual(status["sensitive_actions"], "blocked")
+
+    def test_manager_selects_real_adapter_without_heavy_dependency(self):
+        manager = self.manager(True, "read_only")
+        self.assertIsInstance(manager.adapter, ReadOnlyWebInspectionAdapter)
+        self.assertTrue(manager.status()["network_inspection_enabled"])
+        self.assertEqual(manager.adapter.adapter_id, "read-only-http")
 
     def test_valid_https_url_is_normalized(self):
         decision = self.manager().policy(WebActionType.OPEN_URL, "HTTPS://Example.COM/path#fragment")
@@ -82,6 +142,12 @@ class WebAutomationTests(unittest.TestCase):
     def test_unsafe_schemes_credentials_and_local_targets_are_blocked(self):
         manager = self.manager()
         for url in ("file:///private.txt", "javascript:alert(1)", "ftp://example.com/file", "https://user:pass@example.com", "http://127.0.0.1", "http://localhost", "http://10.1.2.3"):
+            with self.subTest(url=url):
+                self.assertFalse(manager.policy(WebActionType.OPEN_URL, url).allowed)
+
+    def test_link_local_metadata_and_sensitive_queries_are_blocked(self):
+        manager = self.manager()
+        for url in ("https://169.254.169.254/latest/meta-data", "https://[::1]/", "https://example.com/?access_token=secret", "https://example.com/?session=secret"):
             with self.subTest(url=url):
                 self.assertFalse(manager.policy(WebActionType.OPEN_URL, url).allowed)
 
@@ -103,7 +169,7 @@ class WebAutomationTests(unittest.TestCase):
         self.assertEqual(result.status, WebAutomationStatus.DISABLED)
 
     def test_unavailable_adapter_does_not_fake_open(self):
-        result = self.manager(True, "read_only").open_url("https://example.com")
+        result = self.manager(True, "read_only", UnavailableBrowserAdapter()).open_url("https://example.com")
         self.assertEqual(result.status, WebAutomationStatus.UNAVAILABLE)
 
     def test_real_adapter_contract_supports_only_read_only_metadata(self):
@@ -144,6 +210,83 @@ class WebAutomationTests(unittest.TestCase):
         ignore = (Path(__file__).resolve().parents[1] / ".gitignore").read_text(encoding="utf-8")
         self.assertIn("data/*", ignore)
 
+    def test_real_read_only_fetch_extracts_bounded_sanitized_snapshot(self):
+        with LocalInspectionServer() as server:
+            manager = self.manager(True, "read_only", allow_local=True, allow_http=True)
+            result = manager.open_url(server.base_url + "/page")
+            self.assertEqual(result.status, WebAutomationStatus.COMPLETED)
+            snapshot = result.snapshot
+            self.assertEqual(snapshot.title, "Example Safe Page")
+            self.assertEqual(snapshot.description, "A safe description")
+            self.assertIn("Hello public page", snapshot.text_preview)
+            self.assertNotIn("hidden()", snapshot.text_preview)
+            self.assertIn("[redacted-email]", snapshot.text_preview)
+            self.assertIn("[redacted-path]", snapshot.text_preview)
+            self.assertIn("[redacted-value]", snapshot.text_preview)
+            self.assertFalse(snapshot.content_stored)
+            self.assertFalse(snapshot.screenshot_stored)
+            self.assertFalse((self.root / "page.html").exists())
+
+    def test_safe_redirect_is_followed_and_recorded(self):
+        with LocalInspectionServer() as server:
+            manager = self.manager(True, "read_only", allow_local=True, allow_http=True)
+            result = manager.open_url(server.base_url + "/redirect")
+            self.assertEqual(result.status, WebAutomationStatus.COMPLETED)
+            self.assertEqual(result.snapshot.redirect_count, 1)
+            self.assertEqual(result.snapshot.redirect_domains, ("127.0.0.1",))
+            self.assertEqual(manager.audit_events()[-1].redirect_count, 1)
+
+    def test_redirect_loop_and_response_limits_fail_safely(self):
+        with LocalInspectionServer() as server:
+            loop_manager = self.manager(True, "read_only", allow_local=True, allow_http=True, redirects=1)
+            self.assertEqual(loop_manager.open_url(server.base_url + "/loop").error_code, "WEB_TOO_MANY_REDIRECTS")
+            size_manager = self.manager(True, "read_only", allow_local=True, allow_http=True, max_bytes=1024)
+            self.assertEqual(size_manager.open_url(server.base_url + "/large").error_code, "WEB_RESPONSE_TOO_LARGE")
+            self.assertEqual(size_manager.open_url(server.base_url + "/binary").error_code, "WEB_UNSUPPORTED_CONTENT_TYPE")
+
+    def test_redirect_policy_rejects_unsafe_targets(self):
+        manager = self.manager()
+        handler = _ValidatedRedirectHandler(manager._validate_fetch_url, 5)
+        for target in ("file:///private.txt", "http://127.0.0.1", "https://user:pass@example.com"):
+            with self.subTest(target=target), self.assertRaises(_WebInspectionError) as caught:
+                handler.redirect_request(None, None, 302, "Found", {}, target)
+            self.assertEqual(caught.exception.code, "WEB_REDIRECT_BLOCKED")
+
+    def test_dns_resolution_to_private_address_is_blocked(self):
+        manager = self.manager(True, "read_only")
+        fake = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", 0))]
+        with patch("jarvis.web_automation.socket.getaddrinfo", return_value=fake):
+            decision = manager._validate_fetch_url("https://public.example/")
+        self.assertFalse(decision.allowed)
+        self.assertEqual(decision.error_code, "WEB_PRIVATE_NETWORK_BLOCKED")
+
+    def test_http_timeout_dns_and_tls_failures_are_classified(self):
+        with LocalInspectionServer() as server:
+            manager = self.manager(True, "read_only", allow_local=True, allow_http=True)
+            self.assertEqual(manager.open_url(server.base_url + "/error").error_code, "WEB_HTTP_ERROR")
+
+        manager = self.manager(True, "read_only")
+        fake_opener = SimpleNamespace()
+        for reason, expected in (
+            (socket.timeout(), "WEB_TIMEOUT"),
+            (socket.gaierror(), "WEB_DNS_ERROR"),
+            (ssl.SSLError("test"), "WEB_TLS_ERROR"),
+        ):
+            fake_opener.open = lambda *args, _reason=reason, **kwargs: (_ for _ in ()).throw(URLError(_reason))
+            public_dns = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443))]
+            with self.subTest(expected=expected), patch("jarvis.web_automation.socket.getaddrinfo", return_value=public_dns), patch("jarvis.web_automation.build_opener", return_value=fake_opener):
+                self.assertEqual(manager.open_url("https://example.com/").error_code, expected)
+
+    def test_close_clears_only_in_memory_page_and_keeps_audit(self):
+        with LocalInspectionServer() as server:
+            manager = self.manager(True, "read_only", allow_local=True, allow_http=True)
+            manager.open_url(server.base_url + "/page")
+            count = len(manager.audit_events())
+            self.assertEqual(manager.close().status, WebAutomationStatus.CLOSED)
+            self.assertFalse(manager.sessions)
+            self.assertFalse(manager.adapter.pages)
+            self.assertGreater(len(manager.audit_events()), count)
+
 
 class WebCommandTests(unittest.TestCase):
     def setUp(self):
@@ -171,6 +314,20 @@ class WebCommandTests(unittest.TestCase):
         self.assertIn("Usage", self.execute("web open").response)
         self.assertIn("blocked_by_policy", self.execute("web open file:///secret.txt").response)
         self.assertIn("blocked_by_policy", self.execute("web open https://user:pass@example.com").response)
+
+    def test_real_read_only_command_flow(self):
+        with LocalInspectionServer() as server:
+            real = WebAutomationManager(Path(self.temp.name), settings(True, "read_only", allow_local=True, allow_http=True))
+            context = ConversationContext(ConversationSession(), web_automation=real)
+            opened = self.commands.execute(f"web open {server.base_url}/page", context)
+            self.assertIn("completed", opened.response)
+            self.assertIn("Example Safe Page", self.commands.execute("web title", context).response)
+            self.assertIn("127.0.0.1", self.commands.execute("web url", context).response)
+            snapshot = self.commands.execute("web snapshot", context).response
+            self.assertIn("content_type=text/html", snapshot)
+            self.assertIn("preview=", snapshot)
+            self.assertIn("Web audit", self.commands.execute("web audit", context).response)
+            self.assertIn("closed", self.commands.execute("web close", context).response)
 
 
 if __name__ == "__main__":

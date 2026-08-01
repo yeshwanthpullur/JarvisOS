@@ -138,12 +138,16 @@ class SyncConfig:
 
 @dataclass(frozen=True, slots=True)
 class WebAutomationConfig:
-    enabled: bool = False
-    mode: str = "off"
-    adapter: str = "unavailable-browser"
+    enabled: bool = True
+    mode: str = "read_only"
+    adapter: str = "read-only-http"
     allow_local_targets: bool = False
+    allow_http: bool = False
     audit_retention: int = 100
-    action_timeout_seconds: int = 30
+    action_timeout_seconds: int = 8
+    maximum_redirects: int = 5
+    maximum_response_bytes: int = 524288
+    maximum_preview_characters: int = 2000
     store_page_content: bool = False
     store_screenshots: bool = False
 

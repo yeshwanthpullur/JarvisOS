@@ -58,8 +58,8 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(health["limitations"]["fixed"], self.data["counts"]["fixed"])
         self.assertEqual(health["limitations"]["still_open"], self.data["counts"]["still_open"])
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
-        self.assertIn("**27** limitations", current)
-        self.assertIn("**13 fixed**", current)
+        self.assertIn("**28** limitations", current)
+        self.assertIn("**14 fixed**", current)
         self.assertIn("**14 still open**", current)
 
     def test_major_gaps_are_never_claimed_working(self) -> None:
@@ -80,7 +80,7 @@ class LimitationsRegisterTests(unittest.TestCase):
         for phrase in ("real authenticated encrypted adapter", "web interface is experimental", "Web automation", "Mobile automation"):
             self.assertIn(phrase.lower(), status.lower())
         web = (DOCS / "WEB_AUTOMATION.md").read_text(encoding="utf-8")
-        for phrase in ("default adapter is intentionally unavailable", "blocked before adapter dispatch", "not persisted by default"):
+        for phrase in ("ReadOnlyWebInspectionAdapter", "blocked before adapter dispatch", "never persisted"):
             self.assertIn(phrase, web)
 
     def test_tracking_files_contain_no_secret_shaped_values(self) -> None:

@@ -20,17 +20,18 @@ Updated: 2026-08-02
 - Prompt 33 - Online Sync Foundation: governed local queue, strict policy, manual CLI, conflict and adapter foundations; remote transfer remains unavailable.
 - Prompt 33.1 - Limitations Audit and Fix Pass: evidence-backed limitations register, concise CLI counts, and consolidated setup guidance.
 - Prompt 34 - Web Automation Foundation: provider-neutral policy, permissions, read-only CLI, normalized results, and bounded redacted audit; real browser control and sensitive actions remain deferred.
+- Prompt 34.1 - Real Read-Only Web Adapter and Page Inspection: bounded public HTML/text inspection, DNS/IP SSRF controls, redirect revalidation, sanitized previews, and redacted audit.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Web Automation - Remaining Work
 
-**Goal:** Add a governed real read-only browser adapter, then introduce narrowly scoped interactive operations only after approval UX and threat review.
+**Goal:** Introduce narrowly scoped interactive operations only after approval UX and threat review. Read-only public page inspection is complete.
 
-**Expected deliverables:** redirect revalidation, browser process lifecycle, bounded page metadata, explicit approvals, cancellation, rollback guidance, and safe evidence handling.
+**Expected deliverables:** explicit approvals, controlled browser lifecycle, cancellation, rollback guidance, and safe evidence handling for narrowly scoped interactions.
 
 **Risks:** prompt injection, account actions, accidental purchases/messages, credential exposure, destructive navigation, and terms-of-service violations.
 
-**Acceptance criteria:** a real adapter passes read-only acceptance tests; sensitive actions require explicit approval; provider/agent output cannot authorize actions; stop controls work; every action is correlated and auditable; no arbitrary script execution exists.
+**Acceptance criteria:** sensitive actions require explicit approval; provider/agent output cannot authorize actions; stop controls work; every action is correlated and auditable; no arbitrary script execution exists.
 
 **Release target:** TBD after Vision and Sync foundations are stable.
 

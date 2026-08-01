@@ -1,6 +1,6 @@
 # Automation Strategy
 
-This document defines safety requirements for web and mobile automation. Prompt 34 provides a disabled-by-default, provider-neutral web foundation with URL policy, permissions, read-only commands, normalized results, and bounded redacted audit. No production browser adapter, interactive browser control, or mobile automation is implemented.
+This document defines safety requirements for web and mobile automation. Prompt 34.1 adds standard-library, read-only public page inspection with DNS/IP and redirect validation, bounded sanitized text extraction, and redacted audit. No interactive browser control or mobile automation is implemented.
 
 ## Authority and Permission Gates
 
@@ -18,9 +18,9 @@ Approval for one action must not authorize unrelated future actions. Wake words,
 
 ## Browser Automation Foundation
 
-`WebAutomationManager` is the only web action gateway. It separates observation from action, validates HTTP(S) hosts and URLs, preserves session and request correlation, and rejects arbitrary script or shell execution. The default unavailable adapter makes readiness truthful. A future real adapter must revalidate redirects, avoid persistent profiles and cookies, and return only bounded metadata unless the user explicitly approves more.
+`WebAutomationManager` is the only web action gateway. It separates observation from action, validates HTTPS hosts and resolved addresses, revalidates every redirect, preserves session and request correlation, and rejects arbitrary script or shell execution. `ReadOnlyWebInspectionAdapter` avoids profiles and cookies and returns only bounded metadata and sanitized text.
 
-Safe foundation operations are status, URL open preparation, title/current-URL reads, ephemeral snapshot metadata, metadata summary, and close. Clicks, typing, form submission, downloads, uploads, login, purchases, messages, deletion, and account changes are blocked before adapter dispatch.
+Safe operations are status, bounded public URL inspection, title/current-URL reads, ephemeral snapshot metadata, metadata summary, and close. Clicks, typing, form submission, downloads, uploads, login, purchases, messages, deletion, and account changes are blocked before adapter dispatch.
 
 ## Mobile Automation Concept
 

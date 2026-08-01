@@ -210,6 +210,7 @@ def load_settings(
             **raw_config["web_automation"],
             "enabled": _coerce_bool(raw_config["web_automation"]["enabled"]),
             "allow_local_targets": _coerce_bool(raw_config["web_automation"]["allow_local_targets"]),
+            "allow_http": _coerce_bool(raw_config["web_automation"]["allow_http"]),
             "store_page_content": _coerce_bool(raw_config["web_automation"]["store_page_content"]),
             "store_screenshots": _coerce_bool(raw_config["web_automation"]["store_screenshots"]),
         }),

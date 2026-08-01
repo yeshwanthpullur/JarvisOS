@@ -36,8 +36,8 @@ class ProjectTrackingTests(unittest.TestCase):
     def test_project_health_json_is_valid_and_bounded(self) -> None:
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(health["release"], "v0.5.0-alpha")
-        self.assertEqual(health["commit"], "01dd1fc1f139f45a4c54b86202cb71fe8619829f")
+        self.assertEqual(health["release"], "v0.6.0-alpha")
+        self.assertEqual(health["commit"], "d2ba7a64f0330d43f0f0c5100351934a22065c53")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Partial")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
@@ -80,7 +80,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("automatic detection treated root `main.py`", text)
         self.assertIn("jarvis-os-6oy2", text)
         self.assertIn("jarvis-221b5o5fc-jj1-e21e.vercel.app/api/status", text)
-        self.assertIn("1,463 passed", text)
+        self.assertIn("read-only public", text)
 
     def test_roadmap_covers_completed_and_next_milestones(self) -> None:
         text = (DOCS / "ROADMAP.md").read_text(encoding="utf-8")
@@ -129,14 +129,14 @@ class ProjectTrackingTests(unittest.TestCase):
         commands = CommandManager()
         commands.initialize()
         response = commands.execute("project status")
-        self.assertIn("release=v0.5.0-alpha", response.response)
-        self.assertIn("MVP=66%", response.response)
+        self.assertIn("release=v0.6.0-alpha", response.response)
+        self.assertIn("MVP=67%", response.response)
         self.assertIn("Prompt 35", response.response)
-        self.assertIn("limitations=fixed:13/open:14", response.response)
+        self.assertIn("limitations=fixed:14/open:14", response.response)
         self.assertIn("focus=LIM-027", response.response)
         self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 66)
-        self.assertEqual(response.metadata["fixed_limitations"], 13)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 67)
+        self.assertEqual(response.metadata["fixed_limitations"], 14)
         self.assertEqual(response.metadata["open_limitations"], 14)
 
     def test_sync_tracking_is_honest_and_local_first(self) -> None:

@@ -715,7 +715,8 @@ def _handler_for(name: str):
                     "Web Automation: "
                     f"mode={state['mode']} enabled={'yes' if state['enabled'] else 'no'} "
                     f"adapter={state['adapter_id']} available={'yes' if state['adapter_available'] else 'no'} "
-                    f"read_only=yes sensitive_actions=blocked page_storage=off screenshots=off.",
+                    f"network_inspection={'ready' if state['network_inspection_enabled'] else 'unavailable'} "
+                    f"read_only=yes interactive_actions=blocked sensitive_actions=blocked page_storage=off screenshots=off.",
                     **state,
                 )
             if name == "web policy":
@@ -748,7 +749,16 @@ def _handler_for(name: str):
                 safe_url = web.safe_url_for_display(result.current_url)
                 if safe_url: details += f" url={safe_url}"
                 if result.snapshot:
-                    details += f" domain={result.snapshot.domain or 'unknown'} content_stored=no screenshot_stored=no"
+                    snapshot = result.snapshot
+                    details += (
+                        f" domain={snapshot.domain or 'unknown'} status={snapshot.status_code or 'unknown'} "
+                        f"content_type={snapshot.content_type or 'unknown'} redirects={snapshot.redirect_count} "
+                        f"bytes={snapshot.byte_count} content_stored=no screenshot_stored=no"
+                    )
+                    if snapshot.description:
+                        details += f" description={snapshot.description[:300]}"
+                    if snapshot.text_preview:
+                        details += f" preview={snapshot.text_preview[:500]}"
                 return _text_response(
                     f"Web {result.action_type.value} {result.status.value}: {details}",
                     web_status=result.status.value, action_type=result.action_type.value,

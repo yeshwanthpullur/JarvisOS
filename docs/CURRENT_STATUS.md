@@ -4,10 +4,10 @@ Updated: 2026-08-02
 
 ## Current Release
 
-- Release: `v0.5.0-alpha - Sync and Limitations Tracking`
-- Baseline commit: `01dd1fc1f139f45a4c54b86202cb71fe8619829f`
+- Release: `v0.6.0-alpha - Web Automation Foundation`
+- Baseline commit: `d2ba7a64f0330d43f0f0c5100351934a22065c53`
 - Branch: `main`
-- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v0.5.0-alpha`
+- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v0.6.0-alpha`
 
 ## Stable Launch
 
@@ -46,7 +46,7 @@ python main.py --ui
 - Vision Intelligence: CLI path validation, safe metadata, local-only policy, and Provider Router integration work; semantic analysis awaits a model that advertises vision capability.
 - Online deployment foundation: both connected Vercel projects reached Ready from commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b`; the canonical `jarvis-os` `/api/status` response was verified live.
 - Online Sync foundation: disabled-by-default manual queueing, strict summary schemas, atomic persistence, deduplication, bounded audit/retention, conflict detection, and truthful unavailable remote behavior work. No real encrypted remote adapter is configured.
-- Web Automation foundation: strict URL policy, permissions, read-only commands, normalized results, and bounded redacted audit work. No real browser adapter is configured, and interactive actions are blocked.
+- Web Automation: bounded read-only public HTML/text inspection works through a standard-library adapter with DNS/IP checks, redirect revalidation, sanitized previews, and redacted audit. Interactive actions remain blocked.
 
 ## Experimental Features
 
@@ -62,14 +62,14 @@ python main.py --ui
 
 ## Known Limitations
 
-The audited register contains **27** limitations: **13 fixed** and **14 still open** across open, deferred, blocked, and experimental states. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
+The audited register contains **28** limitations: **14 fixed** and **14 still open** across open, deferred, blocked, and experimental states. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
 
 - SAPI playback is synchronous, so the CLI waits while speech is playing.
 - Voice input is architecturally connected but unavailable on this machine; `voice listen` does not fake transcription.
 - Cloud execution depends on user-provided credentials and explicit paid-request approval.
 - The web interface is experimental.
 - Sync is local-queue-only in practice: `sync run` cannot upload until a real authenticated encrypted adapter is configured. The Vercel status endpoint is not a sync backend.
-- Semantic vision, cross-device sync, interactive browser control, and mobile control do not exist yet. Safe image metadata, the local sync queue, and governed read-only web request foundations do exist.
+- Semantic vision, cross-device sync, interactive browser control, and mobile control do not exist yet. Safe image metadata, the local sync queue, and real bounded read-only public page inspection do exist.
 - Runtime state is local and some conversation/interface state is not durable across restarts.
 - The former Vercel failure occurred because automatic detection treated root `main.py` as a Python function even though it is intentionally CLI-only. `vercel.json` now builds only `api/index.py`; the deployed surface remains status-only and is not online JARVIS or sync.
 - The current production deployment for canonical project `jarvis-os` is Ready at commit `df912e8f67c06503bb0eecb1fa8cbec13095f2b4`. Failed deployments shown before commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b` are historical records from before `vercel.json` and `api/index.py` existed; they do not describe current health and may be ignored or deleted.
@@ -82,7 +82,7 @@ Prompt 35 - Mobile Automation. It must establish a narrow trusted-device boundar
 
 ## Last Verified Tests
 
-- Full suite: 1,463 passed, 0 skipped, 0 failed, 0 errors.
+- Full suite: 1,473 passed, 0 skipped, 0 failed, 0 errors.
 - Focused web/command/CLI/voice/vision/sync/settings/tracking/deployment suite: 213 passed.
 - Real Ollama chat: passed with `llama3.2:1b`.
 - Local-only enforcement: passed.
@@ -102,6 +102,6 @@ Prompt 35 - Mobile Automation. It must establish a narrow trusted-device boundar
 - [x] Confirm `voice input status/on/listen` reports unavailable local prerequisites without activating a microphone.
 - [x] Run calculator Tool Intelligence and confirm a real normalized result.
 - [x] Run `web status` and `web policy`; confirm unsafe URLs and sensitive actions are blocked.
-- [ ] Configure and verify a real read-only browser adapter before claiming live page access.
+- [x] Inspect `https://example.com` through `web open`, `web title`, and `web snapshot`; confirm bounded output and no persistent page data.
 - [x] Run `voice output off` and `exit`.
 - [ ] Re-verify paid cloud execution only with explicit permission and configured credentials.

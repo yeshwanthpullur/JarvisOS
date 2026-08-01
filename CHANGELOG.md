@@ -6,6 +6,8 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 
 ### Added
 
+- Standard-library read-only public page inspection with title, description, status, content type, byte count, redirect summary, and sanitized text preview.
+- DNS/IP SSRF protection and per-redirect URL revalidation with bounded timeout, redirect, response, and preview limits.
 - Provider-neutral Web Automation foundation with strict URL policy, scoped permissions, normalized results, bounded redacted audit, and CLI status/read-only commands.
 - Truthful unavailable browser adapter so startup and CLI remain healthy without a browser runtime.
 

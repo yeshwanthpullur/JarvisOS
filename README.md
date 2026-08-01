@@ -1,6 +1,6 @@
 # JARVIS OS
 
-JARVIS OS is currently at **v0.5.0-alpha - Sync and Limitations Tracking**. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at **v0.6.0-alpha - Web Automation Foundation**. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
 For an evidence-based snapshot, roadmap, and health scorecard, see [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise summary is available from the CLI with `project status`.
 
@@ -16,11 +16,13 @@ The Vercel deployment is a deliberately limited online status foundation. Root `
 
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 
-JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, Windows SAPI voice output, and partial Vision and Online Sync foundations. Encrypted remote sync and web/mobile automation are not implemented.
+JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, Windows SAPI voice output, partial Vision and Online Sync foundations, and bounded read-only public page inspection. Encrypted remote sync, interactive browsing, and mobile automation are not implemented.
 
 Online Sync now has an optional, disabled-by-default local foundation: a bounded atomic queue, allowlisted summary schemas, conflict records, audit retention, and manual CLI controls. No real remote backend is configured, and the public Vercel status deployment is not writable sync infrastructure. Raw conversations, databases, audio, images, documents, logs, local paths, and credentials are blocked from the queue.
 
 Verified gaps and their owners are tracked in [docs/LIMITATIONS_REGISTER.md](docs/LIMITATIONS_REGISTER.md); the bounded machine-readable source is [docs/limitations_register.json](docs/limitations_register.json).
+
+Use `web open <https-url>` for bounded public HTML/text inspection, then `web title`, `web url`, or `web snapshot`. This does not launch or control a browser; clicking, typing, forms, login, downloads, and account actions remain blocked.
 
 ## Goals
 

@@ -6,7 +6,7 @@ Start with `python main.py`. Use `help` for the focused command guide and `proje
 
 `project status` also shows fixed and still-open limitation counts. Detailed evidence and future owners are in `docs/LIMITATIONS_REGISTER.md`.
 
-Web foundation commands are `web status`, `web policy`, `web session`, `web open <https-url>`, `web title`, `web url`, `web snapshot`, `web audit`, and `web close`. They use the governed Web Automation Manager. The default adapter is unavailable, so commands report that no real browser backend is configured instead of claiming page access. Local/internal targets, credential-bearing URLs, unsafe schemes, and unsafe content categories are rejected. Interactive and sensitive actions are not available.
+Web inspection commands are `web status`, `web policy`, `web session`, `web open <https-url>`, `web title`, `web url`, `web snapshot`, `web audit`, and `web close`. They use the governed Web Automation Manager and a bounded standard-library adapter. `web open` reads safe public HTML/text metadata and a sanitized preview; it does not launch or control a browser. Local/internal targets, sensitive query fields, credential URLs, unsafe schemes, and unsafe categories are rejected. Interactive and sensitive actions remain unavailable.
 
 Vision commands are `vision status`, `vision describe <image_path>`, and `vision ask <image_path> <question>`. Quote paths containing spaces. Image metadata is available after validation; semantic descriptions require a genuinely vision-capable configured model.
 

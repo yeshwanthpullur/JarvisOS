@@ -2,16 +2,16 @@
 
 Updated: 2026-08-02
 
-This register is the authoritative compact audit of limitations recorded from Prompts 27 through 33. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
+This register is the authoritative compact audit of limitations recorded through Prompt 34.1. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
 
 ## Counts
 
 | Measure | Count |
 | --- | ---: |
-| Total limitations audited | 27 |
-| Fixed before Prompt 34 | 12 |
-| Fixed during Prompt 34 | 1 |
-| Fixed total | 13 |
+| Total limitations audited | 28 |
+| Fixed before Prompt 34.1 | 13 |
+| Fixed during Prompt 34.1 | 1 |
+| Fixed total | 14 |
 | Still open in any form | 14 |
 | Open | 5 |
 | Deferred | 5 |
@@ -20,7 +20,7 @@ This register is the authoritative compact audit of limitations recorded from Pr
 
 The machine-readable source is [`limitations_register.json`](limitations_register.json). Its counts are validated by tests.
 
-## Fixed Before Prompt 34
+## Fixed Before Prompt 34.1
 
 | ID | Limitation | Evidence |
 | --- | --- | --- |
@@ -36,12 +36,13 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-010 | Offline STT setup guidance was fragmented | The CLI guide has a safe local setup checklist. |
 | LIM-011 | Local vision setup guidance was fragmented | Capability discovery and semantic readiness are distinct. |
 | LIM-012 | Tracking language understated the sync foundation | Local queue and unavailable remote transfer are distinct. |
+| LIM-021 | Web automation had no governed foundation | Prompt 34 added strict policy, permissions, read-only commands, normalized results, bounded audit, and a truthful fallback adapter. |
 
-## Fixed During Prompt 34
+## Fixed During Prompt 34.1
 
 | ID | Limitation | Fix |
 | --- | --- | --- |
-| LIM-021 | Web automation had no governed foundation | Added strict policy, permissions, read-only commands, normalized results, bounded audit, and a truthful unavailable adapter. |
+| LIM-028 | Web automation had no live read-only inspection or redirect verification | Added a standard-library adapter with bounded fetches, SSRF controls, redirect revalidation, sanitized previews, and no raw-page persistence. |
 
 ## Still Open
 
@@ -69,4 +70,4 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 - **Blocked** means a model, dependency, adapter, service, or explicit setup step is missing.
 - **Experimental** means the capability exists but is not the recommended primary experience.
 
-The CLI remains primary. Online deployment remains a safe status foundation only. Local queueing does not imply remote sync, image metadata does not imply semantic vision, voice command architecture does not imply working microphone transcription, and web policy/commands do not imply a configured browser adapter or interactive control.
+The CLI remains primary. Online deployment remains a safe status foundation only. Local queueing does not imply remote sync, image metadata does not imply semantic vision, voice command architecture does not imply working microphone transcription, and read-only web inspection does not imply interactive browser control.

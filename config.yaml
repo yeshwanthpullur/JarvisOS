@@ -232,12 +232,16 @@ sync:
   sync_secrets: false
 
 web_automation:
-  enabled: false
-  mode: "off"
-  adapter: unavailable-browser
+  enabled: true
+  mode: "read_only"
+  adapter: read-only-http
   allow_local_targets: false
+  allow_http: false
   audit_retention: 100
-  action_timeout_seconds: 30
+  action_timeout_seconds: 8
+  maximum_redirects: 5
+  maximum_response_bytes: 524288
+  maximum_preview_characters: 2000
   store_page_content: false
   store_screenshots: false
 
