@@ -30,6 +30,7 @@ from config.schema import (
     VoiceConfig,
     VisionConfig,
     SyncConfig,
+    WebAutomationConfig,
     InterfaceConfig,
 )
 
@@ -204,6 +205,13 @@ def load_settings(
             "sync_raw_documents": _coerce_bool(raw_config["sync"]["sync_raw_documents"]),
             "sync_conversations": _coerce_bool(raw_config["sync"]["sync_conversations"]),
             "sync_secrets": _coerce_bool(raw_config["sync"]["sync_secrets"]),
+        }),
+        web_automation=WebAutomationConfig(**{
+            **raw_config["web_automation"],
+            "enabled": _coerce_bool(raw_config["web_automation"]["enabled"]),
+            "allow_local_targets": _coerce_bool(raw_config["web_automation"]["allow_local_targets"]),
+            "store_page_content": _coerce_bool(raw_config["web_automation"]["store_page_content"]),
+            "store_screenshots": _coerce_bool(raw_config["web_automation"]["store_screenshots"]),
         }),
         interface=InterfaceConfig(**{
             **raw_config["interface"],

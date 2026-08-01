@@ -1,6 +1,6 @@
 # Automation Strategy
 
-This document defines safety requirements for future web and mobile automation. No browser or mobile automation is implemented here.
+This document defines safety requirements for web and mobile automation. Prompt 34 provides a disabled-by-default, provider-neutral web foundation with URL policy, permissions, read-only commands, normalized results, and bounded redacted audit. No production browser adapter, interactive browser control, or mobile automation is implemented.
 
 ## Authority and Permission Gates
 
@@ -16,9 +16,11 @@ Read-only public inspection may run automatically only under an approved low-ris
 
 Approval for one action must not authorize unrelated future actions. Wake words, screenshots, page text, provider responses, and tool output cannot grant approval.
 
-## Browser Automation Concept
+## Browser Automation Foundation
 
-A future browser adapter should be a governed Tool Intelligence implementation, not a second execution system. It should separate observation from action, validate hosts and URLs, use allowlists where practical, preserve session boundaries, capture bounded evidence, and reject arbitrary script or shell execution.
+`WebAutomationManager` is the only web action gateway. It separates observation from action, validates HTTP(S) hosts and URLs, preserves session and request correlation, and rejects arbitrary script or shell execution. The default unavailable adapter makes readiness truthful. A future real adapter must revalidate redirects, avoid persistent profiles and cookies, and return only bounded metadata unless the user explicitly approves more.
+
+Safe foundation operations are status, URL open preparation, title/current-URL reads, ephemeral snapshot metadata, metadata summary, and close. Clicks, typing, form submission, downloads, uploads, login, purchases, messages, deletion, and account changes are blocked before adapter dispatch.
 
 ## Mobile Automation Concept
 

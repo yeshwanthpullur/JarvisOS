@@ -4,6 +4,16 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 
 ## Unreleased
 
+### Added
+
+- Provider-neutral Web Automation foundation with strict URL policy, scoped permissions, normalized results, bounded redacted audit, and CLI status/read-only commands.
+- Truthful unavailable browser adapter so startup and CLI remain healthy without a browser runtime.
+
+### Security
+
+- Credential-bearing, local/internal, unsafe-scheme, and policy-sensitive URLs are rejected.
+- Click, type, submit, download, upload, login, purchase, message, delete, and account-change actions are blocked before adapter dispatch.
+
 - Added an evidence-backed limitations register covering Prompts 27 through 33, with internally checked fixed, open, deferred, blocked, and experimental counts.
 - Added concise limitation totals to `project status` and consolidated safe local STT and vision setup guidance.
 - Corrected stale tracking language so the working local sync queue is distinguished from unavailable encrypted remote synchronization.

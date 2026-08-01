@@ -1,6 +1,6 @@
 # Limitations Register
 
-Updated: 2026-08-01
+Updated: 2026-08-02
 
 This register is the authoritative compact audit of limitations recorded from Prompts 27 through 33. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
 
@@ -8,10 +8,10 @@ This register is the authoritative compact audit of limitations recorded from Pr
 
 | Measure | Count |
 | --- | ---: |
-| Total limitations audited | 26 |
-| Fixed before Prompt 33.1 | 8 |
-| Fixed during Prompt 33.1 | 4 |
-| Fixed total | 12 |
+| Total limitations audited | 27 |
+| Fixed before Prompt 34 | 12 |
+| Fixed during Prompt 34 | 1 |
+| Fixed total | 13 |
 | Still open in any form | 14 |
 | Open | 5 |
 | Deferred | 5 |
@@ -20,7 +20,7 @@ This register is the authoritative compact audit of limitations recorded from Pr
 
 The machine-readable source is [`limitations_register.json`](limitations_register.json). Its counts are validated by tests.
 
-## Fixed Before This Audit
+## Fixed Before Prompt 34
 
 | ID | Limitation | Evidence |
 | --- | --- | --- |
@@ -32,15 +32,16 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-006 | Vercel treated CLI `main.py` as a handler | Canonical deployment is Ready and `/api/status` returns HTTP 200. |
 | LIM-007 | No concise machine-readable project status | Health JSON and `project status` are tested. |
 | LIM-008 | `sync conflicts` could fall into Goal Intelligence | Registered commands now dispatch first. |
+| LIM-009 | Project status omitted limitation totals | Compact counts and register path are data-backed. |
+| LIM-010 | Offline STT setup guidance was fragmented | The CLI guide has a safe local setup checklist. |
+| LIM-011 | Local vision setup guidance was fragmented | Capability discovery and semantic readiness are distinct. |
+| LIM-012 | Tracking language understated the sync foundation | Local queue and unavailable remote transfer are distinct. |
 
-## Fixed During This Audit
+## Fixed During Prompt 34
 
 | ID | Limitation | Fix |
 | --- | --- | --- |
-| LIM-009 | Project status omitted limitation totals | Added compact fixed/open counts and register path. |
-| LIM-010 | Offline STT setup guidance was fragmented | Added one safe local setup checklist to the CLI guide. |
-| LIM-011 | Local vision setup guidance was fragmented | Clarified capability discovery and semantic readiness. |
-| LIM-012 | Tracking language understated the sync foundation | Distinguished working local queue from unavailable remote transfer. |
+| LIM-021 | Web automation had no governed foundation | Added strict policy, permissions, read-only commands, normalized results, bounded audit, and a truthful unavailable adapter. |
 
 ## Still Open
 
@@ -54,12 +55,12 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-018 | Deferred | High | Encrypted remote synchronization backend does not exist. | Future Encrypted Sync Backend |
 | LIM-019 | Deferred | Medium | Autonomous plans remain advisory. | Future Governed Execution Milestone |
 | LIM-020 | Deferred | Medium | Multi-agent specialist breadth is limited. | Future Agent Expansion |
-| LIM-021 | Deferred | High | Web automation is not implemented. | Prompt 34 - Web Automation |
 | LIM-022 | Deferred | High | Mobile automation is not implemented. | Prompt 35 - Mobile Automation |
 | LIM-023 | Blocked | High | Real local voice input is unavailable. | Local STT Setup and Verification |
 | LIM-024 | Blocked | High | Semantic image analysis is unavailable. | Local Vision Model Setup |
 | LIM-025 | Blocked | Medium | Wake word and continuous listening are unavailable. | Future Voice Input Milestone |
 | LIM-026 | Experimental | Medium | Local web interface remains experimental. | Dedicated Interface Stabilization |
+| LIM-027 | Deferred | High | Interactive and sensitive web actions are unavailable. | Future Governed Interactive Web Automation |
 
 ## Interpretation
 
@@ -68,4 +69,4 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 - **Blocked** means a model, dependency, adapter, service, or explicit setup step is missing.
 - **Experimental** means the capability exists but is not the recommended primary experience.
 
-The CLI remains primary. Online deployment remains a safe status foundation only. Local queueing does not imply remote sync, image metadata does not imply semantic vision, and voice command architecture does not imply working microphone transcription.
+The CLI remains primary. Online deployment remains a safe status foundation only. Local queueing does not imply remote sync, image metadata does not imply semantic vision, voice command architecture does not imply working microphone transcription, and web policy/commands do not imply a configured browser adapter or interactive control.

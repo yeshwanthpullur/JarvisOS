@@ -92,6 +92,9 @@ def _vision_manager(context:CommandContext):
 def _sync_manager(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else getattr(conversation,"sync_intelligence",None) or (getattr(conversation,"metadata",{}) or {}).get("sync_intelligence")
+def _web_manager(context:CommandContext):
+    conversation=context.conversation_context
+    return None if conversation is None else getattr(conversation,"web_automation",None) or (getattr(conversation,"metadata",{}) or {}).get("web_automation")
 
 
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
@@ -292,6 +295,15 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("sync cleanup", "Prune bounded sync history", "sync", (), CommandPermission.SYNC),
         ("sync run", "Run a manual sync batch", "sync", (), CommandPermission.SYNC),
         ("sync conflicts", "List unresolved sync conflicts", "sync", (), CommandPermission.SYNC),
+        ("web status", "Show Web Automation readiness", "web", (), CommandPermission.WEB),
+        ("web open", "Open a policy-approved URL read-only", "web", (), CommandPermission.WEB),
+        ("web title", "Read the active page title", "web", (), CommandPermission.WEB),
+        ("web url", "Read the active safe URL", "web", (), CommandPermission.WEB),
+        ("web snapshot", "Read non-persistent page metadata", "web", (), CommandPermission.WEB),
+        ("web close", "Close the active web session", "web", (), CommandPermission.WEB),
+        ("web audit", "Show bounded web audit metadata", "web", (), CommandPermission.WEB),
+        ("web policy", "Show Web Automation policy", "web", (), CommandPermission.WEB),
+        ("web session", "Show active Web Automation sessions", "web", (), CommandPermission.WEB),
         ("departments", "Show department summary", "department", (), CommandPermission.DEPARTMENT),
         ("department list", "List departments", "department", (), CommandPermission.DEPARTMENT),
         ("memory", "Show memory summary", "memory", (), CommandPermission.MEMORY),
@@ -691,6 +703,58 @@ def _handler_for(name: str):
                 conflicts = sync.conflicts()
                 text = ", ".join(f"{item.conflict_id}:{item.sync_item_id}:{item.status}" for item in conflicts[-20:]) or "none"
                 return _text_response(f"Sync conflicts ({len(conflicts)}): {text}", conflict_count=len(conflicts))
+        if name.startswith("web "):
+            web = _web_manager(context); args = context.arguments
+            conversation = context.conversation_context
+            request_id = getattr(getattr(conversation, "session", None), "request_id", None)
+            if web is None:
+                return _text_response("Web Automation is unavailable. No browser action was performed.")
+            if name == "web status":
+                state = web.status()
+                return _text_response(
+                    "Web Automation: "
+                    f"mode={state['mode']} enabled={'yes' if state['enabled'] else 'no'} "
+                    f"adapter={state['adapter_id']} available={'yes' if state['adapter_available'] else 'no'} "
+                    f"read_only=yes sensitive_actions=blocked page_storage=off screenshots=off.",
+                    **state,
+                )
+            if name == "web policy":
+                return _text_response(
+                    "Web policy: HTTP(S) read-only metadata actions may proceed after URL validation when a governed adapter is configured. "
+                    "Local/private targets and unsafe topics are blocked by default. Click, type, submit, download, upload, login, purchase, message, delete, and account changes are blocked. "
+                    "CAPTCHA, paywall, and access-control bypass are never permitted in this foundation.",
+                    read_only_actions=("open_url", "get_page_title", "get_current_url", "snapshot_page", "close_session"),
+                    sensitive_actions="blocked",
+                )
+            if name == "web session":
+                sessions = tuple(web.sessions.values())
+                text = ", ".join(f"{item.session_id}:{item.status}:{item.current_domain or 'unknown'}" for item in sessions) or "none"
+                return _text_response(f"Web sessions ({len(sessions)}): {text}", active_sessions=len(sessions))
+            if name == "web audit":
+                events = web.audit_events()
+                text = ", ".join(f"{item.action_type}:{item.status}:{item.safe_domain or 'none'}" for item in events[-20:]) or "none"
+                return _text_response(f"Web audit ({len(events)}): {text}", audit_count=len(events))
+            if name == "web open":
+                if not args: return _text_response("Usage: web open <https_url>")
+                result = web.open_url(args[0], request_id)
+            elif name == "web title": result = web.title(request_id=request_id)
+            elif name == "web url": result = web.current_url(request_id=request_id)
+            elif name == "web snapshot": result = web.snapshot(request_id=request_id)
+            elif name == "web close": result = web.close(request_id=request_id)
+            else: result = None
+            if result is not None:
+                details = result.message
+                if result.title: details += f" title={result.title}"
+                safe_url = web.safe_url_for_display(result.current_url)
+                if safe_url: details += f" url={safe_url}"
+                if result.snapshot:
+                    details += f" domain={result.snapshot.domain or 'unknown'} content_stored=no screenshot_stored=no"
+                return _text_response(
+                    f"Web {result.action_type.value} {result.status.value}: {details}",
+                    web_status=result.status.value, action_type=result.action_type.value,
+                    session_id=result.session_id, safe_domain=result.safe_domain,
+                    error_code=result.error_code, approval_required=result.approval_required,
+                )
         if name in {"providers", "provider list", "provider status", "provider health"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:

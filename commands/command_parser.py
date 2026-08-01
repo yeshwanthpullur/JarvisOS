@@ -30,6 +30,7 @@ _SUBCOMMANDS = {
     "voice status", "voice on", "voice off", "voice listen", "voice cleanup", "voice stop", "voice cancel", "voice interrupt", "voice session", "voice devices", "voice backend", "voice device", "voice input", "voice output", "voice say", "voice transcribe", "voice mode", "voice privacy", "voice language", "voice rate", "voice volume", "voice raw-audio", "voice limits", "voice health",
     "vision status", "vision describe", "vision ask",
     "sync status", "sync on", "sync off", "sync queue", "sync add", "sync inspect", "sync cancel", "sync retry", "sync cleanup", "sync run", "sync conflicts",
+    "web status", "web open", "web title", "web url", "web snapshot", "web close", "web audit", "web policy", "web session",
 }
 
 

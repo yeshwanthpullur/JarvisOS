@@ -58,8 +58,8 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(health["limitations"]["fixed"], self.data["counts"]["fixed"])
         self.assertEqual(health["limitations"]["still_open"], self.data["counts"]["still_open"])
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
-        self.assertIn("**26** limitations", current)
-        self.assertIn("**12 fixed**", current)
+        self.assertIn("**27** limitations", current)
+        self.assertIn("**13 fixed**", current)
         self.assertIn("**14 still open**", current)
 
     def test_major_gaps_are_never_claimed_working(self) -> None:
@@ -69,7 +69,7 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(statuses["Vision"], "Partial")
         self.assertEqual(statuses["Online Sync"], "Partial")
         self.assertEqual(statuses["Web Interface"], "Experimental")
-        self.assertEqual(statuses["Web Automation"], "Not Started")
+        self.assertEqual(statuses["Web Automation"], "Partial")
         self.assertEqual(statuses["Mobile Automation"], "Not Started")
 
     def test_setup_and_boundary_guidance_is_explicit(self) -> None:
@@ -79,6 +79,9 @@ class LimitationsRegisterTests(unittest.TestCase):
             self.assertIn(phrase, guide)
         for phrase in ("real authenticated encrypted adapter", "web interface is experimental", "Web automation", "Mobile automation"):
             self.assertIn(phrase.lower(), status.lower())
+        web = (DOCS / "WEB_AUTOMATION.md").read_text(encoding="utf-8")
+        for phrase in ("default adapter is intentionally unavailable", "blocked before adapter dispatch", "not persisted by default"):
+            self.assertIn(phrase, web)
 
     def test_tracking_files_contain_no_secret_shaped_values(self) -> None:
         paths = (DOCS / "LIMITATIONS_REGISTER.md", self.path, DOCS / "CLI_GUIDE.md", DOCS / "CURRENT_STATUS.md")

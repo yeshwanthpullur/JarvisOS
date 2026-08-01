@@ -1,6 +1,6 @@
 # JARVIS OS
 
-JARVIS OS is currently at **v0.4.0-alpha - Vision and Deployment Foundation**. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at **v0.5.0-alpha - Sync and Limitations Tracking**. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
 For an evidence-based snapshot, roadmap, and health scorecard, see [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise summary is available from the CLI with `project status`.
 
@@ -61,6 +61,7 @@ Verified gaps and their owners are tracked in [docs/LIMITATIONS_REGISTER.md](doc
 | `config/` | Settings loading and application logging configuration. |
 | `data/` | Local runtime data that should not be committed by default. |
 | `data/sync/` | Ignored local sync queue, anonymous installation identifier, conflicts, and bounded audit state. |
+| `data/web-automation/` | Ignored bounded web-action audit state; never stores cookies, profiles, screenshots, or page content by default. |
 | `desktop/` | Dependency-free responsive browser interface assets for local Windows use. |
 | `docs/` | Project documentation and architectural notes. |
 | `logs/` | Runtime log output. Log files are ignored by Git. |

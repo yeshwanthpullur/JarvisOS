@@ -23,3 +23,4 @@ class CommandPermission(StrEnum):
     DIAGNOSTIC = "diagnostic"
     DEVELOPER = "developer"
     SYNC = "sync"
+    WEB = "web"

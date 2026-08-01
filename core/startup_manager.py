@@ -300,6 +300,7 @@ class StartupManager:
         self.agent_manager.orchestrator.tool_manager = self.jarvis_core.manager.tools
         self.status.mark_module_loaded("jarvis")
         self.status.mark_module_loaded("sync_intelligence")
+        self.status.mark_module_loaded("web_automation")
 
         self.conversation_manager = ConversationManager(
             jarvis_core=self.jarvis_core,
@@ -321,6 +322,7 @@ class StartupManager:
             voice_intelligence=self.jarvis_core.manager.voice_intelligence,
             vision_intelligence=self.jarvis_core.manager.vision_intelligence,
             sync_intelligence=self.jarvis_core.manager.sync_intelligence,
+            web_automation=self.jarvis_core.manager.web_automation,
             personal_intelligence_manager=self.personal_intelligence_manager,
             context_intelligence_manager=self.context_intelligence_manager,
             logger=logging.getLogger("conversation"),
@@ -947,6 +949,10 @@ class StartupManager:
                 "sync_intelligence": lambda: (
                     self.jarvis_core is not None
                     and self.jarvis_core.manager.sync_intelligence.initialized
+                ),
+                "web_automation": lambda: (
+                    self.jarvis_core is not None
+                    and self.jarvis_core.manager.web_automation.initialized
                 ),
                 "conversation_engine": lambda: (
                     self.conversation_manager is not None

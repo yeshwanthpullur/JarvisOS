@@ -231,6 +231,16 @@ sync:
   sync_conversations: false
   sync_secrets: false
 
+web_automation:
+  enabled: false
+  mode: "off"
+  adapter: unavailable-browser
+  allow_local_targets: false
+  audit_retention: 100
+  action_timeout_seconds: 30
+  store_page_content: false
+  store_screenshots: false
+
 interface:
   enabled: false
   host: 127.0.0.1

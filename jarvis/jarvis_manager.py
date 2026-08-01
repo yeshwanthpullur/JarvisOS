@@ -34,6 +34,7 @@ from jarvis.autonomous_planning import AutonomousPlanning, PlanningLimits
 from jarvis.voice_intelligence import VoiceIntelligence
 from jarvis.vision_intelligence import VisionIntelligence
 from jarvis.sync_intelligence import SyncIntelligence
+from jarvis.web_automation import WebAutomationManager
 from jarvis.jarvis_validator import JarvisValidator
 from reasoning import ReasoningManager
 from reflection import ReflectionManager
@@ -134,6 +135,7 @@ class JarvisManager:
         self.voice_intelligence = VoiceIntelligence(context.settings if context else None,(context.settings.data_dir / "voice") if context and context.settings else None,self.logger)
         self.vision_intelligence = VisionIntelligence(context.settings if context else None,context.metadata.get("provider_manager") if context else None,self.logger)
         self.sync_intelligence = SyncIntelligence((context.settings.data_dir / "sync") if context and context.settings else Path("data/sync"), context.settings if context else None, self.logger)
+        self.web_automation = WebAutomationManager((context.settings.data_dir / "web-automation") if context and context.settings else Path("data/web-automation"), context.settings if context else None, logger=self.logger)
         self.skills = JarvisSkills()
         self.workflow = WorkflowManager()
         self.retrieval = RetrievalManager()
@@ -176,6 +178,7 @@ class JarvisManager:
             "voice_intelligence": self.voice_intelligence,
             "vision_intelligence": self.vision_intelligence,
             "sync_intelligence": self.sync_intelligence,
+            "web_automation": self.web_automation,
             "skills": self.skills,
             "workflow": self.workflow,
             "retrieval": self.retrieval,
@@ -255,6 +258,7 @@ class JarvisManager:
             voice_intelligence=self.voice_intelligence,
             vision_intelligence=self.vision_intelligence,
             sync_intelligence=self.sync_intelligence,
+            web_automation=self.web_automation,
             logger=self.logger,
             metadata={**(base.metadata if base else {}), **request.metadata},
         )

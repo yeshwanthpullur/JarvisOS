@@ -59,6 +59,7 @@ class ConversationManager:
         voice_intelligence: object | None = None,
         vision_intelligence: object | None = None,
         sync_intelligence: object | None = None,
+        web_automation: object | None = None,
         personal_intelligence_manager: PersonalIntelligenceManager | None = None,
         context_intelligence_manager: ContextIntelligenceManager | None = None,
         logger: logging.Logger | None = None,
@@ -87,6 +88,7 @@ class ConversationManager:
         self.voice_intelligence = voice_intelligence
         self.vision_intelligence = vision_intelligence
         self.sync_intelligence = sync_intelligence
+        self.web_automation = web_automation
         self.personal_intelligence = personal_intelligence_manager
         self.context_intelligence = context_intelligence_manager
         self.logger = logger or logging.getLogger(__name__)
@@ -141,6 +143,7 @@ class ConversationManager:
             voice_intelligence=self.voice_intelligence,
             vision_intelligence=self.vision_intelligence,
             sync_intelligence=self.sync_intelligence,
+            web_automation=self.web_automation,
             metadata={
                 "session_metadata": dict(self.active_session.metadata),
                 "personal_intelligence_manager": self.personal_intelligence,

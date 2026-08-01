@@ -33,4 +33,5 @@ class ConversationContext:
     voice_intelligence: Any | None = None
     vision_intelligence: Any | None = None
     sync_intelligence: Any | None = None
+    web_automation: Any | None = None
     metadata: dict[str, Any] = field(default_factory=dict)

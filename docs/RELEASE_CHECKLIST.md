@@ -30,6 +30,7 @@ Use this checklist for every JARVIS OS release. Record exact results in the rele
 - [ ] Deployment entrypoints are isolated from local launchers, live health URLs are checked, and duplicate connected projects are reviewed.
 - [ ] Security, permissions, local-only policy, and command separation are verified.
 - [ ] Sync queue artifacts remain ignored; safe schemas, secret/path rejection, offline behavior, conflict handling, and bounded retention are verified.
+- [ ] Web automation URLs, permissions, blocked sensitive actions, audit redaction, and browser runtime artifact exclusions are verified.
 
 ## Release
 

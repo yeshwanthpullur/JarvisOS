@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated: 2026-08-01
+Updated: 2026-08-02
 
 ## Completed Milestones
 
@@ -19,17 +19,18 @@ Updated: 2026-08-01
 - Prompt 32.1 - Safe Vercel status foundation, isolated from the local CLI. This is deployment readiness, not online sync.
 - Prompt 33 - Online Sync Foundation: governed local queue, strict policy, manual CLI, conflict and adapter foundations; remote transfer remains unavailable.
 - Prompt 33.1 - Limitations Audit and Fix Pass: evidence-backed limitations register, concise CLI counts, and consolidated setup guidance.
+- Prompt 34 - Web Automation Foundation: provider-neutral policy, permissions, read-only CLI, normalized results, and bounded redacted audit; real browser control and sensitive actions remain deferred.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
-## Prompt 34 - Web Automation
+## Web Automation - Remaining Work
 
-**Goal:** Add permission-gated browser automation through authoritative Tool and Workflow paths.
+**Goal:** Add a governed real read-only browser adapter, then introduce narrowly scoped interactive operations only after approval UX and threat review.
 
-**Expected deliverables:** browser tool contract, target allowlists, read/action separation, screenshot evidence, approval prompts, cancellation, rollback guidance, and safe audit history.
+**Expected deliverables:** redirect revalidation, browser process lifecycle, bounded page metadata, explicit approvals, cancellation, rollback guidance, and safe evidence handling.
 
 **Risks:** prompt injection, account actions, accidental purchases/messages, credential exposure, destructive navigation, and terms-of-service violations.
 
-**Acceptance criteria:** sensitive actions require explicit approval, provider/agent output cannot authorize actions, stop controls work, every action is correlated and auditable, and no arbitrary script execution exists.
+**Acceptance criteria:** a real adapter passes read-only acceptance tests; sensitive actions require explicit approval; provider/agent output cannot authorize actions; stop controls work; every action is correlated and auditable; no arbitrary script execution exists.
 
 **Release target:** TBD after Vision and Sync foundations are stable.
 

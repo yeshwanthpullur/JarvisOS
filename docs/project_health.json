@@ -1,11 +1,11 @@
 {
-  "release": "v0.4.0-alpha",
-  "commit": "0ef62db42913de70cf6dcb7c6b92674cc20a11ef",
-  "updated_at": "2026-08-01",
+  "release": "v0.5.0-alpha",
+  "commit": "01dd1fc1f139f45a4c54b86202cb71fe8619829f",
+  "updated_at": "2026-08-02",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 34 - Web Automation",
-  "overall_mvp_readiness": 64,
-  "limitations": {"total": 26, "fixed": 12, "still_open": 14, "register": "docs/limitations_register.json"},
+  "next_milestone": "Prompt 35 - Mobile Automation",
+  "overall_mvp_readiness": 66,
+  "limitations": {"total": 27, "fixed": 13, "still_open": 14, "register": "docs/limitations_register.json"},
   "categories": [
     {"name": "Core Runtime", "status": "Working", "confidence": 90, "evidence": "Startup, shutdown, health, and full regression suite pass.", "next_action": "Keep startup checks bounded."},
     {"name": "CLI Experience", "status": "Working", "confidence": 88, "evidence": "Prompt 31.7 stable CLI and focused tests pass.", "next_action": "Fix only observed usability defects."},
@@ -21,9 +21,9 @@
     {"name": "Vision", "status": "Partial", "confidence": 55, "evidence": "Safe validation, metadata, CLI, local-only policy, and Provider Router integration exist; no installed vision model is available.", "next_action": "Install and verify a local vision-capable Ollama model."},
     {"name": "Deployment / Online Foundation", "status": "Working", "confidence": 90, "evidence": "Both Vercel projects reached Ready and the canonical status endpoint returned safe JSON; Deployment Protection still gates some anonymous paths.", "next_action": "Retain jarvis-os, manually remove the duplicate, and review Deployment Protection."},
     {"name": "Online Sync", "status": "Partial", "confidence": 55, "evidence": "Bounded atomic local queue, allowlisted summaries, conflict/audit retention, and manual CLI work; no encrypted remote backend exists.", "next_action": "Design and verify an authenticated encrypted remote adapter before enabling transfer."},
-    {"name": "Web Automation", "status": "Not Started", "confidence": 0, "evidence": "No governed browser action implementation exists.", "next_action": "Implement after Vision and permissions review."},
+    {"name": "Web Automation", "status": "Partial", "confidence": 48, "evidence": "Provider-neutral manager, strict URL policy, permissions, read-only CLI, bounded redacted audit, and unavailable adapter are tested; no production browser adapter is configured.", "next_action": "Add a governed read-only browser adapter, then design explicit approvals for interactive actions."},
     {"name": "Mobile Automation", "status": "Not Started", "confidence": 0, "evidence": "No mobile bridge or device-control implementation exists.", "next_action": "Define a narrow trust boundary first."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 75, "evidence": "Permission, approval, locality, tool, provider, and UI boundaries are tested.", "next_action": "Threat-review every external integration."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 90, "evidence": "1448 tests pass and v0.4.0-alpha is published.", "next_action": "Keep release evidence current."}
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 90, "evidence": "1463 tests pass and v0.5.0-alpha is published.", "next_action": "Keep release evidence current."}
   ]
 }

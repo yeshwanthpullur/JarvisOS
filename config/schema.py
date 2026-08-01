@@ -136,6 +136,17 @@ class SyncConfig:
     sync_conversations: bool = False
     sync_secrets: bool = False
 
+@dataclass(frozen=True, slots=True)
+class WebAutomationConfig:
+    enabled: bool = False
+    mode: str = "off"
+    adapter: str = "unavailable-browser"
+    allow_local_targets: bool = False
+    audit_retention: int = 100
+    action_timeout_seconds: int = 30
+    store_page_content: bool = False
+    store_screenshots: bool = False
+
 
 @dataclass(frozen=True, slots=True)
 class InterfaceConfig:
@@ -247,6 +258,7 @@ class AppSettings:
     voice: VoiceConfig = field(default_factory=VoiceConfig)
     vision: VisionConfig = field(default_factory=VisionConfig)
     sync: SyncConfig = field(default_factory=SyncConfig)
+    web_automation: WebAutomationConfig = field(default_factory=WebAutomationConfig)
     interface: InterfaceConfig = field(default_factory=InterfaceConfig)
 
     @property

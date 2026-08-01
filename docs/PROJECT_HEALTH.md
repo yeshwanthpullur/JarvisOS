@@ -1,6 +1,6 @@
 # Project Health
 
-Updated: 2026-08-01
+Updated: 2026-08-02
 
 Status values are evidence-based: **Working**, **Partial**, **Experimental**, **Not Started**, or **Blocked**. Confidence describes confidence in the status assessment, not percentage feature completion. Values are conservative and should change only after code, tests, or manual evidence changes.
 
@@ -20,19 +20,19 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Vision | Partial | 55% | Safe image validation, metadata, CLI commands, local-only policy, and provider routing exist; no installed model advertises vision. | `vision status`; focused vision tests | Install and verify a local vision-capable Ollama model. |
 | Deployment / Online Foundation | Working | 90% | Canonical `jarvis-os` production is Ready at `df912e8`; older failures predate the deployment entrypoint and are harmless history. The duplicate project still exists. | Deployment tests; Vercel history audit; live canonical `/api/status` check | Keep `jarvis-os`; disconnect or delete `jarvis-os-6oy2`; ignore or delete historical failed deployments; review Deployment Protection. |
 | Online Sync | Partial | 55% | Bounded atomic local queue, allowlisted summaries, policy checks, conflicts, retention, audit, and manual CLI work; no encrypted remote backend exists. | Sync tests; manual `sync` command sequence | Design and verify an authenticated encrypted remote adapter before enabling transfer. |
-| Web Automation | Not Started | 0% | No governed browser action implementation. | Repository inspection | Implement only after vision and permission foundations. |
+| Web Automation | Partial | 48% | Provider-neutral manager, strict URL policy, permissions, read-only CLI, bounded redacted audit, and truthful unavailable adapter are tested; no production browser adapter is configured. | `web status`; `web policy`; web automation tests | Add a governed read-only adapter before designing approval-gated interactive actions. |
 | Mobile Automation | Not Started | 0% | No mobile bridge or device-control implementation. | Repository inspection | Define narrow mobile trust boundary first. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 90% | 1,448 tests pass and `v0.4.0-alpha` is published. | Full suite; release checklist | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 90% | 1,463 tests pass and `v0.5.0-alpha` is published. | Full suite; release checklist | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
-**64%** toward the broader local-first JARVIS MVP described by the roadmap.
+**66%** toward the broader local-first JARVIS MVP described by the roadmap.
 
-This is not a mathematical average of feature labels. The small increase reflects a real governed local sync queue, not remote sync capability. Unavailable real microphone transcription, incomplete semantic vision, absent encrypted remote transfer, missing automation, and limited real-world breadth remain substantial constraints.
+This is not a mathematical average of feature labels. The small increase reflects tested policy, command, and audit foundations for read-only web work, not real browser control. Unavailable microphone transcription, incomplete semantic vision, absent encrypted remote transfer, blocked interactive browsing, and missing mobile automation remain substantial constraints.
 
 Machine-readable details: [`project_health.json`](project_health.json).
 
 ## Limitations
 
-The audited register currently records **26 total**, **12 fixed**, and **14 still open** limitations. Voice Input remains Partial, Vision and Online Sync remain Partial, the Web Interface remains Experimental, and Web/Mobile Automation remain Not Started. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).
+The audited register currently records **27 total**, **13 fixed**, and **14 still open** limitations. Voice Input, Vision, Online Sync, and Web Automation remain Partial; the Web Interface remains Experimental; Mobile Automation remains Not Started. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).
