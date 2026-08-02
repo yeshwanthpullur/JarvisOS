@@ -50,6 +50,7 @@ class VercelDeploymentTests(unittest.TestCase):
                 self.assertEqual(set(payload), required)
                 self.assertEqual(payload, STATUS)
                 self.assertEqual(payload["web_automation"], "partial_read_only")
+                self.assertEqual(payload["mobile_automation"], "partial_planning_only")
 
     def test_status_exposes_no_secrets_or_local_paths(self) -> None:
         body = json.dumps(STATUS)

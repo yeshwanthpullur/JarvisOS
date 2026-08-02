@@ -37,9 +37,11 @@ Updated: 2026-08-02
 
 ## Prompt 35 - Mobile Automation
 
+**Status:** Completed foundation. Planning-only manager, adapters, CLI, strict policy, and redacted audit exist; no phone control exists.
+
 **Goal:** Add a narrow, permission-scoped mobile companion and device-action bridge.
 
-**Expected deliverables:** trusted-device enrollment, scoped capabilities, confirmation UX, secure transport, status reporting, action receipts, revoke/stop controls, and recovery behavior.
+**Delivered foundation:** provider-neutral models and adapters, planning-only commands, safe setup guidance, capability classification, sensitive-action blocking, and bounded audit. Trusted-device enrollment, secure transport, live adapters, confirmation UX for execution, and device actions remain future work.
 
 **Risks:** device takeover, notification/message leakage, unsafe background actions, location exposure, and unreliable connectivity.
 

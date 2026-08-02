@@ -4,6 +4,10 @@ The interactive `Jarvis >` prompt is the current primary JARVIS experience. It i
 
 Start with `python main.py`. Use `help` for the focused command guide and `project status` for the current release, MVP readiness, and next milestone. Common operating commands include `local only on/off`, `local use <model>`, `provider status`, `tools status`, `voice status`, `voice output on/off`, `voice say <text>`, and `exit`.
 
+## Mobile Planning Foundation
+
+Use `mobile status`, `mobile policy`, `mobile capabilities`, `mobile setup`, `mobile plan <task>`, `mobile audit`, and `mobile close`. These commands do not connect to or control a phone. Requests involving messages, calls, notifications, contacts, photos, sensors, device input, apps, settings, purchases, login, unlock, or background monitoring are blocked.
+
 `project status` also shows fixed and still-open limitation counts. Detailed evidence and future owners are in `docs/LIMITATIONS_REGISTER.md`.
 
 Web inspection commands are `web status`, `web policy`, `web session`, `web open <https-url>`, `web title`, `web url`, `web snapshot`, `web audit`, and `web close`. They use the governed Web Automation Manager and a bounded standard-library adapter. `web open` reads safe public HTML/text metadata and a sanitized preview; it does not launch or control a browser. Local/internal targets, sensitive query fields, credential URLs, unsafe schemes, and unsafe categories are rejected. Interactive and sensitive actions remain unavailable.

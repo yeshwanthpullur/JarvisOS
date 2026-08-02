@@ -24,3 +24,4 @@ class CommandPermission(StrEnum):
     DEVELOPER = "developer"
     SYNC = "sync"
     WEB = "web"
+    MOBILE = "mobile"

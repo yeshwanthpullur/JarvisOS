@@ -95,6 +95,9 @@ def _sync_manager(context:CommandContext):
 def _web_manager(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else getattr(conversation,"web_automation",None) or (getattr(conversation,"metadata",{}) or {}).get("web_automation")
+def _mobile_manager(context:CommandContext):
+    conversation=context.conversation_context
+    return None if conversation is None else getattr(conversation,"mobile_automation",None) or (getattr(conversation,"metadata",{}) or {}).get("mobile_automation")
 
 
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
@@ -304,6 +307,15 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("web audit", "Show bounded web audit metadata", "web", (), CommandPermission.WEB),
         ("web policy", "Show Web Automation policy", "web", (), CommandPermission.WEB),
         ("web session", "Show active Web Automation sessions", "web", (), CommandPermission.WEB),
+        ("mobile status", "Show Mobile Automation foundation status", "mobile", (), CommandPermission.MOBILE),
+        ("mobile policy", "Show mobile privacy and action policy", "mobile", (), CommandPermission.MOBILE),
+        ("mobile capabilities", "Show current and future mobile capabilities", "mobile", (), CommandPermission.MOBILE),
+        ("mobile setup", "Show safe future mobile setup guidance", "mobile", (), CommandPermission.MOBILE),
+        ("mobile plan", "Plan a mobile workflow without execution", "mobile", (), CommandPermission.MOBILE),
+        ("mobile audit", "Show bounded redacted mobile audit", "mobile", (), CommandPermission.MOBILE),
+        ("mobile close", "Clear mobile planning session state", "mobile", (), CommandPermission.MOBILE),
+        ("mobile devices", "Show privacy-safe device summary", "mobile", (), CommandPermission.MOBILE),
+        ("mobile session", "Show mobile planning session state", "mobile", (), CommandPermission.MOBILE),
         ("departments", "Show department summary", "department", (), CommandPermission.DEPARTMENT),
         ("department list", "List departments", "department", (), CommandPermission.DEPARTMENT),
         ("memory", "Show memory summary", "memory", (), CommandPermission.MEMORY),
@@ -765,6 +777,43 @@ def _handler_for(name: str):
                     session_id=result.session_id, safe_domain=result.safe_domain,
                     error_code=result.error_code, approval_required=result.approval_required,
                 )
+        if name.startswith("mobile "):
+            mobile = _mobile_manager(context); args = context.arguments
+            conversation = context.conversation_context
+            request_id = getattr(getattr(conversation, "session", None), "request_id", None)
+            if mobile is None:
+                return _text_response("Mobile Automation is unavailable. No device was accessed.")
+            if name == "mobile status":
+                state = mobile.status()
+                return _text_response(
+                    "Mobile Automation: "
+                    f"status={state['status']} mode={state['mode']} adapter={state['adapter_id']} "
+                    f"available={'yes' if state['adapter_available'] else 'no'} real_phone_adapter=no "
+                    "live_control=off private_data_access=blocked sensitive_actions=blocked.", **state)
+            if name == "mobile policy":
+                return _text_response("Mobile policy: status, setup guidance, capability summaries, connection planning, audit reading, and session closure are allowed. Private phone data, communications, sensors, device input, installs, settings, purchases, login/unlock, and background monitoring are blocked.", sensitive_actions="blocked")
+            if name == "mobile capabilities":
+                result = mobile.capabilities(request_id)
+                return _text_response(f"Mobile capabilities {result.status.value}: current=status,policy,capabilities,setup,connection_plan,audit,close; future_blocked=private_data,communications,camera,microphone,location,tap,type,swipe,install,settings,purchase,login,unlock,background_monitor.", error_code=result.error_code)
+            if name == "mobile setup":
+                result = mobile.setup(request_id)
+                return _text_response(f"Mobile setup {result.status.value}: {result.message}", error_code=result.error_code)
+            if name == "mobile plan":
+                if not args: return _text_response("Usage: mobile plan <safe_mobile_workflow>")
+                result = mobile.plan(" ".join(args), request_id)
+                return _text_response(f"Mobile plan {result.status.value}: {result.message}", error_code=result.error_code, approval_required=result.approval_required)
+            if name == "mobile audit":
+                events = mobile.audit_events()
+                text = ", ".join(f"{item.action_type}:{item.status}:{item.policy_decision}" for item in events[-20:]) or "none"
+                return _text_response(f"Mobile audit ({len(events)}): {text}", audit_count=len(events))
+            if name == "mobile close":
+                result = mobile.close(request_id)
+                return _text_response(f"Mobile close {result.status.value}: {result.message}", error_code=result.error_code)
+            if name == "mobile devices":
+                devices = mobile.device_summaries()
+                return _text_response(f"Mobile devices ({len(devices)}): none; no phone identifiers were read.", device_count=len(devices))
+            if name == "mobile session":
+                return _text_response(f"Mobile sessions ({len(mobile.sessions)}): planning-only; no device connection.", session_count=len(mobile.sessions))
         if name in {"providers", "provider list", "provider status", "provider health"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:

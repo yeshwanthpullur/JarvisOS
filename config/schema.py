@@ -237,6 +237,12 @@ class MobileConfig:
 
     enabled: bool
     api_enabled: bool
+    automation_enabled: bool = True
+    automation_mode: str = "planning_only"
+    automation_adapter: str = "planning-only"
+    audit_retention: int = 100
+    live_control_enabled: bool = False
+    store_private_data: bool = False
 
 
 @dataclass(frozen=True, slots=True)

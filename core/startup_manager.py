@@ -301,6 +301,7 @@ class StartupManager:
         self.status.mark_module_loaded("jarvis")
         self.status.mark_module_loaded("sync_intelligence")
         self.status.mark_module_loaded("web_automation")
+        self.status.mark_module_loaded("mobile_automation")
 
         self.conversation_manager = ConversationManager(
             jarvis_core=self.jarvis_core,
@@ -323,6 +324,7 @@ class StartupManager:
             vision_intelligence=self.jarvis_core.manager.vision_intelligence,
             sync_intelligence=self.jarvis_core.manager.sync_intelligence,
             web_automation=self.jarvis_core.manager.web_automation,
+            mobile_automation=self.jarvis_core.manager.mobile_automation,
             personal_intelligence_manager=self.personal_intelligence_manager,
             context_intelligence_manager=self.context_intelligence_manager,
             logger=logging.getLogger("conversation"),
@@ -953,6 +955,10 @@ class StartupManager:
                 "web_automation": lambda: (
                     self.jarvis_core is not None
                     and self.jarvis_core.manager.web_automation.initialized
+                ),
+                "mobile_automation": lambda: (
+                    self.jarvis_core is not None
+                    and self.jarvis_core.manager.mobile_automation.initialized
                 ),
                 "conversation_engine": lambda: (
                     self.conversation_manager is not None

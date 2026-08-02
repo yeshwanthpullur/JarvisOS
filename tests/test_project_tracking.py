@@ -24,6 +24,7 @@ REQUIRED_DOCS = (
     "LIMITATIONS_REGISTER.md",
     "WEB_AUTOMATION.md",
     "JARVIS_USE_CASES.md",
+    "MOBILE_AUTOMATION.md",
 )
 
 
@@ -37,8 +38,8 @@ class ProjectTrackingTests(unittest.TestCase):
     def test_project_health_json_is_valid_and_bounded(self) -> None:
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(health["release"], "v0.6.0-alpha")
-        self.assertEqual(health["commit"], "d2ba7a64f0330d43f0f0c5100351934a22065c53")
+        self.assertEqual(health["release"], "v0.7.0-alpha")
+        self.assertEqual(health["commit"], "dce6f6250ba1f394d82a3ef880037b99cbef0673")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Partial")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
@@ -50,6 +51,8 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertEqual(online_sync["status"], "Partial")
         web = next(item for item in health["categories"] if item["name"] == "Web Automation")
         self.assertEqual(web["status"], "Partial")
+        mobile = next(item for item in health["categories"] if item["name"] == "Mobile Automation")
+        self.assertEqual(mobile["status"], "Partial")
         self.assertEqual(len(health["categories"]), 24)
         allowed = {"Working", "Partial", "Experimental", "Not Started", "Blocked"}
         for category in health["categories"]:
@@ -131,15 +134,15 @@ class ProjectTrackingTests(unittest.TestCase):
         commands = CommandManager()
         commands.initialize()
         response = commands.execute("project status")
-        self.assertIn("release=v0.6.0-alpha", response.response)
-        self.assertIn("MVP=67%", response.response)
-        self.assertIn("Prompt 35", response.response)
-        self.assertIn("limitations=fixed:14/open:22", response.response)
-        self.assertIn("focus=LIM-027", response.response)
+        self.assertIn("release=v0.7.0-alpha", response.response)
+        self.assertIn("MVP=68%", response.response)
+        self.assertIn("Prompt 36", response.response)
+        self.assertIn("limitations=fixed:15/open:24", response.response)
+        self.assertIn("focus=LIM-023", response.response)
         self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 67)
-        self.assertEqual(response.metadata["fixed_limitations"], 14)
-        self.assertEqual(response.metadata["open_limitations"], 22)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 68)
+        self.assertEqual(response.metadata["fixed_limitations"], 15)
+        self.assertEqual(response.metadata["open_limitations"], 24)
 
     def test_sync_tracking_is_honest_and_local_first(self) -> None:
         status = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")

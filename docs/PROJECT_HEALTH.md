@@ -21,7 +21,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Deployment / Online Foundation | Working | 90% | Canonical `jarvis-os` production is Ready at `df912e8`; older failures predate the deployment entrypoint and are harmless history. The duplicate project still exists. | Deployment tests; Vercel history audit; live canonical `/api/status` check | Keep `jarvis-os`; disconnect or delete `jarvis-os-6oy2`; ignore or delete historical failed deployments; review Deployment Protection. |
 | Online Sync | Partial | 55% | Bounded atomic local queue, allowlisted summaries, policy checks, conflicts, retention, audit, and manual CLI work; no encrypted remote backend exists. | Sync tests; manual `sync` command sequence | Design and verify an authenticated encrypted remote adapter before enabling transfer. |
 | Web Automation | Partial | 58% | The provider-neutral manager now uses a real bounded read-only HTTP adapter with DNS/IP and redirect validation, sanitized previews, permissions, and redacted audit. Interactive browser actions remain blocked. | `web open https://example.com`; `web snapshot`; web automation tests | Design approval-gated interactive actions only after a separate threat review. |
-| Mobile Automation | Not Started | 0% | No mobile bridge or device-control implementation. | Repository inspection | Define narrow mobile trust boundary first. |
+| Mobile Automation | Partial | 45% | Planning-only manager, strict policy, CLI, adapters, and redacted bounded audit are tested; no phone is accessed. | `python -m unittest tests.test_mobile_automation` | Keep live control blocked until a separately approved adapter milestone. |
 | Study and Research Workflows | Partial | 45% | Conversation, retrieval, research, goals, planning, and read-only web foundations exist; no dedicated study workflow composes them. | Research/retrieval tests; product vision review | Build Prompt 38 with evidence and academic-honesty controls. |
 | Advanced Builder Workflows | Partial | 35% | Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized. | Planning/tool/agent tests; repository inspection | Formalize the governed workflow in Prompt 39. |
 | Raspberry Pi and Hardware | Partial | 20% | General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exists. | Repository inspection | Add verified profiles and safety gates in Prompt 40. |
@@ -29,16 +29,16 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Communication Assistance | Not Started | 0% | No call, contact, calendar, messaging, or communication connector is integrated. | Repository inspection | Define consent and connector boundaries in Prompt 47. |
 | Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 90% | The bundled-runtime verification completed 1,480 tests: 1,477 passed, 3 optional environment-dependent skips, and no failures/errors; `v0.6.0-alpha` is published. | Full suite; release checklist | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 90% | Prompt 35 verification completed 1,493 tests with no skips, failures, or errors; `v0.7.0-alpha` is published. | Full suite; focused mobile/CLI suite | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
-**67%** toward the broader local-first JARVIS MVP described by the roadmap.
+**68%** toward the broader local-first JARVIS MVP described by the roadmap.
 
-This is not a mathematical average of feature labels. The increase reflects tested live read-only page inspection and redirect safety, not interactive browser control. Unavailable microphone transcription, incomplete semantic vision, absent encrypted remote transfer, blocked interactive browsing, and missing mobile automation remain substantial constraints.
+This is not a mathematical average of feature labels. The increase reflects a tested planning-only mobile safety boundary, not phone control. Unavailable microphone transcription, incomplete semantic vision, absent encrypted remote transfer, blocked interactive browsing, and unavailable real mobile adapters remain substantial constraints.
 
 Machine-readable details: [`project_health.json`](project_health.json).
 
 ## Limitations
 
-The audited register currently records **36 total**, **14 fixed**, and **22 still open** limitations. Voice Input, Vision, Online Sync, Web Automation, Study/Research, Builder, Hardware, and Personal Workspace remain Partial; the Web Interface remains Experimental; Mobile Automation, Creative Media workflows, and Communication Assistance remain Not Started. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).
+The audited register currently records **39 total**, **15 fixed**, and **24 still open** limitations. Voice Input, Vision, Online Sync, Web Automation, Mobile Automation, Study/Research, Builder, Hardware, and Personal Workspace remain Partial; the Web Interface remains Experimental; Creative Media workflows and Communication Assistance remain Not Started. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).

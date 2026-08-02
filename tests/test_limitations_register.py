@@ -58,9 +58,9 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(health["limitations"]["fixed"], self.data["counts"]["fixed"])
         self.assertEqual(health["limitations"]["still_open"], self.data["counts"]["still_open"])
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
-        self.assertIn("**36** limitations", current)
-        self.assertIn("**14 fixed**", current)
-        self.assertIn("**22 still open**", current)
+        self.assertIn("**39** limitations", current)
+        self.assertIn("**15 fixed**", current)
+        self.assertIn("**24 still open**", current)
 
     def test_major_gaps_are_never_claimed_working(self) -> None:
         health = json.loads((DOCS / "project_health.json").read_text(encoding="utf-8"))
@@ -70,7 +70,7 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(statuses["Online Sync"], "Partial")
         self.assertEqual(statuses["Web Interface"], "Experimental")
         self.assertEqual(statuses["Web Automation"], "Partial")
-        self.assertEqual(statuses["Mobile Automation"], "Not Started")
+        self.assertEqual(statuses["Mobile Automation"], "Partial")
 
     def test_setup_and_boundary_guidance_is_explicit(self) -> None:
         guide = (DOCS / "CLI_GUIDE.md").read_text(encoding="utf-8")

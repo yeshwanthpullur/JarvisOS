@@ -2,25 +2,25 @@
 
 Updated: 2026-08-02
 
-This register is the authoritative compact audit of limitations recorded through Prompt 34.1. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
+This register is the authoritative compact audit of limitations recorded through Prompt 35. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
 
 ## Counts
 
 | Measure | Count |
 | --- | ---: |
-| Total limitations audited | 36 |
-| Fixed before Prompt 34.1 | 13 |
-| Fixed during Prompt 34.1 | 1 |
-| Fixed total | 14 |
-| Still open in any form | 22 |
+| Total limitations audited | 39 |
+| Fixed before Prompt 35 | 14 |
+| Fixed during Prompt 35 | 1 |
+| Fixed total | 15 |
+| Still open in any form | 24 |
 | Open | 5 |
-| Deferred | 13 |
+| Deferred | 15 |
 | Blocked | 3 |
 | Experimental | 1 |
 
 The machine-readable source is [`limitations_register.json`](limitations_register.json). Its counts are validated by tests.
 
-## Fixed Before Prompt 34.1
+## Fixed Before Prompt 35
 
 | ID | Limitation | Evidence |
 | --- | --- | --- |
@@ -37,12 +37,13 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-011 | Local vision setup guidance was fragmented | Capability discovery and semantic readiness are distinct. |
 | LIM-012 | Tracking language understated the sync foundation | Local queue and unavailable remote transfer are distinct. |
 | LIM-021 | Web automation had no governed foundation | Prompt 34 added strict policy, permissions, read-only commands, normalized results, bounded audit, and a truthful fallback adapter. |
+| LIM-028 | Web automation had no live read-only inspection or redirect verification | Prompt 34.1 added bounded standard-library inspection and redirect validation. |
 
-## Fixed During Prompt 34.1
+## Fixed During Prompt 35
 
 | ID | Limitation | Fix |
 | --- | --- | --- |
-| LIM-028 | Web automation had no live read-only inspection or redirect verification | Added a standard-library adapter with bounded fetches, SSRF controls, redirect revalidation, sanitized previews, and no raw-page persistence. |
+| LIM-022 | Mobile automation had no governed foundation | Added a planning-only manager, adapters, commands, policy blocks, and redacted bounded audit without phone access. |
 
 ## Still Open
 
@@ -56,7 +57,6 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-018 | Deferred | High | Encrypted remote synchronization backend does not exist. | Future Encrypted Sync Backend |
 | LIM-019 | Deferred | Medium | Autonomous plans remain advisory. | Future Governed Execution Milestone |
 | LIM-020 | Deferred | Medium | Multi-agent specialist breadth is limited. | Future Agent Expansion |
-| LIM-022 | Deferred | High | Mobile automation is not implemented. | Prompt 35 - Mobile Automation |
 | LIM-023 | Blocked | High | Real local voice input is unavailable. | Local STT Setup and Verification |
 | LIM-024 | Blocked | High | Semantic image analysis is unavailable. | Local Vision Model Setup |
 | LIM-025 | Blocked | Medium | Wake word and continuous listening are unavailable. | Future Voice Input Milestone |
@@ -70,6 +70,9 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-034 | Deferred | High | Advanced Builder Mode is not formalized. | Prompt 39 - Advanced Builder / Coding Workflow Foundation |
 | LIM-035 | Deferred | High | Call and communication assistance is not implemented. | Prompt 47 - Safe Communication and Call Assistance Foundation |
 | LIM-036 | Deferred | High | Unified personal multi-tool workspace is not implemented. | Prompt 49 - Personal Workspace / Multi-Tool Replacement Layer |
+| LIM-037 | Deferred | High | No real phone adapter or live mobile control exists. | Future Governed Mobile Adapter |
+| LIM-038 | Deferred | High | No approval-gated mobile actions exist. | Future Governed Mobile Actions |
+| LIM-039 | Deferred | Medium | No trusted phone companion app exists. | Future Mobile Companion |
 
 ## Interpretation
 

@@ -212,9 +212,9 @@ Future implementation may include local file indexing, transcript generation, sc
 
 **Required modules:** Trusted-device enrollment, encrypted transport, Mobile Automation, Sync, permissions, and revocation.
 
-**Current status:** Not Started.
+**Current status:** Partial. A planning-only policy, adapter, CLI, and audit foundation exists; live phone control and private-data access remain unavailable.
 
-**Future owner:** Prompt 35 - Mobile Automation Foundation, followed by Prompt 44.
+**Future owner:** Prompt 35 established the foundation; Prompt 44 owns cross-device sync and a later approved adapter milestone owns live control.
 
 **Safety:** No unrestricted phone, contacts, messages, sensors, or background control.
 

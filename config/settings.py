@@ -190,6 +190,12 @@ def load_settings(
         mobile=MobileConfig(
             enabled=_coerce_bool(raw_config["mobile"]["enabled"]),
             api_enabled=_coerce_bool(raw_config["mobile"]["api_enabled"]),
+            automation_enabled=_coerce_bool(raw_config["mobile"]["automation_enabled"]),
+            automation_mode=str(raw_config["mobile"]["automation_mode"]),
+            automation_adapter=str(raw_config["mobile"]["automation_adapter"]),
+            audit_retention=int(raw_config["mobile"]["audit_retention"]),
+            live_control_enabled=_coerce_bool(raw_config["mobile"]["live_control_enabled"]),
+            store_private_data=_coerce_bool(raw_config["mobile"]["store_private_data"]),
         ),
         tools=ToolsConfig(**{key: int(value) for key, value in raw_config["tools"].items()}),
         planning=PlanningConfig(**{key: int(value) for key, value in raw_config["planning"].items()}),

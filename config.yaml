@@ -300,3 +300,9 @@ desktop:
 mobile:
   enabled: false
   api_enabled: false
+  automation_enabled: true
+  automation_mode: planning_only
+  automation_adapter: planning-only
+  audit_retention: 100
+  live_control_enabled: false
+  store_private_data: false

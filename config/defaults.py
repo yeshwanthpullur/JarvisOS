@@ -231,5 +231,11 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
     "mobile": {
         "enabled": False,
         "api_enabled": False,
+        "automation_enabled": True,
+        "automation_mode": "planning_only",
+        "automation_adapter": "planning-only",
+        "audit_retention": 100,
+        "live_control_enabled": False,
+        "store_private_data": False,
     },
 }

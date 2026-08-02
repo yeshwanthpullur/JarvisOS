@@ -1,6 +1,6 @@
 # Automation Strategy
 
-This document defines safety requirements for web and mobile automation. Prompt 34.1 adds standard-library, read-only public page inspection with DNS/IP and redirect validation, bounded sanitized text extraction, and redacted audit. No interactive browser control or mobile automation is implemented.
+This document defines safety requirements for web and mobile automation. Prompt 34.1 adds standard-library, read-only public page inspection. Prompt 35 adds planning-only mobile policy, adapters, commands, and redacted audit. No interactive browser control or live mobile control is implemented.
 
 ## Authority and Permission Gates
 
@@ -24,7 +24,7 @@ Safe operations are status, bounded public URL inspection, title/current-URL rea
 
 ## Mobile Automation Concept
 
-A future mobile bridge should require trusted-device enrollment, encrypted transport, per-capability permission, visible device status, and local revoke/stop controls. It must not expose a general remote-control channel or assume that a connected phone authorizes sensitive operations.
+The current planning-only mobile manager performs no device access. A future mobile bridge should require trusted-device enrollment, encrypted transport, per-capability permission, visible device status, and local revoke/stop controls. It must not expose a general remote-control channel or assume that a connected phone authorizes sensitive operations.
 
 ## Vision Dependency
 

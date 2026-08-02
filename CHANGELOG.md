@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Mobile Automation Foundation
+
+- Added a provider-neutral, planning-only Mobile Automation Manager with null and planning adapters.
+- Added strict policy blocks for private phone data, communication, sensors, input, apps, settings, purchases, authentication, unlock, and background monitoring.
+- Added concise mobile CLI commands and bounded redacted audit records without live phone access.
+
 All notable verified changes to JARVIS OS are recorded here. Unreleased architecture or planned work belongs in `docs/ROADMAP.md`, not in release history.
 
 ## Unreleased

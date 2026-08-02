@@ -1,11 +1,11 @@
 {
-  "release": "v0.6.0-alpha",
-  "commit": "d2ba7a64f0330d43f0f0c5100351934a22065c53",
+  "release": "v0.7.0-alpha",
+  "commit": "dce6f6250ba1f394d82a3ef880037b99cbef0673",
   "updated_at": "2026-08-02",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 35 - Mobile Automation",
-  "overall_mvp_readiness": 67,
-  "limitations": {"total": 36, "fixed": 14, "still_open": 22, "register": "docs/limitations_register.json"},
+  "next_milestone": "Prompt 36 - Real Local STT and Voice Input",
+  "overall_mvp_readiness": 68,
+  "limitations": {"total": 39, "fixed": 15, "still_open": 24, "register": "docs/limitations_register.json"},
   "categories": [
     {"name": "Core Runtime", "status": "Working", "confidence": 90, "evidence": "Startup, shutdown, health, and full regression suite pass.", "next_action": "Keep startup checks bounded."},
     {"name": "CLI Experience", "status": "Working", "confidence": 88, "evidence": "Prompt 31.7 stable CLI and focused tests pass.", "next_action": "Fix only observed usability defects."},
@@ -22,7 +22,7 @@
     {"name": "Deployment / Online Foundation", "status": "Working", "confidence": 90, "evidence": "Both Vercel projects reached Ready and the canonical status endpoint returned safe JSON; Deployment Protection still gates some anonymous paths.", "next_action": "Retain jarvis-os, manually remove the duplicate, and review Deployment Protection."},
     {"name": "Online Sync", "status": "Partial", "confidence": 55, "evidence": "Bounded atomic local queue, allowlisted summaries, conflict/audit retention, and manual CLI work; no encrypted remote backend exists.", "next_action": "Design and verify an authenticated encrypted remote adapter before enabling transfer."},
     {"name": "Web Automation", "status": "Partial", "confidence": 58, "evidence": "Standard-library read-only public page inspection, DNS and redirect SSRF checks, bounded text extraction, CLI, permissions, and redacted audit are tested; no interactive browser control exists.", "next_action": "Keep sensitive actions blocked until a separate approval-gated interaction milestone."},
-    {"name": "Mobile Automation", "status": "Not Started", "confidence": 0, "evidence": "No mobile bridge or device-control implementation exists.", "next_action": "Define a narrow trust boundary first."},
+    {"name": "Mobile Automation", "status": "Partial", "confidence": 45, "evidence": "Planning-only manager, policy gates, CLI commands, adapters, bounded redacted audit, and tests exist; no phone is accessed.", "next_action": "Add a separately approved real adapter and enrollment model without weakening current blocks."},
     {"name": "Study and Research Workflows", "status": "Partial", "confidence": 45, "evidence": "Conversation, retrieval, research, goals, planning, and read-only web foundations exist; no dedicated study workflow composes them.", "next_action": "Build Prompt 38 with evidence and academic-honesty controls."},
     {"name": "Advanced Builder Workflows", "status": "Partial", "confidence": 35, "evidence": "Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized.", "next_action": "Formalize the governed workflow in Prompt 39."},
     {"name": "Raspberry Pi and Hardware", "status": "Partial", "confidence": 20, "evidence": "General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exists.", "next_action": "Add verified profiles and safety gates in Prompt 40."},
@@ -30,6 +30,6 @@
     {"name": "Communication Assistance", "status": "Not Started", "confidence": 0, "evidence": "No call, contact, calendar, messaging, or communication connector is integrated.", "next_action": "Define consent and connector boundaries in Prompt 47."},
     {"name": "Personal Workspace", "status": "Partial", "confidence": 30, "evidence": "CLI access and project tracking exist, but capabilities are not unified into a complete multi-tool replacement workspace.", "next_action": "Compose approved capabilities in Prompt 49 without duplicating authorities."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 75, "evidence": "Permission, approval, locality, tool, provider, and UI boundaries are tested.", "next_action": "Threat-review every external integration."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 90, "evidence": "Prompt 34.1 regression verification passes and v0.6.0-alpha is published.", "next_action": "Keep release evidence current."}
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 90, "evidence": "Prompt 35 full regression verification passes and v0.7.0-alpha is published.", "next_action": "Keep release evidence current."}
   ]
 }
