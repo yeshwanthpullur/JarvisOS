@@ -125,6 +125,33 @@ class ChatHotfixTests(unittest.TestCase):
 
         self.assertEqual(handled, ["exit"])
 
+    def test_cli_continues_after_unmatched_command_quote(self) -> None:
+        manager, execution = self.manager_for(
+            ProviderExecutionResponse(response="unused", provider="ollama", model="llama3.2:1b")
+        )
+        startup = StartupManager()
+        startup.conversation_manager = manager
+        with patch(
+            "builtins.input",
+            side_effect=['voice say "unfinished', "provider status", "exit"],
+        ), patch("builtins.print") as output:
+            startup.command_loop()
+
+        rendered = "\n".join(str(call.args[0]) for call in output.call_args_list if call.args)
+        self.assertIn("Command parse error: unmatched quotation mark.", rendered)
+        self.assertIn("provider status", rendered.lower())
+        self.assertEqual(execution.calls, 0)
+
+    def test_apostrophe_in_free_form_chat_still_routes_to_provider(self) -> None:
+        manager, execution = self.manager_for(
+            ProviderExecutionResponse(response="It is Paris.", provider="ollama", model="llama3.2:1b")
+        )
+
+        response = manager.handle_input("What's the capital of France?")
+
+        self.assertEqual(response.response, "It is Paris.")
+        self.assertEqual(execution.calls, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

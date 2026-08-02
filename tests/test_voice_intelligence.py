@@ -6,6 +6,7 @@ from unittest.mock import patch
 from commands import CommandManager
 from commands.command_parser import CommandParser
 from conversation import ConversationContext,ConversationSession
+from jarvis.stt_intelligence import VoskSTTAdapter
 from jarvis.voice_intelligence import *
 
 class FakeAdapter:
@@ -24,6 +25,8 @@ class VoiceTests(unittest.TestCase):
   return subprocess.CompletedProcess(args,0,"","")
  def decoded_script(self,run):
   args=run.call_args.args[0];return base64.b64decode(args[args.index("-EncodedCommand")+1]).decode("utf-16le")
+ def force_stt_unavailable(self):
+  self.v.voice_input.stt_adapter=VoskSTTAdapter(Path(__file__).parent/"missing-vosk-model")
  def wav(self,root,seconds=.1):
   p=Path(root)/"x.wav"
   with wave.open(str(p),"wb") as w:w.setnchannels(1);w.setsampwidth(2);w.setframerate(16000);w.writeframes(b"\0\0"*int(16000*seconds))
@@ -44,13 +47,15 @@ class VoiceTests(unittest.TestCase):
    self.assertEqual(voice.validate_audio_file(str(self.wav(allowed))).status,VoiceStatus.COMPLETED)
    self.assertRaises(ValueError,voice.validate_audio_file,str(self.wav(blocked)))
  def test_local_tts_registered(self):self.assertIsNotNone(self.v.registry.get("windows-sapi"))
- def test_stt_truthful_unavailable(self):self.assertFalse(self.v.registry.get("offline-stt").available)
+ def test_stt_availability_is_reported_truthfully(self):
+  status=self.v.input_status();self.assertEqual(status["stt_available"],self.v.voice_input.stt_adapter.available)
  def test_adapter_registration(self):self.v.registry.register(FakeAdapter());self.assertIsNotNone(self.v.registry.get("test-stt"))
  def test_duplicate_adapter_rejected(self):self.v.registry.register(FakeAdapter());self.assertRaises(ValueError,self.v.registry.register,FakeAdapter())
  def test_malformed_adapter_rejected(self):
   a=FakeAdapter();a.adapter_id="?";self.assertRaises(ValueError,self.v.registry.register,a)
  def test_devices_normalized(self):self.assertEqual(self.v.devices("output")[0].direction,"output")
- def test_no_input_device_fabricated(self):self.assertEqual(self.v.devices("input"),())
+ def test_input_devices_match_detected_microphone_state(self):
+  devices=self.v.devices("input");self.assertEqual(bool(devices),self.v.input_status()["microphone_available"]);self.assertTrue(all(item.direction=="input" for item in devices))
  def test_session_unavailable_when_disabled(self):self.assertEqual(self.v.create_session().state,VoiceState.UNAVAILABLE)
  def test_session_ready_after_enable(self):self.v.enabled=True;self.assertEqual(self.v.create_session().state,VoiceState.READY)
  def test_session_limit(self):self.v.enabled=True;self.v.create_session();self.assertRaises(ValueError,self.v.create_session)
@@ -111,6 +116,17 @@ class VoiceTests(unittest.TestCase):
   with patch("jarvis.voice_intelligence.subprocess.run",return_value=subprocess.CompletedProcess([],0,"","")) as run:
    result=self.sapi().synthesize(self.synthesis_request("playback"));script=self.decoded_script(run)
    self.assertEqual(result.status,VoiceStatus.COMPLETED);self.assertIsNone(result.audio_reference);self.assertIn("SetOutputToDefaultAudioDevice",script);self.assertNotIn("SetOutputToWaveFile",script)
+   self.assertEqual(run.call_args.kwargs["timeout"],30)
+ def test_sapi_long_playback_uses_bounded_adaptive_timeout(self):
+  spoken="A reasonably detailed assistant sentence. "*12
+  with patch("jarvis.voice_intelligence.subprocess.run",return_value=subprocess.CompletedProcess([],0,"","")) as run:
+   result=self.sapi().synthesize(self.synthesis_request("playback",text=spoken))
+  timeout=run.call_args.kwargs["timeout"]
+  self.assertEqual(result.status,VoiceStatus.COMPLETED);self.assertGreater(timeout,30);self.assertLessEqual(timeout,90);self.assertIsNone(result.audio_reference)
+ def test_sapi_timeout_bounds_cover_slow_and_fast_rates(self):
+  adapter=self.sapi();text="x"*500
+  slow=adapter.bounded_synthesis_timeout(text,5,-10);normal=adapter.bounded_synthesis_timeout(text,30,0);fast=adapter.bounded_synthesis_timeout(text,5,10)
+  self.assertLessEqual(slow,90);self.assertGreaterEqual(fast,15);self.assertGreater(slow,normal);self.assertGreater(normal,fast)
  def test_sapi_both_mode(self):
   with tempfile.TemporaryDirectory() as d,patch("jarvis.voice_intelligence.subprocess.run",side_effect=self.successful_run) as run:
    result=self.sapi().synthesize(self.synthesis_request("both",Path(d)/"out.wav"));script=self.decoded_script(run)
@@ -125,16 +141,18 @@ class VoiceTests(unittest.TestCase):
   self.assertEqual(result.status,VoiceStatus.FAILED);self.assertIn("device failed",result.errors[1]);self.assertNotIn(spoken,result.errors[1]);self.assertLessEqual(len(result.errors[1]),300)
  def test_sapi_timeout(self):
   with patch("jarvis.voice_intelligence.subprocess.run",side_effect=subprocess.TimeoutExpired("powershell",1)):result=self.sapi().synthesize(self.synthesis_request("playback"))
-  self.assertEqual(result.status,VoiceStatus.TIMED_OUT)
+  self.assertEqual(result.status,VoiceStatus.TIMED_OUT);self.assertEqual(result.errors,("synthesis_timeout",));self.assertIsNone(result.audio_reference)
  def test_sapi_special_text_uses_environment_not_command(self):
   spoken="O'Brien says $value; \"hello\"\nUnicode: \u0928\u092e\u0938\u094d\u0924\u0947"
   with patch("jarvis.voice_intelligence.subprocess.run",return_value=subprocess.CompletedProcess([],0,"","")) as run:
    self.assertEqual(self.sapi().synthesize(self.synthesis_request("playback",text=spoken)).status,VoiceStatus.COMPLETED)
    self.assertEqual(run.call_args.kwargs["env"]["JARVIS_SPEECH_TEXT"],spoken);self.assertNotIn(spoken," ".join(run.call_args.args[0]));self.assertNotIn(spoken,self.decoded_script(run))
  def test_stt_unavailable_not_fake(self):
+  self.force_stt_unavailable()
   with tempfile.TemporaryDirectory() as d:p=self.wav(d);self.v.settings=SimpleNamespace(base_dir=Path(d));r=self.v.transcribe_file(str(p));self.assertEqual(r.status,VoiceStatus.UNAVAILABLE)
  def test_input_status_reports_missing_local_capabilities(self):
-  status=self.v.input_status();self.assertFalse(status["stt_available"]);self.assertFalse(status["microphone_available"]);self.assertIn("microphone_capture_adapter",status["missing_capabilities"])
+  status=self.v.input_status();self.assertEqual(status["ready"],status["stt_available"] and status["microphone_available"])
+  self.assertEqual("local_stt_model" in status["missing_capabilities"],not status["model_ready"]);self.assertEqual("microphone_capture_adapter" in status["missing_capabilities"],not status["microphone_available"])
  def test_temp_audio_cleanup_is_scoped_and_safe(self):
   with tempfile.TemporaryDirectory() as d:
    voice=VoiceIntelligence(SimpleNamespace(voice=SimpleNamespace(temp_directory=Path(d)),base_dir=Path(d)))
@@ -148,12 +166,16 @@ class VoiceTests(unittest.TestCase):
  def test_voice_status_reports_input_output_and_storage(self):
   commands=CommandManager();commands.initialize();context=ConversationContext(session=ConversationSession(),voice_intelligence=self.v)
   response=commands.execute("voice status",context)
-  for value in ("output=off","input=off","stt=unavailable","raw_audio_persistence=off","retained_audio=0"):self.assertIn(value,response.response)
+  expected_stt="ready" if self.v.input_status()["stt_available"] else "unavailable"
+  for value in ("output=off","input=off",f"stt={expected_stt}","raw_audio_persistence=off","retained_audio=0"):self.assertIn(value,response.response)
  def test_voice_input_commands_are_truthful_without_stt(self):
+  self.force_stt_unavailable()
   commands=CommandManager();commands.initialize();context=ConversationContext(session=ConversationSession(),voice_intelligence=self.v)
   self.assertIn("stt=unavailable",commands.execute("voice input status",context).response)
-  self.assertIn("no local STT model",commands.execute("voice input on",context).response);self.assertFalse(self.v.input_enabled)
-  self.assertIn("no local STT model",commands.execute("voice listen",context).response)
+  response=commands.execute("voice input on",context).response
+  self.assertIn("not available",response);self.assertIn("local Vosk model",response);self.assertFalse(self.v.input_enabled)
+  listen_response=commands.execute("voice listen",context).response
+  self.assertIn("not available",listen_response);self.assertIn("local Vosk model",listen_response)
   self.assertIn("disabled",commands.execute("voice input off",context).response)
  def test_voice_cleanup_command(self):
   with tempfile.TemporaryDirectory() as d:

@@ -29,6 +29,8 @@ class ConversationEngine:
             return ConversationResponse(response=validation.errors[0], warnings=validation.errors, conversation_state=ConversationState.FAILED)
         if context.command_manager is not None:
             parsed = context.command_manager.parser.parse(request.normalized_input)
+            if not parsed.valid and parsed.metadata.get("parse_error") and context.command_manager.is_command_candidate(request.user_input):
+                return context.command_manager.execute(request.user_input, context)
             if context.command_manager.registry.lookup(parsed.name) is not None:
                 return context.command_manager.execute(request.normalized_input, context)
         personal_manager = context.metadata.get("personal_intelligence_manager")

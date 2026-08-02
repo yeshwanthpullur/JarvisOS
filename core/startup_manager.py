@@ -1065,6 +1065,8 @@ class StartupManager:
             return False
         manager = self.conversation_manager.command_manager
         parsed = manager.parser.parse(text)
+        if not getattr(parsed, "valid", True):
+            return manager.is_command_candidate(text)
         return manager.registry.lookup(parsed.name) is not None
 
     def _speak_cli_response(self, response: object) -> str | None:

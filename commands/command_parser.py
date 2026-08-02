@@ -46,7 +46,16 @@ class CommandParser:
         lexer.whitespace_split = True
         lexer.commenters = ""
         lexer.escape = ""
-        parts = tuple(lexer)
+        try:
+            parts = tuple(lexer)
+        except ValueError as exc:
+            parse_error = "unmatched_quotation" if "quotation" in str(exc).lower() else "invalid_syntax"
+            return ParsedCommand(
+                name="",
+                raw=text,
+                valid=False,
+                metadata={"parse_error": parse_error},
+            )
         flags: dict[str, str | bool] = {}
         args: list[str] = []
         for part in parts[1:]:

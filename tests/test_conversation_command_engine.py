@@ -52,6 +52,17 @@ class ConversationCommandTests(unittest.TestCase):
     def test_parser_empty_invalid(self) -> None:
         self.assertFalse(CommandParser().parse("").valid)
 
+    def test_parser_unmatched_quote_is_structured_invalid_input(self) -> None:
+        parsed = CommandParser().parse('voice say "unfinished')
+        self.assertFalse(parsed.valid)
+        self.assertEqual(parsed.metadata.get("parse_error"), "unmatched_quotation")
+
+    def test_parser_valid_quoted_command_still_works(self) -> None:
+        parsed = CommandParser().parse('voice say "hello from JARVIS"')
+        self.assertTrue(parsed.valid)
+        self.assertEqual(parsed.name, "voice say")
+        self.assertEqual(parsed.arguments, ("hello from JARVIS",))
+
     def test_aliases_resolve(self) -> None:
         self.assertEqual(CommandAliases().resolve("?"), "help")
 

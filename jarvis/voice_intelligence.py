@@ -1,7 +1,7 @@
 """Local-first governed voice input and output for JARVIS OS."""
 from __future__ import annotations
 
-import base64, json, logging, os, re, subprocess, wave
+import base64, json, logging, math, os, re, subprocess, wave
 from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime
 from enum import StrEnum
@@ -66,6 +66,12 @@ class WindowsSapiAdapter:
   except Exception:return False
  def health_check(self):return {"status":"healthy" if self.available else "unavailable","local":True}
  @staticmethod
+ def bounded_synthesis_timeout(text:str,requested_timeout:int,rate:int=0)->int:
+  """Allow normal speech duration while retaining a finite subprocess bound."""
+  characters_per_second=max(4.0,8.0+(max(-10,min(10,rate))*.4))
+  estimated=math.ceil(8.0+(len(text)/characters_per_second))
+  return min(90,max(15,int(requested_timeout),estimated))
+ @staticmethod
  def _script(output_mode:str)->str:
   common="""$ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Speech
@@ -115,7 +121,8 @@ try {
    if path:path.parent.mkdir(parents=True,exist_ok=True)
    encoded=base64.b64encode(self._script(request.output_mode).encode("utf-16le")).decode("ascii")
    environment=os.environ.copy();environment.update({"JARVIS_SPEECH_TEXT":request.text,"JARVIS_SPEECH_RATE":str(request.rate),"JARVIS_SPEECH_VOLUME":str(request.volume),"JARVIS_SPEECH_PATH":str(path) if path else ""})
-   p=subprocess.run(["powershell.exe","-NoProfile","-NonInteractive","-EncodedCommand",encoded],capture_output=True,text=True,timeout=request.timeout,creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0),env=environment)
+   timeout=self.bounded_synthesis_timeout(request.text,request.timeout,request.rate)
+   p=subprocess.run(["powershell.exe","-NoProfile","-NonInteractive","-EncodedCommand",encoded],capture_output=True,text=True,timeout=timeout,creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0),env=environment)
    if p.returncode:
     detail=self._safe_error(p.stderr,request.text,path);errors=("synthesis_failed",detail) if detail else ("synthesis_failed",)
     return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.FAILED,output_mode=request.output_mode,errors=errors)

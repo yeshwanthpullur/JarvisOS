@@ -37,6 +37,12 @@ class CommandManager:
     def execute(self, text: str, conversation_context: object | None = None) -> ConversationResponse:
         """Execute input as a command."""
         parsed = self.parser.parse(text)
+        if parsed.metadata.get("parse_error") == "unmatched_quotation":
+            return ConversationResponse(
+                response="Command parse error: unmatched quotation mark.",
+                warnings=("command_parse_error",),
+                execution_state="failed",
+            )
         resolved_name = self.aliases.resolve(parsed.name)
         if resolved_name != parsed.name:
             parsed = self.parser.parse(resolved_name + (" " + " ".join(parsed.arguments) if parsed.arguments else ""))
@@ -47,6 +53,17 @@ class CommandManager:
         else:
             self.metrics.commands_executed += 1
         return response
+
+    def is_command_candidate(self, text: str) -> bool:
+        """Identify command-shaped input without invoking shell-style parsing."""
+        stripped = text.strip().lstrip("/").strip()
+        if not stripped:
+            return False
+        root = stripped.split(maxsplit=1)[0].lower()
+        return text.strip().startswith("/") or any(
+            record.name == root or record.name.startswith(f"{root} ") or root in record.aliases
+            for record in self.registry.list_commands()
+        )
 
     def statistics(self) -> dict[str, int]:
         """Return command statistics."""
