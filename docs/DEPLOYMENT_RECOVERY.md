@@ -7,12 +7,12 @@
 - Historical failed projects: `jarvis-os` and `jarvis-os-6oy2`
 - Recovery branch: `deployment-recovery/19-tool-intelligence-jarvis-os`
 - Canonical replacement project: `jarvis-os`
-- Replacement commit: pending initial recovery commit
-- Replacement deployment URL: pending deployment
-- Status: pending verification
+- Replacement commit: `17eccb354c6326b2a954942ba70128407540723d`
+- Replacement deployment URL: `https://jarvis-ge8ugn0gu-jj1-e21e.vercel.app`
+- Status: `READY`; `/api/status` returned HTTP 200 bounded JSON
 - Minimum files changed: `api/index.py`, `vercel.json`, and this bounded record
-- Tests: Python compilation, deployment/status/CLI-boundary tests, and focused
-  historical Tool Intelligence tests where practical
+- Tests: Python compilation; 3 deployment/status/CLI-boundary tests and 31
+  focused historical Tool Intelligence tests passed
 
 The old failures remain untouched. `jarvis-os-6oy2` was not used or
 reconnected. Recovery 20 reuses this canonical replacement and creates no
