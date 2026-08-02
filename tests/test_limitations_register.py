@@ -58,9 +58,9 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(health["limitations"]["fixed"], self.data["counts"]["fixed"])
         self.assertEqual(health["limitations"]["still_open"], self.data["counts"]["still_open"])
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
-        self.assertIn("**28** limitations", current)
+        self.assertIn("**36** limitations", current)
         self.assertIn("**14 fixed**", current)
-        self.assertIn("**14 still open**", current)
+        self.assertIn("**22 still open**", current)
 
     def test_major_gaps_are_never_claimed_working(self) -> None:
         health = json.loads((DOCS / "project_health.json").read_text(encoding="utf-8"))

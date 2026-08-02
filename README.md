@@ -2,7 +2,7 @@
 
 JARVIS OS is currently at **v0.6.0-alpha - Web Automation Foundation**. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
-For an evidence-based snapshot, roadmap, and health scorecard, see [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise summary is available from the CLI with `project status`.
+For the central product direction and evidence-based tracking, see [Master Use Cases](docs/JARVIS_USE_CASES.md), [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise status summary is available from the CLI with `project status`.
 
 Tool Intelligence provides governed capability matching, schema validation, risk and approval checks, dry runs, bounded execution, normalized results, and command access through the existing Executive path. See [docs/TOOL_INTELLIGENCE.md](docs/TOOL_INTELLIGENCE.md).
 

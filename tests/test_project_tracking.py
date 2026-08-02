@@ -23,6 +23,7 @@ REQUIRED_DOCS = (
     "VISION_INTELLIGENCE.md",
     "LIMITATIONS_REGISTER.md",
     "WEB_AUTOMATION.md",
+    "JARVIS_USE_CASES.md",
 )
 
 
@@ -49,7 +50,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertEqual(online_sync["status"], "Partial")
         web = next(item for item in health["categories"] if item["name"] == "Web Automation")
         self.assertEqual(web["status"], "Partial")
-        self.assertEqual(len(health["categories"]), 18)
+        self.assertEqual(len(health["categories"]), 24)
         allowed = {"Working", "Partial", "Experimental", "Not Started", "Blocked"}
         for category in health["categories"]:
             self.assertIn(category["status"], allowed)
@@ -106,7 +107,8 @@ class ProjectTrackingTests(unittest.TestCase):
             with self.subTest(path=path.name):
                 text = path.read_text(encoding="utf-8")
                 self.assertGreater(len(text), 200)
-                self.assertLess(len(text), 20_000)
+                limit = 50_000 if path.name == "JARVIS_USE_CASES.md" else 20_000
+                self.assertLess(len(text), limit)
                 self.assertTrue(text.startswith("# "))
 
     def test_tracking_docs_do_not_contain_secret_values(self) -> None:
@@ -132,12 +134,12 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("release=v0.6.0-alpha", response.response)
         self.assertIn("MVP=67%", response.response)
         self.assertIn("Prompt 35", response.response)
-        self.assertIn("limitations=fixed:14/open:14", response.response)
+        self.assertIn("limitations=fixed:14/open:22", response.response)
         self.assertIn("focus=LIM-027", response.response)
         self.assertLess(len(response.response), 500)
         self.assertEqual(response.metadata["overall_mvp_readiness"], 67)
         self.assertEqual(response.metadata["fixed_limitations"], 14)
-        self.assertEqual(response.metadata["open_limitations"], 14)
+        self.assertEqual(response.metadata["open_limitations"], 22)
 
     def test_sync_tracking_is_honest_and_local_first(self) -> None:
         status = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")

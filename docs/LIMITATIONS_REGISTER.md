@@ -8,13 +8,13 @@ This register is the authoritative compact audit of limitations recorded through
 
 | Measure | Count |
 | --- | ---: |
-| Total limitations audited | 28 |
+| Total limitations audited | 36 |
 | Fixed before Prompt 34.1 | 13 |
 | Fixed during Prompt 34.1 | 1 |
 | Fixed total | 14 |
-| Still open in any form | 14 |
+| Still open in any form | 22 |
 | Open | 5 |
-| Deferred | 5 |
+| Deferred | 13 |
 | Blocked | 3 |
 | Experimental | 1 |
 
@@ -62,6 +62,14 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-025 | Blocked | Medium | Wake word and continuous listening are unavailable. | Future Voice Input Milestone |
 | LIM-026 | Experimental | Medium | Local web interface remains experimental. | Dedicated Interface Stabilization |
 | LIM-027 | Deferred | High | Interactive and sensitive web actions are unavailable. | Future Governed Interactive Web Automation |
+| LIM-029 | Deferred | Medium | Image generation workflow is not implemented. | Prompt 41 - Image Generation Workflow Foundation |
+| LIM-030 | Deferred | Medium | Video editing workflow is not implemented. | Prompt 42 - Video Editing Workflow Foundation |
+| LIM-031 | Deferred | High | Cross-device synchronization is unavailable. | Prompt 44 - Cross-Device Sync |
+| LIM-032 | Deferred | Medium | Dedicated Raspberry Pi and hardware support is not implemented. | Prompt 40 - Raspberry Pi Deployment and Hardware Support |
+| LIM-033 | Deferred | Medium | Dedicated study assistant workflow is not implemented. | Prompt 38 - Study Assistant and Research Workflows |
+| LIM-034 | Deferred | High | Advanced Builder Mode is not formalized. | Prompt 39 - Advanced Builder / Coding Workflow Foundation |
+| LIM-035 | Deferred | High | Call and communication assistance is not implemented. | Prompt 47 - Safe Communication and Call Assistance Foundation |
+| LIM-036 | Deferred | High | Unified personal multi-tool workspace is not implemented. | Prompt 49 - Personal Workspace / Multi-Tool Replacement Layer |
 
 ## Interpretation
 

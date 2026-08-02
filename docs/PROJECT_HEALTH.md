@@ -22,8 +22,14 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Online Sync | Partial | 55% | Bounded atomic local queue, allowlisted summaries, policy checks, conflicts, retention, audit, and manual CLI work; no encrypted remote backend exists. | Sync tests; manual `sync` command sequence | Design and verify an authenticated encrypted remote adapter before enabling transfer. |
 | Web Automation | Partial | 58% | The provider-neutral manager now uses a real bounded read-only HTTP adapter with DNS/IP and redirect validation, sanitized previews, permissions, and redacted audit. Interactive browser actions remain blocked. | `web open https://example.com`; `web snapshot`; web automation tests | Design approval-gated interactive actions only after a separate threat review. |
 | Mobile Automation | Not Started | 0% | No mobile bridge or device-control implementation. | Repository inspection | Define narrow mobile trust boundary first. |
+| Study and Research Workflows | Partial | 45% | Conversation, retrieval, research, goals, planning, and read-only web foundations exist; no dedicated study workflow composes them. | Research/retrieval tests; product vision review | Build Prompt 38 with evidence and academic-honesty controls. |
+| Advanced Builder Workflows | Partial | 35% | Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized. | Planning/tool/agent tests; repository inspection | Formalize the governed workflow in Prompt 39. |
+| Raspberry Pi and Hardware | Partial | 20% | General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exists. | Repository inspection | Add verified profiles and safety gates in Prompt 40. |
+| Creative Media Workflows | Not Started | 0% | No governed image-generation or video-editing workflow exists in JARVIS OS. | Repository inspection | Implement Prompts 41 and 42 separately. |
+| Communication Assistance | Not Started | 0% | No call, contact, calendar, messaging, or communication connector is integrated. | Repository inspection | Define consent and connector boundaries in Prompt 47. |
+| Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 90% | 1,473 tests pass and `v0.6.0-alpha` is published. | Full suite; release checklist | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 90% | The bundled-runtime verification completed 1,480 tests: 1,477 passed, 3 optional environment-dependent skips, and no failures/errors; `v0.6.0-alpha` is published. | Full suite; release checklist | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
@@ -35,4 +41,4 @@ Machine-readable details: [`project_health.json`](project_health.json).
 
 ## Limitations
 
-The audited register currently records **28 total**, **14 fixed**, and **14 still open** limitations. Voice Input, Vision, Online Sync, and Web Automation remain Partial; the Web Interface remains Experimental; Mobile Automation remains Not Started. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).
+The audited register currently records **36 total**, **14 fixed**, and **22 still open** limitations. Voice Input, Vision, Online Sync, Web Automation, Study/Research, Builder, Hardware, and Personal Workspace remain Partial; the Web Interface remains Experimental; Mobile Automation, Creative Media workflows, and Communication Assistance remain Not Started. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).

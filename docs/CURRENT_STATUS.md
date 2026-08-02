@@ -47,6 +47,10 @@ python main.py --ui
 - Online deployment foundation: both connected Vercel projects reached Ready from commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b`; the canonical `jarvis-os` `/api/status` response was verified live.
 - Online Sync foundation: disabled-by-default manual queueing, strict summary schemas, atomic persistence, deduplication, bounded audit/retention, conflict detection, and truthful unavailable remote behavior work. No real encrypted remote adapter is configured.
 - Web Automation: bounded read-only public HTML/text inspection works through a standard-library adapter with DNS/IP checks, redirect revalidation, sanitized previews, and redacted audit. Interactive actions remain blocked.
+- Study and research support: general chat, retrieval, research, planning, goals, and public-page inspection can help, but no dedicated end-to-end Study Assistant workflow exists.
+- Advanced project building: planning, tools, agents, providers, tests, and Git workflows exist independently, but a formal governed Builder Mode is not implemented.
+- Raspberry Pi and hardware support: general coding and planning guidance is available, but no verified hardware profile or deployment module exists.
+- Personal workspace: the CLI composes many capabilities, but the unified multi-tool replacement experience remains future work.
 
 ## Experimental Features
 
@@ -55,6 +59,10 @@ python main.py --ui
 ## Not Started Features
 
 - Mobile automation.
+- Image generation workflow inside JARVIS OS.
+- Video editing workflow.
+- Safe call and communication assistance.
+- Real encrypted remote synchronization and cross-device sync.
 
 ## Blocked Features
 
@@ -62,7 +70,7 @@ python main.py --ui
 
 ## Known Limitations
 
-The audited register contains **28** limitations: **14 fixed** and **14 still open** across open, deferred, blocked, and experimental states. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
+The audited register contains **36** limitations: **14 fixed** and **22 still open** across open, deferred, blocked, and experimental states. Future product goals are recorded as deferred capabilities, not current defects or completed features. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
 
 - SAPI playback is synchronous, so the CLI waits while speech is playing.
 - Voice input is architecturally connected but unavailable on this machine; `voice listen` does not fake transcription.
@@ -70,6 +78,7 @@ The audited register contains **28** limitations: **14 fixed** and **14 still op
 - The web interface is experimental.
 - Sync is local-queue-only in practice: `sync run` cannot upload until a real authenticated encrypted adapter is configured. The Vercel status endpoint is not a sync backend.
 - Semantic vision, cross-device sync, interactive browser control, and mobile control do not exist yet. Safe image metadata, the local sync queue, and real bounded read-only public page inspection do exist.
+- Image generation, video editing, dedicated study, formal Builder Mode, Raspberry Pi profiles, communication/call assistance, and the unified personal workspace remain future milestones.
 - Runtime state is local and some conversation/interface state is not durable across restarts.
 - The former Vercel failure occurred because automatic detection treated root `main.py` as a Python function even though it is intentionally CLI-only. `vercel.json` now builds only `api/index.py`; the deployed surface remains status-only and is not online JARVIS or sync.
 - The current production deployment for canonical project `jarvis-os` is Ready at commit `df912e8f67c06503bb0eecb1fa8cbec13095f2b4`. Failed deployments shown before commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b` are historical records from before `vercel.json` and `api/index.py` existed; they do not describe current health and may be ignored or deleted.
@@ -80,9 +89,11 @@ The audited register contains **28** limitations: **14 fixed** and **14 still op
 
 Prompt 35 - Mobile Automation. It must establish a narrow trusted-device boundary and must not weaken the web, tool, workflow, or approval controls.
 
+The product direction after Prompt 35 is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
+
 ## Last Verified Tests
 
-- Full suite: 1,473 passed, 0 skipped, 0 failed, 0 errors.
+- Full suite in the bundled verification runtime: 1,477 passed, 3 environment-dependent skips, 0 failed, 0 errors (1,480 total).
 - Focused web/command/CLI/voice/vision/sync/settings/tracking/deployment suite: 213 passed.
 - Real Ollama chat: passed with `llama3.2:1b`.
 - Local-only enforcement: passed.

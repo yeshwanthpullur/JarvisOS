@@ -6,6 +6,7 @@ Use this checklist for every JARVIS OS release. Record exact results in the rele
 
 - [ ] Release scope and authority boundaries are defined.
 - [ ] Current status, roadmap, health scorecard, and machine-readable health are updated.
+- [ ] `docs/JARVIS_USE_CASES.md` still matches product direction, safety boundaries, and milestone ownership.
 - [ ] `CHANGELOG.md` includes the release version and verified limitations.
 - [ ] `docs/LIMITATIONS_REGISTER.md` and `docs/limitations_register.json` have consistent counts and owners.
 

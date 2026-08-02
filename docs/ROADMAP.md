@@ -47,6 +47,100 @@ Updated: 2026-08-02
 
 **Release target:** TBD after Web Automation security review.
 
+## Long-Term Milestones
+
+These milestones express product direction, not current capability. Detailed use cases and safety boundaries are maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md). Each milestone requires its own implementation prompt and acceptance evidence.
+
+### Prompt 36 - Real Local STT and Voice Input
+
+**Goal:** Verify local push-to-talk microphone transcription through a supported offline model and bounded capture adapter.
+
+**Acceptance:** Real transcription, no cloud audio, explicit capture state, no raw-audio persistence by default, cancellation, and truthful unavailable behavior.
+
+### Prompt 37 - Real Vision Model Integration
+
+**Goal:** Connect a genuinely vision-capable local model through Provider Router.
+
+**Acceptance:** Real descriptions and questions over validated images, local-only enforcement, model evidence, and no fabricated interpretation.
+
+### Prompt 38 - Study Assistant and Research Workflows
+
+**Goal:** Compose existing conversation, retrieval, research, goals, documents, and web inspection into evidence-aware study workflows.
+
+**Acceptance:** Explanations, quizzes, plans, source comparison, citations, and reports remain attributable and academically honest.
+
+### Prompt 39 - Advanced Builder / Coding Workflow Foundation
+
+**Goal:** Formalize governed repository-to-plan-to-implementation-to-verification workflows for complex projects.
+
+**Acceptance:** Existing tools and agents remain authoritative; approvals, tests, Git scope, and truthful verification are mandatory.
+
+### Prompt 40 - Raspberry Pi Deployment and Hardware Support
+
+**Goal:** Add hardware profiles, safe setup guidance, deployment checks, and bounded support for Raspberry Pi and related projects.
+
+**Acceptance:** Device constraints are verified, physical risks are disclosed, and privileged or physical actions require confirmation.
+
+### Prompt 41 - Image Generation Workflow Foundation
+
+**Goal:** Add permission-controlled visual creation workflows through approved image tools.
+
+**Acceptance:** Provenance, privacy, safe-content policy, file controls, and honest generated-content labeling are enforced.
+
+### Prompt 42 - Video Editing Workflow Foundation
+
+**Goal:** Add scripts, shot lists, clip organization, captions, and non-destructive editing plans before editor integration.
+
+**Acceptance:** No silent uploads or destructive edits; source files and exports remain explicit and reviewable.
+
+### Prompt 43 - Real Encrypted Remote Sync Backend
+
+**Goal:** Implement an authenticated encrypted adapter behind the existing local-first Sync foundation.
+
+**Acceptance:** End-to-end encryption, strict schemas, conflict handling, revocation, audit, offline queues, and no secret synchronization.
+
+### Prompt 44 - Cross-Device Sync
+
+**Goal:** Synchronize approved summaries and project state among trusted devices.
+
+**Acceptance:** Device enrollment, least privilege, deletion propagation, conflict resolution, and offline behavior are verified.
+
+### Prompt 45 - Async Voice and Push-to-Talk Conversation
+
+**Goal:** Provide non-blocking playback and ergonomic push-to-talk after real STT exists.
+
+**Acceptance:** Interruption, cancellation, text fallback, sensitive-content filtering, and correlated voice sessions work.
+
+### Prompt 46 - Approval-Gated Interactive Web Automation
+
+**Goal:** Add narrowly scoped clicking and typing behind explicit approval and the existing Web Automation Manager.
+
+**Acceptance:** No login, submission, purchase, communication, or account change without scoped approval; stop and audit are complete.
+
+### Prompt 47 - Safe Communication and Call Assistance Foundation
+
+**Goal:** Support drafts, agendas, reminders, and future scoped connectors without impersonation or silent communication.
+
+**Acceptance:** Nothing is sent or recorded without clear consent; private content is minimized and auditable.
+
+### Prompt 48 - Wake Word and Continuous Listening Safety Layer
+
+**Goal:** Evaluate opt-in wake word and bounded listening after push-to-talk is stable.
+
+**Acceptance:** Disabled by default, visible capture state, local processing, immediate stop, and no secret background recording.
+
+### Prompt 49 - Personal Workspace / Multi-Tool Replacement Layer
+
+**Goal:** Unify approved chat, projects, study, research, creation, and automation workflows without duplicating authoritative systems.
+
+**Acceptance:** One coherent workspace with selective context, user-controlled memory, clear status, and no hidden cross-tool data sharing.
+
+### Prompt 50 - v1.0 MVP Hardening
+
+**Goal:** Stabilize supported workflows, reduce open high-severity limitations, and prepare a trustworthy v1.0.
+
+**Acceptance:** Full regression and security review, documented support matrix, migration/recovery checks, clean release artifacts, and real acceptance evidence.
+
 ## Roadmap Rules
 
 - Finish and verify one milestone before beginning the next.
