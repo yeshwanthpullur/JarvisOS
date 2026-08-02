@@ -111,7 +111,7 @@ class VoiceConfig:
 
 @dataclass(frozen=True,slots=True)
 class VisionConfig:
- enabled:bool=True; local_only:bool=True; privacy_mode:str="standard"; max_image_size:int=20000000; timeout_seconds:int=60; allowed_directories:tuple[Path,...]=()
+ enabled:bool=True; local_only:bool=True; privacy_mode:str="standard"; provider:str="ollama"; model:str="llava"; ollama_host:str="http://127.0.0.1:11434"; max_image_size:int=20000000; timeout_seconds:int=60; audit_enabled:bool=True; audit_retention:int=100; store_image_content:bool=False; allowed_directories:tuple[Path,...]=()
 
 @dataclass(frozen=True, slots=True)
 class SyncConfig:

@@ -39,8 +39,8 @@ class ProjectTrackingTests(unittest.TestCase):
     def test_project_health_json_is_valid_and_bounded(self) -> None:
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(health["release"], "v0.8.0-alpha")
-        self.assertEqual(health["commit"], "0c414c179821c7e495556436459814f802df3680")
+        self.assertEqual(health["release"], "v0.9.0-alpha")
+        self.assertEqual(health["commit"], "515ee84f812469ffd2117d51ef1e42ed47c2ece5")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Partial")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
@@ -135,15 +135,15 @@ class ProjectTrackingTests(unittest.TestCase):
         commands = CommandManager()
         commands.initialize()
         response = commands.execute("project status")
-        self.assertIn("release=v0.8.0-alpha", response.response)
-        self.assertIn("MVP=69%", response.response)
-        self.assertIn("Prompt 37", response.response)
-        self.assertIn("limitations=fixed:16/open:24", response.response)
+        self.assertIn("release=v0.9.0-alpha", response.response)
+        self.assertIn("MVP=70%", response.response)
+        self.assertIn("Prompt 38", response.response)
+        self.assertIn("limitations=fixed:17/open:29", response.response)
         self.assertIn("focus=LIM-024", response.response)
         self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 69)
-        self.assertEqual(response.metadata["fixed_limitations"], 16)
-        self.assertEqual(response.metadata["open_limitations"], 24)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 70)
+        self.assertEqual(response.metadata["fixed_limitations"], 17)
+        self.assertEqual(response.metadata["open_limitations"], 29)
 
     def test_sync_tracking_is_honest_and_local_first(self) -> None:
         status = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")

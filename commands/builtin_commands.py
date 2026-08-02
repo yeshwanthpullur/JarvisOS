@@ -284,8 +284,12 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("voice limits", "Show voice limits", "voice", (), CommandPermission.DIAGNOSTIC),
         ("voice health", "Show voice health", "voice", (), CommandPermission.DIAGNOSTIC),
         ("vision status", "Show vision readiness", "vision", (), CommandPermission.DIAGNOSTIC),
+        ("vision models", "Show local Ollama vision models", "vision", (), CommandPermission.DIAGNOSTIC),
+        ("vision analyze", "Analyze an image locally", "vision", (), CommandPermission.UTILITY),
         ("vision describe", "Describe an image", "vision", (), CommandPermission.UTILITY),
         ("vision ask", "Ask a question about an image", "vision", (), CommandPermission.UTILITY),
+        ("vision audit", "Show bounded vision audit metadata", "vision", (), CommandPermission.DIAGNOSTIC),
+        ("vision cleanup", "Clear vision audit metadata", "vision", (), CommandPermission.UTILITY),
         ("sync status", "Show sync and local queue readiness", "sync", (), CommandPermission.SYNC),
         ("sync on", "Enable manual local queue mode", "sync", (), CommandPermission.SYNC),
         ("sync off", "Disable sync without deleting queue items", "sync", (), CommandPermission.SYNC),
@@ -663,19 +667,30 @@ def _handler_for(name: str):
             local_only=bool(metadata.get("local_only") or metadata.get("execution_policy")=="local_only" or vision.local_only)
             if name=="vision status":
                 status=vision.status(local_only);providers=tuple(status["providers"]);provider_text=", ".join(f"{item.provider_id}:{item.model_id}" for item in providers) or "none"
-                return _text_response(f"Vision status: {'ready' if status['available'] else 'unavailable'} local_only={'on' if local_only else 'off'} providers={provider_text} raw_image_persistence=off max_image_size={status['max_image_size']}.",enabled=status["enabled"],available=status["available"],local_only=local_only,privacy_mode=status["privacy_mode"],provider_models=tuple((item.provider_id,item.model_id) for item in providers),raw_image_persistence=False,max_image_size=status["max_image_size"])
-            if name=="vision describe":
-                if not args:return _text_response("Provide an allowed image path: vision describe <image_path>.")
-                result=vision.analyze(args[0],local_only=local_only,preferred_provider=metadata.get("provider_preference"),preferred_model=metadata.get("model_preference"))
+                return _text_response(f"Vision status: {'ready' if status['available'] else status['availability_status']} provider={status['provider']} model={status['configured_model']} ollama={'ready' if status['ollama_available'] else 'unavailable'} local_only={'on' if local_only else 'off'} providers={provider_text} raw_image_persistence=off audit_entries={status['audit_events']} max_image_size={status['max_image_size']}.",enabled=status["enabled"],available=status["available"],local_only=local_only,privacy_mode=status["privacy_mode"],provider=status["provider"],configured_model=status["configured_model"],ollama_available=status["ollama_available"],model_available=status["model_available"],availability_status=status["availability_status"],provider_models=tuple((item.provider_id,item.model_id) for item in providers),raw_image_persistence=False,max_image_size=status["max_image_size"])
+            if name=="vision models":
+                models=vision.models();installed=", ".join(models["installed_models"]) or "none";capable=", ".join(models["vision_models"]) or "none"
+                return _text_response(f"Vision models: provider={models['provider']} configured={models['configured_model']} ollama={'ready' if models['ollama_available'] else 'unavailable'} installed={installed} vision_capable={capable} status={models['availability_status']}. JARVIS never downloads models automatically.",**models)
+            if name in {"vision analyze","vision describe"}:
+                if not args:return _text_response(f"Provide an allowed image path: {name} <image_path>.")
+                result=vision.analyze(args[0],local_only=local_only)
             elif name=="vision ask":
                 if len(args)<2:return _text_response("Provide an image path and question: vision ask <image_path> <question>.")
-                result=vision.analyze(args[0]," ".join(args[1:]),local_only=local_only,preferred_provider=metadata.get("provider_preference"),preferred_model=metadata.get("model_preference"))
+                result=vision.analyze(args[0]," ".join(args[1:]),local_only=local_only)
+            elif name=="vision audit":
+                events=vision.audit_events()
+                if not events:return _text_response("Vision audit: no events. Image content, base64 data, and full paths are never retained.",audit_events=())
+                summary="; ".join(f"{event.action}:{event.status}:{event.image_name or 'none'}:{event.provider_id or 'none'}:{event.model_id or 'none'}" for event in events[-10:])
+                return _text_response(f"Vision audit ({len(events)} bounded metadata events): {summary}. Image content and prompts are not retained.",audit_events=tuple(events[-10:]))
+            elif name=="vision cleanup":
+                cleanup=vision.cleanup()
+                return _text_response(f"Vision cleanup complete: removed={cleanup['removed']} remaining={cleanup['remaining']} failed={cleanup['failed']}. User images were not changed.",**cleanup)
             else:result=None
             if result is not None:
-                if result.status.value=="completed":return _text_response(result.content,vision_status=result.status.value,provider_id=result.provider_id,model_id=result.model_id,request_id=result.request_id,image_metadata=dict(result.metadata))
-                guidance=" Configure a local Ollama vision model that advertises vision capability." if result.status.value=="unavailable" else ""
+                if result.status.value=="completed":return _text_response(result.content,vision_status=result.status.value,provider_id=result.provider_id,model_id=result.model_id,request_id=result.request_id,image_metadata=dict(result.metadata),warnings=result.warnings,latency_ms=result.latency_ms)
+                guidance=" Start Ollama and install/configure a local vision-capable model such as llava; JARVIS will not download it automatically." if result.status.value=="unavailable" else ""
                 detail=(result.error or "analysis did not complete").rstrip(".")
-                return _text_response(f"Vision {result.status.value}: {detail}.{guidance}",vision_status=result.status.value,request_id=result.request_id,image_metadata=dict(result.metadata))
+                return _text_response(f"Vision {result.status.value}: {detail}.{guidance}",vision_status=result.status.value,availability_status=result.availability_status,request_id=result.request_id,image_metadata=dict(result.metadata))
         if name.startswith("sync "):
             sync = _sync_manager(context); args = context.arguments
             if sync is None:

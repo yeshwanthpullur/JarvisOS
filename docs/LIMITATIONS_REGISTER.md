@@ -2,25 +2,25 @@
 
 Updated: 2026-08-02
 
-This register is the authoritative compact audit of limitations recorded through Prompt 36. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
+This register is the authoritative compact audit of limitations recorded through Prompt 37. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
 
 ## Counts
 
 | Measure | Count |
 | --- | ---: |
-| Total limitations audited | 40 |
-| Fixed before Prompt 36 | 15 |
-| Fixed during Prompt 36 | 1 |
-| Fixed total | 16 |
-| Still open in any form | 24 |
-| Open | 5 |
-| Deferred | 15 |
-| Blocked | 3 |
+| Total limitations audited | 46 |
+| Fixed before Prompt 37 | 16 |
+| Fixed during Prompt 37 | 1 |
+| Fixed total | 17 |
+| Still open in any form | 29 |
+| Open | 6 |
+| Deferred | 17 |
+| Blocked | 5 |
 | Experimental | 1 |
 
 The machine-readable source is [`limitations_register.json`](limitations_register.json). Its counts are validated by tests.
 
-## Fixed Before Prompt 36
+## Fixed Before Prompt 37
 
 | ID | Limitation | Evidence |
 | --- | --- | --- |
@@ -39,12 +39,13 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-021 | Web automation had no governed foundation | Prompt 34 added strict policy, permissions, read-only commands, normalized results, bounded audit, and a truthful fallback adapter. |
 | LIM-028 | Web automation had no live read-only inspection or redirect verification | Prompt 34.1 added bounded standard-library inspection and redirect validation. |
 | LIM-022 | Mobile automation had no governed foundation | Prompt 35 added planning-only policy, adapters, commands, and redacted audit. |
+| LIM-040 | Local voice input had no executable offline STT/capture path | Prompt 36 added lazy Vosk recognition, explicit in-memory capture, normalized results, and safe CLI handoff. |
 
-## Fixed During Prompt 36
+## Fixed During Prompt 37
 
 | ID | Limitation | Fix |
 | --- | --- | --- |
-| LIM-040 | Local voice input had no executable offline STT/capture path | Added lazy Vosk recognition, validated models, explicit in-memory microphone capture, normalized results, and safe CLI handoff. |
+| LIM-041 | Vision had no explicit governed local Ollama analysis workflow | Added model capability discovery, Provider Router image execution, safety policy, bounded metadata-only audit, and complete CLI controls. |
 
 ## Still Open
 
@@ -59,7 +60,7 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-019 | Deferred | Medium | Autonomous plans remain advisory. | Future Governed Execution Milestone |
 | LIM-020 | Deferred | Medium | Multi-agent specialist breadth is limited. | Future Agent Expansion |
 | LIM-023 | Blocked | High | Real microphone STT is unavailable on the current machine because optional packages/model/device verification are missing. | Local Vosk Setup and Verification |
-| LIM-024 | Blocked | High | Semantic image analysis is unavailable. | Local Vision Model Setup |
+| LIM-024 | Blocked | High | Real semantic analysis requires installing a local Ollama vision model; the adapter exists but the verified machine has only `llama3.2:1b`. | Local Vision Model Installation and Acceptance |
 | LIM-025 | Blocked | Medium | Wake word and continuous listening are unavailable. | Future Voice Input Milestone |
 | LIM-026 | Experimental | Medium | Local web interface remains experimental. | Dedicated Interface Stabilization |
 | LIM-027 | Deferred | High | Interactive and sensitive web actions are unavailable. | Future Governed Interactive Web Automation |
@@ -74,6 +75,11 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-037 | Deferred | High | No real phone adapter or live mobile control exists. | Future Governed Mobile Adapter |
 | LIM-038 | Deferred | High | No approval-gated mobile actions exist. | Future Governed Mobile Actions |
 | LIM-039 | Deferred | Medium | No trusted phone companion app exists. | Future Mobile Companion |
+| LIM-042 | Deferred | High | Live camera and real-time video vision are unavailable. | Future Explicit Camera and Video Safety Milestone |
+| LIM-043 | Blocked | High | Identity recognition and sensitive-trait inference are blocked. | Permanent Safety Boundary |
+| LIM-044 | Deferred | Medium | Cloud and Vercel vision execution are unavailable. | Future Optional Cloud Vision Review |
+| LIM-045 | Open | Medium | OCR accuracy is not guaranteed. | Future OCR Evaluation |
+| LIM-046 | Blocked | High | Medical diagnosis and legal or forensic certainty are blocked. | Permanent Safety Boundary |
 
 ## Interpretation
 
@@ -82,4 +88,4 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 - **Blocked** means a model, dependency, adapter, service, or explicit setup step is missing.
 - **Experimental** means the capability exists but is not the recommended primary experience.
 
-The CLI remains primary. Online deployment remains a safe status foundation only. Local queueing does not imply remote sync, image metadata does not imply semantic vision, voice command architecture does not imply working microphone transcription, and read-only web inspection does not imply interactive browser control.
+The CLI remains primary. Online deployment remains a safe status foundation only. Local queueing does not imply remote sync, an installed adapter does not imply an installed vision model, voice command architecture does not imply verified microphone transcription, and read-only web inspection does not imply interactive browser control.

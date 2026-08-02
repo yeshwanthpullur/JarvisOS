@@ -134,7 +134,12 @@ class JarvisManager:
             limits=PlanningLimits(**{key:getattr(context.settings.planning,key) for key in context.settings.planning.__slots__}) if context and context.settings else None,
         )
         self.voice_intelligence = VoiceIntelligence(context.settings if context else None,(context.settings.data_dir / "voice") if context and context.settings else None,self.logger)
-        self.vision_intelligence = VisionIntelligence(context.settings if context else None,context.metadata.get("provider_manager") if context else None,self.logger)
+        self.vision_intelligence = VisionIntelligence(
+            context.settings if context else None,
+            context.metadata.get("provider_manager") if context else None,
+            self.logger,
+            (context.settings.data_dir / "vision") if context and context.settings else None,
+        )
         self.sync_intelligence = SyncIntelligence((context.settings.data_dir / "sync") if context and context.settings else Path("data/sync"), context.settings if context else None, self.logger)
         self.web_automation = WebAutomationManager((context.settings.data_dir / "web-automation") if context and context.settings else Path("data/web-automation"), context.settings if context else None, logger=self.logger)
         self.mobile_automation = MobileAutomationManager((context.settings.data_dir / "mobile-automation") if context and context.settings else Path("data/mobile-automation"), context.settings if context else None, logger=self.logger)

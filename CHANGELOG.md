@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Real Local Vision Model Integration
+
+- Added configured local Ollama vision-model discovery and real image request execution through the existing Provider Router.
+- Added `vision models`, `vision analyze`, `vision audit`, and `vision cleanup` alongside updated status, describe, and ask behavior.
+- Added bounded metadata-only vision audit, timeout/error normalization, and policy blocks for identity recognition, sensitive-trait inference, medical diagnosis, and legal/forensic certainty.
+- Kept Vercel status-only and retained no image bytes, base64 payloads, prompts, or absolute paths.
+
 ## Unreleased - Local Vosk STT Foundation
 
 - Added lazy optional Vosk transcription with validated local model discovery and normalized results.

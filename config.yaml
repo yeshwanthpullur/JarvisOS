@@ -206,8 +206,14 @@ vision:
   enabled: true
   local_only: true
   privacy_mode: standard
+  provider: ollama
+  model: llava
+  ollama_host: http://127.0.0.1:11434
   max_image_size: 20000000
   timeout_seconds: 60
+  audit_enabled: true
+  audit_retention: 100
+  store_image_content: false
   allowed_directories: []
 
 sync:

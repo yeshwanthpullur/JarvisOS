@@ -1,11 +1,11 @@
 {
-  "release": "v0.8.0-alpha",
-  "commit": "0c414c179821c7e495556436459814f802df3680",
+  "release": "v0.9.0-alpha",
+  "commit": "515ee84f812469ffd2117d51ef1e42ed47c2ece5",
   "updated_at": "2026-08-02",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 37 - Real Vision Model Integration",
-  "overall_mvp_readiness": 69,
-  "limitations": {"total": 40, "fixed": 16, "still_open": 24, "register": "docs/limitations_register.json"},
+  "next_milestone": "Prompt 38 - Study Assistant and Research Workflows",
+  "overall_mvp_readiness": 70,
+  "limitations": {"total": 46, "fixed": 17, "still_open": 29, "register": "docs/limitations_register.json"},
   "categories": [
     {"name": "Core Runtime", "status": "Working", "confidence": 90, "evidence": "Startup, shutdown, health, and full regression suite pass.", "next_action": "Keep startup checks bounded."},
     {"name": "CLI Experience", "status": "Working", "confidence": 88, "evidence": "Prompt 31.7 stable CLI and focused tests pass.", "next_action": "Fix only observed usability defects."},
@@ -18,7 +18,7 @@
     {"name": "Voice Input", "status": "Partial", "confidence": 58, "evidence": "Executable lazy Vosk adapter, model validation, explicit in-memory sounddevice capture, CLI handoff, and privacy tests exist; current machine prerequisites are missing.", "next_action": "Install optional packages and a local Vosk model, then manually verify one microphone utterance."},
     {"name": "Memory", "status": "Partial", "confidence": 70, "evidence": "Local memory and retrieval authorities exist; automated retention is incomplete.", "next_action": "Add policy-driven compaction and archive review."},
     {"name": "Web Interface", "status": "Experimental", "confidence": 55, "evidence": "Loopback UI works but may feel laggy and is not primary.", "next_action": "Use CLI until a dedicated stabilization milestone."},
-    {"name": "Vision", "status": "Partial", "confidence": 55, "evidence": "Safe validation, metadata, CLI, local-only policy, and Provider Router integration exist; no installed vision model is available.", "next_action": "Install and verify a local vision-capable Ollama model."},
+    {"name": "Vision", "status": "Partial", "confidence": 68, "evidence": "Real local Ollama model discovery and Provider Router image execution, safety policy, normalization, commands, and metadata-only audit are tested; no vision model is installed on the verified machine.", "next_action": "Install llava or another compatible local model and verify a real image result."},
     {"name": "Deployment / Online Foundation", "status": "Working", "confidence": 90, "evidence": "Both Vercel projects reached Ready and the canonical status endpoint returned safe JSON; Deployment Protection still gates some anonymous paths.", "next_action": "Retain jarvis-os, manually remove the duplicate, and review Deployment Protection."},
     {"name": "Online Sync", "status": "Partial", "confidence": 55, "evidence": "Bounded atomic local queue, allowlisted summaries, conflict/audit retention, and manual CLI work; no encrypted remote backend exists.", "next_action": "Design and verify an authenticated encrypted remote adapter before enabling transfer."},
     {"name": "Web Automation", "status": "Partial", "confidence": 58, "evidence": "Standard-library read-only public page inspection, DNS and redirect SSRF checks, bounded text extraction, CLI, permissions, and redacted audit are tested; no interactive browser control exists.", "next_action": "Keep sensitive actions blocked until a separate approval-gated interaction milestone."},
@@ -30,6 +30,6 @@
     {"name": "Communication Assistance", "status": "Not Started", "confidence": 0, "evidence": "No call, contact, calendar, messaging, or communication connector is integrated.", "next_action": "Define consent and connector boundaries in Prompt 47."},
     {"name": "Personal Workspace", "status": "Partial", "confidence": 30, "evidence": "CLI access and project tracking exist, but capabilities are not unified into a complete multi-tool replacement workspace.", "next_action": "Compose approved capabilities in Prompt 49 without duplicating authorities."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 75, "evidence": "Permission, approval, locality, tool, provider, and UI boundaries are tested.", "next_action": "Threat-review every external integration."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 90, "evidence": "Prompt 35 full regression verification passes and v0.7.0-alpha is published.", "next_action": "Keep release evidence current."}
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 90, "evidence": "Prompt 37 verification completed 1518 tests with no skips, failures, or errors; v0.9.0-alpha is published.", "next_action": "Keep release evidence current."}
   ]
 }

@@ -21,6 +21,9 @@ Updated: 2026-08-02
 - Prompt 33.1 - Limitations Audit and Fix Pass: evidence-backed limitations register, concise CLI counts, and consolidated setup guidance.
 - Prompt 34 - Web Automation Foundation: provider-neutral policy, permissions, read-only CLI, normalized results, and bounded redacted audit; real browser control and sensitive actions remain deferred.
 - Prompt 34.1 - Real Read-Only Web Adapter and Page Inspection: bounded public HTML/text inspection, DNS/IP SSRF controls, redirect revalidation, sanitized previews, and redacted audit.
+- Prompt 35 - Mobile Automation Foundation: planning-only policy, adapters, commands, and bounded redacted audit without phone access.
+- Prompt 36 - Real Local STT and Voice Input Foundation: optional Vosk recognition and explicit in-memory microphone capture path.
+- Prompt 37 - Real Vision Model Integration: local Ollama model discovery and image execution through Provider Router with no image persistence.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Web Automation - Remaining Work
@@ -62,6 +65,8 @@ These milestones express product direction, not current capability. Detailed use
 **Acceptance:** Real transcription, no cloud audio, explicit capture state, no raw-audio persistence by default, cancellation, and truthful unavailable behavior.
 
 ### Prompt 37 - Real Vision Model Integration
+
+**Status:** Adapter complete. Real local Ollama image requests, model capability checks, commands, policy, normalization, and audit are implemented; a real semantic result still requires installing a local vision model.
 
 **Goal:** Connect a genuinely vision-capable local model through Provider Router.
 
