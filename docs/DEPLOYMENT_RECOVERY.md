@@ -10,9 +10,9 @@ remains CLI-only. Historical failed deployments are retained unchanged.
 - Replacement branch: `deployment-recovery/01-vision-foundation-jarvis-os`
 - Canonical project: `jarvis-os`
 - Duplicate historical project: `jarvis-os-6oy2` was not used or reconnected
-- Replacement commit: pending initial recovery commit
-- Deployment URL: pending deployment
-- Status: pending verification
+- Replacement commit: `f118120b25919df966e2ea443c6ebcac76f41d69`
+- Deployment URL: `https://jarvis-9d1m4zwey-jj1-e21e.vercel.app`
+- Status: `READY`
 
 Recovery 1 is the single replacement for both historical Vercel failures tied
 to the original commit. Recovery 2 therefore reuses this record and does not

@@ -58,4 +58,3 @@ class handler(BaseHTTPRequestHandler):
 
     def log_message(self, format: str, *args: object) -> None:
         """Avoid emitting request details from this status-only function."""
-
