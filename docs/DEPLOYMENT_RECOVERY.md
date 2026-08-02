@@ -10,9 +10,9 @@ stabilization behavior is unchanged and `main.py` remains CLI-only.
 - Replacement branch: `deployment-recovery/11-prompts-27-31-5-jarvis-os`
 - Canonical project: `jarvis-os`
 - Duplicate historical project: `jarvis-os-6oy2` was not used or reconnected
-- Replacement commit: pending initial recovery commit
-- Deployment URL: pending deployment
-- Status: pending verification
+- Replacement commit: `4d85bc2da907046dbd0f920f2053aa32a321a0e7`
+- Deployment URL: `https://jarvis-oo24bxu1d-jj1-e21e.vercel.app`
+- Status: `READY`
 
 Recovery 11 replaces both historical failures tied to this original commit.
 Recovery 12 reuses this deployment and does not create a duplicate.
