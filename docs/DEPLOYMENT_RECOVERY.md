@@ -7,12 +7,12 @@
 - Historical failed projects: `jarvis-os` and `jarvis-os-6oy2`
 - Recovery branch: `deployment-recovery/17-autonomous-planning-jarvis-os`
 - Canonical replacement project: `jarvis-os`
-- Replacement commit: pending initial recovery commit
-- Replacement deployment URL: pending deployment
-- Status: pending verification
+- Replacement commit: `2385b57a670ddac9d7f76cccf54fffb8759b4cd1`
+- Replacement deployment URL: `https://jarvis-1xgt0as9p-jj1-e21e.vercel.app`
+- Status: `READY`; `/api/status` returned HTTP 200 bounded JSON
 - Minimum files changed: `api/index.py`, `vercel.json`, and this bounded record
-- Tests: Python compilation, deployment/status/CLI-boundary tests, and focused
-  historical planning tests where practical
+- Tests: Python compilation; 3 deployment/status/CLI-boundary tests and 29
+  focused historical Autonomous Planning tests passed
 
 The old failed deployments remain untouched. `jarvis-os-6oy2` was not used or
 reconnected. Recovery 18 reuses this canonical replacement without creating a
