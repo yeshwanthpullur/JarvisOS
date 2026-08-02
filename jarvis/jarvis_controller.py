@@ -213,6 +213,10 @@ class JarvisController:
             session_metadata = dict(request.metadata.get("session_metadata", {}) or {})
             execution_policy = session_metadata.get("execution_policy", request.metadata.get("execution_policy", "automatic"))
             provider_preference = session_metadata.get("provider_preference", request.metadata.get("provider_preference"))
+            if not provider_preference:
+                settings = getattr(provider_execution_manager.context, "settings", None)
+                provider_settings = getattr(settings, "providers", None)
+                provider_preference = getattr(provider_settings, "default_provider", None) or None
             model_preference = session_metadata.get("model_preference", request.metadata.get("model_preference"))
             local_only = bool(session_metadata.get("local_only", request.metadata.get("local_only", False)))
             cloud_only = bool(session_metadata.get("cloud_only", request.metadata.get("cloud_only", False)))
@@ -246,9 +250,17 @@ class JarvisController:
                 },
             )
             provider_result = provider_execution_manager.execute_through_provider_router(provider_request)
+            provider_content = str(provider_result.response or "").strip()
+            provider_success = bool(provider_result.success and provider_content)
+            if not provider_content:
+                provider_content = self._provider_failure_message(provider_result)
+            provider_warnings = tuple(provider_result.warnings)
+            if not provider_success:
+                provider_warnings = (*provider_warnings, "provider_execution_failed")
             response = JarvisResponse(
                 request_id=request.request_id,
-                content=provider_result.response,
+                content=provider_content,
+                success=provider_success,
                 response_type=decision.strategy.value,
                 execution_summary={
                     "goal": decision.goal,
@@ -278,7 +290,7 @@ class JarvisController:
                         + tuple(provider_result.diagnostics.keys())
                     )
                 ),
-                warnings=provider_result.warnings,
+                warnings=provider_warnings,
                 streaming_metadata={
                     "provider_id": provider_result.provider,
                     "model_id": provider_result.model,
@@ -292,3 +304,29 @@ class JarvisController:
         response = self.response_builder.build(request, decision, plan, dispatch)
         self.validator.validate_response(response)
         return response
+
+    @staticmethod
+    def _provider_failure_message(provider_result: object) -> str:
+        """Return bounded user guidance when provider execution has no content."""
+        diagnostics = getattr(provider_result, "diagnostics", {}) or {}
+        attempts = diagnostics.get("fallback", ()) if isinstance(diagnostics, dict) else ()
+        providers = {str(getattr(provider_result, "provider", "") or "").lower()}
+        errors: list[str] = []
+        if isinstance(attempts, (tuple, list)):
+            for attempt in attempts:
+                if not isinstance(attempt, dict):
+                    continue
+                providers.add(str(attempt.get("provider", "")).lower())
+                errors.append(str(attempt.get("error", "")).lower())
+        local_failure = bool(providers.intersection({"local", "ollama", "lm_studio"})) or any(
+            marker in error for error in errors for marker in ("ollama", "model missing", "connection refused")
+        )
+        if local_failure:
+            return (
+                "I couldn't get a response from the local AI provider. Start Ollama, confirm the selected "
+                "model is installed, then run `provider status` and try again."
+            )
+        return (
+            "I couldn't get a response from the configured AI provider. Run `provider status`, configure an "
+            "available provider, and try again."
+        )

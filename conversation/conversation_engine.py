@@ -141,7 +141,8 @@ class ConversationEngine:
             warnings=jarvis_response.warnings,
             diagnostics=jarvis_response.diagnostics,
             metadata={"jarvis_request_id": jarvis_response.request_id, **dict(jarvis_response.streaming_metadata)},
-            conversation_state=ConversationState.RESPONDING,
+            conversation_state=(ConversationState.RESPONDING if jarvis_response.success else ConversationState.FAILED),
+            execution_state="completed" if jarvis_response.success else "failed",
         )
 
     def _is_goal_related(self, normalized: str) -> bool:

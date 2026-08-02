@@ -958,10 +958,26 @@ def _handler_for(name: str):
                 provider_router = getattr(provider_manager, "router", None)
                 if provider_router is None:
                     return _text_response("Local AI is not available.")
-                candidate = next((record for record in local_records if getattr(record, "provider", None) is not None and record.provider.list_models()), None)
+                conversation = context.conversation_context
+                session_metadata = conversation.session.metadata if conversation is not None else {}
+                selected_provider = session_metadata.get("provider_preference") or session_metadata.get("local_provider")
+                selected_model = session_metadata.get("model_preference") or session_metadata.get("local_model")
+                candidate = next(
+                    (
+                        record
+                        for record in local_records
+                        if getattr(record, "provider", None) is not None
+                        and record.provider.list_models()
+                        and (not selected_provider or record.config.provider_id == selected_provider)
+                    ),
+                    None,
+                )
+                if candidate is None:
+                    candidate = next((record for record in local_records if getattr(record, "provider", None) is not None and record.provider.list_models()), None)
                 if candidate is None:
                     return _text_response("No usable local model is available.")
-                model_id = candidate.provider.list_models()[0].model_id
+                available_models = {model.model_id for model in candidate.provider.list_models()}
+                model_id = selected_model if selected_model in available_models else candidate.provider.list_models()[0].model_id
                 try:
                     result = asyncio.run(
                         provider_router.execute_with_failover(
