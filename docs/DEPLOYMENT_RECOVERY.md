@@ -10,9 +10,9 @@ failed deployments remain unchanged.
 - Replacement branch: `deployment-recovery/03-voice-cleanup-jarvis-os`
 - Canonical project: `jarvis-os`
 - Duplicate historical project: `jarvis-os-6oy2` was not used or reconnected
-- Replacement commit: pending initial recovery commit
-- Deployment URL: pending deployment
-- Status: pending verification
+- Replacement commit: `dcb2c3beace5afd4600f8e5606f57f7dc01e13b1`
+- Deployment URL: `https://jarvis-8pawcdl85-jj1-e21e.vercel.app`
+- Status: `READY`
 
 Recovery 3 replaces both historical failures tied to this original commit.
 Recovery 4 reuses this deployment and does not create a duplicate.
