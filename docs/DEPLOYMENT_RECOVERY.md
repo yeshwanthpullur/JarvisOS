@@ -10,9 +10,9 @@ redesigned, `main.py` remains CLI-only, and historical failures are unchanged.
 - Replacement branch: `deployment-recovery/13-local-desktop-interface-jarvis-os`
 - Canonical project: `jarvis-os`
 - Duplicate historical project: `jarvis-os-6oy2` was not used or reconnected
-- Replacement commit: pending initial recovery commit
-- Deployment URL: pending deployment
-- Status: pending verification
+- Replacement commit: `9705a23954baa4f79b9f23c70a0a6a17a801652c`
+- Deployment URL: `https://jarvis-a3zqv1jaj-jj1-e21e.vercel.app`
+- Status: `READY`
 
 Recovery 13 replaces both historical failures tied to this original commit.
 Recovery 14 reuses this deployment and does not create a duplicate.
