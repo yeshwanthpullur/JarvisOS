@@ -10,9 +10,9 @@ are unchanged, `main.py` remains CLI-only, and old failures remain untouched.
 - Replacement branch: `deployment-recovery/09-voice-playback-interface-jarvis-os`
 - Canonical project: `jarvis-os`
 - Duplicate historical project: `jarvis-os-6oy2` was not used or reconnected
-- Replacement commit: pending initial recovery commit
-- Deployment URL: pending deployment
-- Status: pending verification
+- Replacement commit: `326e393f8b718c9cbe89aa410fa96e622971bbfe`
+- Deployment URL: `https://jarvis-anukcxqoo-jj1-e21e.vercel.app`
+- Status: `READY`
 
 Recovery 9 replaces both historical failures tied to this original commit.
 Recovery 10 reuses this deployment and does not create a duplicate.
