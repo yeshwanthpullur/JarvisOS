@@ -192,6 +192,7 @@ voice:
   raw_audio_persistence: false
   retention_limit: 0
   temp_audio_lifetime_seconds: 300
+  voice_input_audit_retention: 50
   stt_model_path:
   stt_executable:
   wake_word_enabled: false

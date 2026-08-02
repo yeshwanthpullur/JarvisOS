@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Local Vosk STT Foundation
+
+- Added lazy optional Vosk transcription with validated local model discovery and normalized results.
+- Added explicit in-memory `sounddevice` microphone capture with bounded duration and silence handling.
+- Added `voice input test` and explicit `voice listen send` handoff through the existing conversation path.
+- Kept microphone input, wake word, and continuous listening off by default; no captured PCM or transcript text is persisted.
+
 ## Unreleased - Mobile Automation Foundation
 
 - Added a provider-neutral, planning-only Mobile Automation Manager with null and planning adapters.

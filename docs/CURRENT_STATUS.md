@@ -4,10 +4,10 @@ Updated: 2026-08-02
 
 ## Current Release
 
-- Release: `v0.7.0-alpha - Master Use Cases and Product Vision`
-- Baseline commit: `dce6f6250ba1f394d82a3ef880037b99cbef0673`
+- Release: `v0.8.0-alpha - Mobile Automation Foundation`
+- Baseline commit: `0c414c179821c7e495556436459814f802df3680`
 - Branch: `main`
-- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v0.7.0-alpha`
+- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v0.8.0-alpha`
 
 ## Stable Launch
 
@@ -42,7 +42,7 @@ python main.py --ui
 - Autonomous Planning: advisory plans work, but autonomous execution is intentionally not enabled.
 - Multi-Agent Intelligence: governed planner/reviewer coordination exists, but broad specialist coverage is limited.
 - Memory and Knowledge: authoritative local storage exists, but long-term pruning and cross-device policy are not automated.
-- Voice Input: status, explicit enable/disable/listen commands, local STT discovery, privacy limits, and temp cleanup exist; real microphone transcription still needs a configured local engine, model, and capture adapter.
+- Voice Input: executable lazy Vosk transcription, model validation, explicit in-memory `sounddevice` capture, status/on/off/test/listen commands, optional transcript handoff, and content-free audit exist. Real microphone transcription still needs optional packages, a local model, and manual device verification on this machine.
 - Vision Intelligence: CLI path validation, safe metadata, local-only policy, and Provider Router integration work; semantic analysis awaits a model that advertises vision capability.
 - Online deployment foundation: both connected Vercel projects reached Ready from commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b`; the canonical `jarvis-os` `/api/status` response was verified live.
 - Online Sync foundation: disabled-by-default manual queueing, strict summary schemas, atomic persistence, deduplication, bounded audit/retention, conflict detection, and truthful unavailable remote behavior work. No real encrypted remote adapter is configured.
@@ -70,10 +70,10 @@ python main.py --ui
 
 ## Known Limitations
 
-The audited register contains **39** limitations: **15 fixed** and **24 still open** across open, deferred, blocked, and experimental states. Future product goals are recorded as deferred capabilities, not current defects or completed features. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
+The audited register contains **40** limitations: **16 fixed** and **24 still open** across open, deferred, blocked, and experimental states. Future product goals are recorded as deferred capabilities, not current defects or completed features. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
 
 - SAPI playback is synchronous, so the CLI waits while speech is playing.
-- Voice input is architecturally connected but unavailable on this machine; `voice listen` does not fake transcription.
+- Voice input has a real optional Vosk/capture path but remains unavailable on this machine until Vosk, `sounddevice`, a model, and a microphone are verified; `voice listen` does not fake transcription.
 - Cloud execution depends on user-provided credentials and explicit paid-request approval.
 - The web interface is experimental.
 - Sync is local-queue-only in practice: `sync run` cannot upload until a real authenticated encrypted adapter is configured. The Vercel status endpoint is not a sync backend.
@@ -87,14 +87,15 @@ The audited register contains **39** limitations: **15 fixed** and **24 still op
 
 ## Next Recommended Prompt
 
-Prompt 36 - Real Local STT and Voice Input. Mobile Automation now has a planning-only foundation; no real phone adapter, private-data access, or live control exists.
+Prompt 37 - Real Vision Model Integration. Voice Input remains Partial until the optional local dependencies/model are installed and a real microphone utterance passes.
 
 The product direction after Prompt 35 is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
 ## Last Verified Tests
 
-- Full suite: 1,493 passed, 0 skipped, 0 failed, 0 errors.
-- Focused mobile/command/CLI/settings/tracking/deployment suite: 127 passed, 0 skipped, 0 failed, 0 errors.
+- Full suite: 1,508 passed, 0 skipped, 0 failed, 0 errors.
+- Focused STT/voice/CLI suite: 89 passed, 0 skipped, 0 failed, 0 errors.
+- Focused final STT suite: 15 passed, 0 skipped, 0 failed, 0 errors.
 - Real Ollama chat: passed with `llama3.2:1b`.
 - Local-only enforcement: passed.
 - Explicit and automatic Windows SAPI playback paths: passed; audible playback was manually confirmed.

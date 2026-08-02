@@ -19,6 +19,15 @@ logs/*
 !logs/.gitkeep
 *.log
 
+# Local voice input dependencies and generated media
+models/vosk/
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+*.zip
+
 # Local data
 data/*
 !data/.gitkeep

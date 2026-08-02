@@ -16,7 +16,9 @@ Vision commands are `vision status`, `vision describe <image_path>`, and `vision
 
 ## Local Voice Input Setup
 
-Voice input remains disabled until all three local prerequisites exist: a supported offline STT engine, its model files, and a registered microphone capture adapter. Supported discovery paths include Vosk, faster-whisper, and a configured whisper.cpp-style executable. Configure paths through existing voice settings, then run `voice input status` before enabling input. JARVIS does not download a model, activate a microphone, retain raw audio, or use cloud speech automatically.
+Voice input remains disabled until Vosk, a local model, `sounddevice`, and an input device are ready. Install optional packages with `python -m pip install -r requirements-voice.txt`; then place a model under `models/vosk/` or set `JARVIS_VOSK_MODEL_PATH`/`voice.stt_model_path`. Run `voice input status`, `voice input on`, and then `voice listen`. Use `voice listen send` only when the transcript should enter the normal JARVIS command/chat flow. `voice input test` performs one explicit test capture. See [`VOICE_INPUT.md`](VOICE_INPUT.md).
+
+JARVIS does not download a model, activate a microphone in the background, retain captured PCM, persist transcript text in audit, or use cloud speech. Wake word and continuous listening remain unavailable.
 
 ## Local Vision Setup
 

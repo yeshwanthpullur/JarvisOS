@@ -1,0 +1,3 @@
+# Optional local voice-input dependencies. Normal CLI startup does not require these.
+vosk>=0.3.45,<0.4
+sounddevice>=0.5,<0.6

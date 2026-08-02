@@ -18,6 +18,7 @@ STATUS: Final[dict[str, str]] = {
     "online_sync": "not_started",
     "web_automation": "partial_read_only",
     "mobile_automation": "partial_planning_only",
+    "voice_input": "partial_vosk_foundation",
 }
 
 ROOT_PAGE: Final[str] = """<!doctype html>

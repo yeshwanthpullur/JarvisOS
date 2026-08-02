@@ -58,8 +58,8 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(health["limitations"]["fixed"], self.data["counts"]["fixed"])
         self.assertEqual(health["limitations"]["still_open"], self.data["counts"]["still_open"])
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
-        self.assertIn("**39** limitations", current)
-        self.assertIn("**15 fixed**", current)
+        self.assertIn("**40** limitations", current)
+        self.assertIn("**16 fixed**", current)
         self.assertIn("**24 still open**", current)
 
     def test_major_gaps_are_never_claimed_working(self) -> None:
@@ -75,7 +75,7 @@ class LimitationsRegisterTests(unittest.TestCase):
     def test_setup_and_boundary_guidance_is_explicit(self) -> None:
         guide = (DOCS / "CLI_GUIDE.md").read_text(encoding="utf-8")
         status = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
-        for phrase in ("Local Voice Input Setup", "Vosk", "faster-whisper", "microphone capture adapter", "Local Vision Setup", "vision-capable"):
+        for phrase in ("Local Voice Input Setup", "Vosk", "sounddevice", "JARVIS_VOSK_MODEL_PATH", "Local Vision Setup", "vision-capable"):
             self.assertIn(phrase, guide)
         for phrase in ("real authenticated encrypted adapter", "web interface is experimental", "Web automation", "Mobile automation"):
             self.assertIn(phrase.lower(), status.lower())

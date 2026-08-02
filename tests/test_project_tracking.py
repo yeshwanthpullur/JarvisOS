@@ -25,6 +25,7 @@ REQUIRED_DOCS = (
     "WEB_AUTOMATION.md",
     "JARVIS_USE_CASES.md",
     "MOBILE_AUTOMATION.md",
+    "VOICE_INPUT.md",
 )
 
 
@@ -38,8 +39,8 @@ class ProjectTrackingTests(unittest.TestCase):
     def test_project_health_json_is_valid_and_bounded(self) -> None:
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(health["release"], "v0.7.0-alpha")
-        self.assertEqual(health["commit"], "dce6f6250ba1f394d82a3ef880037b99cbef0673")
+        self.assertEqual(health["release"], "v0.8.0-alpha")
+        self.assertEqual(health["commit"], "0c414c179821c7e495556436459814f802df3680")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Partial")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
@@ -134,14 +135,14 @@ class ProjectTrackingTests(unittest.TestCase):
         commands = CommandManager()
         commands.initialize()
         response = commands.execute("project status")
-        self.assertIn("release=v0.7.0-alpha", response.response)
-        self.assertIn("MVP=68%", response.response)
-        self.assertIn("Prompt 36", response.response)
-        self.assertIn("limitations=fixed:15/open:24", response.response)
-        self.assertIn("focus=LIM-023", response.response)
+        self.assertIn("release=v0.8.0-alpha", response.response)
+        self.assertIn("MVP=69%", response.response)
+        self.assertIn("Prompt 37", response.response)
+        self.assertIn("limitations=fixed:16/open:24", response.response)
+        self.assertIn("focus=LIM-024", response.response)
         self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 68)
-        self.assertEqual(response.metadata["fixed_limitations"], 15)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 69)
+        self.assertEqual(response.metadata["fixed_limitations"], 16)
         self.assertEqual(response.metadata["open_limitations"], 24)
 
     def test_sync_tracking_is_honest_and_local_first(self) -> None:

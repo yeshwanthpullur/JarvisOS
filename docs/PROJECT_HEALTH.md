@@ -14,7 +14,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Planning | Partial | 65% | Advisory provider-backed plans and validation exist; execution remains controlled. | Autonomous planning tests; `plan status` | Improve evidence and review UX without auto-execution. |
 | Multi-Agent System | Partial | 65% | Governed planner/reviewer coordination and bounded synthesis exist. | Multi-agent tests; local planner/reviewer scenario | Expand specialists after capability evidence exists. |
 | Voice Output | Working | 88% | Windows SAPI explicit/automatic playback passed; playback-only is now the default and creates no permanent audio. | `voice status`; `voice say ...`; audio-storage tests | Consider non-blocking playback with safe cancellation. |
-| Voice Input | Partial | 42% | CLI status/on/off/listen, local backend discovery, bounded temp policy, and truthful failures exist; no model/capture adapter is configured. | `voice input status`; `voice listen`; voice tests | Configure and verify Vosk, faster-whisper, or whisper.cpp plus microphone capture. |
+| Voice Input | Partial | 58% | Executable lazy Vosk adapter, model validation, explicit in-memory `sounddevice` capture, CLI handoff, and privacy tests exist; current machine prerequisites are missing. | `voice input status`; STT tests; `voice listen` | Install optional packages and a local Vosk model, then manually verify one microphone utterance. |
 | Memory | Partial | 70% | Local authoritative memory/retrieval foundations exist; retention automation is incomplete. | Memory and retrieval tests | Implement policy-driven compaction and archive review. |
 | Web Interface | Experimental | 55% | Loopback interface works and is tested, but responsiveness may feel laggy. | `python main.py --ui`; browser checks | Keep optional until a separate stabilization milestone. |
 | Vision | Partial | 55% | Safe image validation, metadata, CLI commands, local-only policy, and provider routing exist; no installed model advertises vision. | `vision status`; focused vision tests | Install and verify a local vision-capable Ollama model. |
@@ -29,16 +29,16 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Communication Assistance | Not Started | 0% | No call, contact, calendar, messaging, or communication connector is integrated. | Repository inspection | Define consent and connector boundaries in Prompt 47. |
 | Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 90% | Prompt 35 verification completed 1,493 tests with no skips, failures, or errors; `v0.7.0-alpha` is published. | Full suite; focused mobile/CLI suite | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 90% | Prompt 36 verification completed 1,508 tests with no skips, failures, or errors; `v0.8.0-alpha` is published. | Full suite; focused STT/voice/CLI suite | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
-**68%** toward the broader local-first JARVIS MVP described by the roadmap.
+**69%** toward the broader local-first JARVIS MVP described by the roadmap.
 
-This is not a mathematical average of feature labels. The increase reflects a tested planning-only mobile safety boundary, not phone control. Unavailable microphone transcription, incomplete semantic vision, absent encrypted remote transfer, blocked interactive browsing, and unavailable real mobile adapters remain substantial constraints.
+This is not a mathematical average of feature labels. The increase reflects an executable, privacy-bounded Vosk/capture path, not verified microphone transcription on this machine. Missing local STT prerequisites, incomplete semantic vision, absent encrypted remote transfer, blocked interactive browsing, and unavailable real mobile adapters remain substantial constraints.
 
 Machine-readable details: [`project_health.json`](project_health.json).
 
 ## Limitations
 
-The audited register currently records **39 total**, **15 fixed**, and **24 still open** limitations. Voice Input, Vision, Online Sync, Web Automation, Mobile Automation, Study/Research, Builder, Hardware, and Personal Workspace remain Partial; the Web Interface remains Experimental; Creative Media workflows and Communication Assistance remain Not Started. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).
+The audited register currently records **40 total**, **16 fixed**, and **24 still open** limitations. Voice Input, Vision, Online Sync, Web Automation, Mobile Automation, Study/Research, Builder, Hardware, and Personal Workspace remain Partial; the Web Interface remains Experimental; Creative Media workflows and Communication Assistance remain Not Started. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).

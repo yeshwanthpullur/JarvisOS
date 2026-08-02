@@ -1044,6 +1044,16 @@ class StartupManager:
                     voice_notice = self._speak_cli_response(response)
                     if voice_notice:
                         print(f"Voice: {voice_notice}")
+            metadata = getattr(response, "metadata", {}) or {}
+            transcript = str(metadata.get("voice_transcript") or "").strip()
+            if metadata.get("dispatch_voice_transcript") and transcript:
+                print(f"Voice transcript submitted: {transcript}")
+                transcript_response = self.conversation_manager.handle_input(transcript)
+                if transcript_response.response:
+                    print(f"JARVIS: {transcript_response.response}")
+                    voice_notice = self._speak_cli_response(transcript_response)
+                    if voice_notice:
+                        print(f"Voice: {voice_notice}")
             if response.should_exit:
                 break
 

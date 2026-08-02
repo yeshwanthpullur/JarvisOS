@@ -532,6 +532,8 @@ def _handler_for(name: str):
                     f"input={'on' if voice.input_enabled else 'off'} "
                     f"input_backend={voice.selected_input_backend} "
                     f"stt={'ready' if input_status['stt_available'] else 'unavailable'} "
+                    f"stt_provider={input_status['provider']} model={'ready' if input_status['model_ready'] else 'missing'} "
+                    f"microphone={'ready' if input_status['microphone_available'] else input_status['capture_status']} "
                     f"raw_audio_persistence={'on' if voice.raw_audio_persistence else 'off'} "
                     f"temp_directory={voice.temp_directory} retained_audio={retained} "
                     f"mode={voice.mode.value} privacy={voice.privacy_mode}",
@@ -541,6 +543,11 @@ def _handler_for(name: str):
                     input_enabled=voice.input_enabled,
                     input_backend=voice.selected_input_backend,
                     stt_available=input_status["stt_available"],
+                    stt_provider=input_status["provider"],
+                    stt_provider_status=input_status["provider_status"],
+                    stt_model_ready=input_status["model_ready"],
+                    microphone_available=input_status["microphone_available"],
+                    capture_status=input_status["capture_status"],
                     raw_audio_persistence=voice.raw_audio_persistence,
                     temp_directory=str(voice.temp_directory),
                     retained_audio_count=retained,
@@ -553,12 +560,24 @@ def _handler_for(name: str):
                 if args and args[0]=="on":
                     if not status["stt_available"]:
                         voice.input_enabled=False
-                        message="Voice input is not available because no local STT model is configured." if not status["model_ready"] else "Voice input is unavailable because no microphone capture adapter is configured."
+                        message="Voice input is not available because no local STT model is configured. The optional Vosk dependency is also missing." if not status["dependency_ready"] else "Voice input is not available because no local Vosk model is configured."
                         return _text_response(message,missing_capabilities=status["missing_capabilities"])
+                    if not status["microphone_available"]:
+                        voice.input_enabled=False
+                        return _text_response("Voice input is unavailable because no microphone capture adapter/device is ready.",missing_capabilities=status["missing_capabilities"])
                     voice.input_enabled=True;voice.enabled=True;return _text_response("Voice input enabled for explicit push-to-talk listening. Continuous listening remains disabled.")
+                if args and args[0]=="test":
+                    if not voice.input_enabled:return _text_response("Voice input is disabled; no microphone was activated.")
+                    if not status["ready"]:return _text_response("Voice input test unavailable: configure Vosk, a local model, and a microphone capture adapter.",missing_capabilities=status["missing_capabilities"])
+                    result=voice.listen(parent_request_id="command-voice-input-test")
+                    if result.status.value=="completed":return _text_response(f"Voice input test completed locally: {result.text}",status=result.status.value,confidence=result.confidence,provider_id=result.backend_id)
+                    return _text_response(f"Voice input test {result.status.value}: {', '.join(result.errors) or 'no clear speech detected'}",status=result.status.value)
                 return _text_response(
                     f"Voice input: {'on' if voice.input_enabled else 'off'} backend={status['backend']} "
-                    f"stt={'ready' if status['stt_available'] else 'unavailable'} microphone={'ready' if status['microphone_available'] else 'unavailable'}",
+                    f"stt={'ready' if status['stt_available'] else 'unavailable'} "
+                    f"provider={status['provider']} dependency={'ready' if status['dependency_ready'] else 'missing'} "
+                    f"model={'ready' if status['model_ready'] else 'missing'} microphone={'ready' if status['microphone_available'] else status['capture_status']} "
+                    "raw_audio_persistence=off continuous_listening=off wake_word=off",
                     **status,
                 )
             if name=="voice output":
@@ -584,7 +603,9 @@ def _handler_for(name: str):
                 if not args:return _text_response("Please provide an allowed WAV file path.")
                 try:r=voice.transcribe_file(args[0])
                 except ValueError as exc:return _text_response(f"Transcription rejected: {exc}")
-                return _text_response("Offline speech recognition is unavailable on this machine." if r.status.value=="unavailable" else r.text,status=r.status.value)
+                if r.status.value=="completed":return _text_response(f"Transcript: {r.text}",status=r.status.value,confidence=r.confidence,provider_id=r.backend_id,transcription_id=r.transcription_id)
+                reason=", ".join(r.errors) or r.status.value
+                return _text_response(f"Offline transcription {r.status.value}: {reason}.",status=r.status.value,provider_id=r.backend_id,transcription_id=r.transcription_id)
             if name=="voice devices":
                 direction=args[0] if args and args[0] in {"input","output"} else None;items=voice.devices(direction);return _text_response("Voice devices: "+(", ".join(f"{x.device_id}:{x.name}" for x in items) or "none discovered"))
             if name=="voice backend":
@@ -618,10 +639,15 @@ def _handler_for(name: str):
             if name=="voice cancel":voice.cancel();return _text_response("Voice session cancelled.")
             if name=="voice listen":
                 status=voice.input_status()
-                if not status["stt_available"]:return _text_response("Voice input is not available because no local STT model is configured.",missing_capabilities=status["missing_capabilities"])
+                if not status["stt_available"]:
+                    message="Voice input is not available because no local STT model is configured. The optional Vosk dependency is also missing." if not status["dependency_ready"] else "Voice input is not available because no local Vosk model is configured."
+                    return _text_response(message,missing_capabilities=status["missing_capabilities"])
                 if not voice.enabled or not voice.input_enabled:return _text_response("Voice input is disabled; no microphone was activated.")
                 if not status["microphone_available"]:return _text_response("Voice input is unavailable because no microphone capture adapter is configured.",missing_capabilities=status["missing_capabilities"])
-                return _text_response("Voice input is configured, but this backend does not expose a capture operation.")
+                result=voice.listen(parent_request_id="command-voice-listen")
+                if result.status.value!="completed":return _text_response(f"Voice listen {result.status.value}: {', '.join(result.errors) or 'no clear speech detected'}",status=result.status.value,provider_id=result.backend_id)
+                should_send=bool(args and args[0].lower()=="send")
+                return _text_response(f"Transcript: {result.text}"+(" Sending through the normal JARVIS path." if should_send else " Use 'voice listen send' to submit it."),status=result.status.value,confidence=result.confidence,provider_id=result.backend_id,transcription_id=result.transcription_id,voice_transcript=result.text if should_send else None,dispatch_voice_transcript=should_send)
             if name=="voice cleanup":
                 cleanup=voice.cleanup_temp_audio(remove_all=True)
                 return _text_response(f"Voice cleanup complete: removed={cleanup['removed']} remaining={cleanup['remaining']} failed={cleanup['failed']}.",**cleanup)

@@ -55,6 +55,8 @@ These milestones express product direction, not current capability. Detailed use
 
 ### Prompt 36 - Real Local STT and Voice Input
 
+**Status:** Foundation complete. Vosk recognition, model validation, optional explicit microphone capture, CLI handoff, and privacy controls are implemented; live microphone verification remains blocked by missing local prerequisites.
+
 **Goal:** Verify local push-to-talk microphone transcription through a supported offline model and bounded capture adapter.
 
 **Acceptance:** Real transcription, no cloud audio, explicit capture state, no raw-audio persistence by default, cancellation, and truthful unavailable behavior.

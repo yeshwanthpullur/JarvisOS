@@ -1,13 +1,15 @@
 """Local-first governed voice input and output for JARVIS OS."""
 from __future__ import annotations
 
-import base64, importlib.util, json, logging, os, re, subprocess, wave
+import base64, json, logging, os, re, subprocess, wave
 from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
 from typing import Any, Protocol
 from uuid import uuid4
+
+from jarvis.stt_intelligence import VoiceInputManager, VoiceInputStatus
 
 def now()->str:return datetime.now(UTC).isoformat()
 class VoiceMode(StrEnum): OFF="off"; PUSH_TO_TALK="push-to-talk"; SINGLE_LISTEN="single-listen"; CONTINUOUS_READY="continuous-session-ready"; WAKE_WORD_READY="wake-word-ready"
@@ -126,40 +128,26 @@ try {
    detail=self._safe_error(str(exc),request.text,path);errors=("synthesis_error",detail) if detail else ("synthesis_error",)
    return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,self.adapter_id,VoiceStatus.FAILED,output_mode=request.output_mode,errors=errors)
 
-class OfflineSttDiscoveryAdapter:
- adapter_id="offline-stt";name="Offline STT discovery";version="1";local=True;capabilities=("transcription",);supported_languages=("en",);supported_formats=("wav",)
- def __init__(self,config=None):
-  self.engine="vosk" if importlib.util.find_spec("vosk") else "faster-whisper" if importlib.util.find_spec("faster_whisper") else "whisper.cpp" if getattr(config,"stt_executable",None) else None
-  self.model_path=Path(getattr(config,"stt_model_path","")).expanduser() if getattr(config,"stt_model_path",None) else None
-  self.model_ready=bool(self.model_path and self.model_path.exists())
-  self.capture_available=False
-  self.available=bool(self.engine and self.model_ready and self.capture_available)
- def health_check(self):
-  missing=[]
-  if not self.engine:missing.append("local_stt_engine")
-  if not self.model_ready:missing.append("local_stt_model")
-  if not self.capture_available:missing.append("microphone_capture_adapter")
-  return {"status":"healthy" if self.available else "unavailable","engine":self.engine or "none","model_ready":self.model_ready,"capture_ready":self.capture_available,"missing_capabilities":tuple(missing),"local":True}
-
 class VoiceIntelligence:
  def __init__(self,settings:Any=None,storage_dir:Path|None=None,logger:logging.Logger|None=None):
   self.settings=settings;self.storage_dir=storage_dir;self.logger=logger or logging.getLogger("voice_intelligence");self.registry=VoiceAdapterRegistry();self.registry.register(WindowsSapiAdapter())
   config=getattr(settings,"voice",None)
-  self.registry.register(OfflineSttDiscoveryAdapter(config))
   self.enabled=bool(getattr(config,"enabled",False));self.input_enabled=bool(getattr(config,"input_enabled",False));self.output_enabled=bool(getattr(config,"output_enabled",False))
   try:self.mode=VoiceMode(getattr(config,"mode","off"))
   except ValueError:self.mode=VoiceMode.OFF
   self.privacy_mode=str(getattr(config,"privacy_mode","standard"));self.raw_audio_persistence=bool(getattr(config,"raw_audio_persistence",False));self.local_only=bool(getattr(config,"local_only",True));self.language=str(getattr(config,"language","en-US"));self.rate=int(getattr(config,"rate",0));self.volume=int(getattr(config,"volume",100));self.wake_word_enabled=False
-  requested_input=str(getattr(config,"input_backend","offline-stt"));requested_output=str(getattr(config,"output_backend","windows-sapi"));self.selected_input_backend=requested_input if self.registry.get(requested_input) else "offline-stt";self.selected_output_backend=requested_output if self.registry.get(requested_output) else "windows-sapi"
   self.allowed_audio_directories=tuple(getattr(config,"allowed_audio_directories",()) or ())
   configured_temp=getattr(config,"temp_directory",None);base=Path(getattr(settings,"base_dir",Path.cwd()))
   self.temp_directory=(Path(configured_temp) if configured_temp else base/"data"/"voice-temp").resolve()
+  self.voice_input=VoiceInputManager(config,(Path(storage_dir)/"input") if storage_dir else None,self.logger);self.registry.register(self.voice_input.stt_adapter)
+  requested_input=str(getattr(config,"input_backend","offline-stt"));requested_output=str(getattr(config,"output_backend","windows-sapi"));self.selected_input_backend=requested_input if self.registry.get(requested_input) else "offline-stt";self.selected_output_backend=requested_output if self.registry.get(requested_output) else "windows-sapi"
   self.sessions:dict[str,VoiceSession]={};self.limits=VoiceLimits(max_capture_seconds=int(getattr(config,"max_capture_seconds",30)),max_audio_size=int(getattr(config,"max_audio_size",20_000_000)),max_transcript_length=int(getattr(config,"max_transcript_length",4000)),max_spoken_response_length=int(getattr(config,"max_spoken_response_length",500)),temp_lifetime_seconds=int(getattr(config,"temp_audio_lifetime_seconds",300)),retained_audio_count=max(0,int(getattr(config,"retention_limit",0))));self.initialized=True;self.cleanup_temp_audio(remove_all=False);self.logger.info("voice_initialized enabled=%s microphone=%s wake_word=false",self.enabled,self.input_enabled)
  def create_session(self,user_session_id="default",parent_request_id=None):
   if len([s for s in self.sessions.values() if s.state not in {VoiceState.COMPLETED,VoiceState.CANCELLED,VoiceState.FAILED}])>=self.limits.max_sessions:raise ValueError("voice_session_limit")
   s=VoiceSession(str(uuid4()),user_session_id,self.mode,VoiceState.READY if self.enabled else VoiceState.UNAVAILABLE,parent_request_id, self.selected_input_backend,self.selected_output_backend,language=self.language,privacy_mode=self.privacy_mode,raw_audio_persistence=self.raw_audio_persistence,local_only=self.local_only or self.privacy_mode=="strict");self.sessions[s.voice_session_id]=s;self._save();return s
  def devices(self,direction=None):
-  items=(AudioDeviceInfo("default-output","Default Windows audio output","output","windows-sapi",True,self.registry.get("windows-sapi").available),)
+  input_items=tuple(AudioDeviceInfo(item.device_id,item.name,"input",self.voice_input.capture_adapter.adapter_id,item.is_default,True,(item.default_sample_rate,),item.channels) for item in self.voice_input.devices())
+  items=input_items+(AudioDeviceInfo("default-output","Default Windows audio output","output","windows-sapi",True,self.registry.get("windows-sapi").available),)
   return tuple(x for x in items if direction in {None,x.direction})
  def validate_audio_file(self,path_text,allowed_dirs:tuple[Path,...]=()):
   path=Path(path_text).resolve(); roots=allowed_dirs or self.allowed_audio_directories or ((self.settings.base_dir if self.settings else Path.cwd()),)
@@ -196,12 +184,21 @@ class VoiceIntelligence:
   self.logger.info("synthesis_started request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s",parent_request_id,session.voice_session_id,req.synthesis_id,req.backend_id)
   result=self.registry.get(req.backend_id).synthesize(req);self.sessions[session.voice_session_id]=replace(session,state=VoiceState.COMPLETED if result.status==VoiceStatus.COMPLETED else VoiceState.FAILED,synthesis_count=1,ended_at=now(),updated_at=now(),last_error=result.errors[0] if result.errors else None);self._save();self.logger.info("synthesis_completed request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s status=%s",parent_request_id,session.voice_session_id,result.synthesis_id,result.backend_id,result.status.value);return result
  def transcribe_file(self,path):
-  capture=self.validate_audio_file(path);adapter=self.registry.get(self.selected_input_backend)
-  if not adapter.available:return TranscriptionResult(str(uuid4()),capture.voice_session_id,None,adapter.adapter_id,VoiceStatus.UNAVAILABLE,errors=("offline_stt_model_unavailable",))
-  return TranscriptionResult(str(uuid4()),capture.voice_session_id,None,adapter.adapter_id,VoiceStatus.FAILED,errors=("adapter_execution_not_configured",))
+  capture=self.validate_audio_file(path);result=self.voice_input.transcribe_wav(Path(capture.audio_reference or path),"voice-transcribe-file")
+  return self._normalize_input_result(result,capture.voice_session_id)
+ def listen(self,parent_request_id="voice-listen"):
+  result=self.voice_input.listen(parent_request_id)
+  return self._normalize_input_result(result,next(reversed(self.voice_input.sessions),"voice-input"))
+ def _normalize_input_result(self,result,voice_session_id):
+  statuses={VoiceInputStatus.COMPLETED:VoiceStatus.COMPLETED,VoiceInputStatus.NO_SPEECH:VoiceStatus.NO_SPEECH,VoiceInputStatus.UNAVAILABLE:VoiceStatus.UNAVAILABLE,VoiceInputStatus.MODEL_MISSING:VoiceStatus.UNAVAILABLE,VoiceInputStatus.DEPENDENCY_MISSING:VoiceStatus.UNAVAILABLE,VoiceInputStatus.BLOCKED_BY_POLICY:VoiceStatus.FAILED}
+  status=statuses.get(result.status,VoiceStatus.FAILED);errors=(result.error_code,) if result.error_code else ()
+  return TranscriptionResult(result.request_id,voice_session_id,result.parent_request_id,result.provider_id,status,result.text,result.text,self.language,result.confidence,duration=result.duration,warnings=(),errors=errors,started_at=result.started_at or now(),completed_at=result.completed_at or now())
  def input_status(self):
-  adapter=self.registry.get(self.selected_input_backend);health=adapter.health_check() if adapter else {"status":"unavailable","missing_capabilities":("input_backend",)}
-  return {"enabled":self.input_enabled,"backend":self.selected_input_backend,"stt_available":bool(adapter and adapter.available),"model_ready":bool(health.get("model_ready",False)),"microphone_available":bool(health.get("capture_ready",False)),"missing_capabilities":tuple(health.get("missing_capabilities",()))}
+  state=self.voice_input.status();missing=[]
+  if not state["dependency_ready"]:missing.append("vosk_dependency")
+  if not state["model_ready"]:missing.append("local_stt_model")
+  if not state["microphone_available"]:missing.append("microphone_capture_adapter")
+  return {"enabled":self.input_enabled,"backend":self.selected_input_backend,"provider":state["provider"],"provider_status":state["provider_status"],"stt_available":state["stt_available"],"dependency_ready":state["dependency_ready"],"model_ready":state["model_ready"],"model_path":state["model_path"],"capture_backend":state["capture_adapter"],"capture_status":state["capture_status"],"microphone_available":state["microphone_available"],"ready":state["ready"],"missing_capabilities":tuple(missing),"raw_audio_persistence":False,"transcript_persistence":False,"wake_word":False,"continuous_listening":False}
  def retained_audio_files(self):
   directories=[self.temp_directory]
   if self.storage_dir:directories.append((self.storage_dir/"voice-output").resolve())
@@ -228,7 +225,7 @@ class VoiceIntelligence:
   for sid,s in tuple(self.sessions.items()):
    if s.state not in {VoiceState.COMPLETED,VoiceState.CANCELLED,VoiceState.FAILED}:self.sessions[sid]=replace(s,state=VoiceState.CANCELLED,ended_at=now(),updated_at=now())
   self._save();return True
- def health(self):return {a.adapter_id:a.health_check() for a in self.registry.list()}|{"enabled":self.enabled,"input_enabled":self.input_enabled,"output_enabled":self.output_enabled,"wake_word_enabled":False,"raw_audio_persistence":self.raw_audio_persistence,"temp_directory":str(self.temp_directory),"retained_audio_count":len(self.retained_audio_files())}
+ def health(self):return {a.adapter_id:a.health_check() for a in self.registry.list()}|{"enabled":self.enabled,"input_enabled":self.input_enabled,"output_enabled":self.output_enabled,"voice_input":self.input_status(),"wake_word_enabled":False,"continuous_listening":False,"raw_audio_persistence":self.raw_audio_persistence,"temp_directory":str(self.temp_directory),"retained_audio_count":len(self.retained_audio_files())}
  def _save(self):
   if not self.storage_dir:return
   self.storage_dir.mkdir(parents=True,exist_ok=True);records=list(self.sessions.values())[-self.limits.retained_session_history:];(self.storage_dir/"sessions.json").write_text(json.dumps([asdict(x) for x in records],default=str,indent=2),encoding="utf-8")

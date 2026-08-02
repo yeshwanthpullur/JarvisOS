@@ -2,16 +2,16 @@
 
 Updated: 2026-08-02
 
-This register is the authoritative compact audit of limitations recorded through Prompt 35. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
+This register is the authoritative compact audit of limitations recorded through Prompt 36. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
 
 ## Counts
 
 | Measure | Count |
 | --- | ---: |
-| Total limitations audited | 39 |
-| Fixed before Prompt 35 | 14 |
-| Fixed during Prompt 35 | 1 |
-| Fixed total | 15 |
+| Total limitations audited | 40 |
+| Fixed before Prompt 36 | 15 |
+| Fixed during Prompt 36 | 1 |
+| Fixed total | 16 |
 | Still open in any form | 24 |
 | Open | 5 |
 | Deferred | 15 |
@@ -20,7 +20,7 @@ This register is the authoritative compact audit of limitations recorded through
 
 The machine-readable source is [`limitations_register.json`](limitations_register.json). Its counts are validated by tests.
 
-## Fixed Before Prompt 35
+## Fixed Before Prompt 36
 
 | ID | Limitation | Evidence |
 | --- | --- | --- |
@@ -38,12 +38,13 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-012 | Tracking language understated the sync foundation | Local queue and unavailable remote transfer are distinct. |
 | LIM-021 | Web automation had no governed foundation | Prompt 34 added strict policy, permissions, read-only commands, normalized results, bounded audit, and a truthful fallback adapter. |
 | LIM-028 | Web automation had no live read-only inspection or redirect verification | Prompt 34.1 added bounded standard-library inspection and redirect validation. |
+| LIM-022 | Mobile automation had no governed foundation | Prompt 35 added planning-only policy, adapters, commands, and redacted audit. |
 
-## Fixed During Prompt 35
+## Fixed During Prompt 36
 
 | ID | Limitation | Fix |
 | --- | --- | --- |
-| LIM-022 | Mobile automation had no governed foundation | Added a planning-only manager, adapters, commands, policy blocks, and redacted bounded audit without phone access. |
+| LIM-040 | Local voice input had no executable offline STT/capture path | Added lazy Vosk recognition, validated models, explicit in-memory microphone capture, normalized results, and safe CLI handoff. |
 
 ## Still Open
 
@@ -57,7 +58,7 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-018 | Deferred | High | Encrypted remote synchronization backend does not exist. | Future Encrypted Sync Backend |
 | LIM-019 | Deferred | Medium | Autonomous plans remain advisory. | Future Governed Execution Milestone |
 | LIM-020 | Deferred | Medium | Multi-agent specialist breadth is limited. | Future Agent Expansion |
-| LIM-023 | Blocked | High | Real local voice input is unavailable. | Local STT Setup and Verification |
+| LIM-023 | Blocked | High | Real microphone STT is unavailable on the current machine because optional packages/model/device verification are missing. | Local Vosk Setup and Verification |
 | LIM-024 | Blocked | High | Semantic image analysis is unavailable. | Local Vision Model Setup |
 | LIM-025 | Blocked | Medium | Wake word and continuous listening are unavailable. | Future Voice Input Milestone |
 | LIM-026 | Experimental | Medium | Local web interface remains experimental. | Dedicated Interface Stabilization |

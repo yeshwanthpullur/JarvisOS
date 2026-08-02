@@ -72,7 +72,7 @@ JARVIS must not silently access sensors, retain raw audio or images by default, 
 
 **Required modules:** Voice Intelligence, local STT adapter/model, audio capture, async playback, and privacy controls.
 
-**Current status:** Partial. Windows SAPI output works; real microphone transcription is unavailable.
+**Current status:** Partial. Windows SAPI output works. The optional Vosk and sounddevice path can transcribe validated WAV files or an explicitly requested microphone capture, but this machine has no configured Vosk model or capture dependency, so live microphone transcription remains unavailable here.
 
 **Future owner:** Prompts 36, 45, and 48.
 
@@ -331,11 +331,11 @@ Priority may change when evidence, safety review, hardware availability, or user
 
 **Working foundations:** CLI-first runtime, local Ollama chat, provider routing, local-only policy, voice output, project/limitations tracking, safe tools, advisory planning, and bounded read-only public-page inspection.
 
-**Partial:** cloud provider validation, voice input architecture, semantic vision, local-only sync queue, web automation, research/study behavior, project building workflows, memory lifecycle, and Raspberry Pi guidance.
+**Partial:** cloud provider validation, optional local Vosk voice input, semantic vision, local-only sync queue, web automation, mobile planning, research/study behavior, project building workflows, memory lifecycle, and Raspberry Pi guidance.
 
 **Experimental:** Local desktop web interface.
 
-**Not started or deferred:** real local STT verification, wake word, verified semantic vision model, image generation workflow, video editing workflow, encrypted remote sync, cross-device sync, mobile automation, dedicated Raspberry Pi module, formal Study Assistant, Builder Mode, communication/call assistance, interactive web automation, and unified multi-tool workspace.
+**Not started or deferred:** verified live microphone STT on this machine, wake word, verified semantic vision model, image generation workflow, video editing workflow, encrypted remote sync, cross-device mobile sync, live mobile control, dedicated Raspberry Pi module, formal Study Assistant, Builder Mode, communication/call assistance, interactive web automation, and unified multi-tool workspace.
 
 ## 11. Future Milestone Ownership
 
@@ -370,7 +370,7 @@ A capability is not done when it is only a placeholder, data model, command shel
 
 ## 14. Limitations That Must Stay Honest
 
-Real STT, wake word, semantic vision, image generation, video editing, encrypted remote sync, cross-device sync, mobile control, dedicated hardware workflows, formal study and builder modes, call assistance, interactive browsing, the unified workspace, and the experimental web interface must remain visibly limited until their own acceptance criteria pass.
+Live microphone STT verification, wake word, semantic vision, image generation, video editing, encrypted remote sync, cross-device sync, mobile control, dedicated hardware workflows, formal study and builder modes, call assistance, interactive browsing, the unified workspace, and the experimental web interface must remain visibly limited until their own acceptance criteria pass.
 
 ## 15. Product Direction Summary
 

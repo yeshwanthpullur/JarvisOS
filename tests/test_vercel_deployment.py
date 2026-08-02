@@ -39,7 +39,7 @@ class VercelDeploymentTests(unittest.TestCase):
     def test_health_and_status_return_safe_schema(self) -> None:
         required = {
             "service", "status", "deployment_mode", "primary_mode", "release",
-            "vision", "online_sync", "web_automation", "mobile_automation",
+            "vision", "voice_input", "online_sync", "web_automation", "mobile_automation",
         }
         for path in ("/api/health", "/api/status", "/api/status?source=test"):
             with self.subTest(path=path):
@@ -51,6 +51,7 @@ class VercelDeploymentTests(unittest.TestCase):
                 self.assertEqual(payload, STATUS)
                 self.assertEqual(payload["web_automation"], "partial_read_only")
                 self.assertEqual(payload["mobile_automation"], "partial_planning_only")
+                self.assertEqual(payload["voice_input"], "partial_vosk_foundation")
 
     def test_status_exposes_no_secrets_or_local_paths(self) -> None:
         body = json.dumps(STATUS)
