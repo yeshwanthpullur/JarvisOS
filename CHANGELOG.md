@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Persistent Local Memory Intelligence
+
+- Added local memory intelligence with explicit memory commands, bounded retrieval, and safe auto-session summaries.
+- Wired persistent memory context into normal chat so approved local preferences and project notes can reappear in the conversation flow.
+- Kept memory storage local-only, secret-aware, and bounded by explicit configuration.
+
 ## Unreleased - Verified Local Capability Status
 
 - Recorded real local Ollama free-form chat, Vosk microphone input with an Indian-English model, and `voice listen send` as manually verified.

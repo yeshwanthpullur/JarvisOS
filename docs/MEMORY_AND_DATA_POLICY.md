@@ -19,6 +19,15 @@ Keep JARVIS useful without turning local storage into an unbounded archive. Auth
 - Execution, approval, and audit summaries needed for accountability.
 - Current project status, roadmap, release notes, and compact health evidence in Git.
 
+## Persistent Personal Context
+
+- Memory writes should be explicit or derived from a clearly enabled automatic summary policy.
+- Prefer compact, local-only preference and context notes over full transcripts.
+- Store only content that helps future continuity and can be reviewed or forgotten later.
+- Refuse obvious credential-like, token-like, or secret-shaped material unless a separate approved sensitive-storage policy exists.
+- Use bounded retrieval snippets when feeding memory back into chat so the CLI remains readable and fast.
+- Treat memory as local authority, not as a sync queue or a hidden transcript archive.
+
 ## Do Not Store
 
 - API keys, passwords, tokens, credentials, authorization headers, or raw environment values.

@@ -18,6 +18,8 @@ The Local Desktop Interface provides real localhost chat, commands, activity, pr
 
 JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes verified local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, local Vosk push-to-talk input, interruptible Windows SAPI voice output, local Ollama LLaVA image analysis, partial Online Sync, bounded read-only public page inspection, and planning-only Mobile Automation. Encrypted remote sync, interactive browsing, wake word, continuous conversation, live camera vision, and live phone control are not implemented.
 
+Prompt 38 adds persistent local memory intelligence: bounded memory commands, safe retrieval into chat context, explicit remember/forget/update/archive flows, and secret-aware automatic session summaries. The memory layer stays local and does not replace the existing command or conversation authority.
+
 Online Sync now has an optional, disabled-by-default local foundation: a bounded atomic queue, allowlisted summary schemas, conflict records, audit retention, and manual CLI controls. No real remote backend is configured, and the public Vercel status deployment is not writable sync infrastructure. Raw conversations, databases, audio, images, documents, logs, local paths, and credentials are blocked from the queue.
 
 Verified gaps and their owners are tracked in [docs/LIMITATIONS_REGISTER.md](docs/LIMITATIONS_REGISTER.md); the bounded machine-readable source is [docs/limitations_register.json](docs/limitations_register.json).

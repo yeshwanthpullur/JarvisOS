@@ -1,6 +1,6 @@
 # Current Status
 
-Updated: 2026-08-04
+Updated: 2026-08-03
 
 ## Current Release
 
@@ -34,6 +34,7 @@ python main.py --ui
 - Local Vosk microphone input with an Indian-English model, including explicit `voice listen send` handoff.
 - Windows SAPI voice playback through `voice say` and full safe automatic spoken replies, including long-response chunking and non-blocking stop, resume, cancel, interrupt, repeat, and replay controls.
 - Local Ollama LLaVA still-image description and image question answering.
+- Persistent local memory and personal context through explicit memory commands, bounded retrieval, safe auto-session summaries, and secret-aware storage policy.
 - Playback-only speech produces no permanent audio file by default; temporary voice audio is bounded and user-cleanable.
 - Conversation, context, retrieval, personal, task, goal, workflow, reflection, and adaptive foundations.
 - Automated regression suite and a published annotated alpha release.
@@ -44,7 +45,7 @@ python main.py --ui
 - Tool Intelligence: safe built-ins work, while broad external tool integrations are future work.
 - Autonomous Planning: advisory plans work, but autonomous execution is intentionally not enabled.
 - Multi-Agent Intelligence: governed planner/reviewer coordination exists, but broad specialist coverage is limited.
-- Memory and Knowledge: authoritative local storage exists, but long-term pruning and cross-device policy are not automated.
+- Memory and Knowledge: authoritative local storage and persistent personal context exist, but long-term pruning and cross-device policy are not automated.
 - Online deployment foundation: both connected Vercel projects reached Ready from commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b`; the canonical `jarvis-os` `/api/status` response was verified live.
 - Online Sync foundation: disabled-by-default manual queueing, strict summary schemas, atomic persistence, deduplication, bounded audit/retention, conflict detection, and truthful unavailable remote behavior work. No real encrypted remote adapter is configured.
 - Web Automation: bounded read-only public HTML/text inspection works through a standard-library adapter with DNS/IP checks, redirect revalidation, sanitized previews, and redacted audit. Interactive actions remain blocked.
@@ -82,6 +83,7 @@ The audited register contains **46** limitations: **20 fixed** and **26 still op
 - Sync is local-queue-only in practice: `sync run` cannot upload until a real authenticated encrypted adapter is configured. The Vercel status endpoint is not a sync backend.
 - Local Ollama LLaVA image analysis is verified. Live camera/video, image generation, reverse image search, face recognition, guaranteed OCR, cloud/Vercel vision, cross-device sync, interactive browser control, and live mobile control do not exist.
 - Local AI requires the PC and Ollama to be running.
+- Persistent memory is working locally, but automatic retention and compaction are still incomplete.
 - Image generation, video editing, dedicated study, formal Builder Mode, Raspberry Pi profiles, communication/call assistance, and the unified personal workspace remain future milestones.
 - Runtime state is local and some conversation/interface state is not durable across restarts.
 - The former Vercel failure occurred because automatic detection treated root `main.py` as a Python function even though it is intentionally CLI-only. `vercel.json` now builds only `api/index.py`; the deployed surface remains status-only and is not online JARVIS or sync.
@@ -91,9 +93,9 @@ The audited register contains **46** limitations: **20 fixed** and **26 still op
 
 ## Next Recommended Prompt
 
-Prompt 38 - Study Assistant and Research Workflows.
+Prompt 39 - Advanced Builder / Coding Workflow Foundation.
 
-The product direction after Prompt 35 is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
+The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
 ## Last Verified Tests
 
@@ -119,6 +121,7 @@ The product direction after Prompt 35 is maintained in [`JARVIS_USE_CASES.md`](J
 - [x] Confirm normal speech creates no permanent WAV/MP3 and `voice cleanup` is safe.
 - [x] Confirm Vosk microphone input with the Indian-English model and `voice listen send` transcribes and submits locally.
 - [x] Run calculator Tool Intelligence and confirm a real normalized result.
+- [x] Run `memory status`, `memory remember`, `memory search`, and `memory cleanup`; confirm persistent local memory and personal context work locally.
 - [x] Run `vision status` and `vision models`; confirm local LLaVA readiness.
 - [x] Confirm real local image analysis and image Q&A while audit retains no image/base64/prompt/path content.
 - [x] Confirm long SAPI output, `voice stop`, `voice resume`, `voice cancel`, `voice interrupt`, and `voice repeat`/`voice replay`.

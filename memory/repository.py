@@ -5,16 +5,24 @@ from __future__ import annotations
 import json
 import logging
 import sqlite3
+from pathlib import Path
+from datetime import datetime
 from uuid import uuid4
 
 from memory.database import MemoryDatabase
 from memory.models import (
     Memory,
     MemoryCreate,
+    MemoryDeletionRequest,
+    MemoryPermission,
     MemoryStatistics,
     MemoryUpdate,
+    MemoryUpdateRequest,
     datetime_from_text,
     datetime_to_text,
+    MemoryStatus,
+    MemoryType,
+    MemorySensitivity,
     utc_now,
 )
 
@@ -35,6 +43,7 @@ class MemoryRepository:
         memory_id = str(uuid4())
         now = utc_now()
         project_id = None
+        metadata = self._compose_metadata(data)
 
         with self._database.session() as connection:
             if data.project:
@@ -60,7 +69,7 @@ class MemoryRepository:
                     data.importance,
                     project_id,
                     data.session_id,
-                    json.dumps(data.metadata, sort_keys=True),
+                    json.dumps(metadata, sort_keys=True),
                 ),
             )
             self._replace_tags(connection, memory_id, data.tags)
@@ -79,10 +88,62 @@ class MemoryRepository:
         content = data.content if data.content is not None else existing.content
         source = data.source if data.source is not None else existing.source
         importance = data.importance if data.importance is not None else existing.importance
-        metadata = data.metadata if data.metadata is not None else existing.metadata
+        metadata = dict(existing.metadata)
+        if data.metadata is not None:
+            metadata.update(data.metadata)
         session_id = data.session_id if data.session_id is not None else existing.session_id
         project = data.project if data.project is not None else existing.project
         tags = data.tags if data.tags is not None else existing.tags
+        memory_type = data.memory_type if data.memory_type is not None else existing.memory_type
+        sensitivity = data.sensitivity if data.sensitivity is not None else existing.sensitivity
+        status = data.status if data.status is not None else existing.status
+        confidence = data.confidence if data.confidence is not None else existing.confidence
+        last_accessed_at = data.last_accessed_at if data.last_accessed_at is not None else existing.last_accessed_at
+        access_count = data.access_count if data.access_count is not None else existing.access_count
+        expiration_at = data.expiration_at if data.expiration_at is not None else existing.expiration_at
+        supersedes_memory_id = data.supersedes_memory_id if data.supersedes_memory_id is not None else existing.supersedes_memory_id
+        related_goal_id = data.related_goal_id if data.related_goal_id is not None else existing.related_goal_id
+        related_task_id = data.related_task_id if data.related_task_id is not None else existing.related_task_id
+        checksum = data.checksum if data.checksum is not None else existing.checksum
+        version = data.version if data.version is not None else existing.version
+        user_confirmed = data.user_confirmed if data.user_confirmed is not None else existing.user_confirmed
+        normalized_content = data.normalized_content if data.normalized_content is not None else existing.normalized_content
+        metadata = self._compose_metadata(
+            MemoryUpdateRequest(
+                memory_id=memory_id,
+                title=title,
+                content=content,
+                memory_type=memory_type,
+                sensitivity=sensitivity,
+                status=status,
+                source=source,
+                importance=importance,
+                tags=tags,
+                project=project,
+                session_id=session_id,
+                metadata=metadata,
+                confidence=confidence,
+                user_confirmed=user_confirmed,
+            )
+        )
+        metadata.update(
+            {
+                "last_accessed_at": datetime_to_text(last_accessed_at) if last_accessed_at else None,
+                "access_count": access_count,
+                "expiration_at": datetime_to_text(expiration_at) if expiration_at else None,
+                "supersedes_memory_id": supersedes_memory_id,
+                "related_goal_id": related_goal_id,
+                "related_task_id": related_task_id,
+                "checksum": checksum,
+                "version": version,
+                "user_confirmed": user_confirmed,
+                "normalized_content": normalized_content,
+                "memory_type": memory_type,
+                "sensitivity": sensitivity,
+                "status": status,
+                "confidence": confidence,
+            }
+        )
 
         with self._database.session() as connection:
             project_id = self._ensure_project(connection, project) if project else None
@@ -272,6 +333,7 @@ class MemoryRepository:
         return tuple(str(row["name"]) for row in rows)
 
     def _row_to_memory(self, row: sqlite3.Row, tags: tuple[str, ...]) -> Memory:
+        metadata = json.loads(str(row["metadata"]))
         return Memory(
             id=str(row["id"]),
             title=str(row["title"]),
@@ -283,5 +345,67 @@ class MemoryRepository:
             tags=tags,
             project=row["project_name"],
             session_id=row["session_id"],
-            metadata=json.loads(str(row["metadata"])),
+            metadata=metadata,
+            memory_type=str(metadata.get("memory_type") or MemoryType.CUSTOM_NOTE),
+            sensitivity=str(metadata.get("sensitivity") or MemorySensitivity.NORMAL),
+            status=str(metadata.get("status") or MemoryStatus.ACTIVE),
+            confidence=float(metadata.get("confidence") or 0.5),
+            last_accessed_at=self._parse_datetime(metadata.get("last_accessed_at")),
+            access_count=int(metadata.get("access_count") or 0),
+            expiration_at=self._parse_datetime(metadata.get("expiration_at")),
+            supersedes_memory_id=metadata.get("supersedes_memory_id"),
+            related_goal_id=metadata.get("related_goal_id"),
+            related_task_id=metadata.get("related_task_id"),
+            checksum=metadata.get("checksum"),
+            version=int(metadata.get("version") or 1),
+            user_confirmed=bool(metadata.get("user_confirmed", False)),
+            normalized_content=str(metadata.get("normalized_content") or str(row["content"]).strip().lower()),
         )
+
+    def _compose_metadata(self, data: MemoryCreate | MemoryUpdateRequest) -> dict[str, object]:
+        metadata = dict(getattr(data, "metadata", {}) or {})
+        metadata.update(
+            {
+                "memory_type": getattr(data, "memory_type", MemoryType.CUSTOM_NOTE),
+                "sensitivity": getattr(data, "sensitivity", MemorySensitivity.NORMAL),
+                "status": getattr(data, "status", MemoryStatus.ACTIVE),
+                "confidence": getattr(data, "confidence", 0.5),
+                "memory_version": getattr(data, "version", 1),
+                "user_confirmed": getattr(data, "user_confirmed", False),
+                "normalized_content": str(getattr(data, "content", "") or "").strip().lower(),
+            }
+        )
+        for key in (
+            "last_accessed_at",
+            "access_count",
+            "expiration_at",
+            "supersedes_memory_id",
+            "related_goal_id",
+            "related_task_id",
+            "checksum",
+            "version",
+            "user_confirmed",
+            "normalized_content",
+        ):
+            if getattr(data, key, None) is not None:
+                metadata[key] = self._metadata_value(getattr(data, key))
+        return metadata
+
+    def _parse_datetime(self, value: object) -> object | None:
+        if value in {None, ""}:
+            return None
+        try:
+            return datetime_from_text(str(value))
+        except Exception:
+            return None
+
+    def _metadata_value(self, value: object) -> object:
+        if isinstance(value, datetime):
+            return datetime_to_text(value)
+        if isinstance(value, tuple):
+            return [self._metadata_value(item) for item in value]
+        if isinstance(value, list):
+            return [self._metadata_value(item) for item in value]
+        if isinstance(value, Path):
+            return str(value)
+        return value

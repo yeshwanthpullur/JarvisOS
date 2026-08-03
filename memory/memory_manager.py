@@ -7,7 +7,16 @@ from pathlib import Path
 from typing import Any
 
 from memory.database import MemoryDatabase
-from memory.models import Memory, MemoryCreate, MemorySearchQuery, MemoryStatistics, MemoryUpdate
+from memory.models import (
+    Memory,
+    MemoryCreate,
+    MemorySearchQuery,
+    MemoryStatistics,
+    MemoryUpdate,
+    MemoryType,
+    MemorySensitivity,
+    MemoryStatus,
+)
 from memory.repository import MemoryRepository
 from memory.search import MemorySearchService
 
@@ -58,6 +67,20 @@ class MemoryManager:
         project: str | None = None,
         session_id: str | None = None,
         metadata: dict[str, Any] | None = None,
+        memory_type: str = MemoryType.CUSTOM_NOTE,
+        sensitivity: str = MemorySensitivity.NORMAL,
+        status: str = MemoryStatus.ACTIVE,
+        confidence: float = 0.5,
+        last_accessed_at: Any | None = None,
+        access_count: int = 0,
+        expiration_at: Any | None = None,
+        supersedes_memory_id: str | None = None,
+        related_goal_id: str | None = None,
+        related_task_id: str | None = None,
+        checksum: str | None = None,
+        version: int = 1,
+        user_confirmed: bool = False,
+        normalized_content: str = "",
     ) -> Memory:
         """Create a persistent memory record."""
         self._ensure_initialized()
@@ -71,6 +94,20 @@ class MemoryManager:
                 project=project,
                 session_id=session_id,
                 metadata=metadata or {},
+                memory_type=memory_type,
+                sensitivity=sensitivity,
+                status=status,
+                confidence=confidence,
+                last_accessed_at=last_accessed_at,
+                access_count=access_count,
+                expiration_at=expiration_at,
+                supersedes_memory_id=supersedes_memory_id,
+                related_goal_id=related_goal_id,
+                related_task_id=related_task_id,
+                checksum=checksum,
+                version=version,
+                user_confirmed=user_confirmed,
+                normalized_content=normalized_content,
             )
         )
 
@@ -85,6 +122,20 @@ class MemoryManager:
         project: str | None = None,
         session_id: str | None = None,
         metadata: dict[str, Any] | None = None,
+        memory_type: str | None = None,
+        sensitivity: str | None = None,
+        status: str | None = None,
+        confidence: float | None = None,
+        last_accessed_at: Any | None = None,
+        access_count: int | None = None,
+        expiration_at: Any | None = None,
+        supersedes_memory_id: str | None = None,
+        related_goal_id: str | None = None,
+        related_task_id: str | None = None,
+        checksum: str | None = None,
+        version: int | None = None,
+        user_confirmed: bool | None = None,
+        normalized_content: str | None = None,
     ) -> Memory | None:
         """Update a persistent memory record."""
         self._ensure_initialized()
@@ -99,6 +150,20 @@ class MemoryManager:
                 project=project,
                 session_id=session_id,
                 metadata=metadata,
+                memory_type=memory_type,
+                sensitivity=sensitivity,
+                status=status,
+                confidence=confidence,
+                last_accessed_at=last_accessed_at,
+                access_count=access_count,
+                expiration_at=expiration_at,
+                supersedes_memory_id=supersedes_memory_id,
+                related_goal_id=related_goal_id,
+                related_task_id=related_task_id,
+                checksum=checksum,
+                version=version,
+                user_confirmed=user_confirmed,
+                normalized_content=normalized_content,
             ),
         )
 
@@ -150,4 +215,3 @@ class MemoryManager:
     def _ensure_initialized(self) -> None:
         if not self.initialized:
             raise RuntimeError("MemoryManager must be initialized before use.")
-

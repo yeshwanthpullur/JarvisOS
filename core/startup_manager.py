@@ -19,7 +19,7 @@ from core.system_status import APP_VERSION, SystemState, SystemStatus
 from goal_intelligence import GoalIntelligenceManager, GoalIntelligenceStatistics
 from knowledge import KnowledgeManager, KnowledgeStatistics
 from jarvis import JarvisContext, JarvisCore, JarvisExecutiveStatistics
-from memory import MemoryManager, MemoryStatistics
+from memory import MemoryIntelligenceManager, MemoryManager, MemoryStatistics
 from plugins import PluginFrameworkStatistics, PluginManager
 from provider_execution import ExecutionManager, ProviderExecutionContext, ProviderExecutionStatistics
 from providers import ProviderManager, ProviderRouter, ProviderRouterStatistics
@@ -44,6 +44,7 @@ class StartupManager:
         self.status = SystemStatus()
         self.settings: AppSettings | None = None
         self.memory_manager: MemoryManager | None = None
+        self.memory_intelligence_manager: MemoryIntelligenceManager | None = None
         self.brain_manager: BrainManager | None = None
         self.knowledge_manager: KnowledgeManager | None = None
         self.agent_manager: AgentManager | None = None
@@ -122,6 +123,26 @@ class StartupManager:
         self.memory_manager.initialize()
         self.memory_statistics = self.memory_manager.statistics()
         self.status.mark_module_loaded("memory")
+
+        self.memory_intelligence_manager = MemoryIntelligenceManager(
+            self.memory_manager,
+            local_only=self.settings.memory.local_only,
+            auto_remember=self.settings.memory.auto_remember,
+            auto_session_summary=self.settings.memory.auto_session_summary,
+            max_records=self.settings.memory.max_records,
+            max_search_results=self.settings.memory.max_search_results,
+            max_context_items=self.settings.memory.max_context_items,
+            max_context_chars=self.settings.memory.max_context_chars,
+            audit_enabled=self.settings.memory.audit_enabled,
+            audit_retention=self.settings.memory.audit_retention,
+            default_retention_days=self.settings.memory.default_retention_days,
+            sensitive_storage_enabled=self.settings.memory.sensitive_storage_enabled,
+            consolidation_enabled=self.settings.memory.consolidation_enabled,
+            secret_detection_enabled=self.settings.memory.secret_detection_enabled,
+            logger=logging.getLogger("memory_intelligence"),
+        )
+        self.memory_intelligence_manager.initialize()
+        self.status.mark_module_loaded("memory_intelligence")
 
         self.brain_manager = BrainManager(
             vault_path=self.settings.brain.vault_path,
@@ -274,6 +295,7 @@ class StartupManager:
             request_id="startup",
             settings=self.settings,
             memory_manager=self.memory_manager,
+            memory_intelligence_manager=self.memory_intelligence_manager,
             knowledge_manager=self.knowledge_manager,
             brain_manager=self.brain_manager,
             task_manager=self.task_manager,
@@ -292,6 +314,7 @@ class StartupManager:
                 "personal_intelligence_manager": self.personal_intelligence_manager,
                 "context_intelligence_manager": self.context_intelligence_manager,
                 "goal_intelligence_manager": self.goal_intelligence_manager,
+                "memory_intelligence_manager": self.memory_intelligence_manager,
                 "agent_manager": self.agent_manager,
             },
         )
@@ -306,6 +329,7 @@ class StartupManager:
         self.conversation_manager = ConversationManager(
             jarvis_core=self.jarvis_core,
             memory_manager=self.memory_manager,
+            memory_intelligence_manager=self.memory_intelligence_manager,
             knowledge_manager=self.knowledge_manager,
             task_manager=self.task_manager,
             task_intelligence_manager=self.task_intelligence_manager,

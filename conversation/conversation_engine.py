@@ -96,6 +96,17 @@ class ConversationEngine:
                     )
             except Exception:
                 pass
+        memory_intelligence = context.metadata.get("memory_intelligence_manager")
+        if memory_intelligence is not None and hasattr(memory_intelligence, "apply_context"):
+            try:
+                memory_context = memory_intelligence.apply_context(
+                    request.user_input,
+                    conversation_id=context.session.conversation_id,
+                    session_id=context.session.request_id,
+                )
+                context.metadata.update(memory_context)
+            except Exception:
+                pass
         goal_manager = context.metadata.get("goal_intelligence_manager")
         if goal_manager is not None and hasattr(goal_manager, "prepare_request"):
             normalized = request.normalized_input

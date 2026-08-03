@@ -10,6 +10,10 @@ Use `mobile status`, `mobile policy`, `mobile capabilities`, `mobile setup`, `mo
 
 `project status` also shows fixed and still-open limitation counts. Detailed evidence and future owners are in `docs/LIMITATIONS_REGISTER.md`.
 
+## Memory Commands
+
+Use `memory status`, `memory help`, `memory list`, `memory search <text>`, `memory show <id>`, `memory remember <title> | <content>`, `memory forget <id>`, `memory update <id> <content>`, `memory archive <id>`, `memory recent`, `memory preferences`, `memory projects`, `memory audit`, `memory cleanup`, and `memory consolidate`. Memory stays local, secret-aware, and bounded. The memory layer can feed safe context back into chat, but it does not sync anywhere and it does not replace command or conversation authority.
+
 Web inspection commands are `web status`, `web policy`, `web session`, `web open <https-url>`, `web title`, `web url`, `web snapshot`, `web audit`, and `web close`. They use the governed Web Automation Manager and a bounded standard-library adapter. `web open` reads safe public HTML/text metadata and a sanitized preview; it does not launch or control a browser. Local/internal targets, sensitive query fields, credential URLs, unsafe schemes, and unsafe categories are rejected. Interactive and sensitive actions remain unavailable.
 
 Vision commands are `vision status`, `vision models`, `vision analyze <image_path>`, `vision describe <image_path>`, `vision ask <image_path> <question>`, `vision audit`, and `vision cleanup`. Quote paths containing spaces. PNG, JPEG, and WebP images are validated before any provider request. Analysis is local-only through the registered Ollama provider, and audit stores metadata rather than image bytes, base64, prompts, or full paths.

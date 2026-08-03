@@ -46,6 +46,7 @@ class JarvisContext:
     statistics: dict[str, Any] = field(default_factory=dict)
     settings: Any | None = None
     memory_manager: Any | None = None
+    memory_intelligence_manager: Any | None = None
     knowledge_manager: Any | None = None
     brain_manager: Any | None = None
     task_manager: Any | None = None

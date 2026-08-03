@@ -20,6 +20,7 @@ REQUIRED_DOCS = (
     "SYNC_STRATEGY.md",
     "AUTOMATION_STRATEGY.md",
     "MEMORY_AND_DATA_POLICY.md",
+    "MEMORY_INTELLIGENCE.md",
     "VISION_INTELLIGENCE.md",
     "LIMITATIONS_REGISTER.md",
     "WEB_AUTOMATION.md",
@@ -43,6 +44,8 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertEqual(health["commit"], "b0222c76a054fad0a9c735d7d2ad58253c2142af")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Working")
+        memory = next(item for item in health["categories"] if item["name"] == "Memory")
+        self.assertEqual(memory["status"], "Working")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
         self.assertLessEqual(health["overall_mvp_readiness"], 100)
         self.assertLess(path.stat().st_size, 20_000)
@@ -136,12 +139,12 @@ class ProjectTrackingTests(unittest.TestCase):
         commands.initialize()
         response = commands.execute("project status")
         self.assertIn("release=v0.9.0-alpha", response.response)
-        self.assertIn("MVP=74%", response.response)
-        self.assertIn("Prompt 38", response.response)
+        self.assertIn("MVP=75%", response.response)
+        self.assertIn("Prompt 39", response.response)
         self.assertIn("limitations=fixed:20/open:26", response.response)
         self.assertIn("focus=LIM-018", response.response)
         self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 74)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 75)
         self.assertEqual(response.metadata["fixed_limitations"], 20)
         self.assertEqual(response.metadata["open_limitations"], 26)
 
@@ -154,6 +157,8 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("defaults to `off`", strategy)
         self.assertIn("unavailable remote adapter cannot mark an item synced", strategy)
         self.assertIn("must not contain raw memory", policy)
+        self.assertIn("Persistent Personal Context", policy)
+        self.assertIn("bounded retrieval snippets", policy)
 
 
 if __name__ == "__main__":

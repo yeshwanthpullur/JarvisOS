@@ -36,6 +36,19 @@ class MemoryConfig:
     storage_dir: Path
     task_store_dir: Path
     vector_index_dir: Path
+    local_only: bool = True
+    auto_remember: bool = False
+    auto_session_summary: bool = True
+    max_records: int = 2000
+    max_search_results: int = 12
+    max_context_items: int = 8
+    max_context_chars: int = 6000
+    audit_enabled: bool = True
+    audit_retention: int = 100
+    default_retention_days: int = 3650
+    sensitive_storage_enabled: bool = False
+    consolidation_enabled: bool = True
+    secret_detection_enabled: bool = True
 
 
 @dataclass(frozen=True, slots=True)

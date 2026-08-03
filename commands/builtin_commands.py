@@ -47,6 +47,17 @@ def _goal_manager(context: CommandContext):
     return metadata.get("goal_intelligence_manager")
 
 
+def _memory_intelligence(context: CommandContext):
+    conversation = context.conversation_context
+    if conversation is None:
+        return None
+    direct = getattr(conversation, "memory_intelligence_manager", None)
+    if direct is not None:
+        return direct
+    metadata = getattr(conversation, "metadata", {}) or {}
+    return metadata.get("memory_intelligence_manager")
+
+
 def _provider_manager(context: CommandContext):
     conversation = context.conversation_context
     if conversation is None:
@@ -330,7 +341,21 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("departments", "Show department summary", "department", (), CommandPermission.DEPARTMENT),
         ("department list", "List departments", "department", (), CommandPermission.DEPARTMENT),
         ("memory", "Show memory summary", "memory", (), CommandPermission.MEMORY),
-        ("memory search", "Search memory architecture hook", "memory", (), CommandPermission.MEMORY),
+        ("memory status", "Show memory status", "memory", (), CommandPermission.MEMORY),
+        ("memory help", "Show memory help", "memory", (), CommandPermission.MEMORY),
+        ("memory list", "List memories", "memory", (), CommandPermission.MEMORY),
+        ("memory search", "Search memories", "memory", (), CommandPermission.MEMORY),
+        ("memory show", "Show a memory", "memory", (), CommandPermission.MEMORY),
+        ("memory remember", "Remember a memory", "memory", (), CommandPermission.MEMORY),
+        ("memory forget", "Forget a memory", "memory", (), CommandPermission.MEMORY),
+        ("memory update", "Update a memory", "memory", (), CommandPermission.MEMORY),
+        ("memory archive", "Archive a memory", "memory", (), CommandPermission.MEMORY),
+        ("memory recent", "Show recent memories", "memory", (), CommandPermission.MEMORY),
+        ("memory preferences", "Show memory preferences", "memory", (), CommandPermission.MEMORY),
+        ("memory projects", "Show memory projects", "memory", (), CommandPermission.MEMORY),
+        ("memory audit", "Show memory audit trail", "memory", (), CommandPermission.MEMORY),
+        ("memory cleanup", "Clean up memory records", "memory", (), CommandPermission.MEMORY),
+        ("memory consolidate", "Consolidate memory records", "memory", (), CommandPermission.MEMORY),
         ("knowledge", "Show knowledge summary", "knowledge", (), CommandPermission.KNOWLEDGE),
         ("knowledge search", "Search knowledge architecture hook", "knowledge", (), CommandPermission.KNOWLEDGE),
         ("tasks", "Show task summary", "task", (), CommandPermission.TASK),
@@ -393,6 +418,20 @@ def _handler_for(name: str):
             return _text_response(manager.help.render(manager.registry))
         if name == "project status":
             return _project_health_summary()
+        if name == "memory":
+            memory = _memory_intelligence(context)
+            if memory is None:
+                return _text_response("memory summary unavailable: Memory intelligence is unavailable.")
+            return _text_response("Memory summary: " + memory.status_text())
+        if name.startswith("memory "):
+            memory = _memory_intelligence(context)
+            if memory is None:
+                return _text_response(f"{name} unavailable: Memory intelligence is unavailable.")
+            try:
+                summary = memory.handle_command(name, context.arguments)
+            except Exception as exc:  # pragma: no cover - defensive command surface
+                return _text_response(f"Memory command failed: {exc}")
+            return _text_response(summary)
         if name == "exit":
             return ConversationResponse(response="Shutting down JARVIS OS.", should_exit=True)
         if name == "clear":

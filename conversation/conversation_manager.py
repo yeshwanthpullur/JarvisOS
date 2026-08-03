@@ -42,6 +42,7 @@ class ConversationManager:
         self,
         jarvis_core: object | None = None,
         memory_manager: object | None = None,
+        memory_intelligence_manager: object | None = None,
         knowledge_manager: object | None = None,
         task_manager: object | None = None,
         task_intelligence_manager: object | None = None,
@@ -70,6 +71,7 @@ class ConversationManager:
         self.engine = ConversationEngine()
         self.history = ConversationHistory()
         self.memory = ConversationMemory(memory_manager)
+        self.memory_intelligence = memory_intelligence_manager
         self.metrics = ConversationMetrics()
         self.active_session = ConversationSession()
         self.knowledge_manager = knowledge_manager
@@ -128,6 +130,7 @@ class ConversationManager:
             jarvis_core=self.jarvis_core,
             command_manager=self.command_manager,
             memory_manager=self.memory.memory_manager,
+            memory_intelligence_manager=self.memory_intelligence,
             knowledge_manager=self.knowledge_manager,
             task_manager=self.task_manager,
             task_intelligence_manager=self.task_intelligence_manager,
@@ -153,11 +156,22 @@ class ConversationManager:
                 "personal_context": personal_context,
                 "context_intelligence_manager": self.context_intelligence,
                 "goal_intelligence_manager": self.goal_intelligence,
+                "memory_intelligence_manager": self.memory_intelligence,
             },
         )
         response = self.engine.handle(request, context)
         if self.context_intelligence is not None:
             self.context_intelligence.record_interaction(self.active_session, user_input, response)
+        if self.memory_intelligence is not None and hasattr(self.memory_intelligence, "note_response"):
+            try:
+                self.memory_intelligence.note_response(
+                    user_input,
+                    response.response,
+                    context.session.conversation_id,
+                    session_id=getattr(context.session, "request_id", None),
+                )
+            except Exception:
+                pass
         self.history.append(request, response)
         self.active_session.record(user_input, response.response)
         self.metrics.requests += 1

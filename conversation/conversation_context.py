@@ -16,6 +16,7 @@ class ConversationContext:
     jarvis_core: Any | None = None
     command_manager: Any | None = None
     memory_manager: Any | None = None
+    memory_intelligence_manager: Any | None = None
     knowledge_manager: Any | None = None
     task_manager: Any | None = None
     task_intelligence_manager: Any | None = None
