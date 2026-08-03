@@ -14,7 +14,7 @@ Use `conversation status`, `conversation topic`, `conversation confidence`, `con
 
 Use `mobile status`, `mobile policy`, `mobile capabilities`, `mobile setup`, `mobile plan <task>`, `mobile audit`, and `mobile close`. These commands do not connect to or control a phone. Requests involving messages, calls, notifications, contacts, photos, sensors, device input, apps, settings, purchases, login, unlock, or background monitoring are blocked.
 
-`project status` also shows fixed and still-open limitation counts. Detailed evidence and future owners are in `docs/LIMITATIONS_REGISTER.md`.
+`project status` shows fixed, still-open, intentionally restricted, and externally blocked limitation counts. Use `limitations status`, `limitations open`, `limitations fixed`, `limitations show <id>`, `limitations category <category>`, or `limitations next` for bounded evidence and ownership. The full review is in `docs/LIMITATIONS_REVIEW_PROMPT_40.md`.
 
 ## Memory Commands
 

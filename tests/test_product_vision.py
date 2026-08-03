@@ -87,8 +87,8 @@ class ProductVisionTests(unittest.TestCase):
             self.assertTrue(item["next_owner_prompt"])
         counts = self.limitations["counts"]
         self.assertEqual(counts["total"], 47)
-        self.assertEqual(counts["fixed"], 21)
-        self.assertEqual(counts["still_open"], 26)
+        self.assertEqual(counts["fixed"], 22)
+        self.assertEqual(counts["still_open"], 25)
 
     def test_master_document_is_readable_bounded_and_secret_free(self) -> None:
         self.assertGreater(len(self.vision), 10_000)

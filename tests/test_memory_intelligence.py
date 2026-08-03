@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+from datetime import timedelta
 from pathlib import Path
 
 from conversation import ConversationManager
 from memory import MemoryIntelligenceManager, MemoryManager
+from memory.models import MemoryStatus, utc_now
 
 
 class MemoryIntelligenceTests(unittest.TestCase):
@@ -82,6 +84,33 @@ class MemoryIntelligenceTests(unittest.TestCase):
         events = self.memory_intelligence.audit()
         self.assertTrue(events)
         self.assertLessEqual(len(events), 20)
+
+    def test_startup_lifecycle_archives_expired_memory_without_deleting(self) -> None:
+        manager = MemoryManager(Path(self.tempdir.name) / "lifecycle")
+        manager.initialize()
+        expired = manager.create_memory(
+            "Expired preference",
+            "Keep this record for review.",
+            expiration_at=utc_now() - timedelta(days=1),
+        )
+        intelligence = MemoryIntelligenceManager(manager, consolidation_enabled=True)
+        intelligence.initialize()
+        retained = manager.get_memory(expired.id)
+        self.assertIsNotNone(retained)
+        self.assertEqual(retained.status, MemoryStatus.ARCHIVED)  # type: ignore[union-attr]
+        self.assertEqual(manager.count_memories(), 1)
+
+    def test_startup_lifecycle_supersedes_duplicate_without_deleting(self) -> None:
+        manager = MemoryManager(Path(self.tempdir.name) / "duplicates")
+        manager.initialize()
+        manager.create_memory("First", "Same bounded detail")
+        manager.create_memory("Second", "Same bounded detail")
+        intelligence = MemoryIntelligenceManager(manager, consolidation_enabled=True)
+        result = intelligence.initialize()
+        records = manager.list_memories()
+        self.assertEqual(len(records), 2)
+        self.assertEqual(sum(item.status == MemoryStatus.SUPERSEDED for item in records), 1)
+        self.assertTrue(result.consolidation_enabled)
 
     def test_conversation_manager_receives_memory_commands(self) -> None:
         core = None

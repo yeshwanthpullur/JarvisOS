@@ -53,6 +53,7 @@ class CommandHelp:
             ("provider status", "Show provider mode and current selection"),
             ("tools status", "Show registered tool readiness"),
             ("project status", "Show release, MVP health, and next milestone"),
+            ("limitations status", "Show bounded limitation counts and priority"),
             ("help", "Show this guide"),
             ("exit", "Shut down JARVIS cleanly"),
         )

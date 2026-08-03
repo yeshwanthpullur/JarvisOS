@@ -11,6 +11,7 @@ from commands.command_permissions import CommandPermission
 from commands.command_registry import CommandRecord, CommandRegistry
 from conversation.conversation_response import ConversationResponse
 from providers import ProviderRequest
+from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
 
 
 def _manager(context: CommandContext):
@@ -139,6 +140,9 @@ def _project_health_summary() -> ConversationResponse:
         limitation_counts = {}
     fixed_limitations = int(limitation_counts.get("fixed", 0))
     open_limitations = int(limitation_counts.get("still_open", 0))
+    review_counts = limitations.get("review", {}).get("category_totals", {})
+    restricted_limitations = int(review_counts.get("intentionally_restricted", 0))
+    blocked_limitations = int(review_counts.get("blocked_hardware_environment", 0)) + int(review_counts.get("blocked_external_service_cost", 0))
     limitation_focus = str(limitations.get("next_major_limitation_id", "unknown"))
     return _text_response(
         "Project status: "
@@ -146,7 +150,7 @@ def _project_health_summary() -> ConversationResponse:
         f"primary={health.get('primary_mode', 'unknown')} "
         f"MVP={health.get('overall_mvp_readiness', 0)}% "
         f"working={working} experimental={experimental} "
-        f"limitations=fixed:{fixed_limitations}/open:{open_limitations} "
+        f"limitations=fixed:{fixed_limitations}/open:{open_limitations}/restricted:{restricted_limitations}/blocked:{blocked_limitations} "
         f"focus={limitation_focus} "
         f"next={health.get('next_milestone', 'unknown')}. "
         "Details: docs/PROJECT_HEALTH.md and docs/LIMITATIONS_REGISTER.md",
@@ -157,6 +161,8 @@ def _project_health_summary() -> ConversationResponse:
         experimental_categories=experimental,
         fixed_limitations=fixed_limitations,
         open_limitations=open_limitations,
+        restricted_limitations=restricted_limitations,
+        blocked_limitations=blocked_limitations,
         limitation_focus=limitation_focus,
         next_milestone=health.get("next_milestone"),
     )
@@ -199,6 +205,14 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("version", "Show application version", "system", (), CommandPermission.SYSTEM),
         ("status", "Show system status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("project status", "Show project milestone health", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("limitations status", "Show limitation counts and priority", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("limitations list", "Show limitations command help", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("limitations open", "List bounded open limitations", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("limitations fixed", "List bounded fixed limitations", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("limitations show", "Show one limitation", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("limitations category", "List limitations by review category", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("limitations next", "Show the highest-priority limitation", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("limitations summary", "Show limitation counts and priority", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("conversation status", "Show conversation state", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation reset", "Clear in-memory conversation context", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation summary", "Show bounded conversation summary", "conversation", (), CommandPermission.CONVERSATION),
@@ -427,6 +441,11 @@ def _handler_for(name: str):
             return _text_response(manager.help.render(manager.registry))
         if name == "project status":
             return _project_health_summary()
+        if name.startswith("limitations "):
+            try:
+                return _text_response(LimitationsRegister().command(name, context.arguments))
+            except LimitationsRegisterError as exc:
+                return _text_response(f"Limitations unavailable: {exc}.")
         if name.startswith("conversation "):
             intelligence = _conversation_intelligence(context)
             if intelligence is None:

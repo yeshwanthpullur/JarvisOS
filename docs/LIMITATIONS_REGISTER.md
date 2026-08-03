@@ -2,18 +2,18 @@
 
 Updated: 2026-08-04
 
-This register is the authoritative compact audit of limitations recorded through Prompt 39. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
+This register is the authoritative compact audit of limitations reviewed through Prompt 40. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
 
 ## Counts
 
 | Measure | Count |
 | --- | ---: |
 | Total limitations audited | 47 |
-| Fixed before Prompt 39 | 20 |
-| Fixed during Prompt 39 | 1 |
-| Fixed total | 21 |
-| Still open in any form | 26 |
-| Open | 5 |
+| Fixed before Prompt 40 | 21 |
+| Fixed during Prompt 40 | 1 |
+| Fixed total | 22 |
+| Still open in any form | 25 |
+| Open | 4 |
 | Deferred | 17 |
 | Blocked | 3 |
 | Experimental | 1 |
@@ -44,12 +44,13 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-024 | Real semantic image analysis required an installed local vision model | Local Ollama LLaVA image analysis and image Q&A passed manual verification. |
 | LIM-040 | Local voice input had no executable offline STT/capture path | Prompt 36 added lazy Vosk recognition, explicit in-memory capture, normalized results, and safe CLI handoff. |
 | LIM-041 | Vision had no explicit governed local Ollama analysis workflow | Prompt 37 added model capability discovery, Provider Router image execution, safety policy, bounded metadata-only audit, and complete CLI controls. |
+| LIM-047 | Free-form chat lacked bounded multi-turn conversation intelligence | Prompt 39 added bounded topics, entities, follow-ups, references, clarification, repair, modes, confidence, and summaries. |
 
-## Fixed During Prompt 39
+## Fixed During Prompt 40
 
 | ID | Limitation | Fix |
 | --- | --- | --- |
-| LIM-047 | Free-form chat lacked bounded multi-turn conversation intelligence | Added bounded topic/entity/comparison state, follow-up intent, reference resolution, one-question clarification, repair, modes, confidence, summaries, and normal provider-path integration. |
+| LIM-016 | Automated memory retention and compaction were incomplete | Startup now runs bounded non-destructive lifecycle policy: expired records are archived and exact duplicates are superseded. |
 
 ## Still Open
 
@@ -57,7 +58,6 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | --- | --- | --- | --- | --- |
 | LIM-014 | Open | Medium | Paid cloud providers lack routine live verification. | Cloud Provider Validation |
 | LIM-015 | Open | Medium | Production tool catalog is intentionally narrow. | Prompt 34 and later tool milestones |
-| LIM-016 | Open | Medium | Automated memory retention and compaction are incomplete. | Memory Lifecycle Stabilization |
 | LIM-017 | Open | Low | Vercel duplicate cleanup and protection review require dashboard action. | Manual deployment administration |
 | LIM-018 | Deferred | High | Encrypted remote synchronization backend does not exist. | Future Encrypted Sync Backend |
 | LIM-019 | Deferred | Medium | Autonomous plans remain advisory. | Future Governed Execution Milestone |
@@ -68,7 +68,7 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-029 | Deferred | Medium | Image generation workflow is not implemented. | Prompt 41 - Image Generation Workflow Foundation |
 | LIM-030 | Deferred | Medium | Video editing workflow is not implemented. | Prompt 42 - Video Editing Workflow Foundation |
 | LIM-031 | Deferred | High | Cross-device synchronization is unavailable. | Prompt 44 - Cross-Device Sync |
-| LIM-032 | Deferred | Medium | Dedicated Raspberry Pi and hardware support is not implemented. | Prompt 40 - Raspberry Pi Deployment and Hardware Support |
+| LIM-032 | Deferred | Medium | Dedicated Raspberry Pi and hardware support is not implemented. | Existing future hardware-support milestone |
 | LIM-033 | Deferred | Medium | Dedicated study assistant workflow is not implemented. | Prompt 38 - Study Assistant and Research Workflows |
 | LIM-034 | Deferred | High | Advanced Builder Mode is not formalized. | Future Advanced Builder / Coding Workflow Foundation |
 | LIM-035 | Deferred | High | Call and communication assistance is not implemented. | Prompt 47 - Safe Communication and Call Assistance Foundation |

@@ -123,11 +123,14 @@ class MemoryIntelligenceManager:
         self.initialized = False
         self._audit: list[MemoryAuditEvent] = []
         self._last_safe_reply: str | None = None
+        self._last_lifecycle_result = MemoryConsolidationResult(considered=0, updated=0, archived=0, deleted=0)
 
     def initialize(self) -> MemoryIntelligenceStatus:
         """Initialize memory intelligence."""
         self.memory_manager.initialize() if not self.memory_manager.initialized else None
         self.initialized = True
+        if self.consolidation_enabled:
+            self._last_lifecycle_result = self.run_lifecycle()
         self._logger.info("memory_intelligence_initialized")
         return self.status()
 
@@ -339,6 +342,10 @@ class MemoryIntelligenceManager:
         return self.memory_manager.list_memories(limit=limit, offset=0)
 
     def cleanup(self) -> MemoryConsolidationResult:
+        return self.run_lifecycle()
+
+    def run_lifecycle(self, *, now: datetime | None = None) -> MemoryConsolidationResult:
+        """Archive expired records and supersede exact duplicates without deleting data."""
         if not self.consolidation_enabled:
             return MemoryConsolidationResult(considered=0, updated=0, archived=0, deleted=0, preview=("consolidation disabled",))
         memories = self.memory_manager.list_memories(limit=self.max_records)
@@ -346,14 +353,30 @@ class MemoryIntelligenceManager:
         seen: dict[str, str] = {}
         updated = archived = deleted = 0
         considered = len(memories)
+        current_time = now or utc_now()
         for memory in memories:
+            if memory.status == MemoryStatus.ACTIVE and memory.expiration_at and memory.expiration_at <= current_time:
+                expired = self.memory_manager.update_memory(
+                    memory.id,
+                    status=MemoryStatus.ARCHIVED,
+                    metadata={**dict(memory.metadata), "retention_action": "archived_expired"},
+                )
+                if expired is not None:
+                    archived += 1
+                    updated += 1
+                    preview.append(f"archived expired {memory.title}")
+                continue
+            if memory.status != MemoryStatus.ACTIVE:
+                continue
             normalized = memory.normalized_content or memory.content.strip().lower()
             if not normalized:
                 continue
             if normalized in seen:
                 archived_memory = self.memory_manager.update_memory(
                     memory.id,
-                    metadata={**dict(memory.metadata), "status": MemoryStatus.SUPERSEDED, "supersedes_memory_id": seen[normalized]},
+                    status=MemoryStatus.SUPERSEDED,
+                    supersedes_memory_id=seen[normalized],
+                    metadata={**dict(memory.metadata), "retention_action": "superseded_duplicate"},
                 )
                 if archived_memory is not None:
                     archived += 1
@@ -362,7 +385,9 @@ class MemoryIntelligenceManager:
             else:
                 seen[normalized] = memory.id
         self._record_audit("cleanup", "completed", considered, summary=f"updated={updated} archived={archived} deleted={deleted}")
-        return MemoryConsolidationResult(considered=considered, updated=updated, archived=archived, deleted=deleted, preview=tuple(preview[:8]))
+        result = MemoryConsolidationResult(considered=considered, updated=updated, archived=archived, deleted=deleted, preview=tuple(preview[:8]))
+        self._last_lifecycle_result = result
+        return result
 
     def consolidate(self) -> MemoryConsolidationResult:
         return self.cleanup()

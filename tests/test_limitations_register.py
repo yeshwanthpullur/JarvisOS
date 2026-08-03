@@ -8,6 +8,9 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
+from commands import CommandManager
+from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError, VALID_CATEGORIES
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
@@ -23,7 +26,7 @@ class LimitationsRegisterTests(unittest.TestCase):
     def test_register_files_exist_and_are_bounded(self) -> None:
         self.assertTrue((DOCS / "LIMITATIONS_REGISTER.md").is_file())
         self.assertTrue(self.path.is_file())
-        self.assertLess(self.path.stat().st_size, 50_000)
+        self.assertLess(self.path.stat().st_size, 65_000)
         self.assertLess((DOCS / "LIMITATIONS_REGISTER.md").stat().st_size, 20_000)
 
     def test_counts_are_internally_consistent(self) -> None:
@@ -52,6 +55,43 @@ class LimitationsRegisterTests(unittest.TestCase):
             if item["status"] != "fixed":
                 self.assertTrue(item["next_owner_prompt"])
 
+    def test_prompt_40_review_classifies_every_open_record(self) -> None:
+        open_items = [item for item in self.items if item["status"] != "fixed"]
+        categories = Counter(item.get("review_category") for item in open_items)
+        self.assertNotIn(None, categories)
+        self.assertTrue(set(categories).issubset(VALID_CATEGORIES))
+        self.assertEqual(dict(categories), self.data["review"]["category_totals"])
+        for item in open_items:
+            self.assertTrue(item["next_owner_prompt"])
+            self.assertTrue(item["evidence"])
+
+    def test_fixed_entry_has_prompt_40_lifecycle_evidence(self) -> None:
+        fixed = next(item for item in self.items if item["limitation_id"] == "LIM-016")
+        self.assertEqual(fixed["status"], "fixed")
+        self.assertTrue(fixed["fix_implemented_in_this_prompt"])
+        self.assertTrue(fixed["fixed_at"])
+        self.assertIn("test_memory_intelligence", fixed["test_coverage"])
+
+    def test_limitations_reader_rejects_malformed_data_safely(self) -> None:
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "bad.json"
+            path.write_text('{"counts": {}, "limitations": [{"limitation_id": "LIM-001", "status": "wrong"}]}', encoding="utf-8")
+            with self.assertRaises(LimitationsRegisterError):
+                LimitationsRegister(path).load()
+
+    def test_limitations_cli_is_bounded_and_project_status_has_categories(self) -> None:
+        manager = CommandManager()
+        manager.initialize()
+        for command in ("limitations status", "limitations open", "limitations fixed", "limitations next", "limitations show LIM-016", "limitations show LIM-018"):
+            response = manager.execute(command)
+            self.assertTrue(response.response)
+            self.assertLess(len(response.response), 1600)
+            self.assertNotRegex(response.response, r"[A-Z]:\\")
+        project = manager.execute("project status")
+        self.assertIn("restricted:", project.response)
+        self.assertIn("blocked:", project.response)
+
     def test_health_and_status_match_register(self) -> None:
         health = json.loads((DOCS / "project_health.json").read_text(encoding="utf-8"))
         self.assertEqual(health["limitations"]["total"], self.data["counts"]["total"])
@@ -59,8 +99,14 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(health["limitations"]["still_open"], self.data["counts"]["still_open"])
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
         self.assertIn("**47** limitations", current)
-        self.assertIn("**21 fixed**", current)
-        self.assertIn("**26 still open**", current)
+        self.assertIn("**22 fixed**", current)
+        self.assertIn("**25 still open**", current)
+
+    def test_markdown_and_json_counts_agree(self) -> None:
+        register = (DOCS / "LIMITATIONS_REGISTER.md").read_text(encoding="utf-8")
+        counts = self.data["counts"]
+        for label, key in (("Total limitations audited", "total"), ("Fixed total", "fixed"), ("Still open in any form", "still_open")):
+            self.assertRegex(register, rf"\| {re.escape(label)} \| {counts[key]} \|")
 
     def test_capability_statuses_match_verified_scope(self) -> None:
         health = json.loads((DOCS / "project_health.json").read_text(encoding="utf-8"))

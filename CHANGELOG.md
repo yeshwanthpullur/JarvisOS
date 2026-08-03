@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Limitations Review and Safe Fix Pass
+
+- Classified every open limitation with evidence, ownership, blockers, and one primary review category without changing roadmap order.
+- Added bounded limitation inspection commands and richer project-status counts with fail-closed register validation.
+- Added non-destructive automatic memory lifecycle handling that archives expired records and supersedes exact duplicates without deleting user memory.
+
 ## Unreleased - Conversation Intelligence
 
 - Added bounded multi-turn conversation state, topic/entity tracking, follow-up intent, comparison context, reference resolution, confidence, and single-question clarification.

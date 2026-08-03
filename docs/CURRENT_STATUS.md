@@ -4,10 +4,10 @@ Updated: 2026-08-04
 
 ## Current Release
 
-- Release: `v1.1.0-alpha - Persistent Local Memory Intelligence`
-- Baseline commit: `a44bbe193301f9f3956f647c030be9c184962866`
+- Release: `v1.2.0-alpha - Conversation Intelligence`
+- Baseline commit: `4aa197f2bc80001454d8bf0f8d98c22a4271a04c`
 - Branch: `main`
-- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v1.1.0-alpha`
+- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v1.2.0-alpha`
 
 ## Stable Launch
 
@@ -46,7 +46,7 @@ python main.py --ui
 - Tool Intelligence: safe built-ins work, while broad external tool integrations are future work.
 - Autonomous Planning: advisory plans work, but autonomous execution is intentionally not enabled.
 - Multi-Agent Intelligence: governed planner/reviewer coordination exists, but broad specialist coverage is limited.
-- Memory and Knowledge: authoritative local storage and persistent personal context exist, but long-term pruning and cross-device policy are not automated.
+- Memory and Knowledge: authoritative local storage, persistent personal context, and non-destructive retention/duplicate compaction work; cross-device policy is not implemented.
 - Online deployment foundation: both connected Vercel projects reached Ready from commit `57a10421c8f98beb24bb3eb7d2bad60bc0bf036b`; the canonical `jarvis-os` `/api/status` response was verified live.
 - Online Sync foundation: disabled-by-default manual queueing, strict summary schemas, atomic persistence, deduplication, bounded audit/retention, conflict detection, and truthful unavailable remote behavior work. No real encrypted remote adapter is configured.
 - Web Automation: bounded read-only public HTML/text inspection works through a standard-library adapter with DNS/IP checks, redirect revalidation, sanitized previews, and redacted audit. Interactive actions remain blocked.
@@ -75,7 +75,7 @@ python main.py --ui
 
 ## Known Limitations
 
-The audited register contains **47** limitations: **21 fixed** and **26 still open** across open, deferred, blocked, and experimental states. Future product goals are recorded as deferred capabilities, not current defects or completed features. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
+The audited register contains **47** limitations: **22 fixed** and **25 still open** across open, deferred, blocked, and experimental states. Future product goals are recorded as deferred capabilities, not current defects or completed features. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
 
 - Voice input is verified for explicit push-to-talk, but there is no two-way continuous conversation mode, wake word, or dynamic multilingual model switching.
 - SAPI playback is non-blocking and interruptible; resuming after an immediate stop restarts the interrupted chunk from its beginning.
@@ -84,7 +84,7 @@ The audited register contains **47** limitations: **21 fixed** and **26 still op
 - Sync is local-queue-only in practice: `sync run` cannot upload until a real authenticated encrypted adapter is configured. The Vercel status endpoint is not a sync backend.
 - Local Ollama LLaVA image analysis is verified. Live camera/video, image generation, reverse image search, face recognition, guaranteed OCR, cloud/Vercel vision, cross-device sync, interactive browser control, and live mobile control do not exist.
 - Local AI requires the PC and Ollama to be running.
-- Persistent memory is working locally, but automatic retention and compaction are still incomplete.
+- Persistent memory is working locally with bounded startup retention and exact-duplicate compaction; lifecycle changes are non-destructive.
 - Image generation, video editing, dedicated study, formal Builder Mode, Raspberry Pi profiles, communication/call assistance, and the unified personal workspace remain future milestones.
 - Runtime state is local and some conversation/interface state is not durable across restarts.
 - The former Vercel failure occurred because automatic detection treated root `main.py` as a Python function even though it is intentionally CLI-only. `vercel.json` now builds only `api/index.py`; the deployed surface remains status-only and is not online JARVIS or sync.
@@ -94,13 +94,14 @@ The audited register contains **47** limitations: **21 fixed** and **26 still op
 
 ## Next Recommended Prompt
 
-Prompt 40 - Raspberry Pi Deployment and Hardware Support.
+Prompt 41 - Image Generation Workflow Foundation. Prompt 40 reviewed all open limitations without starting hardware or changing roadmap order.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
 ## Last Verified Tests
 
-- Full suite: 1,580 passed, 0 skipped, 0 failed, 0 errors.
+- Full suite: 1,587 passed, 0 skipped, 0 failed, 0 errors.
+- Focused Prompt 40 memory/limitations/project/command suite: 100 passed, 0 skipped, 0 failed, 0 errors.
 - Focused Conversation Intelligence suite: 22 passed, 0 skipped, 0 failed, 0 errors.
 - Focused vision/provider/config/tracking/deployment suite: 85 passed, 0 skipped, 0 failed, 0 errors.
 - Focused Vision Intelligence suite: 25 passed, 0 skipped, 0 failed, 0 errors.

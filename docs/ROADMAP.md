@@ -86,6 +86,8 @@ These milestones express product direction, not current capability. Detailed use
 
 ### Prompt 40 - Raspberry Pi Deployment and Hardware Support
 
+**Tracking note:** The approved Prompt 40 limitations review and safe-fix pass is complete. It did not start hardware implementation or alter the milestone sequence; this hardware goal remains future work.
+
 **Goal:** Add hardware profiles, safe setup guidance, deployment checks, and bounded support for Raspberry Pi and related projects.
 
 **Acceptance:** Device constraints are verified, physical risks are disclosed, and privileged or physical actions require confirmation.
