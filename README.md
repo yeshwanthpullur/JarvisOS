@@ -1,6 +1,6 @@
 # JARVIS OS
 
-JARVIS OS is currently at **v0.9.0-alpha - Local STT and Voice Input Foundation**, with Prompt 37 local vision integration under active development. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at **v0.9.0-alpha - Local STT and Voice Input Foundation**, with later local vision and voice-control work verified on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
 For the central product direction and evidence-based tracking, see [Master Use Cases](docs/JARVIS_USE_CASES.md), [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise status summary is available from the CLI with `project status`.
 
@@ -10,13 +10,13 @@ Autonomous Planning produces provider-backed, validated, reviewable plans withou
 
 Voice Intelligence adds disabled-by-default local Windows speech output, safe audio-file validation, and governed voice sessions without changing text-mode authority. See [docs/VOICE_INTELLIGENCE.md](docs/VOICE_INTELLIGENCE.md).
 
-Vision Intelligence adds safe CLI image validation, local Ollama model discovery, real request routing through Provider Router, metadata-only audit, and local-only policy. Semantic analysis works when the configured local model advertises vision; the verified machine currently has no such model installed. See [docs/VISION_INTELLIGENCE.md](docs/VISION_INTELLIGENCE.md).
+Vision Intelligence adds safe CLI image validation, local Ollama model discovery, real request routing through Provider Router, metadata-only audit, and local-only policy. Local LLaVA image description and image question answering are manually verified on the current machine. See [docs/VISION_INTELLIGENCE.md](docs/VISION_INTELLIGENCE.md).
 
 The Vercel deployment is a deliberately limited online status foundation. Root `main.py` remains the local CLI launcher; `api/index.py` serves only the safe root, `/api/health`, and `/api/status` surfaces. The canonical deployment is `jarvis-os`; it does not provide remote chat, sync, tools, automation, or access to local-only features.
 
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 
-JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes real local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, Windows SAPI voice output, an optional local Vosk push-to-talk foundation, optional local Ollama vision analysis, partial Online Sync, bounded read-only public page inspection, and planning-only Mobile Automation. Encrypted remote sync, interactive browsing, wake word, continuous listening, live camera vision, and live phone control are not implemented.
+JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes verified local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, local Vosk push-to-talk input, interruptible Windows SAPI voice output, local Ollama LLaVA image analysis, partial Online Sync, bounded read-only public page inspection, and planning-only Mobile Automation. Encrypted remote sync, interactive browsing, wake word, continuous conversation, live camera vision, and live phone control are not implemented.
 
 Online Sync now has an optional, disabled-by-default local foundation: a bounded atomic queue, allowlisted summary schemas, conflict records, audit retention, and manual CLI controls. No real remote backend is configured, and the public Vercel status deployment is not writable sync infrastructure. Raw conversations, databases, audio, images, documents, logs, local paths, and credentials are blocked from the queue.
 

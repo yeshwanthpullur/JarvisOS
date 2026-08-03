@@ -59,14 +59,14 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(health["limitations"]["still_open"], self.data["counts"]["still_open"])
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
         self.assertIn("**46** limitations", current)
-        self.assertIn("**17 fixed**", current)
-        self.assertIn("**29 still open**", current)
+        self.assertIn("**20 fixed**", current)
+        self.assertIn("**26 still open**", current)
 
-    def test_major_gaps_are_never_claimed_working(self) -> None:
+    def test_capability_statuses_match_verified_scope(self) -> None:
         health = json.loads((DOCS / "project_health.json").read_text(encoding="utf-8"))
         statuses = {item["name"]: item["status"] for item in health["categories"]}
-        self.assertEqual(statuses["Voice Input"], "Partial")
-        self.assertEqual(statuses["Vision"], "Partial")
+        self.assertEqual(statuses["Voice Input"], "Working")
+        self.assertEqual(statuses["Vision"], "Working")
         self.assertEqual(statuses["Online Sync"], "Partial")
         self.assertEqual(statuses["Web Interface"], "Experimental")
         self.assertEqual(statuses["Web Automation"], "Partial")

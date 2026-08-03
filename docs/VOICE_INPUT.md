@@ -2,7 +2,9 @@
 
 ## Current Status
 
-Voice Input is **Partial**. JARVIS now has an executable offline Vosk adapter, optional `sounddevice` microphone capture, explicit push-to-talk commands, normalized transcription results, and bounded content-free audit records. The current machine does not have the optional packages or a Vosk model installed, so live microphone transcription remains unavailable until local setup and manual verification are completed.
+Voice Input is **Working locally for explicit push-to-talk use**. Offline Vosk transcription, `sounddevice` microphone capture, an Indian-English local model, `voice listen`, and `voice listen send` have been manually verified on the current machine. Input remains off until explicitly enabled or requested, and audit records stay bounded and content-free.
+
+This is not continuous two-way conversation. Wake word, always-listening operation, and dynamic multilingual model switching remain unavailable.
 
 Windows SAPI voice output is independent and remains available without Vosk.
 

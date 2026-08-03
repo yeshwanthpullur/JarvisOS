@@ -27,6 +27,8 @@ Use this checklist for every JARVIS OS release. Record exact results in the rele
 - [ ] Normal CLI startup and shutdown pass.
 - [ ] Relevant real local acceptance tests pass.
 - [ ] Manual verification is completed and its observable results are recorded.
+- [ ] Local model, microphone, voice playback, and vision acceptance evidence is recorded without committing models or media.
+- [ ] Vercel remains status-only and exposes no local AI execution or upload endpoint.
 - [ ] Paid/external integrations use mocks unless an explicit live test was authorized.
 - [ ] Deployment entrypoints are isolated from local launchers, live health URLs are checked, and duplicate connected projects are reviewed.
 - [ ] Security, permissions, local-only policy, and command separation are verified.

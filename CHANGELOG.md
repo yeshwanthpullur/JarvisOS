@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Verified Local Capability Status
+
+- Recorded real local Ollama free-form chat, Vosk microphone input with an Indian-English model, and `voice listen send` as manually verified.
+- Recorded local Ollama LLaVA image analysis and image question answering as manually verified.
+- Recorded non-blocking Windows SAPI long-response playback with stop, resume, cancel, interrupt, repeat, and replay controls.
+- Updated project health to 74% readiness and the limitations register to 46 total, 20 fixed, and 26 still open without changing the roadmap.
+
 ## Unreleased - Real Local Vision Model Integration
 
 - Added configured local Ollama vision-model discovery and real image request execution through the existing Provider Router.

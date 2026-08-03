@@ -16,7 +16,7 @@ Vision commands are `vision status`, `vision models`, `vision analyze <image_pat
 
 ## Local Voice Input Setup
 
-Voice input remains disabled until Vosk, a local model, `sounddevice`, and an input device are ready. Install optional packages with `python -m pip install -r requirements-voice.txt`; then place a model under `models/vosk/` or set `JARVIS_VOSK_MODEL_PATH`/`voice.stt_model_path`. Run `voice input status`, `voice input on`, and then `voice listen`. Use `voice listen send` only when the transcript should enter the normal JARVIS command/chat flow. `voice input test` performs one explicit test capture. See [`VOICE_INPUT.md`](VOICE_INPUT.md).
+Voice input is manually verified with Vosk, `sounddevice`, a microphone, and a local Indian-English model. Keep the model outside Git and configure `JARVIS_VOSK_MODEL_PATH` or `voice.stt_model_path`. Run `voice input status`, `voice input on`, and then `voice listen`. Use `voice listen send` only when the transcript should enter the normal JARVIS command/chat flow. `voice input test` performs one explicit test capture. Missing local prerequisites are reported truthfully without hidden recording. See [`VOICE_INPUT.md`](VOICE_INPUT.md).
 
 JARVIS does not download a model, activate a microphone in the background, retain captured PCM, persist transcript text in audit, or use cloud speech. Wake word and continuous listening remain unavailable.
 
@@ -26,7 +26,7 @@ Spoken replies run in one ordered background queue. Use `voice speaking status` 
 
 ## Local Vision Setup
 
-Install a vision-capable Ollama model outside JARVIS, set `vision.model` to its name, then run `vision models` and `vision status`. The model must advertise vision input; a name alone is not accepted as proof. `llama3.2:1b` remains the text model and is not silently treated as vision-capable. JARVIS does not download models. Until readiness is reported, analysis commands validate files and metadata but return an honest unavailable result.
+Install a vision-capable Ollama model outside JARVIS, set `vision.model` to its name, then run `vision models` and `vision status`. Local LLaVA analysis and image Q&A are manually verified on the current machine. The model must advertise vision input; a name alone is not accepted as proof, and `llama3.2:1b` is not silently treated as vision-capable. JARVIS does not download models and reports unavailable truthfully when Ollama or the configured model is absent.
 
 ## Sync Commands
 
