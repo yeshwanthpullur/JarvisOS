@@ -212,6 +212,7 @@ class JarvisManager:
 
     def shutdown(self) -> None:
         """Shutdown Executive JARVIS."""
+        self.voice_intelligence.shutdown()
         if self.runtime.state.value != "shutdown":
             self.runtime.shutdown()
         self.initialized = False

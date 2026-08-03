@@ -264,7 +264,14 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("voice off", "Disable voice", "voice", (), CommandPermission.UTILITY),
         ("voice listen", "Start explicit listening", "voice", (), CommandPermission.UTILITY),
         ("voice cleanup", "Remove temporary voice audio", "voice", (), CommandPermission.UTILITY),
-        ("voice stop", "Stop listening", "voice", (), CommandPermission.UTILITY),
+        ("voice stop", "Stop active speech", "voice", (), CommandPermission.UTILITY),
+        ("voice pause", "Pause speech at a safe boundary", "voice", (), CommandPermission.UTILITY),
+        ("voice resume", "Resume retained speech", "voice", (), CommandPermission.UTILITY),
+        ("voice speaking", "Show speech playback state", "voice", (), CommandPermission.UTILITY),
+        ("voice speaking status", "Show speech playback state", "voice", (), CommandPermission.UTILITY),
+        ("voice repeat", "Repeat the last safe reply", "voice", (), CommandPermission.UTILITY),
+        ("voice replay", "Repeat the last safe reply", "voice", (), CommandPermission.UTILITY),
+        ("voice correction", "Submit a corrected request", "voice", (), CommandPermission.UTILITY),
         ("voice cancel", "Cancel voice session", "voice", (), CommandPermission.UTILITY),
         ("voice interrupt", "Interrupt voice output", "voice", (), CommandPermission.UTILITY),
         ("voice session", "Show voice session", "voice", (), CommandPermission.UTILITY),
@@ -527,7 +534,7 @@ def _handler_for(name: str):
             if voice is None:return _text_response("Voice Intelligence is unavailable; text mode remains active.")
             if name=="voice status":
                 backend=voice.registry.get(voice.selected_output_backend);input_status=voice.input_status()
-                available=bool(backend and backend.available);retained=len(voice.retained_audio_files())
+                available=bool(backend and backend.available);retained=len(voice.retained_audio_files());playback_status=voice.playback_status()
                 return _text_response(
                     "Voice status: "
                     f"output={'on' if voice.output_enabled else 'off'} "
@@ -540,7 +547,7 @@ def _handler_for(name: str):
                     f"microphone={'ready' if input_status['microphone_available'] else input_status['capture_status']} "
                     f"raw_audio_persistence={'on' if voice.raw_audio_persistence else 'off'} "
                     f"temp_directory={voice.temp_directory} retained_audio={retained} "
-                    f"mode={voice.mode.value} privacy={voice.privacy_mode}",
+                    f"mode={voice.mode.value} privacy={voice.privacy_mode} speaking={playback_status['state']}",
                     output_enabled=voice.output_enabled,
                     output_backend=voice.selected_output_backend,
                     playback_ready=available,
@@ -555,6 +562,7 @@ def _handler_for(name: str):
                     raw_audio_persistence=voice.raw_audio_persistence,
                     temp_directory=str(voice.temp_directory),
                     retained_audio_count=retained,
+                    playback=playback_status,
                 )
             if name=="voice on":voice.enabled=True;return _text_response("Voice enabled. Microphone capture remains disabled until explicitly activated.")
             if name=="voice off":voice.enabled=False;voice.input_enabled=False;voice.mode=type(voice.mode).OFF;voice.cancel();return _text_response("Voice disabled. Text mode remains active.")
@@ -593,16 +601,14 @@ def _handler_for(name: str):
                             return _text_response(f"Voice output unavailable: {voice.selected_output_backend} is not ready.")
                         voice.output_enabled=True;voice.enabled=True
                         return _text_response(f"Voice output enabled through {voice.selected_output_backend}. Safe assistant replies will be spoken.")
-                    voice.output_enabled=False
+                    voice.output_enabled=False;voice.stop_playback(wait=True)
                     return _text_response("Voice output disabled. Replies will remain text-only.")
                 return _text_response(f"Voice output: {voice.output_enabled}")
             if name=="voice say":
                 if not args:return _text_response("Please provide text to speak.")
-                try:r=voice.say(" ".join(args),parent_request_id="command-voice-say",playback=True)
-                except ValueError as exc:return _text_response(f"Voice synthesis blocked: {exc}")
-                if r.status.value != "completed":
-                    return _text_response(f"Voice synthesis failed: {', '.join(r.errors) or r.status.value}",synthesis_id=r.synthesis_id,backend_id=r.backend_id,status=r.status.value)
-                return _text_response(f"Voice synthesis completed through {r.backend_id} playback.",synthesis_id=r.synthesis_id,backend_id=r.backend_id,audio_reference=r.audio_reference)
+                try:r=voice.start_playback(" ".join(args),parent_request_id="command-voice-say")
+                except (RuntimeError,ValueError) as exc:return _text_response(f"Voice synthesis blocked: {exc}")
+                return _text_response(f"Voice playback queued through {voice.selected_output_backend}.",**r)
             if name=="voice transcribe":
                 if not args:return _text_response("Please provide an allowed WAV file path.")
                 try:r=voice.transcribe_file(args[0])
@@ -639,7 +645,29 @@ def _handler_for(name: str):
             if name=="voice raw-audio":
                 if not args or args[0] not in {"on","off"}:return _text_response("Specify on or off.")
                 voice.raw_audio_persistence=args[0]=="on";return _text_response(f"Raw audio retention {'enabled with explicit consent' if voice.raw_audio_persistence else 'disabled'}.")
-            if name in {"voice stop","voice interrupt"}:return _text_response("Voice interruption requested." if voice.interrupt() else "No active voice operation.")
+            if name=="voice stop":return _text_response("Voice playback stopped; queued speech was cleared." if voice.stop_playback(wait=True) else "VOICE_NOT_SPEAKING: No active voice playback.")
+            if name=="voice pause":
+                result=voice.pause_playback();return _text_response(result["message"],**result)
+            if name=="voice resume":
+                result=voice.resume_playback();return _text_response(result["message"],**result)
+            if name in {"voice speaking","voice speaking status"}:
+                state=voice.playback_status();return _text_response(f"Voice playback: state={state['state']} chunk={state['current_chunk']}/{state['total_chunks']} remaining={state['remaining_chunks']} interruption={'available' if state['interruption_available'] else 'idle'}.",**state)
+            if name in {"voice repeat","voice replay"}:
+                try:result=voice.repeat_last()
+                except ValueError as exc:return _text_response(f"Voice repeat blocked: {exc}")
+                return _text_response(result["message"],**result)
+            if name=="voice correction":
+                voice.stop_playback(wait=True);corrected=" ".join(args).strip()
+                if not corrected:return _text_response("VOICE_CORRECTION_EMPTY: Provide corrected text; no request was submitted.")
+                return _text_response(f"Corrected request submitted: {corrected}",voice_transcript=corrected,dispatch_voice_transcript=True,voice_correction=True)
+            if name=="voice interrupt":
+                voice.stop_playback(wait=True);status=voice.input_status()
+                if not status["stt_available"]:return _text_response("VOICE_INTERRUPT_STT_UNAVAILABLE: Current speech stopped, but local transcription is unavailable.")
+                if not voice.enabled or not voice.input_enabled:return _text_response("VOICE_INTERRUPT_STT_UNAVAILABLE: Current speech stopped; voice input is disabled and no microphone was activated.")
+                if not status["microphone_available"]:return _text_response("VOICE_INTERRUPT_STT_UNAVAILABLE: Current speech stopped, but no microphone capture adapter is ready.")
+                result=voice.listen(parent_request_id="command-voice-interrupt")
+                if result.status.value!="completed":return _text_response(f"VOICE_INTERRUPT_NO_SPEECH: {', '.join(result.errors) or result.status.value}.",status=result.status.value)
+                return _text_response(f"Interruption transcript: {result.text}. Sending through the normal JARVIS path.",voice_transcript=result.text,dispatch_voice_transcript=True,voice_interruption=True)
             if name=="voice cancel":voice.cancel();return _text_response("Voice session cancelled.")
             if name=="voice listen":
                 status=voice.input_status()

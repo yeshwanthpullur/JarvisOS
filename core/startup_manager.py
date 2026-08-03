@@ -1028,6 +1028,9 @@ class StartupManager:
                 print("Conversation Engine is not available.")
                 continue
             is_command = self._is_registered_command(command)
+            voice = self.jarvis_core.manager.voice_intelligence if self.jarvis_core is not None else None
+            if not is_command and voice is not None:
+                voice.stop_playback(wait=True)
             response = self.conversation_manager.handle_input(command)
             if response.should_clear:
                 self._handle_clear()
@@ -1090,12 +1093,9 @@ class StartupManager:
             return "Reply kept text-only by the voice safety policy."
         request_id = str(getattr(response, "metadata", {}).get("jarvis_request_id") or "cli-response")
         try:
-            result = voice.say(content, parent_request_id=request_id, playback=True)
+            voice.start_playback(content, parent_request_id=request_id)
         except (RuntimeError, ValueError) as exc:
             return f"Playback unavailable ({exc}). Text response is unchanged."
-        if result.status.value != "completed":
-            reason = result.errors[0] if result.errors else result.status.value
-            return f"Playback unavailable ({reason}). Text response is unchanged."
         return None
 
     def _display_cli_startup_summary(self) -> None:

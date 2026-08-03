@@ -218,9 +218,10 @@ class VoiceTests(unittest.TestCase):
  def test_voice_say_command_requests_playback(self):
   class CapturingVoice:
    def __init__(self):self.playback=None
-   def say(self,text,parent_request_id,playback=False):self.playback=playback;return SimpleNamespace(status=VoiceStatus.COMPLETED,audio_reference="out.wav",synthesis_id="s",backend_id="windows-sapi")
+   selected_output_backend="windows-sapi"
+   def start_playback(self,text,parent_request_id):self.playback=text;return {"state":"queued","playback_session_id":"s"}
   voice=CapturingVoice();commands=CommandManager();commands.initialize();context=ConversationContext(session=ConversationSession(),voice_intelligence=voice)
-  self.assertIn("completed",commands.execute("voice say hello",context).response);self.assertTrue(voice.playback)
+  self.assertIn("queued",commands.execute("voice say hello",context).response);self.assertEqual(voice.playback,"hello")
  def test_parser_preserves_windows_audio_path(self):
   parsed=CommandParser().parse(r"voice transcribe C:\voice-input\sample.wav")
   self.assertEqual(parsed.arguments,(r"C:\voice-input\sample.wav",))

@@ -157,20 +157,12 @@ class CliExperienceTests(unittest.TestCase):
         voice.enabled = True
         manager = StartupManager()
         manager.jarvis_core = SimpleNamespace(manager=SimpleNamespace(voice_intelligence=voice))
-        completed = SpeechSynthesisResult(
-            "synthesis",
-            "session",
-            "request-7",
-            "windows-sapi",
-            VoiceStatus.COMPLETED,
-            output_mode="playback",
-        )
-        with patch.object(voice, "say", return_value=completed) as say:
+        with patch.object(voice, "start_playback", return_value={"state": "queued"}) as start:
             notice = manager._speak_cli_response(
                 ConversationResponse("A safe answer.", metadata={"jarvis_request_id": "request-7"})
             )
         self.assertIsNone(notice)
-        say.assert_called_once_with("A safe answer.", parent_request_id="request-7", playback=True)
+        start.assert_called_once_with("A safe answer.", parent_request_id="request-7")
 
     def test_multi_sentence_cli_response_is_passed_to_speech_in_full(self) -> None:
         voice = VoiceIntelligence()
@@ -179,11 +171,10 @@ class CliExperienceTests(unittest.TestCase):
         manager = StartupManager()
         manager.jarvis_core = SimpleNamespace(manager=SimpleNamespace(voice_intelligence=voice))
         text = "First paragraph is complete. Second sentence remains intact. Third sentence is also spoken."
-        completed = SpeechSynthesisResult("synthesis", "session", "request-8", "windows-sapi", VoiceStatus.COMPLETED, output_mode="playback")
-        with patch.object(voice, "say", return_value=completed) as say:
+        with patch.object(voice, "start_playback", return_value={"state": "queued"}) as start:
             notice = manager._speak_cli_response(ConversationResponse(text, metadata={"jarvis_request_id": "request-8"}))
         self.assertIsNone(notice)
-        say.assert_called_once_with(text, parent_request_id="request-8", playback=True)
+        start.assert_called_once_with(text, parent_request_id="request-8")
         self.assertNotIn("more detail", text.lower())
 
     def test_command_inputs_are_kept_out_of_automatic_reply_speech(self) -> None:
@@ -200,7 +191,7 @@ class CliExperienceTests(unittest.TestCase):
         voice.output_enabled = True
         manager = StartupManager()
         manager.jarvis_core = SimpleNamespace(manager=SimpleNamespace(voice_intelligence=voice))
-        with patch.object(voice, "say") as say:
+        with patch.object(voice, "start_playback") as start:
             code_notice = manager._speak_cli_response(ConversationResponse("```python\nprint('x')\n```"))
             sensitive_notice = manager._speak_cli_response(ConversationResponse("The API key is hidden."))
             warning_notice = manager._speak_cli_response(ConversationResponse("Review this response.", warnings=("warning",)))
@@ -209,7 +200,7 @@ class CliExperienceTests(unittest.TestCase):
         self.assertIn("safety", sensitive_notice)
         self.assertIn("safety", warning_notice)
         self.assertIn("safety", failed_notice)
-        say.assert_not_called()
+        start.assert_not_called()
 
     def test_automatic_speech_cap_reports_text_only_instead_of_summarizing(self) -> None:
         voice = VoiceIntelligence()
@@ -217,11 +208,11 @@ class CliExperienceTests(unittest.TestCase):
         voice.max_auto_speech_chars = 10
         manager = StartupManager()
         manager.jarvis_core = SimpleNamespace(manager=SimpleNamespace(voice_intelligence=voice))
-        with patch.object(voice, "say") as say:
+        with patch.object(voice, "start_playback") as start:
             notice = manager._speak_cli_response(ConversationResponse("This response is safely over the configured cap."))
         self.assertIn("exceeds", notice)
         self.assertIn("10 character", notice)
-        say.assert_not_called()
+        start.assert_not_called()
 
     def test_concise_cli_summary_includes_mode_model_and_voice(self) -> None:
         voice = VoiceIntelligence()
