@@ -51,7 +51,7 @@ class VoicePlaybackControlTests(unittest.TestCase):
             time.sleep(0.01)
         self.fail(f"Playback did not reach {state.value}: {self.voice.playback_status()}")
 
-    def test_automatic_playback_is_non_blocking_and_stop_clears_queue(self) -> None:
+    def test_automatic_playback_is_non_blocking_and_stop_preserves_queue(self) -> None:
         entered = threading.Event()
 
         def blocking(request: object, stop_event: threading.Event) -> SpeechSynthesisResult:
@@ -67,12 +67,19 @@ class VoicePlaybackControlTests(unittest.TestCase):
             self.assertTrue(self.voice.stop_playback(wait=True))
         status = self.voice.playback_status()
         self.assertEqual(status["state"], "stopped")
-        self.assertEqual(status["remaining_chunks"], 0)
+        self.assertGreater(status["remaining_chunks"], 0)
+        self.assertTrue(status["resumable"])
+        self.assertTrue(status["interrupted_chunk"])
 
     def test_stop_while_idle_is_truthful(self) -> None:
         commands = CommandManager(); commands.initialize()
         response = commands.execute("voice stop", ConversationContext(ConversationSession(), voice_intelligence=self.voice))
         self.assertIn("VOICE_NOT_SPEAKING", response.response)
+
+    def test_resume_with_nothing_remaining_is_truthful(self) -> None:
+        result = self.voice.resume_playback()
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["code"], "VOICE_RESUME_UNAVAILABLE")
 
     def test_pause_at_boundary_and_resume_retained_chunks(self) -> None:
         self.voice.limits = replace(self.voice.limits, max_spoken_response_length=100)
@@ -92,10 +99,61 @@ class VoicePlaybackControlTests(unittest.TestCase):
             self.assertEqual(result["code"], "VOICE_PAUSE_AT_BOUNDARY")
             first_gate.set(); self.wait_for(PlaybackState.PAUSED)
             self.assertEqual(len(calls), 1)
+            self.assertFalse(self.voice.playback_status()["interrupted_chunk"])
             self.assertTrue(self.voice.resume_playback()["ok"])
             self.wait_for(PlaybackState.COMPLETED)
         self.assertGreater(len(calls), 1)
         self.assertEqual(" ".join(calls), text)
+
+    def test_resume_restarts_interrupted_chunk_without_replaying_completed_chunks(self) -> None:
+        self.voice.limits = replace(self.voice.limits, max_spoken_response_length=100)
+        second_entered = threading.Event(); calls = []; second_attempts = 0
+        text = "First completed sentence contains enough detail to stay separate from the next chunk. Second interrupted sentence also contains enough detail to form its own chunk. Third queued sentence finishes the response."
+
+        def controlled(request: object, stop_event: threading.Event) -> SpeechSynthesisResult:
+            nonlocal second_attempts
+            calls.append(request.text)
+            if request.text.startswith("Second"):
+                second_attempts += 1
+                if second_attempts == 1:
+                    second_entered.set(); stop_event.wait(2)
+            status = VoiceStatus.CANCELLED if stop_event.is_set() else VoiceStatus.COMPLETED
+            return SpeechSynthesisResult(request.synthesis_id, request.voice_session_id, request.parent_request_id, "windows-sapi", status, output_mode="playback")
+
+        with patch.object(self.adapter, "synthesize_interruptible", side_effect=controlled), patch.object(self.adapter, "stop_playback", return_value=True):
+            self.voice.start_playback(text); self.assertTrue(second_entered.wait(1)); self.voice.stop_playback(wait=True)
+            stopped = self.voice.playback_status()
+            self.assertEqual(stopped["completed_chunks"], 1); self.assertTrue(stopped["interrupted_chunk"]); self.assertTrue(stopped["resumable"])
+            self.assertTrue(self.voice.resume_playback()["ok"]); self.wait_for(PlaybackState.COMPLETED)
+        self.assertEqual(sum(item.startswith("First") for item in calls), 1)
+        self.assertEqual(sum(item.startswith("Second") for item in calls), 2)
+        self.assertEqual(sum(item.startswith("Third") for item in calls), 1)
+
+    def test_cancel_clears_queue_and_disables_resume(self) -> None:
+        entered = threading.Event()
+        def blocking(request: object, stop_event: threading.Event) -> SpeechSynthesisResult:
+            entered.set(); stop_event.wait(2)
+            return SpeechSynthesisResult(request.synthesis_id, request.voice_session_id, request.parent_request_id, "windows-sapi", VoiceStatus.CANCELLED, output_mode="playback")
+        with patch.object(self.adapter, "synthesize_interruptible", side_effect=blocking), patch.object(self.adapter, "stop_playback", return_value=True):
+            self.voice.start_playback("Cancelled sentence. Another queued sentence."); self.assertTrue(entered.wait(1)); self.assertTrue(self.voice.cancel_playback(wait=True))
+        status = self.voice.playback_status()
+        self.assertEqual(status["state"], "cancelled"); self.assertEqual(status["remaining_chunks"], 0); self.assertFalse(status["resumable"]); self.assertTrue(status["cancelled"])
+        self.assertFalse(self.voice.resume_playback()["ok"])
+
+    def test_stop_status_resume_and_cancel_commands_report_semantics(self) -> None:
+        entered = threading.Event()
+        def blocking(request: object, stop_event: threading.Event) -> SpeechSynthesisResult:
+            entered.set(); stop_event.wait(2)
+            return SpeechSynthesisResult(request.synthesis_id, request.voice_session_id, request.parent_request_id, "windows-sapi", VoiceStatus.CANCELLED, output_mode="playback")
+        commands = CommandManager(); commands.initialize(); context = ConversationContext(ConversationSession(), voice_intelligence=self.voice)
+        with patch.object(self.adapter, "synthesize_interruptible", side_effect=blocking), patch.object(self.adapter, "stop_playback", return_value=True):
+            self.voice.start_playback("Interrupted command chunk. Queued command chunk."); self.assertTrue(entered.wait(1))
+            self.assertIn("retained", commands.execute("voice stop", context).response)
+            status = commands.execute("voice speaking status", context).response
+            self.assertIn("state=stopped", status); self.assertIn("resumable=yes", status); self.assertIn("interrupted_chunk=yes", status)
+            self.assertIn("resumed", commands.execute("voice resume", context).response.lower())
+            self.assertIn("permanently cleared", commands.execute("voice cancel", context).response)
+            self.assertIn("No resumable", commands.execute("voice resume", context).response)
 
     def test_new_playback_replaces_old_without_overlap(self) -> None:
         first_entered = threading.Event(); calls = []; active = 0; maximum_active = 0
@@ -149,7 +207,7 @@ class VoicePlaybackControlTests(unittest.TestCase):
     def test_new_free_form_question_stops_speech_before_routing(self) -> None:
         events = []
         commands = CommandManager(); commands.initialize()
-        voice = SimpleNamespace(output_enabled=False, stop_playback=lambda wait=False: events.append("stop"))
+        voice = SimpleNamespace(output_enabled=False, cancel_playback=lambda wait=False, replaced=False: events.append("cancel"))
         def handle(text: str) -> ConversationResponse:
             events.append(f"handle:{text}")
             return ConversationResponse("answer", should_exit=text == "exit")
@@ -158,7 +216,7 @@ class VoicePlaybackControlTests(unittest.TestCase):
         startup.conversation_manager = SimpleNamespace(command_manager=commands, handle_input=handle)
         with patch("builtins.input", side_effect=["What changed?", "exit"]), patch("builtins.print"):
             startup.command_loop()
-        self.assertLess(events.index("stop"), events.index("handle:What changed?"))
+        self.assertLess(events.index("cancel"), events.index("handle:What changed?"))
 
     def test_interrupt_stops_before_explicit_capture_and_dispatches(self) -> None:
         events = []

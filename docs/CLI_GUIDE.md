@@ -20,6 +20,10 @@ Voice input remains disabled until Vosk, a local model, `sounddevice`, and an in
 
 JARVIS does not download a model, activate a microphone in the background, retain captured PCM, persist transcript text in audit, or use cloud speech. Wake word and continuous listening remain unavailable.
 
+## Voice Playback Controls
+
+Spoken replies run in one ordered background queue. Use `voice speaking status` to inspect progress, `voice pause` for a safe-boundary pause, `voice stop` to interrupt immediately while retaining unspoken speech, and `voice resume` to continue. Because Windows SAPI cannot report the exact word reached when its process is terminated, resuming after `voice stop` restarts the interrupted chunk from its beginning; already completed chunks are not replayed. Use `voice cancel` to interrupt immediately and permanently discard the retained queue. Starting a new response replaces and cancels any older resumable speech.
+
 ## Local Vision Setup
 
 Install a vision-capable Ollama model outside JARVIS, set `vision.model` to its name, then run `vision models` and `vision status`. The model must advertise vision input; a name alone is not accepted as proof. `llama3.2:1b` remains the text model and is not silently treated as vision-capable. JARVIS does not download models. Until readiness is reported, analysis commands validate files and metadata but return an honest unavailable result.

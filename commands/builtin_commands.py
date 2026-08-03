@@ -645,13 +645,13 @@ def _handler_for(name: str):
             if name=="voice raw-audio":
                 if not args or args[0] not in {"on","off"}:return _text_response("Specify on or off.")
                 voice.raw_audio_persistence=args[0]=="on";return _text_response(f"Raw audio retention {'enabled with explicit consent' if voice.raw_audio_persistence else 'disabled'}.")
-            if name=="voice stop":return _text_response("Voice playback stopped; queued speech was cleared." if voice.stop_playback(wait=True) else "VOICE_NOT_SPEAKING: No active voice playback.")
+            if name=="voice stop":return _text_response("Voice playback stopped. Unspoken chunks were retained for 'voice resume'." if voice.stop_playback(wait=True) else "VOICE_NOT_SPEAKING: No active voice playback.")
             if name=="voice pause":
                 result=voice.pause_playback();return _text_response(result["message"],**result)
             if name=="voice resume":
                 result=voice.resume_playback();return _text_response(result["message"],**result)
             if name in {"voice speaking","voice speaking status"}:
-                state=voice.playback_status();return _text_response(f"Voice playback: state={state['state']} chunk={state['current_chunk']}/{state['total_chunks']} remaining={state['remaining_chunks']} interruption={'available' if state['interruption_available'] else 'idle'}.",**state)
+                state=voice.playback_status();return _text_response(f"Voice playback: state={state['state']} chunk={state['current_chunk']}/{state['total_chunks']} completed={state['completed_chunks']} remaining={state['remaining_chunks']} resumable={'yes' if state['resumable'] else 'no'} interrupted_chunk={'yes' if state['interrupted_chunk'] else 'no'}.",**state)
             if name in {"voice repeat","voice replay"}:
                 try:result=voice.repeat_last()
                 except ValueError as exc:return _text_response(f"Voice repeat blocked: {exc}")
@@ -668,7 +668,7 @@ def _handler_for(name: str):
                 result=voice.listen(parent_request_id="command-voice-interrupt")
                 if result.status.value!="completed":return _text_response(f"VOICE_INTERRUPT_NO_SPEECH: {', '.join(result.errors) or result.status.value}.",status=result.status.value)
                 return _text_response(f"Interruption transcript: {result.text}. Sending through the normal JARVIS path.",voice_transcript=result.text,dispatch_voice_transcript=True,voice_interruption=True)
-            if name=="voice cancel":voice.cancel();return _text_response("Voice session cancelled.")
+            if name=="voice cancel":return _text_response("Voice playback cancelled; queued speech was permanently cleared." if voice.cancel_playback(wait=True) else "VOICE_NOT_SPEAKING: No active or resumable voice playback.")
             if name=="voice listen":
                 status=voice.input_status()
                 if not status["stt_available"]:

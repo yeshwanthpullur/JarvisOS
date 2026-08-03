@@ -1030,7 +1030,7 @@ class StartupManager:
             is_command = self._is_registered_command(command)
             voice = self.jarvis_core.manager.voice_intelligence if self.jarvis_core is not None else None
             if not is_command and voice is not None:
-                voice.stop_playback(wait=True)
+                voice.cancel_playback(wait=True, replaced=True)
             response = self.conversation_manager.handle_input(command)
             if response.should_clear:
                 self._handle_clear()
