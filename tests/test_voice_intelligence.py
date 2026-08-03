@@ -84,7 +84,12 @@ class VoiceTests(unittest.TestCase):
  def test_sensitive_response_blocked(self):self.assertFalse(self.v.response_policy("API key abc",False)["speak"])
  def test_secret_response_blocked(self):self.v.output_enabled=True;self.assertFalse(self.v.response_policy("Client secret hidden",False)["speak"])
  def test_code_response_blocked(self):self.v.output_enabled=True;self.assertFalse(self.v.response_policy("```python\nx=1\n```")["speak"])
- def test_long_response_summarized(self):self.v.output_enabled=True;self.assertIn("More detail",self.v.response_policy("word "*200)["text"])
+ def test_ordinary_long_response_is_not_summarized(self):
+  self.v.output_enabled=True;text="word "*200;policy=self.v.response_policy(text,automatic=True)
+  self.assertTrue(policy["speak"]);self.assertEqual(policy["text"],text);self.assertNotIn("More detail",policy["text"])
+ def test_automatic_response_cap_is_explicit(self):
+  self.v.output_enabled=True;self.v.max_auto_speech_chars=20;policy=self.v.response_policy("x"*21,automatic=True)
+  self.assertFalse(policy["speak"]);self.assertEqual(policy["reason"],"response_too_large");self.assertEqual(policy["limit"],20)
  def test_output_must_be_enabled(self):self.assertRaises(ValueError,self.v.say,"hello")
  def test_playback_does_not_create_a_wav_by_default(self):
   self.v.output_enabled=True;self.v.enabled=True
@@ -99,6 +104,20 @@ class VoiceTests(unittest.TestCase):
   with patch.object(self.v.registry.get("windows-sapi"),"synthesize",return_value=completed) as synthesize:self.v.say("voice test")
   request=synthesize.call_args.args[0]
   self.assertEqual(request.output_mode,"playback");self.assertIsNone(request.output_path)
+ def test_long_safe_playback_is_chunked_once_and_spoken_in_full(self):
+  self.v.output_enabled=True;self.v.enabled=True;self.v.limits=replace(self.v.limits,max_spoken_response_length=100)
+  text="Sentence one has useful detail. Sentence two adds context. Sentence three explains the result. Sentence four closes the answer clearly."
+  def completed(request):return SpeechSynthesisResult(request.synthesis_id,request.voice_session_id,request.parent_request_id,"windows-sapi",VoiceStatus.COMPLETED,output_mode="playback")
+  with patch.object(self.v.registry.get("windows-sapi"),"synthesize",side_effect=completed) as synthesize:result=self.v.say(text,playback=True)
+  requests=[item.args[0] for item in synthesize.call_args_list];spoken=" ".join(item.text for item in requests)
+  self.assertEqual(result.status,VoiceStatus.COMPLETED);self.assertGreater(len(requests),1);self.assertEqual(spoken,text);self.assertEqual(spoken.count("Sentence one"),1)
+  self.assertTrue(all(item.output_mode=="playback" and item.output_path is None for item in requests))
+ def test_chunk_failure_stops_without_duplicate_playback(self):
+  self.v.output_enabled=True;self.v.enabled=True;self.v.limits=replace(self.v.limits,max_spoken_response_length=100)
+  text="First sentence is long enough to occupy a chunk with additional useful words and context. Second sentence must not play after failure."
+  failed=SpeechSynthesisResult("failed","session","parent","windows-sapi",VoiceStatus.TIMED_OUT,output_mode="playback",errors=("synthesis_timeout",))
+  with patch.object(self.v.registry.get("windows-sapi"),"synthesize",return_value=failed) as synthesize:result=self.v.say(text,playback=True)
+  self.assertEqual(result.status,VoiceStatus.TIMED_OUT);self.assertEqual(synthesize.call_count,1)
  def test_explicit_output_path_is_required_for_file_creation(self):
   self.v.output_enabled=True;self.v.enabled=True
   with tempfile.TemporaryDirectory() as d:

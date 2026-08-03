@@ -142,7 +142,7 @@ class VoiceIntelligence:
   self.enabled=bool(getattr(config,"enabled",False));self.input_enabled=bool(getattr(config,"input_enabled",False));self.output_enabled=bool(getattr(config,"output_enabled",False))
   try:self.mode=VoiceMode(getattr(config,"mode","off"))
   except ValueError:self.mode=VoiceMode.OFF
-  self.privacy_mode=str(getattr(config,"privacy_mode","standard"));self.raw_audio_persistence=bool(getattr(config,"raw_audio_persistence",False));self.local_only=bool(getattr(config,"local_only",True));self.language=str(getattr(config,"language","en-US"));self.rate=int(getattr(config,"rate",0));self.volume=int(getattr(config,"volume",100));self.wake_word_enabled=False
+  self.privacy_mode=str(getattr(config,"privacy_mode","standard"));self.raw_audio_persistence=bool(getattr(config,"raw_audio_persistence",False));self.local_only=bool(getattr(config,"local_only",True));self.language=str(getattr(config,"language","en-US"));self.rate=int(getattr(config,"rate",0));self.volume=int(getattr(config,"volume",100));self.max_auto_speech_chars=max(1,int(getattr(config,"max_auto_speech_chars",12000)));self.wake_word_enabled=False
   self.allowed_audio_directories=tuple(getattr(config,"allowed_audio_directories",()) or ())
   configured_temp=getattr(config,"temp_directory",None);base=Path(getattr(settings,"base_dir",Path.cwd()))
   self.temp_directory=(Path(configured_temp) if configured_temp else base/"data"/"voice-temp").resolve()
@@ -177,19 +177,41 @@ class VoiceIntelligence:
   if low in {"stop","cancel","interrupt"}:return "cancellation"
   if command_manager and command_manager.registry.resolve(low.split()[0]) is not None:return "command"
   return "conversation"
- def response_policy(self,text,sensitive=False):
+ def response_policy(self,text,sensitive=False,automatic=False):
   if not self.output_enabled or sensitive or re.search(r"api[_ -]?key|password|authorization|credential|secret|access[_ -]?token",text,re.I):return {"speak":False,"reason":"disabled_or_sensitive"}
   if "```" in text:return {"speak":False,"reason":"code_text_only"}
-  spoken=text if len(text)<=self.limits.max_spoken_response_length else text[:self.limits.max_spoken_response_length].rsplit(" ",1)[0]+". More detail is available on screen."
-  return {"speak":True,"text":spoken}
+  if automatic and len(text)>self.max_auto_speech_chars:return {"speak":False,"reason":"response_too_large","limit":self.max_auto_speech_chars}
+  return {"speak":True,"text":text}
+ def speech_chunks(self,text):
+  """Split playback at sentence boundaries without omitting or repeating text."""
+  limit=max(100,self.limits.max_spoken_response_length);parts=re.split(r"(?<=[.!?])\s+|\n+",text.strip());chunks=[];current=""
+  for part in (item.strip() for item in parts if item.strip()):
+   while len(part)>limit:
+    available=limit-len(current)-1 if current else limit;split_at=part.rfind(" ",0,available+1)
+    if available<20:chunks.append(current);current="";available=limit;split_at=part.rfind(" ",0,available+1)
+    if split_at<=0:split_at=available
+    piece=part[:split_at].strip();current=f"{current} {piece}".strip()
+    if current:chunks.append(current)
+    current="";part=part[split_at:].strip()
+   candidate=f"{current} {part}".strip()
+   if current and len(candidate)>limit:chunks.append(current);current=part
+   else:current=candidate
+  if current:chunks.append(current)
+  return tuple(chunks)
  def say(self,text,parent_request_id="voice-command",output_path:Path|None=None,playback:bool|None=None):
   if not self.output_enabled:raise ValueError("voice_output_disabled")
   policy=self.response_policy(text)
   if not policy["speak"]:raise ValueError(str(policy["reason"]))
   session=self.create_session(parent_request_id=parent_request_id);path=output_path;playback=path is None if playback is None else playback
-  req=SpeechSynthesisRequest(str(uuid4()),session.voice_session_id,parent_request_id,self.selected_output_backend,str(policy["text"]),self.language,rate=self.rate,volume=self.volume,output_mode="playback" if path is None else "both" if playback else "file",output_path=str(path) if path else None,local_only=self.local_only,timeout=self.limits.synthesis_timeout)
-  self.logger.info("synthesis_started request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s",parent_request_id,session.voice_session_id,req.synthesis_id,req.backend_id)
-  result=self.registry.get(req.backend_id).synthesize(req);self.sessions[session.voice_session_id]=replace(session,state=VoiceState.COMPLETED if result.status==VoiceStatus.COMPLETED else VoiceState.FAILED,synthesis_count=1,ended_at=now(),updated_at=now(),last_error=result.errors[0] if result.errors else None);self._save();self.logger.info("synthesis_completed request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s status=%s",parent_request_id,session.voice_session_id,result.synthesis_id,result.backend_id,result.status.value);return result
+  output_mode="playback" if path is None else "both" if playback else "file";chunks=self.speech_chunks(str(policy["text"])) if output_mode=="playback" else (str(policy["text"]),);result=None;attempted=0
+  for chunk in chunks:
+   attempted+=1
+   req=SpeechSynthesisRequest(str(uuid4()),session.voice_session_id,parent_request_id,self.selected_output_backend,chunk,self.language,rate=self.rate,volume=self.volume,output_mode=output_mode,output_path=str(path) if path else None,local_only=self.local_only,timeout=self.limits.synthesis_timeout)
+   self.logger.info("synthesis_started request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s",parent_request_id,session.voice_session_id,req.synthesis_id,req.backend_id)
+   result=self.registry.get(req.backend_id).synthesize(req)
+   if result.status!=VoiceStatus.COMPLETED:break
+  if result is None:raise ValueError("empty_speech_text")
+  self.sessions[session.voice_session_id]=replace(session,state=VoiceState.COMPLETED if result.status==VoiceStatus.COMPLETED else VoiceState.FAILED,synthesis_count=attempted,ended_at=now(),updated_at=now(),last_error=result.errors[0] if result.errors else None);self._save();self.logger.info("synthesis_completed request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s status=%s chunks=%s",parent_request_id,session.voice_session_id,result.synthesis_id,result.backend_id,result.status.value,attempted);return result
  def transcribe_file(self,path):
   capture=self.validate_audio_file(path);result=self.voice_input.transcribe_wav(Path(capture.audio_reference or path),"voice-transcribe-file")
   return self._normalize_input_result(result,capture.voice_session_id)

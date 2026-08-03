@@ -1080,11 +1080,13 @@ class StartupManager:
         if not content:
             return None
         sensitive = bool(getattr(response, "warnings", ())) or str(getattr(response, "execution_state", "completed")) != "completed"
-        policy = voice.response_policy(content, sensitive=sensitive)
+        policy = voice.response_policy(content, sensitive=sensitive, automatic=True)
         if not policy.get("speak"):
             reason = str(policy.get("reason", "safety_policy"))
             if reason == "code_text_only":
                 return "Reply kept text-only because it contains code."
+            if reason == "response_too_large":
+                return f"Reply exceeds the {policy.get('limit')} character automatic speech safety cap and remains text-only."
             return "Reply kept text-only by the voice safety policy."
         request_id = str(getattr(response, "metadata", {}).get("jarvis_request_id") or "cli-response")
         try:
