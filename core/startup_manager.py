@@ -351,6 +351,7 @@ class StartupManager:
             mobile_automation=self.jarvis_core.manager.mobile_automation,
             personal_intelligence_manager=self.personal_intelligence_manager,
             context_intelligence_manager=self.context_intelligence_manager,
+            conversation_config=self.settings.conversation,
             logger=logging.getLogger("conversation"),
         )
         self.conversation_statistics = self.conversation_manager.initialize()

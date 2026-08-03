@@ -2,16 +2,16 @@
 
 Updated: 2026-08-04
 
-This register is the authoritative compact audit of limitations recorded through Prompt 37. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
+This register is the authoritative compact audit of limitations recorded through Prompt 39. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
 
 ## Counts
 
 | Measure | Count |
 | --- | ---: |
-| Total limitations audited | 46 |
-| Fixed outside Prompt 37 | 19 |
-| Fixed during Prompt 37 | 1 |
-| Fixed total | 20 |
+| Total limitations audited | 47 |
+| Fixed before Prompt 39 | 20 |
+| Fixed during Prompt 39 | 1 |
+| Fixed total | 21 |
 | Still open in any form | 26 |
 | Open | 5 |
 | Deferred | 17 |
@@ -43,12 +43,13 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-023 | Real microphone STT was unavailable on the current machine | Vosk, a microphone, and an Indian-English local model passed manual `voice listen send` verification. |
 | LIM-024 | Real semantic image analysis required an installed local vision model | Local Ollama LLaVA image analysis and image Q&A passed manual verification. |
 | LIM-040 | Local voice input had no executable offline STT/capture path | Prompt 36 added lazy Vosk recognition, explicit in-memory capture, normalized results, and safe CLI handoff. |
+| LIM-041 | Vision had no explicit governed local Ollama analysis workflow | Prompt 37 added model capability discovery, Provider Router image execution, safety policy, bounded metadata-only audit, and complete CLI controls. |
 
-## Fixed During Prompt 37
+## Fixed During Prompt 39
 
 | ID | Limitation | Fix |
 | --- | --- | --- |
-| LIM-041 | Vision had no explicit governed local Ollama analysis workflow | Added model capability discovery, Provider Router image execution, safety policy, bounded metadata-only audit, and complete CLI controls. |
+| LIM-047 | Free-form chat lacked bounded multi-turn conversation intelligence | Added bounded topic/entity/comparison state, follow-up intent, reference resolution, one-question clarification, repair, modes, confidence, summaries, and normal provider-path integration. |
 
 ## Still Open
 
@@ -69,7 +70,7 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-031 | Deferred | High | Cross-device synchronization is unavailable. | Prompt 44 - Cross-Device Sync |
 | LIM-032 | Deferred | Medium | Dedicated Raspberry Pi and hardware support is not implemented. | Prompt 40 - Raspberry Pi Deployment and Hardware Support |
 | LIM-033 | Deferred | Medium | Dedicated study assistant workflow is not implemented. | Prompt 38 - Study Assistant and Research Workflows |
-| LIM-034 | Deferred | High | Advanced Builder Mode is not formalized. | Prompt 39 - Advanced Builder / Coding Workflow Foundation |
+| LIM-034 | Deferred | High | Advanced Builder Mode is not formalized. | Future Advanced Builder / Coding Workflow Foundation |
 | LIM-035 | Deferred | High | Call and communication assistance is not implemented. | Prompt 47 - Safe Communication and Call Assistance Foundation |
 | LIM-036 | Deferred | High | Unified personal multi-tool workspace is not implemented. | Prompt 49 - Personal Workspace / Multi-Tool Replacement Layer |
 | LIM-037 | Deferred | High | No real phone adapter or live mobile control exists. | Future Governed Mobile Adapter |

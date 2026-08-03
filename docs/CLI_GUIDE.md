@@ -4,6 +4,12 @@ The interactive `Jarvis >` prompt is the current primary JARVIS experience. It i
 
 Start with `python main.py`. Use `help` for the focused command guide and `project status` for the current release, MVP readiness, and next milestone. Common operating commands include `local only on/off`, `local use <model>`, `provider status`, `tools status`, `voice status`, `voice output on/off`, `voice say <text>`, and `exit`.
 
+## Conversation Intelligence
+
+Plain text supports bounded multi-turn follow-ups such as `Explain more`, `Go deeper`, `Simplify`, `Give examples`, `Compare`, `Summarize`, `Repeat`, `Continue`, `Why?`, and `How?`. Clear references such as `it`, `that`, `former`, and `latter` use the active topic or comparison; ambiguous references produce one clarification question instead of a guess.
+
+Use `conversation status`, `conversation topic`, `conversation confidence`, `conversation mode`, `conversation summary`, and `conversation reset`. Context is in memory and bounded. `conversation reset` does not delete persistent memories; `memory forget <id>` remains the explicit deletion authority. `voice listen send` and `voice interrupt` submit through this same conversation path without automatically storing transcripts.
+
 ## Mobile Planning Foundation
 
 Use `mobile status`, `mobile policy`, `mobile capabilities`, `mobile setup`, `mobile plan <task>`, `mobile audit`, and `mobile close`. These commands do not connect to or control a phone. Requests involving messages, calls, notifications, contacts, photos, sensors, device input, apps, settings, purchases, login, unlock, or background monitoring are blocked.

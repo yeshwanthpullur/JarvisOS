@@ -15,6 +15,7 @@ from conversation.conversation_request import ConversationRequest
 from conversation.conversation_response import ConversationResponse
 from conversation.conversation_session import ConversationSession
 from conversation.conversation_summary import ConversationSummary
+from conversation.conversation_intelligence import ConversationIntelligenceManager
 from context_intelligence import ContextIntelligenceManager
 from goal_intelligence import GoalIntelligenceManager
 from personal_intelligence import PersonalIntelligenceManager
@@ -64,6 +65,7 @@ class ConversationManager:
         mobile_automation: object | None = None,
         personal_intelligence_manager: PersonalIntelligenceManager | None = None,
         context_intelligence_manager: ContextIntelligenceManager | None = None,
+        conversation_config: object | None = None,
         logger: logging.Logger | None = None,
     ) -> None:
         self.jarvis_core = jarvis_core
@@ -95,6 +97,7 @@ class ConversationManager:
         self.mobile_automation = mobile_automation
         self.personal_intelligence = personal_intelligence_manager
         self.context_intelligence = context_intelligence_manager
+        self.conversation_intelligence = ConversationIntelligenceManager(conversation_config)
         self.logger = logger or logging.getLogger(__name__)
         self.initialized = False
         self._conversations: dict[str, tuple[ConversationSession, ConversationHistory]] = {
@@ -114,10 +117,20 @@ class ConversationManager:
     def handle_input(self, user_input: str, request_id: str | None = None) -> ConversationResponse:
         """Handle user input through conversation, command, and executive layers."""
         self.active_session.request_id = request_id
+        stripped_input = user_input.strip()
+        is_command = self.command_manager.is_command_candidate(stripped_input)
+        plan = None if is_command else self.conversation_intelligence.prepare(
+            stripped_input,
+            {
+                "vision_context": self.active_session.metadata.get("vision_context"),
+                "web_context": self.active_session.metadata.get("web_context"),
+            },
+        )
+        routed_input = plan.provider_input if plan is not None and not plan.clarification else stripped_input
         request = ConversationRequest(
-            user_input=user_input,
-            normalized_input=user_input.strip().lower(),
-            goal=user_input.strip(),
+            user_input=routed_input,
+            normalized_input=routed_input.lower(),
+            goal=stripped_input,
             metadata={"request_id": request_id} if request_id else {},
         )
         personal_context = (
@@ -157,12 +170,28 @@ class ConversationManager:
                 "context_intelligence_manager": self.context_intelligence,
                 "goal_intelligence_manager": self.goal_intelligence,
                 "memory_intelligence_manager": self.memory_intelligence,
+                "conversation_intelligence_manager": self.conversation_intelligence,
+                "conversation_original_input": stripped_input,
+                "conversation_plan": plan,
             },
         )
-        response = self.engine.handle(request, context)
+        response = (
+            ConversationResponse(
+                response=plan.clarification,
+                metadata={"conversation_confidence": plan.confidence, "clarification": True},
+            )
+            if plan is not None and plan.clarification
+            else self.engine.handle(request, context)
+        )
+        if plan is not None and not plan.clarification:
+            self.conversation_intelligence.record_response(response.response)
+        elif stripped_input.lower().startswith(("vision analyze ", "vision describe ", "vision ask ")) and response.execution_state != "failed":
+            self.active_session.metadata["vision_context"] = response.response[:500]
+        elif stripped_input.lower().startswith(("web open ", "web snapshot")) and response.execution_state != "failed":
+            self.active_session.metadata["web_context"] = response.response[:500]
         if self.context_intelligence is not None:
             self.context_intelligence.record_interaction(self.active_session, user_input, response)
-        if self.memory_intelligence is not None and hasattr(self.memory_intelligence, "note_response"):
+        if not is_command and self.memory_intelligence is not None and hasattr(self.memory_intelligence, "note_response"):
             try:
                 self.memory_intelligence.note_response(
                     user_input,
@@ -172,8 +201,15 @@ class ConversationManager:
                 )
             except Exception:
                 pass
-        self.history.append(request, response)
-        self.active_session.record(user_input, response.response)
+        history_request = ConversationRequest(
+            user_input=stripped_input,
+            normalized_input=stripped_input.lower(),
+            goal=stripped_input,
+            metadata=dict(request.metadata),
+        )
+        self.history.append(history_request, response)
+        self.active_session.current_topic = self.conversation_intelligence.state.active_topic
+        self.active_session.record(stripped_input, response.response)
         self.metrics.requests += 1
         self.metrics.responses += 1
         self.metrics.history_size = self.history.statistics()["turns"]

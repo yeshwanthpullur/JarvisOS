@@ -20,6 +20,7 @@ from config.schema import (
     GeneralConfig,
     LoggingConfig,
     MemoryConfig,
+    ConversationIntelligenceConfig,
     MobileConfig,
     ModelsConfig,
     PluginsConfig,
@@ -145,6 +146,15 @@ def load_settings(
             sensitive_storage_enabled=_coerce_bool(raw_config["memory"]["sensitive_storage_enabled"]),
             consolidation_enabled=_coerce_bool(raw_config["memory"]["consolidation_enabled"]),
             secret_detection_enabled=_coerce_bool(raw_config["memory"]["secret_detection_enabled"]),
+        ),
+        conversation=ConversationIntelligenceConfig(
+            enabled=_coerce_bool(raw_config["conversation"]["enabled"]),
+            max_turns=int(raw_config["conversation"]["max_turns"]),
+            max_topics=int(raw_config["conversation"]["max_topics"]),
+            summary_threshold=int(raw_config["conversation"]["summary_threshold"]),
+            reference_resolution=_coerce_bool(raw_config["conversation"]["reference_resolution"]),
+            clarification_enabled=_coerce_bool(raw_config["conversation"]["clarification_enabled"]),
+            max_context_chars=int(raw_config["conversation"]["max_context_chars"]),
         ),
         brain=BrainConfig(
             enabled=_coerce_bool(raw_config["brain"]["enabled"]),

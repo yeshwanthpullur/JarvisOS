@@ -16,6 +16,15 @@ memory:
   task_store_dir: data/tasks
   vector_index_dir: data/vector-indexes
 
+conversation:
+  enabled: true
+  max_turns: 12
+  max_topics: 6
+  summary_threshold: 8
+  reference_resolution: true
+  clarification_enabled: true
+  max_context_chars: 6000
+
 brain:
   enabled: true
   vault_path: data/obsidian-vault

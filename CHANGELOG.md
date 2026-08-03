@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Conversation Intelligence
+
+- Added bounded multi-turn conversation state, topic/entity tracking, follow-up intent, comparison context, reference resolution, confidence, and single-question clarification.
+- Added conversation repair, interruption-aware topic changes, bounded summaries, and normal/teaching/discussion/brainstorming/debugging/project/interview modes.
+- Added `conversation status`, `conversation reset`, `conversation summary`, `conversation mode`, `conversation confidence`, and `conversation topic`.
+- Kept persistent memory authoritative and explicit, reused the same path for voice transcripts, and retained only bounded in-memory conversation context.
+
 ## Unreleased - Persistent Local Memory Intelligence
 
 - Added local memory intelligence with explicit memory commands, bounded retrieval, and safe auto-session summaries.

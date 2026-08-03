@@ -1,13 +1,13 @@
 # Current Status
 
-Updated: 2026-08-03
+Updated: 2026-08-04
 
 ## Current Release
 
-- Release: `v0.9.0-alpha - Local STT and Voice Input Foundation`
-- Baseline commit: `b0222c76a054fad0a9c735d7d2ad58253c2142af`
+- Release: `v1.1.0-alpha - Persistent Local Memory Intelligence`
+- Baseline commit: `a44bbe193301f9f3956f647c030be9c184962866`
 - Branch: `main`
-- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v0.9.0-alpha`
+- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v1.1.0-alpha`
 
 ## Stable Launch
 
@@ -35,6 +35,7 @@ python main.py --ui
 - Windows SAPI voice playback through `voice say` and full safe automatic spoken replies, including long-response chunking and non-blocking stop, resume, cancel, interrupt, repeat, and replay controls.
 - Local Ollama LLaVA still-image description and image question answering.
 - Persistent local memory and personal context through explicit memory commands, bounded retrieval, safe auto-session summaries, and secret-aware storage policy.
+- Bounded multi-turn Conversation Intelligence with topic/entity tracking, follow-up understanding, reference resolution, clarification, repair, modes, confidence, and summaries.
 - Playback-only speech produces no permanent audio file by default; temporary voice audio is bounded and user-cleanable.
 - Conversation, context, retrieval, personal, task, goal, workflow, reflection, and adaptive foundations.
 - Automated regression suite and a published annotated alpha release.
@@ -74,7 +75,7 @@ python main.py --ui
 
 ## Known Limitations
 
-The audited register contains **46** limitations: **20 fixed** and **26 still open** across open, deferred, blocked, and experimental states. Future product goals are recorded as deferred capabilities, not current defects or completed features. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
+The audited register contains **47** limitations: **21 fixed** and **26 still open** across open, deferred, blocked, and experimental states. Future product goals are recorded as deferred capabilities, not current defects or completed features. See [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md).
 
 - Voice input is verified for explicit push-to-talk, but there is no two-way continuous conversation mode, wake word, or dynamic multilingual model switching.
 - SAPI playback is non-blocking and interruptible; resuming after an immediate stop restarts the interrupted chunk from its beginning.
@@ -93,13 +94,14 @@ The audited register contains **46** limitations: **20 fixed** and **26 still op
 
 ## Next Recommended Prompt
 
-Prompt 39 - Advanced Builder / Coding Workflow Foundation.
+Prompt 40 - Raspberry Pi Deployment and Hardware Support.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
 ## Last Verified Tests
 
-- Full suite: 1,552 passed, 0 skipped, 0 failed, 0 errors.
+- Full suite: 1,580 passed, 0 skipped, 0 failed, 0 errors.
+- Focused Conversation Intelligence suite: 22 passed, 0 skipped, 0 failed, 0 errors.
 - Focused vision/provider/config/tracking/deployment suite: 85 passed, 0 skipped, 0 failed, 0 errors.
 - Focused Vision Intelligence suite: 25 passed, 0 skipped, 0 failed, 0 errors.
 - Real Ollama chat: passed with `llama3.2:1b`.
@@ -122,6 +124,7 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - [x] Confirm Vosk microphone input with the Indian-English model and `voice listen send` transcribes and submits locally.
 - [x] Run calculator Tool Intelligence and confirm a real normalized result.
 - [x] Run `memory status`, `memory remember`, `memory search`, and `memory cleanup`; confirm persistent local memory and personal context work locally.
+- [x] Run multi-turn follow-ups plus `conversation status`, `conversation summary`, and `conversation reset`; confirm bounded topic/reference context and one-question clarification.
 - [x] Run `vision status` and `vision models`; confirm local LLaVA readiness.
 - [x] Confirm real local image analysis and image Q&A while audit retains no image/base64/prompt/path content.
 - [x] Confirm long SAPI output, `voice stop`, `voice resume`, `voice cancel`, `voice interrupt`, and `voice repeat`/`voice replay`.

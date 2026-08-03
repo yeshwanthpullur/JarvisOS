@@ -78,11 +78,11 @@ These milestones express product direction, not current capability. Detailed use
 
 **Acceptance:** Explanations, quizzes, plans, source comparison, citations, and reports remain attributable and academically honest.
 
-### Prompt 39 - Advanced Builder / Coding Workflow Foundation
+### Prompt 39 - Conversation Intelligence
 
-**Goal:** Formalize governed repository-to-plan-to-implementation-to-verification workflows for complex projects.
+**Goal:** Add bounded multi-turn context, topic and entity tracking, follow-up intent, reference resolution, clarification, repair, summaries, confidence, and conversation modes.
 
-**Acceptance:** Existing tools and agents remain authoritative; approvals, tests, Git scope, and truthful verification are mandatory.
+**Acceptance:** Text and explicit voice handoff share one conversational path; memory remains authoritative and explicit; ambiguous references produce one clarification; context stays bounded and local.
 
 ### Prompt 40 - Raspberry Pi Deployment and Hardware Support
 

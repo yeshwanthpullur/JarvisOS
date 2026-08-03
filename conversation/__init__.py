@@ -5,11 +5,23 @@ from conversation.conversation_request import ConversationRequest
 from conversation.conversation_response import ConversationResponse
 from conversation.conversation_session import ConversationSession
 from conversation.conversation_state import ConversationState
+from conversation.conversation_intelligence import (
+    ConversationConfig,
+    ConversationIntelligenceManager,
+    ConversationIntelligenceState,
+    ConversationMode,
+    ConversationPlan,
+)
 
 __all__ = [
     "ConversationContext",
+    "ConversationConfig",
     "ConversationEngine",
+    "ConversationIntelligenceManager",
+    "ConversationIntelligenceState",
     "ConversationManager",
+    "ConversationMode",
+    "ConversationPlan",
     "ConversationRequest",
     "ConversationResponse",
     "ConversationSession",

@@ -24,6 +24,7 @@ class ConversationEngine:
 
     def handle(self, request: ConversationRequest, context: ConversationContext) -> ConversationResponse:
         """Handle a conversation request."""
+        original_input = str(context.metadata.get("conversation_original_input") or request.user_input)
         validation = self.validator.validate_request(request)
         if not validation.valid:
             return ConversationResponse(response=validation.errors[0], warnings=validation.errors, conversation_state=ConversationState.FAILED)
@@ -37,7 +38,7 @@ class ConversationEngine:
         if personal_manager is not None and hasattr(personal_manager, "detect_candidates"):
             try:
                 personal_manager.detect_candidates(
-                    request.user_input,
+                    original_input,
                     source_reference=context.session.conversation_id,
                     conversation_id=context.session.conversation_id,
                     request_id=request.timestamp.isoformat() if hasattr(request.timestamp, "isoformat") else None,
@@ -47,7 +48,7 @@ class ConversationEngine:
         context_manager = context.metadata.get("context_intelligence_manager")
         if context_manager is not None and hasattr(context_manager, "prepare_request"):
             try:
-                context_resolution = context_manager.prepare_request(request.user_input, context.session)
+                context_resolution = context_manager.prepare_request(original_input, context.session)
                 context.metadata["resolved_context"] = {
                     "request_type": context_resolution.request_type,
                     "status": context_resolution.status,
@@ -100,7 +101,7 @@ class ConversationEngine:
         if memory_intelligence is not None and hasattr(memory_intelligence, "apply_context"):
             try:
                 memory_context = memory_intelligence.apply_context(
-                    request.user_input,
+                    original_input,
                     conversation_id=context.session.conversation_id,
                     session_id=context.session.request_id,
                 )

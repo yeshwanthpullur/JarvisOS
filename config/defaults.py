@@ -37,6 +37,15 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "consolidation_enabled": True,
         "secret_detection_enabled": True,
     },
+    "conversation": {
+        "enabled": True,
+        "max_turns": 12,
+        "max_topics": 6,
+        "summary_threshold": 8,
+        "reference_resolution": True,
+        "clarification_enabled": True,
+        "max_context_chars": 6000,
+    },
     "brain": {
         "enabled": True,
         "vault_path": "data/obsidian-vault",

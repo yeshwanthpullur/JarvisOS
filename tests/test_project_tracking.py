@@ -40,8 +40,8 @@ class ProjectTrackingTests(unittest.TestCase):
     def test_project_health_json_is_valid_and_bounded(self) -> None:
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(health["release"], "v0.9.0-alpha")
-        self.assertEqual(health["commit"], "b0222c76a054fad0a9c735d7d2ad58253c2142af")
+        self.assertEqual(health["release"], "v1.1.0-alpha")
+        self.assertEqual(health["commit"], "a44bbe193301f9f3956f647c030be9c184962866")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Working")
         memory = next(item for item in health["categories"] if item["name"] == "Memory")
@@ -57,7 +57,9 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertEqual(web["status"], "Partial")
         mobile = next(item for item in health["categories"] if item["name"] == "Mobile Automation")
         self.assertEqual(mobile["status"], "Partial")
-        self.assertEqual(len(health["categories"]), 24)
+        conversation = next(item for item in health["categories"] if item["name"] == "Conversation Intelligence")
+        self.assertEqual(conversation["status"], "Working")
+        self.assertEqual(len(health["categories"]), 25)
         allowed = {"Working", "Partial", "Experimental", "Not Started", "Blocked"}
         for category in health["categories"]:
             self.assertIn(category["status"], allowed)
@@ -138,14 +140,14 @@ class ProjectTrackingTests(unittest.TestCase):
         commands = CommandManager()
         commands.initialize()
         response = commands.execute("project status")
-        self.assertIn("release=v0.9.0-alpha", response.response)
-        self.assertIn("MVP=75%", response.response)
-        self.assertIn("Prompt 39", response.response)
-        self.assertIn("limitations=fixed:20/open:26", response.response)
+        self.assertIn("release=v1.1.0-alpha", response.response)
+        self.assertIn("MVP=77%", response.response)
+        self.assertIn("Prompt 40", response.response)
+        self.assertIn("limitations=fixed:21/open:26", response.response)
         self.assertIn("focus=LIM-018", response.response)
         self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 75)
-        self.assertEqual(response.metadata["fixed_limitations"], 20)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 77)
+        self.assertEqual(response.metadata["fixed_limitations"], 21)
         self.assertEqual(response.metadata["open_limitations"], 26)
 
     def test_sync_tracking_is_honest_and_local_first(self) -> None:

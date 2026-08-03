@@ -163,7 +163,9 @@ Multi-Agent Intelligence extends the existing Agent Framework with Executive-app
 
 ## Conversation And Commands
 
-The `Jarvis >` prompt now routes through the Conversation Engine and Command Engine. Commands are registered through `CommandRegistry`, while normal text requests continue into Executive JARVIS.
+The `Jarvis >` prompt routes commands through `CommandRegistry` and free-form text through bounded Conversation Intelligence before Executive JARVIS. The in-memory manager tracks the active topic, recent entities, comparisons, follow-up intent, confidence, and a compact summary. It resolves clear references, asks one clarification when a reference is ambiguous, and supports repair phrases such as `Actually...`, `Make it shorter`, `Continue`, and `Different question`.
+
+Use `conversation status`, `conversation topic`, `conversation confidence`, `conversation mode`, `conversation summary`, and `conversation reset`. Resetting conversation context does not alter persistent Memory Intelligence. Voice transcript handoff uses the same path; no transcript is automatically persisted by Conversation Intelligence.
 
 ## Agent Creator Framework
 

@@ -58,8 +58,8 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(health["limitations"]["fixed"], self.data["counts"]["fixed"])
         self.assertEqual(health["limitations"]["still_open"], self.data["counts"]["still_open"])
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
-        self.assertIn("**46** limitations", current)
-        self.assertIn("**20 fixed**", current)
+        self.assertIn("**47** limitations", current)
+        self.assertIn("**21 fixed**", current)
         self.assertIn("**26 still open**", current)
 
     def test_capability_statuses_match_verified_scope(self) -> None:
@@ -71,6 +71,7 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(statuses["Web Interface"], "Experimental")
         self.assertEqual(statuses["Web Automation"], "Partial")
         self.assertEqual(statuses["Mobile Automation"], "Partial")
+        self.assertEqual(statuses["Conversation Intelligence"], "Working")
 
     def test_setup_and_boundary_guidance_is_explicit(self) -> None:
         guide = (DOCS / "CLI_GUIDE.md").read_text(encoding="utf-8")

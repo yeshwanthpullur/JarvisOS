@@ -109,6 +109,9 @@ def _web_manager(context:CommandContext):
 def _mobile_manager(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else getattr(conversation,"mobile_automation",None) or (getattr(conversation,"metadata",{}) or {}).get("mobile_automation")
+def _conversation_intelligence(context:CommandContext):
+    conversation=context.conversation_context
+    return None if conversation is None else (getattr(conversation,"metadata",{}) or {}).get("conversation_intelligence_manager")
 
 
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
@@ -196,6 +199,12 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("version", "Show application version", "system", (), CommandPermission.SYSTEM),
         ("status", "Show system status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("project status", "Show project milestone health", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("conversation status", "Show conversation state", "conversation", (), CommandPermission.CONVERSATION),
+        ("conversation reset", "Clear in-memory conversation context", "conversation", (), CommandPermission.CONVERSATION),
+        ("conversation summary", "Show bounded conversation summary", "conversation", (), CommandPermission.CONVERSATION),
+        ("conversation mode", "Show conversation mode", "conversation", (), CommandPermission.CONVERSATION),
+        ("conversation confidence", "Show conversation confidence", "conversation", (), CommandPermission.CONVERSATION),
+        ("conversation topic", "Show active conversation topic", "conversation", (), CommandPermission.CONVERSATION),
         ("health", "Show health status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("clear", "Clear the console", "utility", (), CommandPermission.UTILITY),
         ("exit", "Exit the command loop", "utility", ("quit",), CommandPermission.UTILITY),
@@ -418,6 +427,21 @@ def _handler_for(name: str):
             return _text_response(manager.help.render(manager.registry))
         if name == "project status":
             return _project_health_summary()
+        if name.startswith("conversation "):
+            intelligence = _conversation_intelligence(context)
+            if intelligence is None:
+                return _text_response("Conversation intelligence is unavailable.")
+            if name == "conversation reset":
+                intelligence.reset()
+                session = getattr(context.conversation_context, "session", None)
+                if session is not None:
+                    session.current_topic = None
+                return _text_response("Conversation context reset. Persistent memory was not changed.")
+            if name == "conversation summary": return _text_response(intelligence.summary_text())
+            if name == "conversation mode": return _text_response(intelligence.mode_text())
+            if name == "conversation confidence": return _text_response(intelligence.confidence_text())
+            if name == "conversation topic": return _text_response(intelligence.topic_text())
+            return _text_response(intelligence.status_text())
         if name == "memory":
             memory = _memory_intelligence(context)
             if memory is None:

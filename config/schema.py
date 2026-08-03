@@ -52,6 +52,19 @@ class MemoryConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class ConversationIntelligenceConfig:
+    """Bounded in-memory conversation intelligence settings."""
+
+    enabled: bool = True
+    max_turns: int = 12
+    max_topics: int = 6
+    summary_threshold: int = 8
+    reference_resolution: bool = True
+    clarification_enabled: bool = True
+    max_context_chars: int = 6000
+
+
+@dataclass(frozen=True, slots=True)
 class BrainConfig:
     """Obsidian Brain vault configuration."""
 
@@ -276,6 +289,7 @@ class AppSettings:
     security: SecurityConfig
     desktop: DesktopConfig
     mobile: MobileConfig
+    conversation: ConversationIntelligenceConfig = field(default_factory=ConversationIntelligenceConfig)
     tools: ToolsConfig = field(default_factory=ToolsConfig)
     planning: PlanningConfig = field(default_factory=PlanningConfig)
     voice: VoiceConfig = field(default_factory=VoiceConfig)
