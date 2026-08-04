@@ -31,6 +31,7 @@ models/vosk/
 # Local data
 data/*
 !data/.gitkeep
+data/image_generation/
 *.db
 *.sqlite
 *.sqlite3

@@ -325,6 +325,7 @@ class StartupManager:
         self.status.mark_module_loaded("sync_intelligence")
         self.status.mark_module_loaded("web_automation")
         self.status.mark_module_loaded("mobile_automation")
+        self.status.mark_module_loaded("image_generation")
 
         self.conversation_manager = ConversationManager(
             jarvis_core=self.jarvis_core,
@@ -346,6 +347,7 @@ class StartupManager:
             autonomous_planning=self.jarvis_core.manager.autonomous_planning,
             voice_intelligence=self.jarvis_core.manager.voice_intelligence,
             vision_intelligence=self.jarvis_core.manager.vision_intelligence,
+            image_generation=self.jarvis_core.manager.image_generation,
             sync_intelligence=self.jarvis_core.manager.sync_intelligence,
             web_automation=self.jarvis_core.manager.web_automation,
             mobile_automation=self.jarvis_core.manager.mobile_automation,

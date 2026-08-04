@@ -2,19 +2,19 @@
 
 Updated: 2026-08-04
 
-This register is the authoritative compact audit of limitations reviewed through Prompt 40. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
+This register is the authoritative compact audit of limitations reviewed through Prompt 41. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
 
 ## Counts
 
 | Measure | Count |
 | --- | ---: |
 | Total limitations audited | 47 |
-| Fixed before Prompt 40 | 21 |
-| Fixed during Prompt 40 | 1 |
-| Fixed total | 22 |
-| Still open in any form | 25 |
+| Fixed before Prompt 41 | 22 |
+| Fixed during Prompt 41 | 1 |
+| Fixed total | 23 |
+| Still open in any form | 24 |
 | Open | 4 |
-| Deferred | 17 |
+| Deferred | 16 |
 | Blocked | 3 |
 | Experimental | 1 |
 
@@ -46,11 +46,11 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-041 | Vision had no explicit governed local Ollama analysis workflow | Prompt 37 added model capability discovery, Provider Router image execution, safety policy, bounded metadata-only audit, and complete CLI controls. |
 | LIM-047 | Free-form chat lacked bounded multi-turn conversation intelligence | Prompt 39 added bounded topics, entities, follow-ups, references, clarification, repair, modes, confidence, and summaries. |
 
-## Fixed During Prompt 40
+## Fixed During Prompt 41
 
 | ID | Limitation | Fix |
 | --- | --- | --- |
-| LIM-016 | Automated memory retention and compaction were incomplete | Startup now runs bounded non-destructive lifecycle policy: expired records are archived and exact duplicates are superseded. |
+| LIM-029 | Image generation workflow was not implemented | Prompt 41 added a governed local-first image workflow foundation with prompt validation, safety review, provider abstraction, dry-run planning, bounded metadata, truthful unavailable-provider handling, and CLI commands. |
 
 ## Still Open
 
@@ -65,7 +65,6 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-025 | Blocked | Medium | Wake word and continuous listening are unavailable. | Future Voice Input Milestone |
 | LIM-026 | Experimental | Medium | Local web interface remains experimental. | Dedicated Interface Stabilization |
 | LIM-027 | Deferred | High | Interactive and sensitive web actions are unavailable. | Future Governed Interactive Web Automation |
-| LIM-029 | Deferred | Medium | Image generation workflow is not implemented. | Prompt 41 - Image Generation Workflow Foundation |
 | LIM-030 | Deferred | Medium | Video editing workflow is not implemented. | Prompt 42 - Video Editing Workflow Foundation |
 | LIM-031 | Deferred | High | Cross-device synchronization is unavailable. | Prompt 44 - Cross-Device Sync |
 | LIM-032 | Deferred | Medium | Dedicated Raspberry Pi and hardware support is not implemented. | Existing future hardware-support milestone |

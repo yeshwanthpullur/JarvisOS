@@ -24,6 +24,10 @@ Web inspection commands are `web status`, `web policy`, `web session`, `web open
 
 Vision commands are `vision status`, `vision models`, `vision analyze <image_path>`, `vision describe <image_path>`, `vision ask <image_path> <question>`, `vision audit`, and `vision cleanup`. Quote paths containing spaces. PNG, JPEG, and WebP images are validated before any provider request. Analysis is local-only through the registered Ollama provider, and audit stores metadata rather than image bytes, base64, prompts, or full paths.
 
+## Image Generation Workflow
+
+Use `image status`, `image help`, `image providers`, `image plan <prompt>`, `image safety <prompt>`, `image generate <prompt>`, `image generate <prompt> --dry-run`, `image history`, and `image show <job_id>`. The workflow is local-first, bounded, and truthful: it validates prompt size, blocks unsafe categories before provider dispatch, and reports unavailable when no real local provider is configured. Dry runs do not create output files. Runtime metadata stays under ignored local storage. See [`IMAGE_GENERATION.md`](IMAGE_GENERATION.md).
+
 ## Local Voice Input Setup
 
 Voice input is manually verified with Vosk, `sounddevice`, a microphone, and a local Indian-English model. Keep the model outside Git and configure `JARVIS_VOSK_MODEL_PATH` or `voice.stt_model_path`. Run `voice input status`, `voice input on`, and then `voice listen`. Use `voice listen send` only when the transcript should enter the normal JARVIS command/chat flow. `voice input test` performs one explicit test capture. Missing local prerequisites are reported truthfully without hidden recording. See [`VOICE_INPUT.md`](VOICE_INPUT.md).

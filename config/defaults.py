@@ -196,6 +196,17 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
     "planning": {"maximum_steps":12,"maximum_milestones":5,"maximum_alternatives":3,"maximum_dependencies_per_step":4,"maximum_plan_depth":2,"maximum_retries":1,"maximum_replans":3,"maximum_concurrent":2,"maximum_agents":3,"maximum_tools":4,"maximum_timeout_seconds":90,"maximum_versions":10,"maximum_output_bytes":100000,"maximum_assumptions":8},
     "voice":{"enabled":False,"mode":"off","language":"en-US","local_only":True,"privacy_mode":"standard","input_enabled":False,"output_enabled":False,"input_backend":"offline-stt","output_backend":"windows-sapi","input_device":None,"output_device":None,"confidence_threshold":0.75,"confirmation_threshold":0.6,"max_capture_seconds":30,"silence_timeout_seconds":3,"max_audio_size":20000000,"max_transcript_length":4000,"max_spoken_response_length":500,"max_auto_speech_chars":12000,"rate":0,"volume":100,"raw_audio_persistence":False,"retention_limit":0,"temp_audio_lifetime_seconds":300,"voice_input_audit_retention":50,"stt_model_path":None,"stt_executable":None,"wake_word_enabled":False,"wake_word_backend":None,"activation_phrase":"jarvis","interruption_enabled":True,"temp_directory":"data/voice-temp","allowed_audio_directories":["data/voice-input"]},
     "vision":{"enabled":True,"local_only":True,"privacy_mode":"standard","provider":"ollama","model":"llava","ollama_host":"http://127.0.0.1:11434","max_image_size":20000000,"timeout_seconds":60,"audit_enabled":True,"audit_retention":100,"store_image_content":False,"allowed_directories":[]},
+    "image_generation": {
+        "enabled": False,
+        "default_provider": "unavailable",
+        "local_only": True,
+        "output_dir": "data/image_generation",
+        "max_prompt_chars": 600,
+        "max_negative_prompt_chars": 300,
+        "save_metadata": True,
+        "allow_overwrite": False,
+        "safety_filter_enabled": True,
+    },
     "sync":{"enabled":False,"mode":"off","adapter":"local-queue","automatic_sync":False,"remote_endpoint":None,"maximum_item_size":8192,"maximum_queue_items":100,"maximum_batch_size":10,"maximum_attempts":3,"completed_retention_count":25,"audit_retention_count":100,"maximum_nested_depth":4,"maximum_string_length":1000,"conflict_strategy":"manual","encryption_required":True,"sync_raw_audio":False,"sync_raw_images":False,"sync_raw_documents":False,"sync_conversations":False,"sync_secrets":False},
     "web_automation":{"enabled":True,"mode":"read_only","adapter":"read-only-http","allow_local_targets":False,"allow_http":False,"audit_retention":100,"action_timeout_seconds":8,"maximum_redirects":5,"maximum_response_bytes":524288,"maximum_preview_characters":2000,"store_page_content":False,"store_screenshots":False},
     "interface": {

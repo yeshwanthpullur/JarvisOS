@@ -33,6 +33,7 @@ from jarvis.jarvis_tools import JarvisTools, ToolLimits
 from jarvis.autonomous_planning import AutonomousPlanning, PlanningLimits
 from jarvis.voice_intelligence import VoiceIntelligence
 from jarvis.vision_intelligence import VisionIntelligence
+from jarvis.image_generation import ImageGenerationManager
 from jarvis.sync_intelligence import SyncIntelligence
 from jarvis.web_automation import WebAutomationManager
 from jarvis.mobile_automation import MobileAutomationManager
@@ -140,6 +141,10 @@ class JarvisManager:
             self.logger,
             (context.settings.data_dir / "vision") if context and context.settings else None,
         )
+        self.image_generation = ImageGenerationManager(
+            (context.settings.data_dir / "image_generation") if context and context.settings else Path("data/image_generation"),
+            context.settings if context else None,
+        )
         self.sync_intelligence = SyncIntelligence((context.settings.data_dir / "sync") if context and context.settings else Path("data/sync"), context.settings if context else None, self.logger)
         self.web_automation = WebAutomationManager((context.settings.data_dir / "web-automation") if context and context.settings else Path("data/web-automation"), context.settings if context else None, logger=self.logger)
         self.mobile_automation = MobileAutomationManager((context.settings.data_dir / "mobile-automation") if context and context.settings else Path("data/mobile-automation"), context.settings if context else None, logger=self.logger)
@@ -184,6 +189,7 @@ class JarvisManager:
             "autonomous_planning": self.autonomous_planning,
             "voice_intelligence": self.voice_intelligence,
             "vision_intelligence": self.vision_intelligence,
+            "image_generation": self.image_generation,
             "sync_intelligence": self.sync_intelligence,
             "web_automation": self.web_automation,
             "mobile_automation": self.mobile_automation,
@@ -266,6 +272,7 @@ class JarvisManager:
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,
             vision_intelligence=self.vision_intelligence,
+            image_generation=self.image_generation,
             sync_intelligence=self.sync_intelligence,
             web_automation=self.web_automation,
             mobile_automation=self.mobile_automation,

@@ -60,6 +60,7 @@ class ConversationManager:
         autonomous_planning: object | None = None,
         voice_intelligence: object | None = None,
         vision_intelligence: object | None = None,
+        image_generation: object | None = None,
         sync_intelligence: object | None = None,
         web_automation: object | None = None,
         mobile_automation: object | None = None,
@@ -92,6 +93,7 @@ class ConversationManager:
         self.autonomous_planning = autonomous_planning
         self.voice_intelligence = voice_intelligence
         self.vision_intelligence = vision_intelligence
+        self.image_generation = image_generation
         self.sync_intelligence = sync_intelligence
         self.web_automation = web_automation
         self.mobile_automation = mobile_automation
@@ -160,6 +162,7 @@ class ConversationManager:
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,
             vision_intelligence=self.vision_intelligence,
+            image_generation=self.image_generation,
             sync_intelligence=self.sync_intelligence,
             web_automation=self.web_automation,
             mobile_automation=self.mobile_automation,

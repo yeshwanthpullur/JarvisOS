@@ -101,6 +101,9 @@ def _voice_manager(context:CommandContext):
 def _vision_manager(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else getattr(conversation,"vision_intelligence",None) or (getattr(conversation,"metadata",{}) or {}).get("vision_intelligence")
+def _image_generation_manager(context:CommandContext):
+    conversation=context.conversation_context
+    return None if conversation is None else getattr(conversation,"image_generation",None) or (getattr(conversation,"metadata",{}) or {}).get("image_generation")
 def _sync_manager(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else getattr(conversation,"sync_intelligence",None) or (getattr(conversation,"metadata",{}) or {}).get("sync_intelligence")
@@ -331,6 +334,14 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("vision ask", "Ask a question about an image", "vision", (), CommandPermission.UTILITY),
         ("vision audit", "Show bounded vision audit metadata", "vision", (), CommandPermission.DIAGNOSTIC),
         ("vision cleanup", "Clear vision audit metadata", "vision", (), CommandPermission.UTILITY),
+        ("image status", "Show image generation readiness", "image", (), CommandPermission.DIAGNOSTIC),
+        ("image help", "Show image generation command help", "image", (), CommandPermission.UTILITY),
+        ("image providers", "List registered image providers", "image", (), CommandPermission.DIAGNOSTIC),
+        ("image generate", "Generate an image when a provider is ready", "image", (), CommandPermission.UTILITY),
+        ("image plan", "Dry-run an image generation request", "image", (), CommandPermission.UTILITY),
+        ("image safety", "Evaluate image prompt safety", "image", (), CommandPermission.UTILITY),
+        ("image history", "Show bounded recent image jobs", "image", (), CommandPermission.DIAGNOSTIC),
+        ("image show", "Show one image generation job", "image", (), CommandPermission.DIAGNOSTIC),
         ("sync status", "Show sync and local queue readiness", "sync", (), CommandPermission.SYNC),
         ("sync on", "Enable manual local queue mode", "sync", (), CommandPermission.SYNC),
         ("sync off", "Disable sync without deleting queue items", "sync", (), CommandPermission.SYNC),
@@ -801,6 +812,91 @@ def _handler_for(name: str):
                 guidance=" Start Ollama and install/configure a local vision-capable model such as llava; JARVIS will not download it automatically." if result.status.value=="unavailable" else ""
                 detail=(result.error or "analysis did not complete").rstrip(".")
                 return _text_response(f"Vision {result.status.value}: {detail}.{guidance}",vision_status=result.status.value,availability_status=result.availability_status,request_id=result.request_id,image_metadata=dict(result.metadata))
+        if name.startswith("image "):
+            image = _image_generation_manager(context); args = context.arguments
+            if image is None:
+                return _text_response("Image generation workflow is unavailable.")
+            if name == "image help":
+                return _text_response(
+                    "Image commands: image status, image providers, image plan <prompt>, "
+                    "image generate <prompt> [--dry-run], image safety <prompt>, image history, image show <job_id>."
+                )
+            if name == "image status":
+                status = image.status()
+                return _text_response(
+                    "Image status: "
+                    f"enabled={'yes' if status['enabled'] else 'no'} "
+                    f"local_only={'on' if status['local_only'] else 'off'} "
+                    f"provider={status['default_provider']} "
+                    f"provider_status={status['provider_status']} "
+                    f"overwrite={'on' if status['allow_overwrite'] else 'off'} "
+                    f"metadata={'on' if status['save_metadata'] else 'off'} "
+                    f"output={status['output_policy']}.",
+                    **status,
+                )
+            if name == "image providers":
+                providers = image.list_providers()
+                summary = "; ".join(
+                    f"{item['provider_name']}:{item['status']}:{item['model'] or 'no-model'}"
+                    for item in providers
+                ) or "none"
+                return _text_response(f"Image providers: {summary}.", providers=tuple(providers))
+            if name == "image history":
+                jobs = image.history()
+                text = "; ".join(
+                    f"{item['job_id']}:{item['status']}:{item['provider']}:{item['prompt_preview']}"
+                    for item in jobs
+                ) or "none"
+                return _text_response(f"Image history ({len(jobs)}): {text}.", jobs=tuple(jobs))
+            if name == "image show":
+                if not args:
+                    return _text_response("Usage: image show <image_job_id>")
+                job = image.show(args[0])
+                if job is None:
+                    return _text_response("Image job not found.")
+                return _text_response(
+                    f"Image job {job['job_id']}: status={job['status']} provider={job['provider']} "
+                    f"dry_run={'yes' if job['dry_run'] else 'no'} outputs={', '.join(job['output_paths']) or 'none'} "
+                    f"prompt={job['prompt_preview']}.",
+                    **job,
+                )
+            if name in {"image plan", "image safety", "image generate"}:
+                if not args:
+                    usage = "image generate <prompt>" if name == "image generate" else f"{name} <prompt>"
+                    return _text_response(f"Usage: {usage}")
+                prompt = " ".join(args)
+                if name == "image safety":
+                    safety = image.evaluate_safety(prompt)
+                    alternative = f" Alternative: {safety.safe_alternative}" if safety.safe_alternative else ""
+                    return _text_response(
+                        f"Image safety: allowed={'yes' if safety.allowed else 'no'} category={safety.category} severity={safety.severity}. {safety.reason}{alternative}",
+                        allowed=safety.allowed,
+                        category=safety.category,
+                        severity=safety.severity,
+                        reason=safety.reason,
+                        safe_alternative=safety.safe_alternative,
+                    )
+                dry_run = bool(context.flags.get("dry-run", False)) or name == "image plan"
+                result = image.generate(prompt, dry_run=dry_run) if name == "image generate" else image.plan(prompt)
+                if result.status.value == "completed":
+                    outputs = ", ".join(result.output_paths) or "none"
+                    return _text_response(
+                        f"Image generate completed: job={result.job_id} provider={result.provider} outputs={outputs}.",
+                        job_id=result.job_id,
+                        provider=result.provider,
+                        output_paths=result.output_paths,
+                        metadata_path=result.metadata_path,
+                    )
+                return _text_response(
+                    f"Image {name.split()[1]} {result.status.value}: {result.message}",
+                    job_id=result.job_id,
+                    provider=result.provider,
+                    status=result.status.value,
+                    prompt_preview=result.prompt_preview,
+                    warnings=result.warnings,
+                    error=result.error,
+                    metadata=result.metadata,
+                )
         if name.startswith("sync "):
             sync = _sync_manager(context); args = context.arguments
             if sync is None:

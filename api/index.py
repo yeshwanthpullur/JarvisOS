@@ -13,12 +13,13 @@ STATUS: Final[dict[str, str]] = {
     "status": "online",
     "deployment_mode": "status-foundation",
     "primary_mode": "local-cli",
-    "release": "v0.9.0-alpha",
-    "vision": "partial_local_ollama",
-    "online_sync": "not_started",
+    "release": "v1.3.0-alpha",
+    "vision": "working_local_ollama",
+    "online_sync": "partial_local_queue",
     "web_automation": "partial_read_only",
     "mobile_automation": "partial_planning_only",
-    "voice_input": "partial_vosk_foundation",
+    "voice_input": "working_local_vosk",
+    "image_generation": "partial_workflow_foundation",
 }
 
 ROOT_PAGE: Final[str] = """<!doctype html>

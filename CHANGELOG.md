@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Image Generation Workflow Foundation
+
+- Added a governed local-first image-generation workflow foundation with prompt validation, safety review, provider abstraction, dry-run planning, bounded history, and truthful unavailable-provider handling.
+- Added `image status`, `image help`, `image providers`, `image plan`, `image safety`, `image generate`, `image history`, and `image show`.
+- Added ignored local runtime storage for bounded image metadata without committing generated files.
+- Verified 13 focused image-generation tests and the 1,600-test full suite with three environment-dependent skips.
+
 ## Unreleased - Limitations Review and Safe Fix Pass
 
 - Classified every open limitation with evidence, ownership, blockers, and one primary review category without changing roadmap order.

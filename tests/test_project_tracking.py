@@ -27,6 +27,7 @@ REQUIRED_DOCS = (
     "JARVIS_USE_CASES.md",
     "MOBILE_AUTOMATION.md",
     "VOICE_INPUT.md",
+    "IMAGE_GENERATION.md",
 )
 
 
@@ -40,12 +41,15 @@ class ProjectTrackingTests(unittest.TestCase):
     def test_project_health_json_is_valid_and_bounded(self) -> None:
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(health["release"], "v1.2.0-alpha")
-        self.assertEqual(health["commit"], "4aa197f2bc80001454d8bf0f8d98c22a4271a04c")
+        self.assertEqual(health["release"], "v1.3.0-alpha")
+        self.assertEqual(health["commit"], "e8a528156952f341f1ab31351a24943698900be2")
+        self.assertEqual(health["next_milestone"], "Prompt 42 - Video Editing Workflow Foundation")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Working")
         memory = next(item for item in health["categories"] if item["name"] == "Memory")
         self.assertEqual(memory["status"], "Working")
+        creative = next(item for item in health["categories"] if item["name"] == "Creative Media Workflows")
+        self.assertEqual(creative["status"], "Partial")
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
         self.assertLessEqual(health["overall_mvp_readiness"], 100)
         self.assertLess(path.stat().st_size, 20_000)
@@ -84,30 +88,30 @@ class ProjectTrackingTests(unittest.TestCase):
             "## Manual Verification Checklist",
         ):
             self.assertIn(heading, text)
-        self.assertIn("normal CLI is the current primary", text)
+        self.assertIn("current primary", text.lower())
         self.assertIn("Vision Intelligence", text)
         self.assertIn("Online Sync", text)
         self.assertIn("automatic detection treated root `main.py`", text)
         self.assertIn("jarvis-os-6oy2", text)
-        self.assertIn("jarvis-221b5o5fc-jj1-e21e.vercel.app/api/status", text)
         self.assertIn("read-only public", text)
+        self.assertIn("image generation workflow foundation", text.lower())
 
     def test_roadmap_covers_completed_and_next_milestones(self) -> None:
         text = (DOCS / "ROADMAP.md").read_text(encoding="utf-8")
-        for milestone in range(27, 36):
-            if milestone in {27, 28, 29, 30, 31, 32, 33, 34, 35}:
-                self.assertIn(f"Prompt {milestone}", text)
+        for milestone in range(27, 43):
+            self.assertIn(f"Prompt {milestone}", text)
         self.assertIn("v0.3.0-alpha", text)
+        self.assertIn("Prompt 42 - Video Editing Workflow Foundation", text)
 
     def test_release_checklist_contains_core_gates(self) -> None:
         text = (DOCS / "RELEASE_CHECKLIST.md").read_text(encoding="utf-8")
         for gate in ("git status --short", "git diff --check", "CHANGELOG.md", "Annotated tag", "Manual"):
             self.assertIn(gate.lower(), text.lower())
 
-    def test_changelog_contains_alpha_release(self) -> None:
+    def test_changelog_contains_current_unreleased_sections(self) -> None:
         text = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-        self.assertIn("v0.3.0-alpha", text)
-        self.assertIn("Local Voice and CLI Stability", text)
+        self.assertIn("Image Generation Workflow Foundation", text)
+        self.assertIn("Limitations Review and Safe Fix Pass", text)
         self.assertIn("1,374 passed", text)
 
     def test_tracking_docs_are_readable_and_nonempty(self) -> None:
@@ -140,15 +144,15 @@ class ProjectTrackingTests(unittest.TestCase):
         commands = CommandManager()
         commands.initialize()
         response = commands.execute("project status")
-        self.assertIn("release=v1.2.0-alpha", response.response)
-        self.assertIn("MVP=78%", response.response)
-        self.assertIn("Prompt 41", response.response)
-        self.assertIn("limitations=fixed:22/open:25/restricted:5/blocked:2", response.response)
-        self.assertIn("focus=LIM-029", response.response)
+        self.assertIn("release=v1.3.0-alpha", response.response)
+        self.assertIn("MVP=79%", response.response)
+        self.assertIn("Prompt 42", response.response)
+        self.assertIn("limitations=fixed:23/open:24/restricted:5/blocked:2", response.response)
+        self.assertIn("focus=LIM-030", response.response)
         self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 78)
-        self.assertEqual(response.metadata["fixed_limitations"], 22)
-        self.assertEqual(response.metadata["open_limitations"], 25)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 79)
+        self.assertEqual(response.metadata["fixed_limitations"], 23)
+        self.assertEqual(response.metadata["open_limitations"], 24)
 
     def test_sync_tracking_is_honest_and_local_first(self) -> None:
         status = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")

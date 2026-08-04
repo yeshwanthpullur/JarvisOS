@@ -69,7 +69,6 @@ class ProductVisionTests(unittest.TestCase):
     def test_future_goals_are_not_claimed_complete(self) -> None:
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
         for phrase in (
-            "Image generation workflow inside JARVIS OS",
             "Video editing workflow",
             "Safe call and communication assistance",
             "Real encrypted remote synchronization and cross-device sync",
@@ -77,18 +76,22 @@ class ProductVisionTests(unittest.TestCase):
             self.assertIn(phrase, current)
         self.assertIn("Not Started Features", current)
         self.assertIn("Interactive actions remain blocked", current)
+        self.assertIn("image workflow foundation", current.lower())
 
-    def test_new_limitations_are_deferred_and_counts_match(self) -> None:
+    def test_limitations_counts_and_prompt_41_fix_match(self) -> None:
         by_id = {item["limitation_id"]: item for item in self.limitations["limitations"]}
-        for number in range(29, 37):
+        fixed = by_id["LIM-029"]
+        self.assertEqual(fixed["status"], "fixed")
+        self.assertTrue(fixed["fix_implemented_in_this_prompt"])
+        for number in range(30, 37):
             item = by_id[f"LIM-{number:03d}"]
             self.assertEqual(item["status"], "deferred")
             self.assertFalse(item["fix_implemented_in_this_prompt"])
             self.assertTrue(item["next_owner_prompt"])
         counts = self.limitations["counts"]
         self.assertEqual(counts["total"], 47)
-        self.assertEqual(counts["fixed"], 22)
-        self.assertEqual(counts["still_open"], 25)
+        self.assertEqual(counts["fixed"], 23)
+        self.assertEqual(counts["still_open"], 24)
 
     def test_master_document_is_readable_bounded_and_secret_free(self) -> None:
         self.assertGreater(len(self.vision), 10_000)

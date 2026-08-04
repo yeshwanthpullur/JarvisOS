@@ -1,6 +1,6 @@
 # JARVIS OS
 
-JARVIS OS is currently at **v0.9.0-alpha - Local STT and Voice Input Foundation**, with later local vision and voice-control work verified on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at **v1.3.0-alpha - Limitations Review and Memory Lifecycle Fix**, with later local chat, voice, vision, memory, conversation, and image-workflow work verified on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
 For the central product direction and evidence-based tracking, see [Master Use Cases](docs/JARVIS_USE_CASES.md), [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise status summary is available from the CLI with `project status`; bounded limitation evidence is available through `limitations status`, `limitations open`, and `limitations show <id>`.
 
@@ -11,6 +11,8 @@ Autonomous Planning produces provider-backed, validated, reviewable plans withou
 Voice Intelligence adds disabled-by-default local Windows speech output, safe audio-file validation, and governed voice sessions without changing text-mode authority. See [docs/VOICE_INTELLIGENCE.md](docs/VOICE_INTELLIGENCE.md).
 
 Vision Intelligence adds safe CLI image validation, local Ollama model discovery, real request routing through Provider Router, metadata-only audit, and local-only policy. Local LLaVA image description and image question answering are manually verified on the current machine. See [docs/VISION_INTELLIGENCE.md](docs/VISION_INTELLIGENCE.md).
+
+Image Generation now has a governed workflow foundation: prompt validation, safety review, provider abstraction, dry-run planning, bounded history, and truthful unavailable-provider reporting. Real default local generation still requires a configured provider. See [docs/IMAGE_GENERATION.md](docs/IMAGE_GENERATION.md).
 
 The Vercel deployment is a deliberately limited online status foundation. Root `main.py` remains the local CLI launcher; `api/index.py` serves only the safe root, `/api/health`, and `/api/status` surfaces. The canonical deployment is `jarvis-os`; it does not provide remote chat, sync, tools, automation, or access to local-only features.
 

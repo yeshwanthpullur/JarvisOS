@@ -192,9 +192,9 @@ class VoiceTests(unittest.TestCase):
   commands=CommandManager();commands.initialize();context=ConversationContext(session=ConversationSession(),voice_intelligence=self.v)
   self.assertIn("stt=unavailable",commands.execute("voice input status",context).response)
   response=commands.execute("voice input on",context).response
-  self.assertIn("not available",response);self.assertIn("local Vosk model",response);self.assertFalse(self.v.input_enabled)
+  self.assertIn("not available",response);self.assertIn("local STT model",response);self.assertFalse(self.v.input_enabled)
   listen_response=commands.execute("voice listen",context).response
-  self.assertIn("not available",listen_response);self.assertIn("local Vosk model",listen_response)
+  self.assertIn("not available",listen_response);self.assertIn("local STT model",listen_response)
   self.assertIn("disabled",commands.execute("voice input off",context).response)
  def test_voice_cleanup_command(self):
   with tempfile.TemporaryDirectory() as d:

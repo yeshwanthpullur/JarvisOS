@@ -140,6 +140,18 @@ class VisionConfig:
  enabled:bool=True; local_only:bool=True; privacy_mode:str="standard"; provider:str="ollama"; model:str="llava"; ollama_host:str="http://127.0.0.1:11434"; max_image_size:int=20000000; timeout_seconds:int=60; audit_enabled:bool=True; audit_retention:int=100; store_image_content:bool=False; allowed_directories:tuple[Path,...]=()
 
 @dataclass(frozen=True, slots=True)
+class ImageGenerationConfig:
+    enabled: bool = False
+    default_provider: str = "unavailable"
+    local_only: bool = True
+    output_dir: Path | None = None
+    max_prompt_chars: int = 600
+    max_negative_prompt_chars: int = 300
+    save_metadata: bool = True
+    allow_overwrite: bool = False
+    safety_filter_enabled: bool = True
+
+@dataclass(frozen=True, slots=True)
 class SyncConfig:
     enabled: bool = False
     mode: str = "off"
@@ -294,6 +306,7 @@ class AppSettings:
     planning: PlanningConfig = field(default_factory=PlanningConfig)
     voice: VoiceConfig = field(default_factory=VoiceConfig)
     vision: VisionConfig = field(default_factory=VisionConfig)
+    image_generation: ImageGenerationConfig = field(default_factory=ImageGenerationConfig)
     sync: SyncConfig = field(default_factory=SyncConfig)
     web_automation: WebAutomationConfig = field(default_factory=WebAutomationConfig)
     interface: InterfaceConfig = field(default_factory=InterfaceConfig)
