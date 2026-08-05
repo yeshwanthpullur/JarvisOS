@@ -65,12 +65,12 @@ class LimitationsRegisterTests(unittest.TestCase):
             self.assertTrue(item["next_owner_prompt"])
             self.assertTrue(item["evidence"])
 
-    def test_fixed_entry_has_prompt_41_lifecycle_evidence(self) -> None:
-        fixed = next(item for item in self.items if item["limitation_id"] == "LIM-029")
+    def test_fixed_entry_has_prompt_42_video_evidence(self) -> None:
+        fixed = next(item for item in self.items if item["limitation_id"] == "LIM-030")
         self.assertEqual(fixed["status"], "fixed")
         self.assertTrue(fixed["fix_implemented_in_this_prompt"])
         self.assertTrue(fixed["fixed_at"])
-        self.assertIn("test_image_generation", fixed["test_coverage"])
+        self.assertIn("test_video_editing", fixed["test_coverage"])
 
     def test_limitations_reader_rejects_malformed_data_safely(self) -> None:
         import tempfile
@@ -91,6 +91,7 @@ class LimitationsRegisterTests(unittest.TestCase):
         project = manager.execute("project status")
         self.assertIn("restricted:", project.response)
         self.assertIn("blocked:", project.response)
+        self.assertIn("Prompt 43", project.response)
 
     def test_health_and_status_match_register(self) -> None:
         health = json.loads((DOCS / "project_health.json").read_text(encoding="utf-8"))
@@ -99,8 +100,8 @@ class LimitationsRegisterTests(unittest.TestCase):
         self.assertEqual(health["limitations"]["still_open"], self.data["counts"]["still_open"])
         current = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
         self.assertIn("**47** limitations", current)
-        self.assertIn("**23 fixed**", current)
-        self.assertIn("**24 still open**", current)
+        self.assertIn("**24 fixed**", current)
+        self.assertIn("**23 still open**", current)
 
     def test_markdown_and_json_counts_agree(self) -> None:
         register = (DOCS / "LIMITATIONS_REGISTER.md").read_text(encoding="utf-8")
@@ -123,7 +124,7 @@ class LimitationsRegisterTests(unittest.TestCase):
     def test_setup_and_boundary_guidance_is_explicit(self) -> None:
         guide = (DOCS / "CLI_GUIDE.md").read_text(encoding="utf-8")
         status = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")
-        for phrase in ("Local Voice Input Setup", "Vosk", "sounddevice", "JARVIS_VOSK_MODEL_PATH", "Local Vision Setup", "vision-capable", "Image Generation Workflow"):
+        for phrase in ("Local Voice Input Setup", "Vosk", "sounddevice", "JARVIS_VOSK_MODEL_PATH", "Local Vision Setup", "vision-capable", "Image Generation Workflow", "Video Editing Workflow"):
             self.assertIn(phrase, guide)
         for phrase in ("real authenticated encrypted adapter", "web interface is experimental", "Web Automation", "Mobile Automation"):
             self.assertIn(phrase.lower(), status.lower())
@@ -133,9 +134,12 @@ class LimitationsRegisterTests(unittest.TestCase):
         image = (DOCS / "IMAGE_GENERATION.md").read_text(encoding="utf-8")
         for phrase in ("local-first workflow foundation", "image safety", "unavailable", "Vercel remains status-only"):
             self.assertIn(phrase, image)
+        video = (DOCS / "VIDEO_EDITING.md").read_text(encoding="utf-8")
+        for phrase in ("local-first video editing workflow foundation", "video safety", "unavailable", "Vercel remains status-only"):
+            self.assertIn(phrase, video)
 
     def test_tracking_files_contain_no_secret_shaped_values(self) -> None:
-        paths = (DOCS / "LIMITATIONS_REGISTER.md", self.path, DOCS / "CLI_GUIDE.md", DOCS / "CURRENT_STATUS.md", DOCS / "IMAGE_GENERATION.md")
+        paths = (DOCS / "LIMITATIONS_REGISTER.md", self.path, DOCS / "CLI_GUIDE.md", DOCS / "CURRENT_STATUS.md", DOCS / "IMAGE_GENERATION.md", DOCS / "VIDEO_EDITING.md")
         patterns = (
             re.compile(r"sk-[A-Za-z0-9]{16,}"),
             re.compile(r"(?i)(api[_-]?key|password|access[_-]?token|secret)\s*=\s*[^\s`]+"),

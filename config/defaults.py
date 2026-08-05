@@ -207,6 +207,17 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "allow_overwrite": False,
         "safety_filter_enabled": True,
     },
+    "video_editing": {
+        "enabled": False,
+        "default_provider": "unavailable",
+        "local_only": True,
+        "output_dir": "data/video_editing",
+        "max_prompt_chars": 600,
+        "max_source_media_items": 12,
+        "save_metadata": True,
+        "allow_overwrite": False,
+        "safety_filter_enabled": True,
+    },
     "sync":{"enabled":False,"mode":"off","adapter":"local-queue","automatic_sync":False,"remote_endpoint":None,"maximum_item_size":8192,"maximum_queue_items":100,"maximum_batch_size":10,"maximum_attempts":3,"completed_retention_count":25,"audit_retention_count":100,"maximum_nested_depth":4,"maximum_string_length":1000,"conflict_strategy":"manual","encryption_required":True,"sync_raw_audio":False,"sync_raw_images":False,"sync_raw_documents":False,"sync_conversations":False,"sync_secrets":False},
     "web_automation":{"enabled":True,"mode":"read_only","adapter":"read-only-http","allow_local_targets":False,"allow_http":False,"audit_retention":100,"action_timeout_seconds":8,"maximum_redirects":5,"maximum_response_bytes":524288,"maximum_preview_characters":2000,"store_page_content":False,"store_screenshots":False},
     "interface": {

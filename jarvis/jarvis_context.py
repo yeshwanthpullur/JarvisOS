@@ -60,6 +60,7 @@ class JarvisContext:
     voice_intelligence: Any | None = None
     vision_intelligence: Any | None = None
     image_generation: Any | None = None
+    video_editing: Any | None = None
     sync_intelligence: Any | None = None
     web_automation: Any | None = None
     mobile_automation: Any | None = None

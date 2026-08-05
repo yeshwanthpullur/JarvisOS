@@ -1,14 +1,14 @@
 {
   "release": "v1.3.0-alpha",
   "commit": "e8a528156952f341f1ab31351a24943698900be2",
-  "updated_at": "2026-08-04",
+  "updated_at": "2026-08-05",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 42 - Video Editing Workflow Foundation",
-  "overall_mvp_readiness": 79,
+  "next_milestone": "Prompt 43 - Real Encrypted Remote Sync Backend",
+  "overall_mvp_readiness": 80,
   "limitations": {
     "total": 47,
-    "fixed": 23,
-    "still_open": 24,
+    "fixed": 24,
+    "still_open": 23,
     "register": "docs/limitations_register.json"
   },
   "categories": [
@@ -32,7 +32,7 @@
     {"name": "Study and Research Workflows", "status": "Partial", "confidence": 45, "evidence": "Conversation, retrieval, research, goals, planning, and read-only web foundations exist; no dedicated study workflow composes them.", "next_action": "Keep this partial until a dedicated future study workflow milestone is implemented."},
     {"name": "Advanced Builder Workflows", "status": "Partial", "confidence": 35, "evidence": "Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized.", "next_action": "Formalize the governed workflow in a future dedicated milestone."},
     {"name": "Raspberry Pi and Hardware", "status": "Partial", "confidence": 20, "evidence": "General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exists.", "next_action": "Keep hardware work deferred to a future dedicated milestone."},
-    {"name": "Creative Media Workflows", "status": "Partial", "confidence": 38, "evidence": "A governed image-generation workflow foundation now exists with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation still requires a configured provider; video editing remains separate future work.", "next_action": "Keep Prompt 42 focused on video editing and add real local generation only with an approved provider."},
+    {"name": "Creative Media Workflows", "status": "Partial", "confidence": 44, "evidence": "Governed image-generation and video-editing workflow foundations now exist with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation and real local editing still require configured providers.", "next_action": "Keep Prompt 43 focused on encrypted remote sync and add real local media providers only with approved integrations."},
     {"name": "Communication Assistance", "status": "Not Started", "confidence": 0, "evidence": "No call, contact, calendar, messaging, or communication connector is integrated.", "next_action": "Define consent and connector boundaries in Prompt 47."},
     {"name": "Personal Workspace", "status": "Partial", "confidence": 30, "evidence": "CLI access and project tracking exist, but capabilities are not unified into a complete multi-tool replacement workspace.", "next_action": "Compose approved capabilities in Prompt 49 without duplicating authorities."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 75, "evidence": "Permission, approval, locality, tool, provider, and UI boundaries are tested.", "next_action": "Threat-review every external integration."},

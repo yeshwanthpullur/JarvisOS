@@ -39,7 +39,7 @@ class VercelDeploymentTests(unittest.TestCase):
     def test_health_and_status_return_safe_schema(self) -> None:
         required = {
             "service", "status", "deployment_mode", "primary_mode", "release",
-            "vision", "voice_input", "online_sync", "web_automation", "mobile_automation", "image_generation",
+            "vision", "voice_input", "online_sync", "web_automation", "mobile_automation", "video_editing", "image_generation",
         }
         for path in ("/api/health", "/api/status", "/api/status?source=test"):
             with self.subTest(path=path):
@@ -51,6 +51,7 @@ class VercelDeploymentTests(unittest.TestCase):
                 self.assertEqual(payload, STATUS)
                 self.assertEqual(payload["web_automation"], "partial_read_only")
                 self.assertEqual(payload["mobile_automation"], "partial_planning_only")
+                self.assertEqual(payload["video_editing"], "partial_workflow_foundation")
                 self.assertEqual(payload["voice_input"], "working_local_vosk")
                 self.assertEqual(payload["image_generation"], "partial_workflow_foundation")
 

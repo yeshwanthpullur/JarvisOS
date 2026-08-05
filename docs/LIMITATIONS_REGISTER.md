@@ -1,8 +1,8 @@
 # Limitations Register
 
-Updated: 2026-08-04
+Updated: 2026-08-05
 
-This register is the authoritative compact audit of limitations reviewed through Prompt 41. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
+This register is the authoritative compact audit of limitations reviewed through Prompt 42. A limitation is marked **fixed** only when code, tests, or manual evidence supports that conclusion. Safety boundaries and missing external capabilities remain visible rather than being presented as defects.
 
 ## Counts
 
@@ -11,8 +11,9 @@ This register is the authoritative compact audit of limitations reviewed through
 | Total limitations audited | 47 |
 | Fixed before Prompt 41 | 22 |
 | Fixed during Prompt 41 | 1 |
-| Fixed total | 23 |
-| Still open in any form | 24 |
+| Fixed during Prompt 42 | 1 |
+| Fixed total | 24 |
+| Still open in any form | 23 |
 | Open | 4 |
 | Deferred | 16 |
 | Blocked | 3 |
@@ -37,6 +38,7 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-011 | Local vision setup guidance was fragmented | Capability discovery and semantic readiness are distinct. |
 | LIM-012 | Tracking language understated the sync foundation | Local queue and unavailable remote transfer are distinct. |
 | LIM-013 | SAPI playback blocked the CLI while speaking | Long Windows SAPI replies now use a tested background worker with immediate stop/resume/cancel controls. |
+| LIM-030 | Video editing workflow was not implemented | Prompt 42 added a governed local-first video editing workflow foundation with prompt validation, safety review, provider abstraction, dry-run planning, bounded metadata, truthful unavailable-provider handling, and CLI commands. |
 | LIM-021 | Web automation had no governed foundation | Prompt 34 added strict policy, permissions, read-only commands, normalized results, bounded audit, and a truthful fallback adapter. |
 | LIM-028 | Web automation had no live read-only inspection or redirect verification | Prompt 34.1 added bounded standard-library inspection and redirect validation. |
 | LIM-022 | Mobile automation had no governed foundation | Prompt 35 added planning-only policy, adapters, commands, and redacted audit. |
@@ -65,7 +67,6 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-025 | Blocked | Medium | Wake word and continuous listening are unavailable. | Future Voice Input Milestone |
 | LIM-026 | Experimental | Medium | Local web interface remains experimental. | Dedicated Interface Stabilization |
 | LIM-027 | Deferred | High | Interactive and sensitive web actions are unavailable. | Future Governed Interactive Web Automation |
-| LIM-030 | Deferred | Medium | Video editing workflow is not implemented. | Prompt 42 - Video Editing Workflow Foundation |
 | LIM-031 | Deferred | High | Cross-device synchronization is unavailable. | Prompt 44 - Cross-Device Sync |
 | LIM-032 | Deferred | Medium | Dedicated Raspberry Pi and hardware support is not implemented. | Existing future hardware-support milestone |
 | LIM-033 | Deferred | Medium | Dedicated study assistant workflow is not implemented. | Prompt 38 - Study Assistant and Research Workflows |

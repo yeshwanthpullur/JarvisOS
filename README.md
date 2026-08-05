@@ -14,11 +14,13 @@ Vision Intelligence adds safe CLI image validation, local Ollama model discovery
 
 Image Generation now has a governed workflow foundation: prompt validation, safety review, provider abstraction, dry-run planning, bounded history, and truthful unavailable-provider reporting. Real default local generation still requires a configured provider. See [docs/IMAGE_GENERATION.md](docs/IMAGE_GENERATION.md).
 
+Video Editing now has a governed workflow foundation: prompt validation, safety review, provider abstraction, dry-run planning, bounded history, and truthful unavailable-provider reporting. Real default local editing still requires a configured provider. See [docs/VIDEO_EDITING.md](docs/VIDEO_EDITING.md).
+
 The Vercel deployment is a deliberately limited online status foundation. Root `main.py` remains the local CLI launcher; `api/index.py` serves only the safe root, `/api/health`, and `/api/status` surfaces. The canonical deployment is `jarvis-os`; it does not provide remote chat, sync, tools, automation, or access to local-only features.
 
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 
-JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes verified local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, local Vosk push-to-talk input, interruptible Windows SAPI voice output, local Ollama LLaVA image analysis, partial Online Sync, bounded read-only public page inspection, and planning-only Mobile Automation. Encrypted remote sync, interactive browsing, wake word, continuous conversation, live camera vision, and live phone control are not implemented.
+JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes verified local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, local Vosk push-to-talk input, interruptible Windows SAPI voice output, local Ollama LLaVA image analysis, partial Online Sync, bounded read-only public page inspection, planning-only Mobile Automation, and a governed image/video creative-media foundation. Encrypted remote sync, interactive browsing, wake word, continuous conversation, live camera vision, live phone control, and real local media editing are not implemented by default.
 
 Prompt 38 adds persistent local memory intelligence: bounded memory commands, safe retrieval into chat context, explicit remember/forget/update/archive flows, and secret-aware automatic session summaries. The memory layer stays local and does not replace the existing command or conversation authority.
 

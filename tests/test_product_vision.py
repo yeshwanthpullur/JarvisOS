@@ -83,15 +83,18 @@ class ProductVisionTests(unittest.TestCase):
         fixed = by_id["LIM-029"]
         self.assertEqual(fixed["status"], "fixed")
         self.assertTrue(fixed["fix_implemented_in_this_prompt"])
-        for number in range(30, 37):
+        video = by_id["LIM-030"]
+        self.assertEqual(video["status"], "fixed")
+        self.assertTrue(video["fix_implemented_in_this_prompt"])
+        for number in range(31, 37):
             item = by_id[f"LIM-{number:03d}"]
             self.assertEqual(item["status"], "deferred")
             self.assertFalse(item["fix_implemented_in_this_prompt"])
             self.assertTrue(item["next_owner_prompt"])
         counts = self.limitations["counts"]
         self.assertEqual(counts["total"], 47)
-        self.assertEqual(counts["fixed"], 23)
-        self.assertEqual(counts["still_open"], 24)
+        self.assertEqual(counts["fixed"], 24)
+        self.assertEqual(counts["still_open"], 23)
 
     def test_master_document_is_readable_bounded_and_secret_free(self) -> None:
         self.assertGreater(len(self.vision), 10_000)

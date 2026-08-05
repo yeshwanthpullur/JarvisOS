@@ -27,11 +27,17 @@ models/vosk/
 *.ogg
 *.m4a
 *.zip
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.webm
 
 # Local data
 data/*
 !data/.gitkeep
 data/image_generation/
+data/video_editing/
 *.db
 *.sqlite
 *.sqlite3

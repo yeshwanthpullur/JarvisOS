@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Video Editing Workflow Foundation
+
+- Added a governed local-first video editing workflow foundation with prompt validation, safety review, provider abstraction, dry-run planning, bounded history, and truthful unavailable-provider handling.
+- Added `video status`, `video help`, `video providers`, `video plan`, `video safety`, `video history`, and `video show`.
+- Added ignored local runtime storage for bounded video metadata without committing generated media or export files.
+- Verified the focused video-editing tests and the 1,600 passed full regression suite on the current local branch.
+
 ## Unreleased - Image Generation Workflow Foundation
 
 - Added a governed local-first image-generation workflow foundation with prompt validation, safety review, provider abstraction, dry-run planning, bounded history, and truthful unavailable-provider handling.

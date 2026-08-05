@@ -30,6 +30,7 @@ from config.schema import (
     PlanningConfig,
     VoiceConfig,
     VisionConfig,
+    VideoEditingConfig,
     SyncConfig,
     WebAutomationConfig,
     InterfaceConfig,
@@ -247,6 +248,17 @@ def load_settings(
                 "save_metadata": _coerce_bool(raw_config["image_generation"]["save_metadata"]),
                 "allow_overwrite": _coerce_bool(raw_config["image_generation"]["allow_overwrite"]),
                 "safety_filter_enabled": _coerce_bool(raw_config["image_generation"]["safety_filter_enabled"]),
+            }
+        ),
+        video_editing=VideoEditingConfig(
+            **{
+                **raw_config["video_editing"],
+                "enabled": _coerce_bool(raw_config["video_editing"]["enabled"]),
+                "local_only": _coerce_bool(raw_config["video_editing"]["local_only"]),
+                "output_dir": _optional_path(raw_config["video_editing"]["output_dir"]),
+                "save_metadata": _coerce_bool(raw_config["video_editing"]["save_metadata"]),
+                "allow_overwrite": _coerce_bool(raw_config["video_editing"]["allow_overwrite"]),
+                "safety_filter_enabled": _coerce_bool(raw_config["video_editing"]["safety_filter_enabled"]),
             }
         ),
         sync=SyncConfig(**{

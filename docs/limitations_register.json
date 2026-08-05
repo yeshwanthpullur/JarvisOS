@@ -1,43 +1,42 @@
 {
-  "updated_at": "2026-08-04",
+  "updated_at": "2026-08-05",
   "baseline_commit": "e8a528156952f341f1ab31351a24943698900be2",
   "counts": {
     "total": 47,
-    "fixed": 23,
+    "fixed": 24,
     "fixed_before_prompt": 22,
-    "fixed_during_prompt": 1,
-    "still_open": 24,
+    "fixed_during_prompt": 2,
+    "still_open": 23,
     "open": 4,
-    "deferred": 16,
+    "deferred": 15,
     "blocked": 3,
     "experimental": 1
   },
-  "next_major_limitation_id": "LIM-030",
-  "next_major_limitation": "Video editing workflow is not implemented and belongs to the next roadmap milestone.",
+  "next_major_limitation_id": "LIM-045",
+  "next_major_limitation": "OCR accuracy is not guaranteed and belongs to the next evidence-focused review.",
   "review": {
-    "prompt": 41,
+    "prompt": 42,
     "starting_counts": {
       "total": 47,
-      "fixed": 22,
-      "still_open": 25
+      "fixed": 23,
+      "still_open": 24
     },
     "category_totals": {
-      "next_roadmap_milestone": 1,
       "blocked_external_service_cost": 2,
       "deferred_by_design": 16,
       "intentionally_restricted": 5
     },
     "fix_now_scores": {
-      "LIM-029": {
+      "LIM-030": {
         "user_value": 4,
-        "mvp_impact": 4,
+        "mvp_impact": 3,
         "safety_benefit": 4,
-        "reliability_benefit": 4,
-        "feasibility": 5,
-        "testability": 5,
+        "reliability_benefit": 3,
+        "feasibility": 4,
+        "testability": 4,
         "risk": 2,
         "dependency_cost": 0,
-        "priority_score": 24
+        "priority_score": 16
       }
     }
   },
@@ -71,7 +70,7 @@
     {"limitation_id":"LIM-027","title":"Interactive and sensitive web actions are unavailable","source":"Prompt 34 web automation","status":"deferred","severity":"high","user_impact":"JARVIS cannot click, type, submit, upload, download, log in, purchase, message, delete, or change accounts.","evidence":"The manager classifies these operations as high or critical risk and blocks them before adapter dispatch.","fixability_now":"no","fix_implemented_in_this_prompt":false,"verification":"tests/test_web_automation.py","next_owner_prompt":"Prompt 46 - Approval-Gated Interactive Web Automation","review_category":"intentionally_restricted"},
     {"limitation_id":"LIM-028","title":"No real read-only page inspection or redirect verification","source":"Prompt 34.1 web inspection","status":"fixed","severity":"high","user_impact":"JARVIS could validate web requests but could not inspect a public page.","evidence":"ReadOnlyWebInspectionAdapter performs bounded text-only fetches with DNS/IP and per-redirect policy validation, tested with local HTTP servers and manually with example.com.","fixability_now":"yes","fix_implemented_in_this_prompt":false,"verification":"tests/test_web_automation.py; web open https://example.com","next_owner_prompt":null},
     {"limitation_id":"LIM-029","title":"Image generation workflow is not implemented","source":"Prompt 34.2 product vision","status":"fixed","severity":"medium","user_impact":"JARVIS previously had no governed in-product workflow for generating diagrams, mockups, or creative images.","evidence":"Prompt 41 added a governed local-first image workflow foundation with prompt validation, safety review, provider abstraction, dry-run planning, bounded metadata, provider listing, bounded history, and truthful unavailable-provider handling.","fixability_now":"yes","fix_implemented_in_this_prompt":true,"verification":"tests/test_image_generation.py; image status; image plan; image safety; image generate --dry-run","next_owner_prompt":null,"subsystem":"image_generation","fixed_at":"2026-08-04","fix_commit":"pending","test_coverage":"tests/test_image_generation.py","recommended_action":"Keep the workflow local-first and add real providers only with separate approved integration work.","review_category":"fix_now","classification_reason":"This workflow foundation was fully implementable, locally testable, and kept within existing safety boundaries."},
-    {"limitation_id":"LIM-030","title":"Video editing workflow is not implemented","source":"Prompt 34.2 product vision","status":"deferred","severity":"medium","user_impact":"JARVIS cannot organize clips, generate captions, or integrate with an editor as a governed workflow.","evidence":"No video indexing, editing, or export module exists.","fixability_now":"no","fix_implemented_in_this_prompt":false,"verification":"Repository inspection; docs/JARVIS_USE_CASES.md","next_owner_prompt":"Prompt 42 - Video Editing Workflow Foundation","review_category":"next_roadmap_milestone"},
+    {"limitation_id":"LIM-030","title":"Video editing workflow is not implemented","source":"Prompt 34.2 product vision","status":"fixed","severity":"medium","user_impact":"JARVIS cannot organize clips, generate captions, or integrate with an editor as a governed workflow.","evidence":"Prompt 42 added a governed local-first video editing workflow foundation with prompt validation, safety review, provider abstraction, dry-run planning, bounded metadata, truthful unavailable-provider handling, and CLI commands.","fixability_now":"yes","fix_implemented_in_this_prompt":true,"verification":"tests/test_video_editing.py; video status; video plan; video safety; video history; video show","next_owner_prompt":null,"subsystem":"video_editing","fixed_at":"2026-08-05","fix_commit":"pending","test_coverage":"tests/test_video_editing.py","recommended_action":"Keep the workflow local-first and add real providers only with approved integrations.","review_category":"fix_now","classification_reason":"This workflow foundation was fully implementable, locally testable, and kept within existing safety boundaries."},
     {"limitation_id":"LIM-031","title":"Cross-device synchronization is unavailable","source":"Prompt 34.2 product vision","status":"deferred","severity":"high","user_impact":"Approved project state cannot move among trusted desktop and mobile devices.","evidence":"The current sync adapter is a local queue and no remote encrypted transport exists.","fixability_now":"no","fix_implemented_in_this_prompt":false,"verification":"sync status; docs/SYNC_STRATEGY.md","next_owner_prompt":"Prompt 44 - Cross-Device Sync","review_category":"deferred_by_design"},
     {"limitation_id":"LIM-032","title":"Dedicated Raspberry Pi and hardware support is not implemented","source":"Prompt 34.2 product vision","status":"deferred","severity":"medium","user_impact":"Hardware work relies on general coding guidance rather than verified device profiles and deployment checks.","evidence":"No Raspberry Pi, Arduino, ESP32, GPIO, or hardware profile module exists.","fixability_now":"no","fix_implemented_in_this_prompt":false,"verification":"Repository inspection; docs/JARVIS_USE_CASES.md","next_owner_prompt":"Existing future hardware-support milestone","review_category":"deferred_by_design"},
     {"limitation_id":"LIM-033","title":"Dedicated study assistant workflow is not implemented","source":"Prompt 34.2 product vision","status":"deferred","severity":"medium","user_impact":"General chat can help with study, but quizzes, revision plans, academic evidence, and progress are not one governed workflow.","evidence":"Conversation, retrieval, goals, and research exist independently; no Study Assistant module composes them.","fixability_now":"no","fix_implemented_in_this_prompt":false,"verification":"Repository inspection; docs/JARVIS_USE_CASES.md","next_owner_prompt":"Future Study Assistant and Research Workflows","review_category":"deferred_by_design"},

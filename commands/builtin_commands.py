@@ -104,6 +104,9 @@ def _vision_manager(context:CommandContext):
 def _image_generation_manager(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else getattr(conversation,"image_generation",None) or (getattr(conversation,"metadata",{}) or {}).get("image_generation")
+def _video_editing_manager(context:CommandContext):
+    conversation=context.conversation_context
+    return None if conversation is None else getattr(conversation,"video_editing",None) or (getattr(conversation,"metadata",{}) or {}).get("video_editing")
 def _sync_manager(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else getattr(conversation,"sync_intelligence",None) or (getattr(conversation,"metadata",{}) or {}).get("sync_intelligence")
@@ -342,6 +345,13 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("image safety", "Evaluate image prompt safety", "image", (), CommandPermission.UTILITY),
         ("image history", "Show bounded recent image jobs", "image", (), CommandPermission.DIAGNOSTIC),
         ("image show", "Show one image generation job", "image", (), CommandPermission.DIAGNOSTIC),
+        ("video status", "Show video editing readiness", "video", (), CommandPermission.DIAGNOSTIC),
+        ("video help", "Show video editing command help", "video", (), CommandPermission.UTILITY),
+        ("video providers", "List registered video providers", "video", (), CommandPermission.DIAGNOSTIC),
+        ("video plan", "Plan a non-destructive video edit", "video", (), CommandPermission.UTILITY),
+        ("video safety", "Evaluate video prompt safety", "video", (), CommandPermission.UTILITY),
+        ("video history", "Show bounded recent video plans", "video", (), CommandPermission.DIAGNOSTIC),
+        ("video show", "Show one video editing plan", "video", (), CommandPermission.DIAGNOSTIC),
         ("sync status", "Show sync and local queue readiness", "sync", (), CommandPermission.SYNC),
         ("sync on", "Enable manual local queue mode", "sync", (), CommandPermission.SYNC),
         ("sync off", "Disable sync without deleting queue items", "sync", (), CommandPermission.SYNC),
@@ -897,6 +907,94 @@ def _handler_for(name: str):
                     error=result.error,
                     metadata=result.metadata,
                 )
+        if name.startswith("video "):
+            video = _video_editing_manager(context); args = context.arguments
+            if video is None:
+                return _text_response("Video editing workflow is unavailable.")
+            if name == "video help":
+                return _text_response(
+                    "Video commands: video status, video providers, video plan <prompt>, video safety <prompt>, video history, video show <plan_id>."
+                )
+            if name == "video status":
+                status = video.status()
+                return _text_response(
+                    "Video status: "
+                    f"enabled={'yes' if status['enabled'] else 'no'} "
+                    f"local_only={'on' if status['local_only'] else 'off'} "
+                    f"provider={status['default_provider']} "
+                    f"provider_status={status['provider_status']} "
+                    f"metadata={'on' if status['save_metadata'] else 'off'} "
+                    f"output={status['output_policy']}.",
+                    **status,
+                )
+            if name == "video providers":
+                providers = video.list_providers()
+                summary = "; ".join(
+                    f"{item['provider_name']}:{item['status']}:{item['model'] or 'no-model'}"
+                    for item in providers
+                ) or "none"
+                return _text_response(f"Video providers: {summary}.", providers=tuple(providers))
+            if name == "video history":
+                plans = video.history()
+                text = "; ".join(
+                    f"{item['plan_id']}:{item['status']}:{item['provider']}:{item['prompt_preview']}"
+                    for item in plans
+                ) or "none"
+                return _text_response(f"Video history ({len(plans)}): {text}.", jobs=tuple(plans))
+            if name == "video show":
+                if not args:
+                    return _text_response("Usage: video show <video_plan_id>")
+                plan = video.show(args[0])
+                if plan is None:
+                    return _text_response("Video plan not found.")
+                return _text_response(
+                    f"Video plan {plan['plan_id']}: status={plan['status']} provider={plan['provider']} "
+                    f"dry_run={'yes' if plan['dry_run'] else 'no'} steps={len(plan['plan_steps'])} "
+                    f"deliverables={', '.join(plan['deliverables']) or 'none'} prompt={plan['prompt_preview']}.",
+                    **plan,
+                )
+            if name in {"video plan", "video safety"}:
+                if not args:
+                    return _text_response(f"Usage: {name} <prompt>")
+                prompt = " ".join(args)
+                if name == "video safety":
+                    safety = video.evaluate_safety(prompt)
+                    alternative = f" Alternative: {safety.safe_alternative}" if safety.safe_alternative else ""
+                    return _text_response(
+                        f"Video safety: allowed={'yes' if safety.allowed else 'no'} category={safety.category} severity={safety.severity}. {safety.reason}{alternative}",
+                        allowed=safety.allowed,
+                        category=safety.category,
+                        severity=safety.severity,
+                        reason=safety.reason,
+                        safe_alternative=safety.safe_alternative,
+                    )
+                result = video.plan(prompt, dry_run=True)
+                if result.status.value == "planned":
+                    return _text_response(
+                        f"Video plan prepared: plan={result.plan_id} provider={result.provider} steps={len(result.plan_steps)} deliverables={len(result.deliverables)}.",
+                        plan_id=result.plan_id,
+                        provider=result.provider,
+                        plan_steps=result.plan_steps,
+                        deliverables=result.deliverables,
+                        metadata_path=result.metadata_path,
+                        prompt_preview=result.prompt_preview,
+                        dry_run=result.dry_run,
+                        warnings=result.warnings,
+                        error=result.error,
+                    )
+                if result.status.value == "blocked":
+                    return _text_response(
+                        f"Video planning blocked: {result.message}",
+                        plan_id=result.plan_id,
+                        provider=result.provider,
+                        safety_status="blocked",
+                        warnings=result.warnings,
+                        error=result.error,
+                        dry_run=result.dry_run,
+                    )
+                if result.status.value == "disabled":
+                    return _text_response("Video editing is disabled in local configuration.")
+                return _text_response(f"Video planning unavailable: {result.message}", plan_id=result.plan_id, provider=result.provider, error=result.error)
         if name.startswith("sync "):
             sync = _sync_manager(context); args = context.arguments
             if sync is None:

@@ -151,6 +151,19 @@ class ImageGenerationConfig:
     allow_overwrite: bool = False
     safety_filter_enabled: bool = True
 
+
+@dataclass(frozen=True, slots=True)
+class VideoEditingConfig:
+    enabled: bool = False
+    default_provider: str = "unavailable"
+    local_only: bool = True
+    output_dir: Path | None = None
+    max_prompt_chars: int = 600
+    max_source_media_items: int = 12
+    save_metadata: bool = True
+    allow_overwrite: bool = False
+    safety_filter_enabled: bool = True
+
 @dataclass(frozen=True, slots=True)
 class SyncConfig:
     enabled: bool = False
@@ -307,6 +320,7 @@ class AppSettings:
     voice: VoiceConfig = field(default_factory=VoiceConfig)
     vision: VisionConfig = field(default_factory=VisionConfig)
     image_generation: ImageGenerationConfig = field(default_factory=ImageGenerationConfig)
+    video_editing: VideoEditingConfig = field(default_factory=VideoEditingConfig)
     sync: SyncConfig = field(default_factory=SyncConfig)
     web_automation: WebAutomationConfig = field(default_factory=WebAutomationConfig)
     interface: InterfaceConfig = field(default_factory=InterfaceConfig)

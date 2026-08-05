@@ -18,6 +18,7 @@ STATUS: Final[dict[str, str]] = {
     "online_sync": "partial_local_queue",
     "web_automation": "partial_read_only",
     "mobile_automation": "partial_planning_only",
+    "video_editing": "partial_workflow_foundation",
     "voice_input": "working_local_vosk",
     "image_generation": "partial_workflow_foundation",
 }
@@ -29,7 +30,7 @@ ROOT_PAGE: Final[str] = """<!doctype html>
 <body><main>
 <h1>JARVIS OS</h1>
 <p>JARVIS OS is currently CLI-first. This deployment is only the online status foundation.</p>
-<p>Full cloud sync and web or mobile automation are not available yet. Local-only features run on the user's device.</p>
+    <p>Full cloud sync and web, mobile, or video automation are not available yet. Local-only features run on the user's device.</p>
 <p><a href="/api/status">View deployment status</a></p>
 </main></body></html>"""
 
