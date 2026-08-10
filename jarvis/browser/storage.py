@@ -1,0 +1,1 @@
+BROWSER_HISTORY_POLICY="metadata_only_runtime_ignored"

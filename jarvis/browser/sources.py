@@ -1,0 +1,1 @@
+BROWSER_SOURCE_POLICY="public_read_only_no_login_forms_purchases_cookies_or_sessions"
