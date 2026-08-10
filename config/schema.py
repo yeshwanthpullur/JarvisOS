@@ -223,6 +223,10 @@ class EvaluationConfig:
     enabled: bool = True; default_mode: str = "local_only"; allow_cloud_telemetry: bool = False; allow_remote_logging: bool = False; allow_background_runner: bool = False; save_history: bool = True; max_cases_per_suite: int = 100; max_output_chars: int = 8000; max_history_items: int = 25; redact_sensitive_values: bool = True; block_private_paths: bool = True; require_local_only: bool = True; fail_on_truthfulness_mismatch: bool = True; fail_on_secret_leakage: bool = True; fail_on_path_leakage: bool = True
 
 @dataclass(frozen=True, slots=True)
+class ReleaseReadinessConfig:
+    enabled: bool = True; validation_only: bool = True; require_all_blocking_gates: bool = True; allow_tag_creation: bool = False; allow_release_creation: bool = False; allow_deployment: bool = False; require_clean_repository: bool = True; require_origin_match: bool = True; require_vercel_status_only: bool = True; max_gates: int = 50; max_output_chars: int = 8000
+
+@dataclass(frozen=True, slots=True)
 class ExecutionConfig:
     enabled: bool = True; default_mode: str = "plan_only"; local_first: bool = True; allow_file_writes: bool = True; allow_command_execution: bool = True; allow_git_writes: bool = True; allow_browser_read: bool = True; allow_browser_actions: bool = False; allow_notifications: bool = True; allow_scheduler_runner: bool = True; allow_communication_send: bool = False; allow_mcp_execution: bool = False; allow_model_runtime_start: bool = False; allow_external_network: bool = False; allow_background_execution: bool = False; allow_secrets_access: bool = False; allow_credentials_access: bool = False; require_approval_for_side_effects: bool = True; block_critical_actions: bool = True; max_plan_steps: int = 8; max_history_items: int = 50; save_history: bool = True; redact_sensitive_values: bool = True; block_private_paths: bool = True
 @dataclass(frozen=True, slots=True)
@@ -446,6 +450,7 @@ class AppSettings:
     adapters: AdaptersConfig = field(default_factory=AdaptersConfig)
     advanced_models: AdvancedModelsConfig = field(default_factory=AdvancedModelsConfig)
     evaluation: EvaluationConfig = field(default_factory=EvaluationConfig)
+    release_readiness: ReleaseReadinessConfig = field(default_factory=ReleaseReadinessConfig)
     execution: ExecutionConfig = field(default_factory=ExecutionConfig)
     approvals: ApprovalsConfig = field(default_factory=ApprovalsConfig)
     broker: BrokerConfig = field(default_factory=BrokerConfig)

@@ -62,7 +62,13 @@ Updated: 2026-08-11
 
 ## Next Milestone
 
-Phase 4 is implemented through Prompt 70. The next milestone is a separately approved Phase 4 release checkpoint; Phase 5 has not started.
+Prompt 85's validation layer is implemented, but Phase 5 is **not complete**. Prompts 71-84 remain specifications only, so the production-readiness and `v2.0.0` release gates are blocked. No Phase 6 work has started.
+
+## Blocked Phase 5 Validation
+
+- Prompts 71-84 require separate implementation authorization and verified checkpoint work.
+- Prompt 85 cannot substitute validation for missing provider, MCP, plugin, model, research, knowledge, workflow, reliability, or governance runtimes.
+- No `v2.0.0` tag or release may be created while blocking gates remain.
 
 ## Preserved Deferred Themes
 

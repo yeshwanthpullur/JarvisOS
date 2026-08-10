@@ -44,6 +44,7 @@ _SUBCOMMANDS = {
     "adapter status", "adapter help", "adapter list", "adapter show", "adapter plan", "adapter safety", "adapter permissions", "adapter capabilities", "adapter show-job", "adapter history",
     "model advanced",
     "evaluation status", "evaluation help", "evaluation run", "evaluation routing", "evaluation safety", "evaluation truthfulness", "evaluation observability", "evaluation show", "evaluation history",
+    "release-readiness status", "release-readiness help", "release-readiness gates", "release-readiness contracts", "release-readiness missing", "release-readiness candidate",
     *{f"execution {x}" for x in ("status","help","policy","permissions","readiness","risk","plan","capabilities","show","history")},
     *{f"approval {x}" for x in ("status","help","request","pending","list","show","approve","deny","cancel","revoke","expire","validate")},
     *{f"broker {x}" for x in ("status","help","capabilities","plan","validate","dry-run","execute","show","history")},

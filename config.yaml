@@ -393,6 +393,19 @@ evaluation:
   fail_on_secret_leakage: true
   fail_on_path_leakage: true
 
+release_readiness:
+  enabled: true
+  validation_only: true
+  require_all_blocking_gates: true
+  allow_tag_creation: false
+  allow_release_creation: false
+  allow_deployment: false
+  require_clean_repository: true
+  require_origin_match: true
+  require_vercel_status_only: true
+  max_gates: 50
+  max_output_chars: 8000
+
 execution:
   enabled: true
   default_mode: plan_only

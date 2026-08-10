@@ -23,6 +23,7 @@ from jarvis.communication import CommunicationAgent, render_communication_comman
 from jarvis.adapters import AdapterAgent, render_adapter_command
 from jarvis.evaluation import EvaluationRunner, render_evaluation_command
 from jarvis.execution.cli import get_phase4_runtime, render_phase4_command
+from jarvis.release_readiness import ReleaseReadinessEvaluator, render_release_command
 
 
 def _manager(context: CommandContext):
@@ -270,6 +271,11 @@ def _evaluation_runner(context: CommandContext) -> EvaluationRunner:
     return _foundation_instance(context, "evaluation_runner", lambda: EvaluationRunner(_prime_agent(context), _adapter_agent(context), _advanced_model_planner(context)))
 
 
+def _release_evaluator(context: CommandContext) -> ReleaseReadinessEvaluator:
+    root = Path(__file__).resolve().parents[1]
+    return _foundation_instance(context, "release_readiness_evaluator", lambda: ReleaseReadinessEvaluator(root))
+
+
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
     if session is None:
         return default
@@ -321,6 +327,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         adapter_status = _adapter_agent(context).status()
         advanced_status = _advanced_model_planner(context).status()
         evaluation_status = _evaluation_runner(context).status()
+        release_status = _release_evaluator(context).evaluate()
         phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
         phase3_text = (
             "phase3="
@@ -333,7 +340,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
-            "phase4=controlled_local/manual/no_daemon "
+            f"phase4=controlled_local p85={release_status.status.value} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -370,6 +377,9 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "scheduler_runtime_status": "manual_only",
             "background_execution": False,
             "public_execution_api": False,
+            "prompt85_validation_status": release_status.status.value,
+            "phase5_missing_components": len(release_status.missing_components),
+            "phase6_started": False,
         }
     return _text_response(
         "Project status: "
@@ -534,6 +544,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("evaluation observability", "Show local metadata snapshot", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("evaluation show", "Show one evaluation result", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("evaluation history", "Show bounded evaluation history", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        *((f"release-readiness {op}", f"Prompt 85 release readiness {op}", "evaluation", (), CommandPermission.DIAGNOSTIC) for op in ("status", "help", "gates", "contracts", "missing", "candidate")),
         *((f"execution {op}", f"Phase 4 execution {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","policy","permissions","readiness","risk","plan","capabilities","show","history")),
         *((f"approval {op}", f"Explicit approval {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","request","pending","list","show","approve","deny","cancel","revoke","expire","validate")),
         *((f"broker {op}", f"Execution broker {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","capabilities","plan","validate","dry-run","execute","show","history")),
@@ -879,6 +890,8 @@ def _handler_for(name: str):
             return _text_response(render_adapter_command(_adapter_agent(context), name, context.arguments))
         if name.startswith("evaluation "):
             return _text_response(render_evaluation_command(_evaluation_runner(context), name, context.arguments))
+        if name.startswith("release-readiness "):
+            return _text_response(render_release_command(_release_evaluator(context), name, context.arguments))
         if name.startswith("multiagent "):
             agent_manager = _agent_manager(context)
             orchestrator = getattr(agent_manager, "orchestrator", None)

@@ -40,6 +40,10 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 
 **91%** toward the broader local-first JARVIS MVP described by the roadmap. The increase reflects tested, narrowly scoped local approvals and execution; it does not imply autonomous, external, or unrestricted execution.
 
+Prompt 85 adds release-readiness validation without increasing capability readiness. The current Phase 5 release assessment is blocked because Prompts 71-84 are not implemented. MVP readiness therefore remains 91%.
+
+Verification: 8 focused Prompt 85 tests, 54 focused/cross-phase integration tests, 33 configuration/tracking tests, and the full 1,768-test suite pass with no skips, failures, or errors. Compilation and all required static scans pass.
+
 This is not a mathematical average of feature labels. The one-point increase from 83% reflects the dedicated Coding Agent foundation, including safe repository diagnostics, planning, CLI, configuration, and registry integration. It remains conservative because code edits, commands, commits, pushes, dependency installation, deployments, and provider-backed coding execution are not implemented.
 
 Machine-readable details: [`project_health.json`](project_health.json).

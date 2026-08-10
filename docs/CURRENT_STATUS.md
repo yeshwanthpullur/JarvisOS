@@ -102,11 +102,18 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 
 ## Next Recommended Prompt
 
-Phase 4 is implemented through Prompt 70. Awaiting a separately approved Phase 4 release checkpoint; Phase 5 has not started.
+Prompt 85 production-readiness validation is implemented and currently **blocked**. Prompts 71-84 remain specifications only; Phase 5 is not complete and Phase 6 has not started.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
 ## Last Verified Tests
+
+- Prompt 85 focused release-readiness tests: 8 passed, 0 skipped, 0 failed, 0 errors.
+- Prompt 85 focused and cross-phase integration gate: 54 passed, 0 skipped, 0 failed, 0 errors.
+- Prompt 85 configuration/tracking validation: 33 passed, 0 skipped, 0 failed, 0 errors.
+- Prompt 85 final full suite: 1,768 passed, 0 skipped, 0 failed, 0 errors.
+- Compilation, JSON validation, secret scan, runtime-artifact scan, absolute-path scan, and `git diff --check` passed.
+- Production-readiness result: blocked because thirteen required Phase 5 components from Prompts 71-84 are absent.
 
 - Prompt 41 focused image-generation suite: 13 passed, 0 skipped, 0 failed, 0 errors.
 - Prompt 42 focused video-editing suite: 49 passed, 0 skipped, 0 failed, 0 errors.

@@ -4,6 +4,8 @@ JARVIS OS is currently at **v1.7.0-alpha - Phase 3 Batch 2 Foundation**, with th
 
 Phase 4 adds explicit local approvals and a central execution broker for narrowly scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations. Execution remains `plan_only` by default; critical actions, secrets, force-push, browser writes, external messaging, and hidden/background operation remain blocked.
 
+Prompt 85 now provides a validation-only production-readiness gate evaluator. Its current result is **blocked** because Prompts 71-84 remain specifications only and their Phase 5 runtimes are absent. No `v2.0.0` tag or release has been created. See [Phase 5 Final Validation](docs/PHASE_5_FINAL_VALIDATION.md).
+
 For the central product direction and evidence-based tracking, see [Master Use Cases](docs/JARVIS_USE_CASES.md), [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise status summary is available from the CLI with `project status`; bounded limitation evidence is available through `limitations status`, `limitations open`, and `limitations show <id>`.
 
 Tool Intelligence provides governed capability matching, schema validation, risk and approval checks, dry runs, bounded execution, normalized results, and command access through the existing Executive path. See [docs/TOOL_INTELLIGENCE.md](docs/TOOL_INTELLIGENCE.md).

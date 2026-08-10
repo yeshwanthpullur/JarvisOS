@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased - Prompt 85 Production-Readiness Validation
+
+### Added
+
+- Added typed release gates, system authority contracts, a blocked release-candidate model, and deterministic Phase 5 prerequisite detection.
+- Added bounded `release-readiness` CLI diagnostics and safe release-validation configuration with tag, release, and deployment actions disabled.
+- Added production-readiness and operations documentation.
+
+### Status
+
+- Prompt 85 validation is implemented, but Phase 5 readiness is blocked because Prompts 71-84 remain unimplemented specifications.
+- No provider, MCP, plugin, governance, reliability, or workflow capability was fabricated; no tag or release was created.
+
 ## Unreleased - Phase 4 Controlled Execution Foundation
 
 ### Added
