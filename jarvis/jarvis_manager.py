@@ -10,6 +10,7 @@ from jarvis.jarvis_cache import JarvisCache
 from jarvis.jarvis_context import JarvisContext
 from jarvis.agents import AgentRegistry, PrimeAgent
 from jarvis.models import ModelRouter, build_default_model_registry
+from jarvis.skills import build_default_skill_registry
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
 from jarvis.jarvis_diagnostics import JarvisDiagnostics
@@ -173,10 +174,12 @@ class JarvisManager:
             local_only_default=getattr(model_config, "local_only_default", True),
             allow_cloud_providers=getattr(model_config, "allow_cloud_providers", False),
         )
+        self.skill_registry = build_default_skill_registry()
         prime_config = getattr(context.settings, "prime", None) if context else None
         self.prime_agent = PrimeAgent(
             self.agent_registry,
             model_router=self.model_router,
+            skill_registry=self.skill_registry,
             enabled=getattr(prime_config, "enabled", True),
             max_plan_steps=getattr(prime_config, "max_plan_steps", 8),
             block_critical_risk=getattr(prime_config, "block_critical_risk", True),
@@ -231,6 +234,7 @@ class JarvisManager:
             "prime_agent": self.prime_agent,
             "model_registry": self.model_registry,
             "model_router": self.model_router,
+            "skill_registry": self.skill_registry,
             "skills": self.skills,
             "workflow": self.workflow,
             "retrieval": self.retrieval,
@@ -310,6 +314,7 @@ class JarvisManager:
             prime_agent=self.prime_agent,
             model_registry=self.model_registry,
             model_router=self.model_router,
+            skill_registry=self.skill_registry,
             tool_manager=self.tools,
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,

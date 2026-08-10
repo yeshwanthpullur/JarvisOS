@@ -148,6 +148,19 @@ class PrimeConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class SkillsConfig:
+    enabled: bool = True
+    allow_external_plugins: bool = False
+    allow_mcp: bool = False
+    default_execution_mode: str = "plan_only"
+    max_skills: int = 64
+    max_capabilities_per_skill: int = 32
+    max_output_chars: int = 8000
+    require_approval_for_side_effects: bool = True
+    block_secrets_access: bool = True
+
+
+@dataclass(frozen=True, slots=True)
 class ToolsConfig:
     """Governed tool execution limits."""
 
@@ -350,6 +363,7 @@ class AppSettings:
     desktop: DesktopConfig
     mobile: MobileConfig
     prime: PrimeConfig = field(default_factory=PrimeConfig)
+    skills: SkillsConfig = field(default_factory=SkillsConfig)
     conversation: ConversationIntelligenceConfig = field(default_factory=ConversationIntelligenceConfig)
     tools: ToolsConfig = field(default_factory=ToolsConfig)
     planning: PlanningConfig = field(default_factory=PlanningConfig)

@@ -214,6 +214,17 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "block_critical_risk": True,
         "local_only": True,
     },
+    "skills": {
+        "enabled": True,
+        "allow_external_plugins": False,
+        "allow_mcp": False,
+        "default_execution_mode": "plan_only",
+        "max_skills": 64,
+        "max_capabilities_per_skill": 32,
+        "max_output_chars": 8000,
+        "require_approval_for_side_effects": True,
+        "block_secrets_access": True,
+    },
     "tools": {
         "maximum_per_request": 3,
         "maximum_per_coordination": 6,

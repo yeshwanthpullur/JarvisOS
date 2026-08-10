@@ -14,6 +14,7 @@ from providers import ProviderRequest
 from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
 from jarvis.agents import AgentRegistry, PrimeAgent, render_agent_command, render_prime_command
 from jarvis.models import ModelProviderRegistry, ModelRouter, build_default_model_registry, render_model_command
+from jarvis.skills import SkillRegistry, build_default_skill_registry, render_skill_command
 
 
 def _manager(context: CommandContext):
@@ -115,6 +116,14 @@ def _model_foundation(context: CommandContext) -> tuple[ModelProviderRegistry, M
     if not isinstance(router, ModelRouter):
         router = ModelRouter(registry)
     return registry, router
+
+
+def _skill_registry(context: CommandContext) -> SkillRegistry:
+    conversation = context.conversation_context
+    direct = getattr(conversation, "skill_registry", None) if conversation is not None else None
+    metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
+    registry = direct if isinstance(direct, SkillRegistry) else metadata.get("skill_registry")
+    return registry if isinstance(registry, SkillRegistry) else build_default_skill_registry()
 
 
 def _tool_manager(context: CommandContext):
@@ -318,6 +327,13 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("model explain", "Explain a model route", "provider", (), CommandPermission.PROVIDER),
         ("model hardware", "Show bounded local hardware hints", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("model policy", "Show model routing privacy policy", "provider", (), CommandPermission.PROVIDER),
+        ("skill status", "Show controlled skill registry status", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("skill list", "List declarative skills", "tool", (), CommandPermission.UTILITY),
+        ("skill capabilities", "List declared skill capabilities", "tool", (), CommandPermission.UTILITY),
+        ("skill show", "Show one skill manifest", "tool", (), CommandPermission.UTILITY),
+        ("skill find", "Find skills by capability or category", "tool", (), CommandPermission.UTILITY),
+        ("skill permissions", "Show declared skill permissions", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("skill diagnostics", "Validate skill metadata", "tool", (), CommandPermission.DIAGNOSTIC),
         ("multiagent status", "Show multi-agent status", "agent", (), CommandPermission.AGENT),
         ("multiagent list", "List recent coordinations", "agent", (), CommandPermission.AGENT),
         ("multiagent show", "Show a coordination", "agent", (), CommandPermission.AGENT),
@@ -563,6 +579,8 @@ def _handler_for(name: str):
         if name.startswith("model "):
             registry, router = _model_foundation(context)
             return _text_response(render_model_command(registry, router, name, context.arguments))
+        if name.startswith("skill "):
+            return _text_response(render_skill_command(_skill_registry(context), name, context.arguments))
         if name.startswith("multiagent "):
             agent_manager = _agent_manager(context)
             orchestrator = getattr(agent_manager, "orchestrator", None)
