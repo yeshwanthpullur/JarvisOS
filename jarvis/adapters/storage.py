@@ -1,0 +1,1 @@
+ADAPTER_HISTORY_POLICY="bounded_metadata_no_runtime_tokens_or_tool_output"
