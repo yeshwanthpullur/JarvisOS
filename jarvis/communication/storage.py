@@ -1,0 +1,1 @@
+COMMUNICATION_HISTORY_POLICY="bounded_metadata_no_contacts_tokens_or_full_sensitive_bodies"
