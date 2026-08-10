@@ -41,6 +41,7 @@ class ConversationContext:
     model_router: Any | None = None
     skill_registry: Any | None = None
     research_agent: Any | None = None
+    coding_agent: Any | None = None
     sync_intelligence: Any | None = None
     web_automation: Any | None = None
     mobile_automation: Any | None = None

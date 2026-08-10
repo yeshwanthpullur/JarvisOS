@@ -1,10 +1,10 @@
 {
   "release": "v1.6.0-alpha",
   "commit": "c8300e498e89a01e4f85297eaf510040e029215e",
-  "updated_at": "2026-08-10",
+  "updated_at": "2026-08-11",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Awaiting explicit approval for Prompt 52",
-  "overall_mvp_readiness": 83,
+  "next_milestone": "Awaiting explicit approval for Prompt 53",
+  "overall_mvp_readiness": 84,
   "limitations": {
     "total": 47,
     "fixed": 24,
@@ -33,13 +33,14 @@
     {"name": "Mobile Automation", "status": "Partial", "confidence": 45, "evidence": "Planning-only manager, policy gates, CLI commands, adapters, bounded redacted audit, and tests exist; no phone is accessed.", "next_action": "Add a separately approved real adapter and enrollment model without weakening current blocks."},
     {"name": "Study and Research Workflows", "status": "Partial", "confidence": 45, "evidence": "Conversation, retrieval, research, goals, planning, and read-only web foundations exist; no dedicated study workflow composes them.", "next_action": "Keep this partial until a dedicated future study workflow milestone is implemented."},
     {"name": "Research Agent", "status": "Partial", "confidence": 60, "evidence": "Typed configuration, deterministic planning, bounded safety filtering, restricted-domain handling, metadata-only history, evidence containers, Prime routing, and read-only source policy are integrated; autonomous retrieval is not.", "next_action": "Add retrieval only through governed read-only integrations."},
+    {"name": "Coding Agent", "status": "Partial", "confidence": 66, "evidence": "Typed planning, deterministic intent/risk policy, read-only Git inspection, metadata-only diff review, bounded history, Prime routing, registry skills, and safe configuration are integrated; autonomous edits are not.", "next_action": "Keep write, command, commit, push, install, and deployment operations disabled until separately approved."},
     {"name": "Advanced Builder Workflows", "status": "Partial", "confidence": 35, "evidence": "Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized.", "next_action": "Formalize the governed workflow in a future dedicated milestone."},
     {"name": "Raspberry Pi and Hardware", "status": "Partial", "confidence": 20, "evidence": "General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exists.", "next_action": "Keep hardware work deferred to a future dedicated milestone."},
     {"name": "Creative Media Workflows", "status": "Partial", "confidence": 44, "evidence": "Governed image-generation and video-editing workflow foundations exist with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation and real local editing still require configured providers.", "next_action": "Add real local media providers only with approved integrations."},
     {"name": "Communication Assistance", "status": "Not Started", "confidence": 0, "evidence": "Future communication agent and skill metadata is visible, but no call, contact, calendar, messaging, or communication connector is integrated.", "next_action": "Define consent and connector boundaries in a future communication milestone."},
     {"name": "Personal Workspace", "status": "Partial", "confidence": 34, "evidence": "CLI access, project tracking, and Phase 3 routing metadata compose capabilities without replacing their authoritative subsystems; a complete multi-tool workspace remains future work.", "next_action": "Harden the current local-first experience without duplicating authorities."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 75, "evidence": "Permission, approval, locality, tool, provider, and UI boundaries are tested.", "next_action": "Threat-review every external integration."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 94, "evidence": "Prompt 51 focused and integration checks pass, and the final 1679-test full suite passes with no skips, failures, or errors.", "next_action": "Keep release evidence and status docs current."}
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 94, "evidence": "Prompt 52 focused and integration checks pass, and the final 1703-test full suite passes with no skips, failures, or errors.", "next_action": "Keep release evidence and status docs current."}
   ],
   "phase3": {
     "status": "Partial - plan-only multi-agent foundation",
@@ -51,6 +52,12 @@
     "research_agent_status": "partial",
     "research_external_search_api_enabled": false,
     "research_citations_required_for_web_claims": true,
+    "coding_agent": "ready_plan_only",
+    "coding_agent_status": "partial",
+    "coding_write_operations_enabled": false,
+    "coding_command_execution_enabled": false,
+    "coding_require_approval_for_write": true,
+    "coding_require_approval_for_push": true,
     "total_agents": 22,
     "default_execution_mode": "plan_only",
     "cloud_providers_enabled": false,

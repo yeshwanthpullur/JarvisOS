@@ -61,6 +61,7 @@ class JarvisContext:
     model_router: Any | None = None
     skill_registry: Any | None = None
     research_agent: Any | None = None
+    coding_agent: Any | None = None
     tool_manager: Any | None = None
     autonomous_planning: Any | None = None
     voice_intelligence: Any | None = None

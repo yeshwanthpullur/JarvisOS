@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased - Coding Agent Foundation
+
+### Added
+
+- Added typed coding tasks, plans, repository inspections, diff reviews, results, intent/risk/status models, and bounded metadata-only history.
+- Added deterministic coding planning, safe read-only Git inspection, metadata-only diff review, test recommendations, risk classification, and sensitive-file redaction.
+- Added `coding status`, `coding help`, `coding inspect`, `coding plan`, `coding risk`, `coding diff`, `coding review`, `coding tests`, `coding show`, and `coding history`.
+- Integrated `coding_agent` with Prime routing, the Agent Registry, Skill Registry, Model Router, project status, and typed configuration.
+
+### Safety
+
+- Coding remains `plan_only`. File writes, command execution, dependency installation, commits, pushes, deployments, secret access, broad deletion, and force-push are disabled or blocked.
+- Runtime coding history is ignored and metadata-only; full requests, source copies, diffs, secrets, command output, and private paths are not stored.
+
+### Verification
+
+- Focused Coding Agent tests: 24 passed, 0 skipped, 0 failed, 0 errors.
+- Coding/Phase 3/tracking integration tests: 98 passed, 0 skipped, 0 failed, 0 errors.
+- Cross-subsystem regression suite: 420 passed, 0 skipped, 0 failed, 0 errors.
+- Full suite: 1,703 passed, 0 skipped, 0 failed, 0 errors.
+- Compilation, JSON/document consistency, secret-shaped-value, absolute-path leakage, and `git diff --check` gates passed.
+
 ## Unreleased - Research Agent Foundation
 
 ### Added

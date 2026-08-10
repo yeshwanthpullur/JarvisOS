@@ -23,6 +23,7 @@ from .prime import (
 from .registry import AgentRegistry, AgentRegistryError
 from .specialists import register_specialist_agents, specialist_entries
 from jarvis.research import ResearchAgent, classify_research_intent, classify_research_risk, render_research_command
+from jarvis.coding import CodingAgent, classify_coding_intent, evaluate_coding_safety, render_coding_command
 
 __all__ = [
     "AgentApprovalState", "AgentCapability", "AgentCapabilityType", "AgentDecision",
@@ -34,4 +35,5 @@ __all__ = [
     "render_prime_command", "requires_approval",
     "register_specialist_agents", "specialist_entries",
     "ResearchAgent", "classify_research_intent", "classify_research_risk", "render_research_command",
+    "CodingAgent", "classify_coding_intent", "evaluate_coding_safety", "render_coding_command",
 ]

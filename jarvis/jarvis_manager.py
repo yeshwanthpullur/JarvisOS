@@ -12,6 +12,7 @@ from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents
 from jarvis.models import ModelRouter, build_default_model_registry
 from jarvis.skills import build_default_skill_registry
 from jarvis.research import ResearchAgent, ResearchEvidenceCollector, ResearchHistoryStore, ResearchPlanner
+from jarvis.coding import CodingAgent, CodingHistoryStore, CodingPlanner, DiffReviewer, RepoInspector
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
 from jarvis.jarvis_diagnostics import JarvisDiagnostics
@@ -187,6 +188,23 @@ class JarvisManager:
             require_citations_for_web_claims=getattr(research_config, "require_citations_for_web_claims", True),
             default_depth=getattr(research_config, "default_depth", "standard"),
         )
+        coding_config = getattr(context.settings, "coding", None) if context else None
+        coding_root = context.settings.base_dir if context and context.settings else Path.cwd()
+        coding_max_files = getattr(coding_config, "max_files_listed", 20)
+        self.coding_agent = CodingAgent(
+            repo_inspector=RepoInspector(coding_root, coding_max_files),
+            diff_reviewer=DiffReviewer(coding_root, coding_max_files, getattr(coding_config, "max_diff_chars", 4000)),
+            planner=CodingPlanner(getattr(coding_config, "max_plan_steps", 6), coding_max_files),
+            history_store=CodingHistoryStore((context.settings.data_dir / "coding") if context and context.settings else Path("data/coding"), getattr(coding_config, "max_history_items", 25)),
+            enabled=getattr(coding_config, "enabled", True),
+            default_mode=getattr(coding_config, "default_mode", "plan_only"),
+            allow_write_operations=getattr(coding_config, "allow_write_operations", False),
+            allow_command_execution=getattr(coding_config, "allow_command_execution", False),
+            require_approval_for_write=getattr(coding_config, "require_approval_for_write", True),
+            require_approval_for_push=getattr(coding_config, "require_approval_for_push", True),
+            block_secrets_access=getattr(coding_config, "block_secrets_access", True),
+            max_history_items=getattr(coding_config, "max_history_items", 25),
+        )
         agent_limit = getattr(getattr(context.settings, "agents", None), "max_agents", 64) if context else 64
         self.agent_registry = AgentRegistry(max_agents=agent_limit)
         provider_manager = context.metadata.get("provider_manager") if context else None
@@ -262,6 +280,7 @@ class JarvisManager:
             "sync_intelligence": self.sync_intelligence,
             "web_automation": self.web_automation,
             "research_agent": self.research_agent,
+            "coding_agent": self.coding_agent,
             "mobile_automation": self.mobile_automation,
             "agent_registry": self.agent_registry,
             "prime_agent": self.prime_agent,
@@ -349,6 +368,7 @@ class JarvisManager:
             model_router=self.model_router,
             skill_registry=self.skill_registry,
             research_agent=self.research_agent,
+            coding_agent=self.coding_agent,
             tool_manager=self.tools,
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,

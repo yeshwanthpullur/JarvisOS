@@ -351,6 +351,7 @@ class StartupManager:
             sync_intelligence=self.jarvis_core.manager.sync_intelligence,
             web_automation=self.jarvis_core.manager.web_automation,
             research_agent=self.jarvis_core.manager.research_agent,
+            coding_agent=self.jarvis_core.manager.coding_agent,
             mobile_automation=self.jarvis_core.manager.mobile_automation,
             personal_intelligence_manager=self.personal_intelligence_manager,
             context_intelligence_manager=self.context_intelligence_manager,

@@ -12,6 +12,8 @@ Selection order is an explicit valid agent, capability match, deterministic inte
 
 Research requests route to `research_agent` for plan-only handling. Prime may include the advisory local reasoning route and registered research skills, but it does not fetch sources, call an external search API, or save results to Persistent Memory.
 
+Coding, repository, diff, bug-triage, refactor, and safe integration-planning requests route to `coding_agent`. Prime preserves `plan_only`, raises approval metadata for edits, commands, commits, pushes, installations, and deployments, and blocks critical destructive or secret-access requests. Routing never edits code or runs a coding command.
+
 ## Risk and Approval
 
 Risk levels are `low`, `medium`, `high`, and `critical`. High-risk requests require approval metadata. Critical requests are blocked by Phase 3 policy. Approval states are explicit, but Phase 3 does not add an approval UI or approved side-effect execution.

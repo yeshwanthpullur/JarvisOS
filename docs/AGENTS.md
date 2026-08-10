@@ -15,9 +15,9 @@ JARVIS OS now has a typed, local-first registry for governed agent metadata. The
 
 ## Registered Specialists
 
-Current or foundation entries cover conversation, memory, vision, image workflows, video workflows, read-only web inspection, local sync diagnostics, explicit voice controls, project health, limitations, model routing, safe system metadata, and the plan-only Research Agent.
+Current or foundation entries cover conversation, memory, vision, image workflows, video workflows, read-only web inspection, local sync diagnostics, explicit voice controls, project health, limitations, model routing, safe system metadata, the plan-only Research Agent, and the plan-only Coding Agent.
 
-Future entries cover MCP gateways, coding, documents, browser writes, communication, workflows, robotics, drones, and social media. These entries are disabled or unavailable and explain what is missing. Their presence is a planning contract, not a capability claim. `research_agent` is enabled for bounded planning and evidence summaries, while autonomous source retrieval remains unavailable.
+Future entries cover MCP gateways, documents, browser writes, communication, workflows, robotics, drones, and social media. These entries are disabled or unavailable and explain what is missing. Their presence is a planning contract, not a capability claim. `research_agent` is enabled for bounded planning and evidence summaries, while autonomous source retrieval remains unavailable. `coding_agent` is enabled for bounded plans and read-only repository metadata; code edits, commands, commits, pushes, and dependency installation remain disabled.
 
 ## Commands
 

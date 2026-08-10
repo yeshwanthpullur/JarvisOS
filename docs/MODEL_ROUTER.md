@@ -22,6 +22,8 @@ Routes are local-only by default. A preferred provider is advisory and must be e
 
 Research planning requests map to the local reasoning capability. This route is advisory metadata only: it neither performs research nor calls a model. Ollama may be selected only when the existing local provider is ready; Nemotron, vLLM, llama.cpp, cloud, and external-search routes remain unavailable unless separately configured in a future milestone.
 
+Coding requests map to the `coding` capability as advisory metadata. When no ready local coding provider is detected, `model route "coding"` reports unavailable or a truthful fallback. The router does not install a coding model, call a cloud provider, or grant code-execution authority.
+
 Safe hardware discovery reports only broad CPU, memory, architecture, GPU/CUDA availability hints. It does not expose machine identifiers.
 
 ## Commands

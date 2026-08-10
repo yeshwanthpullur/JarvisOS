@@ -1,6 +1,6 @@
 # Project Health
 
-Updated: 2026-08-10
+Updated: 2026-08-11
 
 Status values are evidence-based: **Working**, **Partial**, **Experimental**, **Not Started**, or **Blocked**. Confidence describes confidence in the status assessment, not percentage feature completion. Values are conservative and should change only after code, tests, or manual evidence changes.
 
@@ -27,19 +27,20 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Mobile Automation | Partial | 45% | Planning-only manager, strict policy, CLI, adapters, and redacted bounded audit are tested; no phone is accessed. | `python -m unittest tests.test_mobile_automation` | Keep live control blocked until a separately approved adapter milestone. |
 | Study and Research Workflows | Partial | 45% | Conversation, retrieval, research, goals, planning, and public-page inspection exist; no dedicated study workflow composes them yet. | Research/retrieval tests; product vision review | Keep this partial until a dedicated future study workflow milestone is implemented. |
 | Research Agent | Partial | 60% | Typed configuration, deterministic planning, bounded safety filtering, restricted-domain handling, metadata-only history, evidence containers, Prime routing, and read-only source policy are integrated; autonomous retrieval is not. | `research status`; focused research tests; Prime/registry integration tests | Keep the foundation plan-first and add retrieval only through governed read-only integrations. |
+| Coding Agent | Partial | 66% | Typed planning, deterministic intent/risk policy, read-only Git inspection, metadata-only diff review, bounded history, Prime routing, registry skills, and safe configuration are integrated; autonomous edits are not. | `coding status`; focused coding tests; Prime/registry integration tests | Keep write, command, commit, push, install, and deployment operations disabled until separately approved. |
 | Advanced Builder Workflows | Partial | 35% | Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized. | Planning/tool/agent tests; repository inspection | Formalize the governed workflow in a future dedicated milestone. |
 | Raspberry Pi and Hardware | Partial | 20% | General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exist. | Repository inspection | Keep hardware work deferred to a future dedicated milestone. |
 | Creative Media Workflows | Partial | 44% | Governed image-generation and video-editing workflow foundations now exist with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation and real local editing still require configured providers. | `image status`; `image plan`; `image safety`; `video status`; `video plan`; image/video workflow tests | Keep Prompt 43 focused on encrypted remote sync and add real local media providers only with approved integrations. |
 | Communication Assistance | Not Started | 0% | No call, contact, calendar, messaging, or communication connector is integrated. | Repository inspection | Define consent and connector boundaries in Prompt 47. |
 | Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 94% | Prompt 51 focused/integration checks pass and the final 1,679-test full suite passes with no skips, failures, or errors. | Research, Phase 3, tracking, regression, and full suites | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 94% | Prompt 52 focused/integration checks pass and the final 1,703-test full suite passes with no skips, failures, or errors. | Coding, Phase 3, tracking, regression, and full suites | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
-**83%** toward the broader local-first JARVIS MVP described by the roadmap.
+**84%** toward the broader local-first JARVIS MVP described by the roadmap.
 
-This is not a mathematical average of feature labels. The one-point increase from 82% reflects the dedicated, integrated Research Agent foundation and its safety, configuration, CLI, and metadata lifecycle coverage. It remains conservative because source retrieval is limited, external search APIs are disabled, and no autonomous research execution was added.
+This is not a mathematical average of feature labels. The one-point increase from 83% reflects the dedicated Coding Agent foundation, including safe repository diagnostics, planning, CLI, configuration, and registry integration. It remains conservative because code edits, commands, commits, pushes, dependency installation, deployments, and provider-backed coding execution are not implemented.
 
 Machine-readable details: [`project_health.json`](project_health.json).
 

@@ -109,7 +109,7 @@ _INTENT_TERMS: tuple[tuple[AgentCapabilityType, tuple[str, ...]], ...] = (
     (AgentCapabilityType.MEMORY, ("remember", "memory", "recall", "forget")),
     (AgentCapabilityType.WEB, ("search the web", "web page", "website", "browse")),
     (AgentCapabilityType.SYNC, ("sync", "queue sync")),
-    (AgentCapabilityType.CODING, ("code", "debug", "repository", "patch", "test suite")),
+    (AgentCapabilityType.CODING, ("code", "debug", "repository", "repo", "patch", "test suite", "diff", "refactor", "fix the bug")),
     (AgentCapabilityType.DOCUMENTS, ("document", "pdf", "presentation", "report")),
     (AgentCapabilityType.RESEARCH, ("research", "sources", "evidence")),
     (AgentCapabilityType.SYSTEM, ("project status", "system status", "health", "limitations", "hardware")),
@@ -120,6 +120,8 @@ _INTENT_TERMS: tuple[tuple[AgentCapabilityType, tuple[str, ...]], ...] = (
 
 def classify_intent(text: str) -> AgentCapabilityType:
     lowered = f" {text.strip().lower()} "
+    if "integration" in lowered and any(term in lowered for term in (" add ", " plan ", " implement ")):
+        return AgentCapabilityType.CODING
     for intent, terms in _INTENT_TERMS:
         if any(term in lowered for term in terms):
             return intent
@@ -131,7 +133,7 @@ def classify_risk(text: str, intent: AgentCapabilityType | None = None) -> Agent
     intent = intent or classify_intent(text)
     if intent is AgentCapabilityType.DRONE or any(term in lowered for term in ("steal credential", "bypass security", "unlock device")):
         return AgentRiskLevel.CRITICAL
-    if any(term in lowered for term in ("post", "send email", "send message", "delete", "purchase", "deploy", "account", "control", "write file", "microphone", "camera")):
+    if any(term in lowered for term in ("post", "send email", "send message", "delete", "purchase", "deploy", "account", "control", "write file", "fix automatically", "commit", "push", "install dependency", "microphone", "camera")):
         return AgentRiskLevel.HIGH
     if any(term in lowered for term in ("inspect file", "process file", "edit video", "generate an image")):
         return AgentRiskLevel.MEDIUM

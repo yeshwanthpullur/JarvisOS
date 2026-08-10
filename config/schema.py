@@ -178,6 +178,23 @@ class ResearchConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class CodingConfig:
+    """Read-only and plan-only Coding Agent settings."""
+
+    enabled: bool = True
+    default_mode: str = "plan_only"
+    max_plan_steps: int = 6
+    max_files_listed: int = 20
+    max_diff_chars: int = 4000
+    max_history_items: int = 25
+    allow_write_operations: bool = False
+    allow_command_execution: bool = False
+    require_approval_for_write: bool = True
+    require_approval_for_push: bool = True
+    block_secrets_access: bool = True
+
+
+@dataclass(frozen=True, slots=True)
 class ToolsConfig:
     """Governed tool execution limits."""
 
@@ -382,6 +399,7 @@ class AppSettings:
     prime: PrimeConfig = field(default_factory=PrimeConfig)
     skills: SkillsConfig = field(default_factory=SkillsConfig)
     research: ResearchConfig = field(default_factory=ResearchConfig)
+    coding: CodingConfig = field(default_factory=CodingConfig)
     conversation: ConversationIntelligenceConfig = field(default_factory=ConversationIntelligenceConfig)
     tools: ToolsConfig = field(default_factory=ToolsConfig)
     planning: PlanningConfig = field(default_factory=PlanningConfig)

@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated: 2026-08-10
+Updated: 2026-08-11
 
 ## Completed Milestones
 
@@ -39,11 +39,12 @@ Updated: 2026-08-10
 - Prompt 49 - Phase 3 Integration, Tests, Documentation, and Verification.
 - Prompt 50 - Phase 3 Release, Status Checkpoint, and Continuation Plan.
 - Prompt 51 - Research Agent Foundation.
+- Prompt 52 - Coding Agent Foundation.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Next Milestone
 
-Prompt 52 has not started. Its implementation requires explicit user approval and a complete specification before any code or tracking change is made.
+Prompt 53 has not started. Its implementation requires explicit user approval and a complete specification before any code or tracking change is made.
 
 ## Preserved Deferred Themes
 

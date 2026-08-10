@@ -64,6 +64,7 @@ class ConversationManager:
         sync_intelligence: object | None = None,
         web_automation: object | None = None,
         research_agent: object | None = None,
+        coding_agent: object | None = None,
         mobile_automation: object | None = None,
         personal_intelligence_manager: PersonalIntelligenceManager | None = None,
         context_intelligence_manager: ContextIntelligenceManager | None = None,
@@ -98,6 +99,7 @@ class ConversationManager:
         self.sync_intelligence = sync_intelligence
         self.web_automation = web_automation
         self.research_agent = research_agent
+        self.coding_agent = coding_agent
         self.mobile_automation = mobile_automation
         self.personal_intelligence = personal_intelligence_manager
         self.context_intelligence = context_intelligence_manager
@@ -168,6 +170,7 @@ class ConversationManager:
             sync_intelligence=self.sync_intelligence,
             web_automation=self.web_automation,
             research_agent=self.research_agent,
+            coding_agent=self.coding_agent,
             mobile_automation=self.mobile_automation,
             metadata={
                 "session_metadata": dict(self.active_session.metadata),

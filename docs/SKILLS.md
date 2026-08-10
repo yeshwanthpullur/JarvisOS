@@ -16,6 +16,8 @@ Built-in manifests describe safe current status, conversation, memory retrieval,
 
 Research skills remain metadata and plan-only capabilities. `web_research_skill` declares read-only browser permission; it cannot log in, submit forms, bypass paywalls, or invent retrieved sources. External search APIs remain disabled and require a future separately approved integration.
 
+Prompt 52 adds ready metadata-only skills for coding planning, repository inspection, diff review, test planning, and release review. The `code_edit_skill`, `command_execution_skill`, `auto_commit_skill`, `auto_push_skill`, and `dependency_install_skill` remain disabled future manifests. Git-read permission is explicit; Git-write and command permissions remain approval-required and unavailable for execution.
+
 ## Commands
 
 Use `skill status`, `skill list`, `skill capabilities`, `skill show <id>`, `skill find <query>`, `skill permissions <id>`, and `skill diagnostics`.

@@ -124,3 +124,22 @@ research history
 ```
 
 `research summarize` is honest when no evidence was supplied. Restricted medical, legal, financial, safety-critical engineering, robotics, drone, and chemical requests remain high-level and may require explicit confirmation for action-oriented workflows. Private-person targeting and operational wrongdoing are blocked.
+
+## Coding Agent
+
+Coding commands inspect bounded Git metadata and produce plans. They do not modify files, run commands, install dependencies, commit, push, deploy, or access secrets.
+
+```text
+coding status
+coding help
+coding inspect
+coding plan "<request>"
+coding risk "<request>"
+coding diff
+coding review
+coding tests "<request>"
+coding show <coding_job_id>
+coding history
+```
+
+`coding diff` and `coding review` report bounded file/count metadata, risks, and test recommendations without printing full diffs. High-risk write or remote actions remain plan-only and approval-required. Critical destructive or secret-access requests are blocked.
