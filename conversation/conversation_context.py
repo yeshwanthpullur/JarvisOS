@@ -36,6 +36,7 @@ class ConversationContext:
     image_generation: Any | None = None
     video_editing: Any | None = None
     agent_registry: Any | None = None
+    prime_agent: Any | None = None
     sync_intelligence: Any | None = None
     web_automation: Any | None = None
     mobile_automation: Any | None = None

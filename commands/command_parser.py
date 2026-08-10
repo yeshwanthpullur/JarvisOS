@@ -36,6 +36,7 @@ _SUBCOMMANDS = {
     "mobile status", "mobile policy", "mobile capabilities", "mobile setup", "mobile plan", "mobile audit", "mobile close", "mobile devices", "mobile session",
     "conversation status", "conversation reset", "conversation summary", "conversation mode", "conversation confidence", "conversation topic",
     "limitations status", "limitations list", "limitations open", "limitations fixed", "limitations show", "limitations category", "limitations next", "limitations summary",
+    "prime status", "prime route", "prime plan", "prime risk", "prime explain",
 }
 
 

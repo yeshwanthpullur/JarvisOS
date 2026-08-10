@@ -193,6 +193,16 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "default_specialist_mode": "plan_only",
         "block_critical_future_agents": True,
     },
+    "prime": {
+        "enabled": True,
+        "default_execution_mode": "plan_only",
+        "max_plan_steps": 8,
+        "max_reason_chars": 600,
+        "max_fallbacks": 3,
+        "require_approval_for_high_risk": True,
+        "block_critical_risk": True,
+        "local_only": True,
+    },
     "tools": {
         "maximum_per_request": 3,
         "maximum_per_coordination": 6,

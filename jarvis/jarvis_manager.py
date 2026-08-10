@@ -8,7 +8,7 @@ from pathlib import Path
 
 from jarvis.jarvis_cache import JarvisCache
 from jarvis.jarvis_context import JarvisContext
-from jarvis.agents import AgentRegistry
+from jarvis.agents import AgentRegistry, PrimeAgent
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
 from jarvis.jarvis_diagnostics import JarvisDiagnostics
@@ -156,6 +156,13 @@ class JarvisManager:
         self.mobile_automation = MobileAutomationManager((context.settings.data_dir / "mobile-automation") if context and context.settings else Path("data/mobile-automation"), context.settings if context else None, logger=self.logger)
         agent_limit = getattr(getattr(context.settings, "agents", None), "max_agents", 64) if context else 64
         self.agent_registry = AgentRegistry(max_agents=agent_limit)
+        prime_config = getattr(context.settings, "prime", None) if context else None
+        self.prime_agent = PrimeAgent(
+            self.agent_registry,
+            enabled=getattr(prime_config, "enabled", True),
+            max_plan_steps=getattr(prime_config, "max_plan_steps", 8),
+            block_critical_risk=getattr(prime_config, "block_critical_risk", True),
+        )
         self.skills = JarvisSkills()
         self.workflow = WorkflowManager()
         self.retrieval = RetrievalManager()
@@ -203,6 +210,7 @@ class JarvisManager:
             "web_automation": self.web_automation,
             "mobile_automation": self.mobile_automation,
             "agent_registry": self.agent_registry,
+            "prime_agent": self.prime_agent,
             "skills": self.skills,
             "workflow": self.workflow,
             "retrieval": self.retrieval,
@@ -279,6 +287,7 @@ class JarvisManager:
             agent_manager=base.agent_manager if base else None,
             agent_creator=base.agent_creator if base else None,
             agent_registry=self.agent_registry,
+            prime_agent=self.prime_agent,
             tool_manager=self.tools,
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,

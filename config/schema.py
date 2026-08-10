@@ -125,6 +125,18 @@ class AgentsConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class PrimeConfig:
+    enabled: bool = True
+    default_execution_mode: str = "plan_only"
+    max_plan_steps: int = 8
+    max_reason_chars: int = 600
+    max_fallbacks: int = 3
+    require_approval_for_high_risk: bool = True
+    block_critical_risk: bool = True
+    local_only: bool = True
+
+
+@dataclass(frozen=True, slots=True)
 class ToolsConfig:
     """Governed tool execution limits."""
 
@@ -326,6 +338,7 @@ class AppSettings:
     security: SecurityConfig
     desktop: DesktopConfig
     mobile: MobileConfig
+    prime: PrimeConfig = field(default_factory=PrimeConfig)
     conversation: ConversationIntelligenceConfig = field(default_factory=ConversationIntelligenceConfig)
     tools: ToolsConfig = field(default_factory=ToolsConfig)
     planning: PlanningConfig = field(default_factory=PlanningConfig)
