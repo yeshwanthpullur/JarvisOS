@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from enum import StrEnum
+from pathlib import PurePath, PureWindowsPath
+import re
 from uuid import uuid4
 
 
@@ -64,6 +67,21 @@ def _bounded(value: object, limit: int) -> str:
     return text if len(text) <= limit else text[: limit - 3] + "..."
 
 
+def _now() -> str:
+    return datetime.now(UTC).isoformat()
+
+
+def _is_absolute_ref(value: str) -> bool:
+    return PurePath(value).is_absolute() or PureWindowsPath(value).is_absolute()
+
+
+_SECRET_PATTERN = re.compile(r"(?i)(api[_-]?key|password|access[_-]?token|secret|authorization|credential)\s*[:=]\s*\S+")
+
+
+def _contains_secret(value: str) -> bool:
+    return bool(_SECRET_PATTERN.search(value))
+
+
 @dataclass(frozen=True, slots=True)
 class ResearchQuestion:
     query: str
@@ -72,7 +90,7 @@ class ResearchQuestion:
     scope: str = ""
     depth: ResearchDepth = ResearchDepth.STANDARD
     question_id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = "phase3"
+    created_at: str = field(default_factory=_now)
 
     def __post_init__(self) -> None:
         if not self.query.strip() or len(self.query) > MAX_TEXT:
@@ -100,7 +118,9 @@ class ResearchPlan:
     depth: ResearchDepth = ResearchDepth.STANDARD
 
     def __post_init__(self) -> None:
-        if len(self.steps) > MAX_ITEMS or any(len(step) > MAX_TEXT for step in self.steps):
+        if not self.query or len(self.query) > MAX_TEXT:
+            raise ValueError("invalid_research_plan_query")
+        if not self.steps or len(self.steps) > MAX_ITEMS or any(len(step) > MAX_TEXT for step in self.steps):
             raise ValueError("research_plan_too_large")
 
 
@@ -112,7 +132,7 @@ class ResearchEvidence:
     source_ref: str
     snippet: str
     confidence: float = 0.0
-    retrieved_at: str = "phase3"
+    retrieved_at: str = field(default_factory=_now)
     metadata: dict[str, str] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -120,6 +140,14 @@ class ResearchEvidence:
             raise ValueError("research_evidence_confidence_out_of_range")
         if len(self.snippet) > MAX_SNIPPET or len(self.title) > MAX_TEXT or len(self.source_ref) > MAX_TEXT:
             raise ValueError("research_evidence_text_too_long")
+        if _is_absolute_ref(self.source_ref):
+            raise ValueError("private_source_ref_not_allowed")
+        if _contains_secret(self.source_ref) or _contains_secret(self.snippet):
+            raise ValueError("secret_shaped_research_evidence_not_allowed")
+        if any(str(key).lower() in {"secret", "token", "password", "credential", "authorization", "api_key", "access_token"} for key in self.metadata):
+            raise ValueError("secret_research_metadata_not_allowed")
+        if len(self.metadata) > MAX_ITEMS or any(len(str(key)) > 80 or len(str(value)) > MAX_SNIPPET for key, value in self.metadata.items()):
+            raise ValueError("research_evidence_metadata_too_large")
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,7 +159,7 @@ class ResearchSummary:
     confidence: float = 0.0
     limitations: tuple[str, ...] = ()
     missing_information: tuple[str, ...] = ()
-    created_at: str = "phase3"
+    created_at: str = field(default_factory=_now)
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.confidence <= 1.0:
@@ -149,9 +177,8 @@ class ResearchResult:
     summary: ResearchSummary | None = None
     warnings: tuple[str, ...] = ()
     error: str | None = None
-    created_at: str = "phase3"
+    created_at: str = field(default_factory=_now)
 
     def __post_init__(self) -> None:
         if len(self.evidence) > MAX_ITEMS or len(self.warnings) > MAX_ITEMS or len(self.error or "") > MAX_TEXT:
             raise ValueError("research_result_too_large")
-

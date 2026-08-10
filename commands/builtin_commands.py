@@ -853,7 +853,7 @@ def _handler_for(name: str):
                 if args and args[0]=="on":
                     if not status["stt_available"]:
                         voice.input_enabled=False
-                        message="Voice input is not available because no local STT model is configured. The optional Vosk dependency is also missing." if not status["dependency_ready"] else "Voice input is not available because no local Vosk model is configured."
+                        message="Voice input is not available because no local STT model is configured. The optional Vosk dependency is also missing." if not status["dependency_ready"] else "Voice input is not available because no local STT model (Vosk) is configured."
                         return _text_response(message,missing_capabilities=status["missing_capabilities"])
                     if not status["microphone_available"]:
                         voice.input_enabled=False
@@ -953,7 +953,7 @@ def _handler_for(name: str):
             if name=="voice listen":
                 status=voice.input_status()
                 if not status["stt_available"]:
-                    message="Voice input is not available because no local STT model is configured. The optional Vosk dependency is also missing." if not status["dependency_ready"] else "Voice input is not available because no local Vosk model is configured."
+                    message="Voice input is not available because no local STT model is configured. The optional Vosk dependency is also missing." if not status["dependency_ready"] else "Voice input is not available because no local STT model (Vosk) is configured."
                     return _text_response(message,missing_capabilities=status["missing_capabilities"])
                 if not voice.enabled or not voice.input_enabled:return _text_response("Voice input is disabled; no microphone was activated.")
                 if not status["microphone_available"]:return _text_response("Voice input is unavailable because no microphone capture adapter is configured.",missing_capabilities=status["missing_capabilities"])

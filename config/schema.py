@@ -161,6 +161,23 @@ class SkillsConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class ResearchConfig:
+    """Local-first, bounded Research Agent settings."""
+
+    enabled: bool = True
+    default_depth: str = "standard"
+    max_plan_steps: int = 5
+    max_evidence_items: int = 5
+    max_snippet_chars: int = 320
+    max_summary_chars: int = 1200
+    allow_web_read_only: bool = True
+    allow_external_search_api: bool = False
+    save_history: bool = True
+    local_only: bool = True
+    require_citations_for_web_claims: bool = True
+
+
+@dataclass(frozen=True, slots=True)
 class ToolsConfig:
     """Governed tool execution limits."""
 
@@ -364,6 +381,7 @@ class AppSettings:
     mobile: MobileConfig
     prime: PrimeConfig = field(default_factory=PrimeConfig)
     skills: SkillsConfig = field(default_factory=SkillsConfig)
+    research: ResearchConfig = field(default_factory=ResearchConfig)
     conversation: ConversationIntelligenceConfig = field(default_factory=ConversationIntelligenceConfig)
     tools: ToolsConfig = field(default_factory=ToolsConfig)
     planning: PlanningConfig = field(default_factory=PlanningConfig)

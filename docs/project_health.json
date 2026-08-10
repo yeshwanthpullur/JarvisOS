@@ -3,20 +3,13 @@
   "commit": "c8300e498e89a01e4f85297eaf510040e029215e",
   "updated_at": "2026-08-10",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 51 - Research Agent Foundation",
-  "overall_mvp_readiness": 82,
+  "next_milestone": "Awaiting explicit approval for Prompt 52",
+  "overall_mvp_readiness": 83,
   "limitations": {
     "total": 47,
     "fixed": 24,
     "still_open": 23,
     "register": "docs/limitations_register.json"
-  },
-  "phase3": {
-    "agent_system_status": "ready",
-    "prime_agent_status": "ready",
-    "model_router_status": "ready",
-    "skill_registry_status": "ready",
-    "research_agent_status": "partial"
   },
   "categories": [
     {"name": "Core Runtime", "status": "Working", "confidence": 90, "evidence": "Startup, shutdown, health, and full regression coverage remain broad.", "next_action": "Keep startup checks bounded."},
@@ -39,13 +32,14 @@
     {"name": "Web Automation", "status": "Partial", "confidence": 62, "evidence": "Read-only public page inspection and status work with DNS and redirect SSRF checks, bounded text extraction, CLI permissions, and redacted audit; no interactive browser control exists.", "next_action": "Keep sensitive actions blocked until a separate approval-gated interaction milestone."},
     {"name": "Mobile Automation", "status": "Partial", "confidence": 45, "evidence": "Planning-only manager, policy gates, CLI commands, adapters, bounded redacted audit, and tests exist; no phone is accessed.", "next_action": "Add a separately approved real adapter and enrollment model without weakening current blocks."},
     {"name": "Study and Research Workflows", "status": "Partial", "confidence": 45, "evidence": "Conversation, retrieval, research, goals, planning, and read-only web foundations exist; no dedicated study workflow composes them.", "next_action": "Keep this partial until a dedicated future study workflow milestone is implemented."},
+    {"name": "Research Agent", "status": "Partial", "confidence": 60, "evidence": "Typed configuration, deterministic planning, bounded safety filtering, restricted-domain handling, metadata-only history, evidence containers, Prime routing, and read-only source policy are integrated; autonomous retrieval is not.", "next_action": "Add retrieval only through governed read-only integrations."},
     {"name": "Advanced Builder Workflows", "status": "Partial", "confidence": 35, "evidence": "Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized.", "next_action": "Formalize the governed workflow in a future dedicated milestone."},
     {"name": "Raspberry Pi and Hardware", "status": "Partial", "confidence": 20, "evidence": "General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exists.", "next_action": "Keep hardware work deferred to a future dedicated milestone."},
     {"name": "Creative Media Workflows", "status": "Partial", "confidence": 44, "evidence": "Governed image-generation and video-editing workflow foundations exist with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation and real local editing still require configured providers.", "next_action": "Add real local media providers only with approved integrations."},
     {"name": "Communication Assistance", "status": "Not Started", "confidence": 0, "evidence": "Future communication agent and skill metadata is visible, but no call, contact, calendar, messaging, or communication connector is integrated.", "next_action": "Define consent and connector boundaries in a future communication milestone."},
     {"name": "Personal Workspace", "status": "Partial", "confidence": 34, "evidence": "CLI access, project tracking, and Phase 3 routing metadata compose capabilities without replacing their authoritative subsystems; a complete multi-tool workspace remains future work.", "next_action": "Harden the current local-first experience without duplicating authorities."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 75, "evidence": "Permission, approval, locality, tool, provider, and UI boundaries are tested.", "next_action": "Threat-review every external integration."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 93, "evidence": "Phase 3 focused checks and the 1661-test full suite pass with three environment-dependent skips.", "next_action": "Keep release evidence and status docs current."}
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 94, "evidence": "Prompt 51 focused and integration checks pass, and the final 1679-test full suite passes with no skips, failures, or errors.", "next_action": "Keep release evidence and status docs current."}
   ],
   "phase3": {
     "status": "Partial - plan-only multi-agent foundation",
@@ -53,6 +47,10 @@
     "prime_agent": "ready_plan_only",
     "model_router": "ready_metadata_only",
     "skill_registry": "ready_metadata_only",
+    "research_agent": "ready_plan_only_retrieval_limited",
+    "research_agent_status": "partial",
+    "research_external_search_api_enabled": false,
+    "research_citations_required_for_web_claims": true,
     "total_agents": 22,
     "default_execution_mode": "plan_only",
     "cloud_providers_enabled": false,

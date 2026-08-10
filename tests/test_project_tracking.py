@@ -34,6 +34,7 @@ REQUIRED_DOCS = (
     "MODEL_ROUTER.md",
     "SKILLS.md",
     "MULTI_AGENT_OS_FOUNDATION.md",
+    "RESEARCH_AGENT.md",
 )
 
 
@@ -49,7 +50,7 @@ class ProjectTrackingTests(unittest.TestCase):
         health = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(health["release"], "v1.6.0-alpha")
         self.assertEqual(health["commit"], "c8300e498e89a01e4f85297eaf510040e029215e")
-        self.assertEqual(health["next_milestone"], "Prompt 51 - Research Agent Foundation")
+        self.assertEqual(health["next_milestone"], "Awaiting explicit approval for Prompt 52")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Working")
         memory = next(item for item in health["categories"] if item["name"] == "Memory")
@@ -70,7 +71,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertEqual(mobile["status"], "Partial")
         conversation = next(item for item in health["categories"] if item["name"] == "Conversation Intelligence")
         self.assertEqual(conversation["status"], "Working")
-        self.assertEqual(len(health["categories"]), 27)
+        self.assertEqual(len(health["categories"]), 28)
         allowed = {"Working", "Partial", "Experimental", "Not Started", "Blocked"}
         for category in health["categories"]:
             self.assertIn(category["status"], allowed)
@@ -112,7 +113,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("v0.3.0-alpha", text)
         self.assertIn("Prompt 42 - Video Editing Workflow Foundation", text)
         self.assertIn("Prompt 49 - Phase 3 Integration", text)
-        self.assertIn("Prompt 50 - v1.0 MVP Hardening", text)
+        self.assertIn("Prompt 51 - Research Agent Foundation", text)
 
     def test_release_checklist_contains_core_gates(self) -> None:
         text = (DOCS / "RELEASE_CHECKLIST.md").read_text(encoding="utf-8")
@@ -158,15 +159,15 @@ class ProjectTrackingTests(unittest.TestCase):
         commands.initialize()
         response = commands.execute("project status")
         self.assertIn("release=v1.6.0-alpha", response.response)
-        self.assertIn("MVP=82%", response.response)
-        self.assertIn("Prompt 51", response.response)
+        self.assertIn("MVP=83%", response.response)
+        self.assertIn("Awaiting explicit approval for Prompt 52", response.response)
         self.assertIn("limitations=fixed:24/open:23/restricted:5/blocked:2", response.response)
         self.assertIn("focus=LIM-045", response.response)
         self.assertIn("phase3=agents:", response.response)
         self.assertIn("prime:ready", response.response)
         self.assertIn("model_router:ready", response.response)
         self.assertLess(len(response.response), 700)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 82)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 83)
         self.assertEqual(response.metadata["fixed_limitations"], 24)
         self.assertEqual(response.metadata["open_limitations"], 23)
         self.assertEqual(response.metadata["total_agents"], 22)

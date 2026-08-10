@@ -16,7 +16,7 @@ from .models import (
     ResearchQuestion,
 )
 from .planner import ResearchPlanner, classify_research_intent, classify_research_risk
-from .safety import is_research_allowed, research_source_policy
+from .safety import ResearchSafetyDecision, evaluate_research_safety, is_research_allowed, research_source_policy
 from .sources import ResearchSourcePolicy, ResearchSourceRequest
 from .storage import ResearchHistoryRecord, ResearchHistoryStore
 
@@ -33,6 +33,7 @@ __all__ = [
     "ResearchQuestion",
     "ResearchResult",
     "ResearchRiskLevel",
+    "ResearchSafetyDecision",
     "ResearchSourcePolicy",
     "ResearchSourceRequest",
     "ResearchSourceType",
@@ -40,6 +41,7 @@ __all__ = [
     "ResearchSummary",
     "classify_research_intent",
     "classify_research_risk",
+    "evaluate_research_safety",
     "is_research_allowed",
     "render_research_command",
     "research_source_policy",

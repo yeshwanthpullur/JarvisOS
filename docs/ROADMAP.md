@@ -37,15 +37,13 @@ Updated: 2026-08-10
 - Prompt 47 - Tool and Skill Registry Foundation.
 - Prompt 48 - Specialist Agent Stubs and Diagnostics.
 - Prompt 49 - Phase 3 Integration, Tests, Documentation, and Verification.
+- Prompt 50 - Phase 3 Release, Status Checkpoint, and Continuation Plan.
+- Prompt 51 - Research Agent Foundation.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Next Milestone
 
-### Prompt 50 - v1.0 MVP Hardening
-
-**Goal:** Stabilize supported workflows, reduce open high-severity limitations, and prepare a trustworthy v1.0.
-
-**Acceptance:** Full regression and security review, documented support matrix, migration/recovery checks, clean release artifacts, and real acceptance evidence.
+Prompt 52 has not started. Its implementation requires explicit user approval and a complete specification before any code or tracking change is made.
 
 ## Preserved Deferred Themes
 

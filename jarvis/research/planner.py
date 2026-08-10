@@ -14,7 +14,7 @@ from .models import (
     ResearchSourceType,
     ResearchStatus,
 )
-from .safety import is_research_allowed, research_source_policy
+from .safety import evaluate_research_safety, is_research_allowed, research_source_policy
 
 
 _INTENT_MAP: tuple[tuple[ResearchIntent, tuple[str, ...]], ...] = (
@@ -56,6 +56,12 @@ class ResearchPlanner:
     documents_available: bool = True
     _history: list[ResearchQuestion] = field(default_factory=list)
 
+    def __post_init__(self) -> None:
+        self.max_steps = max(1, min(int(self.max_steps), 12))
+        self.max_evidence_items = max(1, min(int(self.max_evidence_items), 12))
+        self.max_snippet_chars = max(80, min(int(self.max_snippet_chars), 320))
+        self.max_summary_chars = max(200, min(int(self.max_summary_chars), 1200))
+
     def create_question(self, query: str, *, depth: ResearchDepth = ResearchDepth.STANDARD) -> ResearchQuestion:
         normalized = " ".join(query.strip().split())
         intent = classify_research_intent(normalized)
@@ -63,11 +69,11 @@ class ResearchPlanner:
 
     def create_plan(self, query: str, *, depth: ResearchDepth = ResearchDepth.STANDARD) -> ResearchPlan:
         question = self.create_question(query, depth=depth)
-        allowed, risk, reason = is_research_allowed(question.normalized_query, question.intent)
-        if not allowed:
-            return ResearchPlan(question.question_id, question.normalized_query, question.intent, ("Reject the unsafe request.",), needs_user_clarification=False, risk_level=risk, status=ResearchStatus.BLOCKED, warnings=(reason,), depth=depth)
+        safety = evaluate_research_safety(question.normalized_query, question.intent)
+        if not safety.allowed:
+            return ResearchPlan(question.question_id, question.normalized_query, question.intent, ("Reject the unsafe request.",), needs_user_clarification=False, risk_level=safety.risk_level, status=ResearchStatus.BLOCKED, warnings=(safety.reason,), depth=depth)
         policy = research_source_policy(web_available=self.web_available, documents_available=self.documents_available)
-        steps = self._build_steps(question.intent, depth)
+        steps = self._build_steps(question.intent, depth)[: self.max_steps]
         status = ResearchStatus.PLANNED
         needs_web = policy.allowed_sources and ResearchSourceType.WEB in policy.allowed_sources and question.intent in {ResearchIntent.WEB_QUESTION, ResearchIntent.REPO_RESEARCH, ResearchIntent.LITERATURE_REVIEW, ResearchIntent.TECHNICAL_RESEARCH, ResearchIntent.COMPARISON}
         needs_documents = ResearchSourceType.DOCUMENT in policy.allowed_sources and question.intent in {ResearchIntent.DOCUMENT_QUESTION, ResearchIntent.LITERATURE_REVIEW}
@@ -85,9 +91,12 @@ class ResearchPlanner:
             needs_web=needs_web,
             needs_documents=needs_documents,
             needs_user_clarification=needs_clarification,
-            risk_level=risk,
+            risk_level=safety.risk_level,
             status=status,
-            warnings=(reason,) if reason else (),
+            warnings=tuple(filter(None, (
+                safety.reason,
+                "Action-oriented restricted-domain work requires explicit confirmation." if safety.action_confirmation_required else "",
+            ))),
             depth=depth,
         )
         if self.save_history:
@@ -135,4 +144,3 @@ class ResearchPlanner:
 
     def history(self) -> tuple[ResearchQuestion, ...]:
         return tuple(self._history)
-

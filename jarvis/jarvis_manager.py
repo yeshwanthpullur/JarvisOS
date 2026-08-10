@@ -11,6 +11,7 @@ from jarvis.jarvis_context import JarvisContext
 from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents
 from jarvis.models import ModelRouter, build_default_model_registry
 from jarvis.skills import build_default_skill_registry
+from jarvis.research import ResearchAgent, ResearchEvidenceCollector, ResearchHistoryStore, ResearchPlanner
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
 from jarvis.jarvis_diagnostics import JarvisDiagnostics
@@ -156,6 +157,36 @@ class JarvisManager:
         self.sync_intelligence = SyncIntelligence((context.settings.data_dir / "sync") if context and context.settings else Path("data/sync"), context.settings if context else None, self.logger)
         self.web_automation = WebAutomationManager((context.settings.data_dir / "web-automation") if context and context.settings else Path("data/web-automation"), context.settings if context else None, logger=self.logger)
         self.mobile_automation = MobileAutomationManager((context.settings.data_dir / "mobile-automation") if context and context.settings else Path("data/mobile-automation"), context.settings if context else None, logger=self.logger)
+        research_config = getattr(context.settings, "research", None) if context else None
+        research_enabled = getattr(research_config, "enabled", True)
+        web_config = getattr(context.settings, "web_automation", None) if context else None
+        research_web_available = bool(
+            research_enabled
+            and getattr(research_config, "allow_web_read_only", True)
+            and getattr(web_config, "enabled", True)
+            and getattr(web_config, "mode", "read_only") == "read_only"
+        )
+        research_documents_available = bool(context and (context.knowledge_manager or context.memory_manager))
+        self.research_agent = ResearchAgent(
+            enabled=research_enabled,
+            web_available=research_web_available,
+            documents_available=research_documents_available,
+            planner=ResearchPlanner(
+                max_steps=getattr(research_config, "max_plan_steps", 5),
+                max_evidence_items=getattr(research_config, "max_evidence_items", 5),
+                max_snippet_chars=getattr(research_config, "max_snippet_chars", 320),
+                max_summary_chars=getattr(research_config, "max_summary_chars", 1200),
+                save_history=getattr(research_config, "save_history", True),
+                web_available=research_web_available,
+                documents_available=research_documents_available,
+            ),
+            evidence_collector=ResearchEvidenceCollector(getattr(research_config, "max_snippet_chars", 320)),
+            history_store=ResearchHistoryStore((context.settings.data_dir / "research") if context and context.settings else Path("data/research")),
+            local_only=getattr(research_config, "local_only", True),
+            external_search_api_enabled=getattr(research_config, "allow_external_search_api", False),
+            require_citations_for_web_claims=getattr(research_config, "require_citations_for_web_claims", True),
+            default_depth=getattr(research_config, "default_depth", "standard"),
+        )
         agent_limit = getattr(getattr(context.settings, "agents", None), "max_agents", 64) if context else 64
         self.agent_registry = AgentRegistry(max_agents=agent_limit)
         provider_manager = context.metadata.get("provider_manager") if context else None
@@ -230,6 +261,7 @@ class JarvisManager:
             "video_editing": self.video_editing,
             "sync_intelligence": self.sync_intelligence,
             "web_automation": self.web_automation,
+            "research_agent": self.research_agent,
             "mobile_automation": self.mobile_automation,
             "agent_registry": self.agent_registry,
             "prime_agent": self.prime_agent,
@@ -316,6 +348,7 @@ class JarvisManager:
             model_registry=self.model_registry,
             model_router=self.model_router,
             skill_registry=self.skill_registry,
+            research_agent=self.research_agent,
             tool_manager=self.tools,
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,

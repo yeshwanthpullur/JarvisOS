@@ -106,3 +106,21 @@ skill diagnostics
 ```
 
 Future agents and skills appear in diagnostics so missing dependencies and safety restrictions are visible. They remain disabled or unavailable. Cloud providers, external plugins, and MCP are disabled by default; Nemotron is listed as not configured rather than installed. High-risk capabilities declare approval requirements, critical future actions are blocked, and `plan_only` is the default execution mode.
+
+## Research Agent
+
+Research commands create bounded plans and metadata-only history. They do not perform browser side effects, call external search APIs, invent citations, or write Persistent Memory.
+
+```text
+research status
+research help
+research plan "<query>"
+research safety "<query>"
+research sources "<query>"
+research summarize "<query>"
+research evidence <research_id>
+research show <research_id>
+research history
+```
+
+`research summarize` is honest when no evidence was supplied. Restricted medical, legal, financial, safety-critical engineering, robotics, drone, and chemical requests remain high-level and may require explicit confirmation for action-oriented workflows. Private-person targeting and operational wrongdoing are blocked.

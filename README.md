@@ -1,12 +1,14 @@
 # JARVIS OS
 
-JARVIS OS is currently at **v1.5.0-alpha - Video Editing Workflow Foundation**, with the Phase 3 Multi-Agent OS Foundation implemented and verified locally on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at **v1.6.0-alpha - Multi-Agent OS Foundation**, with Prompt 51 Research Agent Foundation implemented on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
 For the central product direction and evidence-based tracking, see [Master Use Cases](docs/JARVIS_USE_CASES.md), [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise status summary is available from the CLI with `project status`; bounded limitation evidence is available through `limitations status`, `limitations open`, and `limitations show <id>`.
 
 Tool Intelligence provides governed capability matching, schema validation, risk and approval checks, dry runs, bounded execution, normalized results, and command access through the existing Executive path. See [docs/TOOL_INTELLIGENCE.md](docs/TOOL_INTELLIGENCE.md).
 
 Phase 3 adds typed agent contracts, a truthful specialist registry, Prime Agent plan-only delegation, provider-neutral model routing, and a permission-aware Skill Registry. These systems plan and diagnose; they do not create unrestricted autonomy or bypass existing authorities. See [docs/MULTI_AGENT_OS_FOUNDATION.md](docs/MULTI_AGENT_OS_FOUNDATION.md), [docs/AGENTS.md](docs/AGENTS.md), [docs/PRIME_AGENT.md](docs/PRIME_AGENT.md), [docs/MODEL_ROUTER.md](docs/MODEL_ROUTER.md), and [docs/SKILLS.md](docs/SKILLS.md).
+
+Prompt 51 adds a local-first Research Agent for deterministic intent and risk classification, bounded plans, metadata-only history, source/evidence policy, and honest plan-only summaries when evidence retrieval is unavailable. It does not browse with side effects, invent citations, call external search APIs, or mutate Persistent Memory. See [docs/RESEARCH_AGENT.md](docs/RESEARCH_AGENT.md).
 
 Autonomous Planning produces provider-backed, validated, reviewable plans without executing them. See [docs/AUTONOMOUS_PLANNING.md](docs/AUTONOMOUS_PLANNING.md).
 
@@ -72,6 +74,7 @@ Use `web open <https-url>` for bounded public HTML/text inspection, then `web ti
 | `data/` | Local runtime data that should not be committed by default. |
 | `data/sync/` | Ignored local sync queue, anonymous installation identifier, conflicts, and bounded audit state. |
 | `data/web-automation/` | Ignored bounded web-action audit state; never stores cookies, profiles, screenshots, or page content by default. |
+| `data/research/` | Ignored bounded Research Agent job metadata; no source dumps, private paths, or full queries. |
 | `desktop/` | Dependency-free responsive browser interface assets for local Windows use. |
 | `docs/` | Project documentation and architectural notes. |
 | `logs/` | Runtime log output. Log files are ignored by Git. |

@@ -20,6 +20,8 @@ No provider is installed, downloaded, contacted, or given credentials by registr
 
 Routes are local-only by default. A preferred provider is advisory and must be enabled, ready, local when required, and capability-compatible. Missing routes return an unavailable result with bounded fallback metadata.
 
+Research planning requests map to the local reasoning capability. This route is advisory metadata only: it neither performs research nor calls a model. Ollama may be selected only when the existing local provider is ready; Nemotron, vLLM, llama.cpp, cloud, and external-search routes remain unavailable unless separately configured in a future milestone.
+
 Safe hardware discovery reports only broad CPU, memory, architecture, GPU/CUDA availability hints. It does not expose machine identifiers.
 
 ## Commands

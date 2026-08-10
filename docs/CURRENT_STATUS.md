@@ -96,7 +96,7 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 
 ## Next Recommended Prompt
 
-Prompt 51 - Research Agent Foundation. Phase 3 Batch 1 is complete and the continuation plan begins with the research specialist foundation.
+Awaiting explicit user approval for Prompt 52. Prompt 51 is implemented; Prompt 52 has not started.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
@@ -109,11 +109,14 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - Phase 3 focused integration/tracking suite: 66 passed, 0 skipped, 0 failed, 0 errors.
 - Cross-subsystem regression suite: 448 passed, 1 environment-dependent skip, 0 failed, 0 errors.
 - Full suite: 1,658 passed, 3 environment-dependent skips, 0 failed, 0 errors (1,661 total).
+- Prompt 51 focused and integration/tracking checks: 96 passed, 0 skipped, 0 failed, 0 errors.
+- Prompt 51 final full suite: 1,679 passed, 0 skipped, 0 failed, 0 errors.
 - Real Ollama chat: working locally.
 - Local Ollama LLaVA vision: working locally.
 - Local Vosk microphone input with an Indian-English model and `voice listen send`: working locally.
 - Windows SAPI playback with non-blocking controls: working locally.
 - Research Agent foundation: plan-only research planning and bounded summaries are now available.
+- Research configuration, metadata-only runtime history, restricted-domain safety, Prime routing, registry integration, and all research CLI commands are covered by focused tests.
 
 ## Manual Verification Checklist
 
@@ -129,4 +132,5 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - [x] Run `limitations show LIM-029` and `limitations status`.
 - [x] Run bounded `agent`, `prime`, `model`, and `skill` diagnostics.
 - [x] Confirm future agents, cloud providers, MCP, and external plugins remain unavailable and no route/plan command performs side effects.
+- [x] Run the bounded `research status`, `research help`, `research plan`, `research safety`, `research sources`, `research summarize`, `research evidence`, `research show`, and `research history` workflow.
 - [x] Confirm safe prompts are allowed, unsafe prompts are blocked, dry-run creates no real output, provider unavailability is truthful, and outputs stay bounded.

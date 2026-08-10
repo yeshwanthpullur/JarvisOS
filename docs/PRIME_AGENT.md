@@ -10,6 +10,8 @@ It does not replace Conversation Intelligence, bypass command permissions, call 
 
 Selection order is an explicit valid agent, capability match, deterministic intent match, then a safe fallback. Unavailable agents produce an unavailable explanation rather than fake success. Image and video requests can route to workflow foundations; communication, robotics, drone, and social requests route to disabled future entries.
 
+Research requests route to `research_agent` for plan-only handling. Prime may include the advisory local reasoning route and registered research skills, but it does not fetch sources, call an external search API, or save results to Persistent Memory.
+
 ## Risk and Approval
 
 Risk levels are `low`, `medium`, `high`, and `critical`. High-risk requests require approval metadata. Critical requests are blocked by Phase 3 policy. Approval states are explicit, but Phase 3 does not add an approval UI or approved side-effect execution.

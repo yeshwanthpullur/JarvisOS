@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased - Research Agent Foundation
+
+### Added
+
+- Added typed research questions, plans, evidence, summaries, results, safety decisions, source policy, and bounded metadata-only history.
+- Added deterministic research intent, depth, risk, restricted-domain, clarification, evidence-requirement, and source planning.
+- Added `research status`, `research help`, `research plan`, `research safety`, `research sources`, `research summarize`, `research evidence`, `research show`, and `research history`.
+- Integrated the Research Agent with Prime routing, the Agent Registry, the Model Router, the Skill Registry, project status, and typed local-first configuration.
+
+### Safety
+
+- Research remains read-only and plan-first. External search APIs are disabled, web claims require citations, private-person targeting is blocked, restricted domains carry uncertainty and confirmation boundaries, and Persistent Memory is never mutated automatically.
+- Runtime history is ignored by Git and stores bounded metadata only; it contains no full query, source dump, transcript, secret, or private absolute path.
+
+### Verification
+
+- Focused Prompt 51 and integration/tracking checks: 96 passed, 0 skipped, 0 failed, 0 errors.
+- Full suite: 1,679 passed, 0 skipped, 0 failed, 0 errors.
+- Compilation, JSON/document consistency, secret-shaped-value, absolute-path leakage, and `git diff --check` gates passed.
+
 ## Unreleased - Multi-Agent OS Foundation
 
 ### Added

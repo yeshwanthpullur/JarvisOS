@@ -12,7 +12,9 @@ Sensitive permissions such as file writes, commands, browser writes, communicati
 
 ## Current and Future Skills
 
-Built-in manifests describe safe current status, conversation, memory retrieval, vision status, image/video workflow planning, read-only web, local sync, and explicit voice capabilities. Future disabled placeholders describe Telegram, Discord, email, calendar, browser writes, coding, research, documents, robotics, drones, social media, MCP, and scheduling.
+Built-in manifests describe safe current status, conversation, memory retrieval, vision status, image/video workflow planning, read-only web, local sync, explicit voice capabilities, research planning, source policy, project research, and bounded evidence summaries. Future disabled placeholders describe academic search, citation management, external search APIs, Telegram, Discord, email, calendar, browser writes, coding, documents, robotics, drones, social media, MCP, and scheduling.
+
+Research skills remain metadata and plan-only capabilities. `web_research_skill` declares read-only browser permission; it cannot log in, submit forms, bypass paywalls, or invent retrieved sources. External search APIs remain disabled and require a future separately approved integration.
 
 ## Commands
 
