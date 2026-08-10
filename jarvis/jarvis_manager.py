@@ -8,6 +8,7 @@ from pathlib import Path
 
 from jarvis.jarvis_cache import JarvisCache
 from jarvis.jarvis_context import JarvisContext
+from jarvis.agents import AgentRegistry
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
 from jarvis.jarvis_diagnostics import JarvisDiagnostics
@@ -153,6 +154,8 @@ class JarvisManager:
         self.sync_intelligence = SyncIntelligence((context.settings.data_dir / "sync") if context and context.settings else Path("data/sync"), context.settings if context else None, self.logger)
         self.web_automation = WebAutomationManager((context.settings.data_dir / "web-automation") if context and context.settings else Path("data/web-automation"), context.settings if context else None, logger=self.logger)
         self.mobile_automation = MobileAutomationManager((context.settings.data_dir / "mobile-automation") if context and context.settings else Path("data/mobile-automation"), context.settings if context else None, logger=self.logger)
+        agent_limit = getattr(getattr(context.settings, "agents", None), "max_agents", 64) if context else 64
+        self.agent_registry = AgentRegistry(max_agents=agent_limit)
         self.skills = JarvisSkills()
         self.workflow = WorkflowManager()
         self.retrieval = RetrievalManager()
@@ -199,6 +202,7 @@ class JarvisManager:
             "sync_intelligence": self.sync_intelligence,
             "web_automation": self.web_automation,
             "mobile_automation": self.mobile_automation,
+            "agent_registry": self.agent_registry,
             "skills": self.skills,
             "workflow": self.workflow,
             "retrieval": self.retrieval,
@@ -274,6 +278,7 @@ class JarvisManager:
             provider_router=base.provider_router if base else None,
             agent_manager=base.agent_manager if base else None,
             agent_creator=base.agent_creator if base else None,
+            agent_registry=self.agent_registry,
             tool_manager=self.tools,
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,

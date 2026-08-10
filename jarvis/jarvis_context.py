@@ -55,6 +55,7 @@ class JarvisContext:
     provider_router: Any | None = None
     agent_manager: Any | None = None
     agent_creator: Any | None = None
+    agent_registry: Any | None = None
     tool_manager: Any | None = None
     autonomous_planning: Any | None = None
     voice_intelligence: Any | None = None

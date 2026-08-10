@@ -110,6 +110,18 @@ class AgentsConfig:
     max_recursion_depth: int = 1
     max_retries_per_subtask: int = 1
     max_total_timeout_seconds: int = 180
+    default_mode: str = "plan_only"
+    max_agents: int = 64
+    max_capabilities_per_agent: int = 32
+    max_output_chars: int = 8000
+    require_approval_for_high_risk: bool = True
+    local_only_default: bool = True
+    register_future_placeholders: bool = True
+    show_future_agents: bool = True
+    max_diagnostic_agents: int = 25
+    max_diagnostic_capabilities: int = 40
+    default_specialist_mode: str = "plan_only"
+    block_critical_future_agents: bool = True
 
 
 @dataclass(frozen=True, slots=True)

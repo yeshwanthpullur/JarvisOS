@@ -12,6 +12,7 @@ from commands.command_registry import CommandRecord, CommandRegistry
 from conversation.conversation_response import ConversationResponse
 from providers import ProviderRequest
 from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
+from jarvis.agents import AgentRegistry, render_agent_command
 
 
 def _manager(context: CommandContext):
@@ -79,6 +80,16 @@ def _agent_manager(context: CommandContext):
         return direct
     metadata = getattr(conversation, "metadata", {}) or {}
     return metadata.get("agent_manager")
+
+
+def _phase3_agent_registry(context: CommandContext) -> AgentRegistry:
+    conversation = context.conversation_context
+    direct = getattr(conversation, "agent_registry", None) if conversation is not None else None
+    if isinstance(direct, AgentRegistry):
+        return direct
+    metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
+    registry = metadata.get("agent_registry")
+    return registry if isinstance(registry, AgentRegistry) else AgentRegistry()
 
 
 def _tool_manager(context: CommandContext):
@@ -266,6 +277,10 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("agents", "Show agent summary", "agent", (), CommandPermission.AGENT),
         ("agent list", "List agents", "agent", (), CommandPermission.AGENT),
         ("agent status", "Show agent status", "agent", (), CommandPermission.AGENT),
+        ("agent capabilities", "List governed agent capabilities", "agent", (), CommandPermission.AGENT),
+        ("agent show", "Show one governed agent", "agent", (), CommandPermission.AGENT),
+        ("agent find", "Find agents by capability", "agent", (), CommandPermission.AGENT),
+        ("agent diagnostics", "Validate the governed agent registry", "agent", (), CommandPermission.DIAGNOSTIC),
         ("multiagent status", "Show multi-agent status", "agent", (), CommandPermission.AGENT),
         ("multiagent list", "List recent coordinations", "agent", (), CommandPermission.AGENT),
         ("multiagent show", "Show a coordination", "agent", (), CommandPermission.AGENT),
@@ -504,6 +519,8 @@ def _handler_for(name: str):
             return _text_response(f"Command history: {len(manager.history.list_history())} entries")
         if name == "metrics" and manager is not None:
             return _text_response(f"Commands executed: {manager.metrics.commands_executed}")
+        if name in {"agents", "agent status", "agent list", "agent capabilities", "agent show", "agent find", "agent diagnostics"}:
+            return _text_response(render_agent_command(_phase3_agent_registry(context), name, context.arguments))
         if name.startswith("multiagent "):
             agent_manager = _agent_manager(context)
             orchestrator = getattr(agent_manager, "orchestrator", None)
