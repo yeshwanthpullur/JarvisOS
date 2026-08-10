@@ -24,6 +24,7 @@ from jarvis.adapters import AdapterAgent, render_adapter_command
 from jarvis.evaluation import EvaluationRunner, render_evaluation_command
 from jarvis.execution.cli import get_phase4_runtime, render_phase4_command
 from jarvis.release_readiness import ReleaseReadinessEvaluator, render_release_command
+from jarvis.integrations import ExternalIntegrationControlPlane, render_external_command
 
 
 def _manager(context: CommandContext):
@@ -169,6 +170,13 @@ def _skill_registry(context: CommandContext) -> SkillRegistry:
     metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
     registry = direct if isinstance(direct, SkillRegistry) else metadata.get("skill_registry")
     return registry if isinstance(registry, SkillRegistry) else build_default_skill_registry()
+
+def _external_integrations(context: CommandContext) -> ExternalIntegrationControlPlane:
+    conversation = context.conversation_context
+    direct = getattr(conversation, "external_integrations", None) if conversation is not None else None
+    metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
+    plane = direct if isinstance(direct, ExternalIntegrationControlPlane) else metadata.get("external_integrations")
+    return plane if isinstance(plane, ExternalIntegrationControlPlane) else ExternalIntegrationControlPlane()
 
 
 def _tool_manager(context: CommandContext):
@@ -328,6 +336,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         advanced_status = _advanced_model_planner(context).status()
         evaluation_status = _evaluation_runner(context).status()
         release_status = _release_evaluator(context).evaluate()
+        external_summary = _external_integrations(context).registry.summary()
         phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
         phase3_text = (
             "phase3="
@@ -340,7 +349,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
-            f"phase4=controlled_local p85={release_status.status.value} "
+            f"phase4=local ext:{external_summary['enabled']}/{external_summary['total']}/off p85={release_status.status.value} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -380,6 +389,10 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "prompt85_validation_status": release_status.status.value,
             "phase5_missing_components": len(release_status.missing_components),
             "phase6_started": False,
+            "external_provider_registry_status": "ready_metadata_only" if external_summary["valid"] else "error",
+            "external_providers_total": external_summary["total"],
+            "external_providers_enabled": external_summary["enabled"],
+            "external_execution_enabled": bool(external_summary["execution_enabled"]),
         }
     return _text_response(
         "Project status: "
@@ -569,6 +582,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("provider enable", "Enable a provider", "provider", (), CommandPermission.PROVIDER),
         ("provider disable", "Disable a provider", "provider", (), CommandPermission.PROVIDER),
         ("provider test", "Test a provider", "provider", (), CommandPermission.PROVIDER),
+        *((name, "Show bounded external integration metadata", "provider", (), CommandPermission.DIAGNOSTIC) for name in ("provider show","provider capabilities","provider policy","provider validate","provider history","integration status","integration policy","credential status","credential required")),
         ("local", "Show local AI summary", "provider", (), CommandPermission.PROVIDER),
         ("local status", "Show local AI status", "provider", (), CommandPermission.PROVIDER),
         ("local providers", "List local providers", "provider", (), CommandPermission.PROVIDER),
@@ -1547,9 +1561,15 @@ def _handler_for(name: str):
                 return _text_response(f"Mobile devices ({len(devices)}): none; no phone identifiers were read.", device_count=len(devices))
             if name == "mobile session":
                 return _text_response(f"Mobile sessions ({len(mobile.sessions)}): planning-only; no device connection.", session_count=len(mobile.sessions))
+        if name in {"provider show","provider capabilities","provider policy","provider validate","provider history","integration status","integration policy","credential status","credential required"}:
+            return _text_response(render_external_command(name, context.arguments, _external_integrations(context)))
+        if name == "provider health" and context.arguments and _external_integrations(context).registry.get(context.arguments[0]):
+            return _text_response(render_external_command(name, context.arguments, _external_integrations(context)))
         if name in {"providers", "provider list", "provider status", "provider health"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:
+                if name == "provider list":
+                    return _text_response(render_external_command("provider list", (), _external_integrations(context)))
                 return _text_response(f"{name} unavailable: Provider Manager is not initialized.")
             records = provider_manager.registry.all()
             conversation = context.conversation_context
@@ -1579,7 +1599,8 @@ def _handler_for(name: str):
                 location = "local" if _is_local_provider(record) else "cloud"
                 details.append(f"{record.config.provider_id}={location}/{'ready' if available else 'unavailable'}")
             label = "Provider health" if name == "provider health" else "Providers"
-            return _text_response(f"{label}: " + (", ".join(details) if details else "none configured"), configured=len(records), healthy=healthy)
+            suffix = " | " + render_external_command("provider list", (), _external_integrations(context)) if name == "provider list" else ""
+            return _text_response(f"{label}: " + (", ".join(details) if details else "none configured") + suffix, configured=len(records), healthy=healthy)
         if name in {"local", "local status", "local providers", "local models", "local refresh", "local use", "local test", "local explain-selection", "local only on", "local only off", "cloud", "cloud status", "cloud providers", "cloud models", "cloud refresh", "cloud use", "cloud test", "cloud explain-selection", "cloud only on", "cloud only off", "provider enable", "provider disable", "provider test"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:

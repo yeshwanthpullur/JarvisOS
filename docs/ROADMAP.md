@@ -60,9 +60,15 @@ Updated: 2026-08-11
 - Prompt 70 - Phase 4 Implementation, Hardening, and Verification.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
+## Phase 5 Sequential Progress
+
+- Prompt 71 - External Integration Security and Provider Architecture: implemented and verified on `main`.
+- Prompts 72-84: specification-only; not started.
+- Prompt 85 validation remains blocked until every prerequisite is implemented.
+
 ## Next Milestone
 
-Prompt 85's validation layer is implemented, but Phase 5 is **not complete**. Prompts 71-84 remain specifications only, so the production-readiness and `v2.0.0` release gates are blocked. No Phase 6 work has started.
+Prompt 85's validation layer is implemented, but Phase 5 is **not complete**. Prompt 71 is implemented; Prompts 72-84 remain specifications only, so the production-readiness and `v2.0.0` release gates are blocked. No Phase 6 work has started.
 
 ## Blocked Phase 5 Validation
 

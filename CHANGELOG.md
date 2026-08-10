@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased - Prompt 71 External Integration Control Plane
+
+### Added
+
+- Added typed external-provider, capability, health, policy, action, route, cost, and data-egress models.
+- Added a central metadata-only registry for communication, GitHub, model, MCP, and plugin placeholders plus bounded CLI diagnostics.
+- Added credential-reference-only reporting, shared redaction, endpoint validation, health caching, and local-first non-executing route policy.
+
+### Safety
+
+- Every external provider remains disabled and unconfigured; paid/cloud execution, MCP, plugins, sending, remote GitHub actions, and remote models remain unavailable.
+- Phase 4 approvals, Execution Policy, and Broker remain authoritative. No credentials are read and no network calls occur.
+
 ## Unreleased - Prompt 85 Production-Readiness Validation
 
 ### Added

@@ -11,6 +11,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Local AI | Working | 92% | Real Ollama text chat and free-form routing are manually verified through Provider Router. | Normal local-only questions; provider tests | Keep truthful unavailable handling when the PC or Ollama is offline. |
 | Conversation Intelligence | Working | 80% | Bounded multi-turn state, topics, entities, follow-up intent, references, clarification, repair, modes, confidence, and summaries are integrated with normal chat. | Conversation intelligence tests; multi-turn CLI sequence | Improve language understanding from observed ambiguity without hidden persistence. |
 | Cloud Provider Foundation | Partial | 65% | Provider-neutral adapters, policy, mocks, and commands exist; no routine paid live verification. | Cloud mock tests; `cloud status` | Add opt-in provider smoke checks when authorized. |
+| External Integration Control Plane | Partial | 70% | Prompt 71 adds typed provider, credential-reference, egress, endpoint, cost, health, and routing metadata with all external execution disabled. | External integration tests; `integration status`; `provider validate` | Implement Prompt 72 independently without enabling providers by default. |
 | Tools | Partial | 75% | Governed calculator/text tools execute; Skill Registry adds explicit permission, risk, side-effect, approval, and availability metadata. | `tools status`; `skill diagnostics`; focused tests | Add executable skills only through separately verified owning milestones. |
 | Planning | Partial | 65% | Advisory provider-backed plans and validation exist; execution remains controlled. | Autonomous planning tests; `plan status` | Improve evidence and review UX without auto-execution. |
 | Multi-Agent System | Partial | 78% | Typed protocols, a validated registry, specialist metadata, bounded diagnostics, and Prime Agent plan-only delegation work without side effects. | `agent diagnostics`; `prime status`; Phase 3 tests | Expand executable specialists only with evidence and scoped approvals. |
@@ -38,11 +39,11 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 
 ## Overall MVP Readiness
 
-**91%** toward the broader local-first JARVIS MVP described by the roadmap. The increase reflects tested, narrowly scoped local approvals and execution; it does not imply autonomous, external, or unrestricted execution.
+**92%** toward the broader local-first JARVIS MVP described by the roadmap. The one-point increase reflects the verified external integration security and provider-control architecture, not working external providers.
 
-Prompt 85 adds release-readiness validation without increasing capability readiness. The current Phase 5 release assessment is blocked because Prompts 71-84 are not implemented. MVP readiness therefore remains 91%.
+Prompt 85 adds release-readiness validation. The current Phase 5 release assessment remains blocked because only Prompt 71 is implemented and Prompts 72-84 are not.
 
-Verification: 8 focused Prompt 85 tests, 54 focused/cross-phase integration tests, 33 configuration/tracking tests, and the full 1,768-test suite pass with no skips, failures, or errors. Compilation and all required static scans pass.
+Prompt 71 verification: 12 focused external-integration tests, 150 focused/cross-system tests, and the full 1,780-test suite pass with no skips, failures, or errors. Compilation, JSON validation, and required static scans pass.
 
 This is not a mathematical average of feature labels. The one-point increase from 83% reflects the dedicated Coding Agent foundation, including safe repository diagnostics, planning, CLI, configuration, and registry integration. It remains conservative because code edits, commands, commits, pushes, dependency installation, deployments, and provider-backed coding execution are not implemented.
 

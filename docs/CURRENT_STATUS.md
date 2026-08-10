@@ -44,6 +44,7 @@ python main.py --ui
 - Coding Agent foundation: bounded coding plans, test recommendations, read-only Git status inspection, metadata-only diff review, risk classification, and safe history are available in `plan_only` mode.
 - Phase 3 Batch 2: explicit bounded text-document extraction, read-only browser planning, schedule validation without a runner, draft-only communication, manifest-only adapters, advanced-provider planning, and local evaluation/observability are integrated.
 - Phase 4 controlled execution: exact local approvals and a central broker now govern narrowly scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations.
+- Prompt 71 external integration control plane: typed provider registry, credential references, data-egress policy, endpoint validation, cost/risk metadata, and bounded diagnostics are implemented; every external provider remains disabled and non-executing.
 
 ## Partially Working Features
 
@@ -102,7 +103,7 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 
 ## Next Recommended Prompt
 
-Prompt 85 production-readiness validation is implemented and currently **blocked**. Prompts 71-84 remain specifications only; Phase 5 is not complete and Phase 6 has not started.
+Prompt 85 production-readiness validation is implemented and currently **blocked**. Prompt 71 is implemented; Prompts 72-84 remain specifications only. Phase 5 is not complete and Phase 6 has not started.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
@@ -113,7 +114,8 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - Prompt 85 configuration/tracking validation: 33 passed, 0 skipped, 0 failed, 0 errors.
 - Prompt 85 final full suite: 1,768 passed, 0 skipped, 0 failed, 0 errors.
 - Compilation, JSON validation, secret scan, runtime-artifact scan, absolute-path scan, and `git diff --check` passed.
-- Production-readiness result: blocked because thirteen required Phase 5 components from Prompts 71-84 are absent.
+- Production-readiness result: blocked because the remaining required Phase 5 components from Prompts 72-84 are absent.
+- Prompt 71 verification: 12 focused tests, 150 focused/cross-system tests, and 1,780 full-suite tests passed with no skips, failures, or errors.
 
 - Prompt 41 focused image-generation suite: 13 passed, 0 skipped, 0 failed, 0 errors.
 - Prompt 42 focused video-editing suite: 49 passed, 0 skipped, 0 failed, 0 errors.

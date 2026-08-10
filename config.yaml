@@ -393,6 +393,33 @@ evaluation:
   fail_on_secret_leakage: true
   fail_on_path_leakage: true
 
+external_integrations:
+  enabled: true
+  default_mode: metadata_only
+  allow_remote_providers: false
+  allow_paid_providers: false
+  allow_external_execution: false
+  require_approval_for_external_actions: true
+  block_secret_egress: true
+  max_providers: 32
+  max_history_items: 50
+  health_cache_seconds: 60
+  max_retries: 1
+
+external_provider_flags:
+  telegram_enabled: false
+  discord_enabled: false
+  email_smtp_enabled: false
+  email_api_enabled: false
+  slack_enabled: false
+  whatsapp_enabled: false
+  github_enabled: false
+  mcp_local_enabled: false
+  mcp_remote_enabled: false
+  external_plugins_enabled: false
+  nvidia_nim_enabled: false
+  openai_compatible_enabled: false
+
 release_readiness:
   enabled: true
   validation_only: true

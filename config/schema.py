@@ -227,6 +227,14 @@ class ReleaseReadinessConfig:
     enabled: bool = True; validation_only: bool = True; require_all_blocking_gates: bool = True; allow_tag_creation: bool = False; allow_release_creation: bool = False; allow_deployment: bool = False; require_clean_repository: bool = True; require_origin_match: bool = True; require_vercel_status_only: bool = True; max_gates: int = 50; max_output_chars: int = 8000
 
 @dataclass(frozen=True, slots=True)
+class ExternalIntegrationsConfig:
+    enabled: bool = True; default_mode: str = "metadata_only"; allow_remote_providers: bool = False; allow_paid_providers: bool = False; allow_external_execution: bool = False; require_approval_for_external_actions: bool = True; block_secret_egress: bool = True; max_providers: int = 32; max_history_items: int = 50; health_cache_seconds: int = 60; max_retries: int = 1
+
+@dataclass(frozen=True, slots=True)
+class ExternalProviderFlagsConfig:
+    telegram_enabled: bool = False; discord_enabled: bool = False; email_smtp_enabled: bool = False; email_api_enabled: bool = False; slack_enabled: bool = False; whatsapp_enabled: bool = False; github_enabled: bool = False; mcp_local_enabled: bool = False; mcp_remote_enabled: bool = False; external_plugins_enabled: bool = False; nvidia_nim_enabled: bool = False; openai_compatible_enabled: bool = False
+
+@dataclass(frozen=True, slots=True)
 class ExecutionConfig:
     enabled: bool = True; default_mode: str = "plan_only"; local_first: bool = True; allow_file_writes: bool = True; allow_command_execution: bool = True; allow_git_writes: bool = True; allow_browser_read: bool = True; allow_browser_actions: bool = False; allow_notifications: bool = True; allow_scheduler_runner: bool = True; allow_communication_send: bool = False; allow_mcp_execution: bool = False; allow_model_runtime_start: bool = False; allow_external_network: bool = False; allow_background_execution: bool = False; allow_secrets_access: bool = False; allow_credentials_access: bool = False; require_approval_for_side_effects: bool = True; block_critical_actions: bool = True; max_plan_steps: int = 8; max_history_items: int = 50; save_history: bool = True; redact_sensitive_values: bool = True; block_private_paths: bool = True
 @dataclass(frozen=True, slots=True)
@@ -451,6 +459,8 @@ class AppSettings:
     advanced_models: AdvancedModelsConfig = field(default_factory=AdvancedModelsConfig)
     evaluation: EvaluationConfig = field(default_factory=EvaluationConfig)
     release_readiness: ReleaseReadinessConfig = field(default_factory=ReleaseReadinessConfig)
+    external_integrations: ExternalIntegrationsConfig = field(default_factory=ExternalIntegrationsConfig)
+    external_provider_flags: ExternalProviderFlagsConfig = field(default_factory=ExternalProviderFlagsConfig)
     execution: ExecutionConfig = field(default_factory=ExecutionConfig)
     approvals: ApprovalsConfig = field(default_factory=ApprovalsConfig)
     broker: BrokerConfig = field(default_factory=BrokerConfig)

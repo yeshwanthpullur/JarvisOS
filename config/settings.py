@@ -39,6 +39,8 @@ from config.schema import (
     WebAutomationConfig,
     InterfaceConfig,
     ImageGenerationConfig,
+    ExternalIntegrationsConfig,
+    ExternalProviderFlagsConfig,
 )
 
 
@@ -262,6 +264,8 @@ def load_settings(
             require_approval_for_push=_coerce_bool(raw_config["coding"]["require_approval_for_push"]),
             block_secrets_access=_coerce_bool(raw_config["coding"]["block_secrets_access"]),
         ),
+        external_integrations=ExternalIntegrationsConfig(**raw_config["external_integrations"]),
+        external_provider_flags=ExternalProviderFlagsConfig(**raw_config["external_provider_flags"]),
         plugins=PluginsConfig(
             enabled=_coerce_bool(raw_config["plugins"]["enabled"]),
             plugin_dir=_resolve_path(raw_config["plugins"]["plugin_dir"]),

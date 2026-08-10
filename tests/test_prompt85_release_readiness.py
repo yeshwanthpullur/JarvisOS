@@ -22,7 +22,7 @@ class Prompt85ReleaseReadinessTests(unittest.TestCase):
     def test_missing_phase5_components_block_release(self):
         report = self.evaluator.evaluate()
         self.assertEqual(report.status, GateState.BLOCKED)
-        self.assertIn("external_integration_control_plane", report.missing_components)
+        self.assertNotIn("external_integration_control_plane", report.missing_components)
         self.assertIn("enterprise_governance", report.missing_components)
         self.assertGreater(report.blocked, 0)
 

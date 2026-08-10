@@ -1,5 +1,9 @@
 # CLI Guide
 
+## Prompt 71 External Integration Controls
+
+Use `integration status`, `integration policy`, `provider show <id>`, `provider capabilities`, `provider health <id>`, `provider policy`, `provider validate <id>`, `provider history`, `credential status <id>`, and `credential required`. These commands display bounded metadata only. They never reveal credential values, contact a provider, enable paid/cloud execution, launch MCP/plugins, or replace Phase 4 approvals and Broker authority.
+
 ## Phase 3 Batch 2
 
 Use `document`, `browser`, `scheduler`, `communication`, `adapter`, `model advanced`, and `evaluation` command groups for bounded diagnostics and planning. None installs, sends, schedules, starts a provider, launches MCP, performs interactive browsing, or exports telemetry.
