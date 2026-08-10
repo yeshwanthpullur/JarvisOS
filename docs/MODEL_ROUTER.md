@@ -1,5 +1,9 @@
 # Model Provider Registry and Router
 
+## Batch 2 Capabilities
+
+The metadata router represents document Q&A, browser summarization, scheduler planning, communication drafting, adapter planning, research, and summarization. Advanced-provider profiles remain planning-only and do not alter existing Ollama execution paths.
+
 Updated: 2026-08-10
 
 Model Router provides provider-neutral metadata and deterministic route planning. Existing Ollama chat and local Ollama vision execution paths remain intact; the Phase 3 router does not replace or invoke them.

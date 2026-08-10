@@ -322,3 +322,73 @@ mobile:
   audit_retention: 100
   live_control_enabled: false
   store_private_data: false
+
+documents:
+  enabled: true
+  default_mode: plan_only
+  allow_pdf: false
+  allow_office: false
+  allow_ocr: false
+  allow_cloud_parsing: false
+  allow_bulk_ingestion: false
+  store_extracted_content: false
+
+browser:
+  enabled: true
+  default_mode: read_only
+  allow_interactive: false
+  allow_login: false
+  allow_forms: false
+  allow_purchases: false
+  allow_downloads: false
+  allow_cookies: false
+  allow_sessions: false
+
+scheduler:
+  enabled: true
+  default_mode: plan_only
+  allow_background_runner: false
+  allow_os_cron: false
+  allow_task_scheduler: false
+  allow_notifications: false
+  minimum_cadence_minutes: 60
+
+communication:
+  enabled: true
+  default_mode: draft_only
+  allow_sending: false
+  allow_external_providers: false
+  allow_contact_access: false
+  allow_bulk_messages: false
+  allow_credentials_access: false
+
+adapters:
+  enabled: true
+  default_mode: plan_only
+  allow_mcp_runtime: false
+  allow_plugin_install: false
+  allow_external_tool_execution: false
+  allow_network_connectors: false
+  allow_credentials_access: false
+  allow_background_servers: false
+
+models_advanced:
+  enabled: true
+  default_mode: planning_only
+  local_first: true
+  allow_cloud_providers: false
+  allow_provider_install: false
+  allow_model_download: false
+  allow_runtime_start: false
+  allow_docker: false
+  allow_credentials_access: false
+
+evaluation:
+  enabled: true
+  default_mode: local_only
+  allow_cloud_telemetry: false
+  allow_remote_logging: false
+  allow_background_runner: false
+  fail_on_truthfulness_mismatch: true
+  fail_on_secret_leakage: true
+  fail_on_path_leakage: true

@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased - Phase 3 Batch 2 Foundations
+
+### Added
+
+- Added typed, bounded Document, Browser, Scheduler, Communication, Adapter, Advanced Model, and Evaluation foundations with complete safe CLI command groups.
+- Integrated plan-only specialists with Prime routing, Agent Registry, Skill Registry, Model Router, project status, configuration, and local-only observability.
+- Added safe text extraction for explicit bounded local text files, draft-only communication, disabled provider/runtime manifests, recurrence validation, advanced-provider comparisons, and deterministic routing/safety/truthfulness fixtures.
+
+### Safety
+
+- Browser writes, scheduling runtimes, communication sending, MCP/plugin execution, credentials, cloud model use, downloads, runtime startup, telemetry, and remote logging remain disabled.
+- Runtime metadata folders remain ignored; no document dumps, cookies, sessions, contacts, tokens, model files, or evaluation logs are committed.
+
+### Verification
+
+- Batch 2 focused integration: 115 passed; tracking and Vercel contracts: 32 passed.
+- Full suite: 1,727 passed, 0 skipped, 0 failed, 0 errors.
+- Compilation, JSON/docs validation, leakage scans, CLI output bounds, and `git diff --check` passed.
+
 ## Unreleased - Coding Agent Foundation
 
 ### Added

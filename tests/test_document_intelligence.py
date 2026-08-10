@@ -43,5 +43,12 @@ class DocumentIntelligenceTests(unittest.TestCase):
                 self.assertLess(len(output),5000); self.assertNotIn(str(Path(temp).resolve()),output)
             self.assertIn("OCR=disabled", render_document_command(agent,"document types",()))
 
+    def test_long_approved_text_is_bounded_without_crashing(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp); (root / "long.md").write_text("safe text " * 1000, encoding="utf-8")
+            result = DocumentAgent(root).extract("long.md")
+            self.assertEqual(result.status, DocumentStatus.EXTRACTED)
+            self.assertLessEqual(len(result.extraction.extracted_text_preview), 4000)
+
 
 if __name__ == "__main__": unittest.main()

@@ -37,6 +37,13 @@ _SUBCOMMANDS = {
     "conversation status", "conversation reset", "conversation summary", "conversation mode", "conversation confidence", "conversation topic",
     "research status", "research help", "research plan", "research safety", "research sources", "research summarize", "research evidence", "research show", "research history",
     "coding status", "coding help", "coding inspect", "coding plan", "coding risk", "coding diff", "coding review", "coding tests", "coding show", "coding history",
+    "document status", "document help", "document plan", "document safety", "document types", "document inspect", "document extract", "document summarize", "document ask", "document show", "document history",
+    "browser status", "browser help", "browser plan", "browser safety", "browser capabilities", "browser sources", "browser summarize", "browser show", "browser history",
+    "scheduler status", "scheduler help", "scheduler plan", "scheduler safety", "scheduler validate", "scheduler preview", "scheduler capabilities", "scheduler show", "scheduler history",
+    "communication status", "communication help", "communication providers", "communication plan", "communication safety", "communication draft", "communication notify-plan", "communication show", "communication history",
+    "adapter status", "adapter help", "adapter list", "adapter show", "adapter plan", "adapter safety", "adapter permissions", "adapter capabilities", "adapter show-job", "adapter history",
+    "model advanced",
+    "evaluation status", "evaluation help", "evaluation run", "evaluation routing", "evaluation safety", "evaluation truthfulness", "evaluation observability", "evaluation show", "evaluation history",
     "limitations status", "limitations list", "limitations open", "limitations fixed", "limitations show", "limitations category", "limitations next", "limitations summary",
     "prime status", "prime route", "prime plan", "prime risk", "prime explain",
     "model status", "model providers", "model capabilities", "model route", "model explain", "model hardware", "model policy",
@@ -81,4 +88,6 @@ class CommandParser:
             if name == "sync queue" and args and args[0] == "summary":
                 name = "sync queue summary"
                 args.pop(0)
+            if name == "model advanced" and args and args[0] in {"status", "providers", "show", "plan", "compare", "hardware", "route", "safety", "checklist", "history"}:
+                name = f"{name} {args.pop(0)}"
         return ParsedCommand(name=name.lower(), arguments=tuple(args), flags=flags, raw=text)

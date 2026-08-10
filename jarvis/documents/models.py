@@ -83,7 +83,7 @@ class DocumentExtraction:
     warnings: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        validate_text(self.extracted_text_preview, required=False); validate_items(self.warnings)
+        validate_text(self.extracted_text_preview, required=False, limit=4000); validate_items(self.warnings)
 
 
 @dataclass(frozen=True, slots=True)

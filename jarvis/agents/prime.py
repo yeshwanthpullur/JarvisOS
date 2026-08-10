@@ -102,15 +102,17 @@ class PrimeResult:
 
 
 _INTENT_TERMS: tuple[tuple[AgentCapabilityType, tuple[str, ...]], ...] = (
-    (AgentCapabilityType.COMMUNICATION, ("instagram", "telegram", "discord", "send email", "send message", "post this")),
+    (AgentCapabilityType.ADAPTER, (" mcp", "plugin adapter", "external plugin", "connect github")),
+    (AgentCapabilityType.SCHEDULER, ("remind me", "schedule", "tomorrow at", "every hour", "every day", "cron")),
+    (AgentCapabilityType.COMMUNICATION, ("instagram", "telegram", "discord", "send email", "send message", "draft an email", "draft email", "post this")),
     (AgentCapabilityType.IMAGE, ("generate an image", "create an image", "image prompt", "picture of")),
     (AgentCapabilityType.VIDEO, ("edit this video", "video edit", "trim video", "video plan")),
     (AgentCapabilityType.VISION, ("analyze image", "describe image", "what is in this image", "vision")),
     (AgentCapabilityType.MEMORY, ("remember", "memory", "recall", "forget")),
-    (AgentCapabilityType.WEB, ("search the web", "web page", "website", "browse")),
+    (AgentCapabilityType.WEB, ("search the web", "web page", "webpage", "website", "browse")),
     (AgentCapabilityType.SYNC, ("sync", "queue sync")),
     (AgentCapabilityType.CODING, ("code", "debug", "repository", "repo", "patch", "test suite", "diff", "refactor", "fix the bug")),
-    (AgentCapabilityType.DOCUMENTS, ("document", "pdf", "presentation", "report")),
+    (AgentCapabilityType.DOCUMENTS, ("document", "pdf", "presentation", "summarize this pdf")),
     (AgentCapabilityType.RESEARCH, ("research", "sources", "evidence")),
     (AgentCapabilityType.SYSTEM, ("project status", "system status", "health", "limitations", "hardware")),
     (AgentCapabilityType.DRONE, ("drone", "flight controller", "fly ")),
@@ -120,6 +122,8 @@ _INTENT_TERMS: tuple[tuple[AgentCapabilityType, tuple[str, ...]], ...] = (
 
 def classify_intent(text: str) -> AgentCapabilityType:
     lowered = f" {text.strip().lower()} "
+    if "research" not in lowered and any(term in lowered for term in ("compare vllm", "llama.cpp", "nemotron", "nvidia nim", "model provider")):
+        return AgentCapabilityType.SYSTEM
     if "integration" in lowered and any(term in lowered for term in (" add ", " plan ", " implement ")):
         return AgentCapabilityType.CODING
     for intent, terms in _INTENT_TERMS:
@@ -131,7 +135,7 @@ def classify_intent(text: str) -> AgentCapabilityType:
 def classify_risk(text: str, intent: AgentCapabilityType | None = None) -> AgentRiskLevel:
     lowered = text.lower()
     intent = intent or classify_intent(text)
-    if intent is AgentCapabilityType.DRONE or any(term in lowered for term in ("steal credential", "bypass security", "unlock device")):
+    if intent is AgentCapabilityType.DRONE or any(term in lowered for term in ("steal credential", "bypass security", "bypass captcha", "captcha", "read my .env", ".env", "spam this", "100 people", "friend's location", "unlock device")):
         return AgentRiskLevel.CRITICAL
     if any(term in lowered for term in ("post", "send email", "send message", "delete", "purchase", "deploy", "account", "control", "write file", "fix automatically", "commit", "push", "install dependency", "microphone", "camera")):
         return AgentRiskLevel.HIGH
@@ -151,10 +155,13 @@ _AGENT_FOR_INTENT = {
     AgentCapabilityType.RESEARCH: "research_agent",
     AgentCapabilityType.CODING: "coding_agent",
     AgentCapabilityType.DOCUMENTS: "document_agent",
+    AgentCapabilityType.SCHEDULER: "scheduler_agent",
+    AgentCapabilityType.ADAPTER: "adapter_agent",
+    AgentCapabilityType.EVALUATION: "evaluation_agent",
     AgentCapabilityType.COMMUNICATION: "communication_agent",
     AgentCapabilityType.ROBOTICS: "robotics_agent",
     AgentCapabilityType.DRONE: "drone_agent",
-    AgentCapabilityType.SYSTEM: "project_agent",
+    AgentCapabilityType.SYSTEM: "model_agent",
 }
 
 
@@ -183,6 +190,8 @@ class PrimeAgent:
         intent = request.preferred_capability or classify_intent(request.normalized_intent or request.user_input)
         risk = classify_risk(request.user_input, intent)
         preferred_name = request.preferred_agent or _AGENT_FOR_INTENT.get(intent)
+        if request.preferred_agent is None and intent is AgentCapabilityType.WEB and any(term in request.user_input.lower() for term in ("webpage", "browser", "page summary", "summarize this web")):
+            preferred_name = "browser_agent"
         entry = self.registry.get_agent(preferred_name or "")
         candidates = self.registry.find_by_capability(intent, executable_only=False)
         if entry is None and candidates:
@@ -196,6 +205,8 @@ class PrimeAgent:
         if critical_block:
             mode = AgentExecutionMode.BLOCKED
             blocked_reason = "Critical-risk execution is blocked by Phase 3 policy."
+        elif risk is AgentRiskLevel.HIGH and intent is AgentCapabilityType.COMMUNICATION:
+            blocked_reason = "External sending/posting is unavailable; communication_agent is draft-only."
         elif not available:
             blocked_reason = entry.reason if entry else "No registered agent supports this request."
         model_route = None

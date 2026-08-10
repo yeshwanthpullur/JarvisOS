@@ -40,7 +40,7 @@ class SkillRegistry:
 
     def find_by_capability(self, query: str) -> tuple[SkillManifest, ...]:
         needle = query.strip().lower()
-        return tuple(skill for skill in self._skills.values() if skill.category.lower() == needle or any(cap.name.lower() == needle or cap.capability_type.lower() == needle for cap in skill.capabilities))
+        return tuple(skill for skill in self._skills.values() if needle in skill.skill_id.lower() or needle in skill.category.lower() or any(needle in cap.name.lower() or needle in cap.capability_type.lower() for cap in skill.capabilities))
 
     def find_by_category(self, category: str) -> tuple[SkillManifest, ...]:
         return tuple(item for item in self._skills.values() if item.category.lower() == category.strip().lower())
@@ -70,4 +70,3 @@ class SkillRegistry:
             if item.status is SkillStatus.READY and not item.enabled:
                 errors.append(f"ready_disabled:{item.skill_id}")
         return tuple(errors[:32])
-

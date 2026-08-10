@@ -1,6 +1,6 @@
 # JARVIS OS
 
-JARVIS OS is currently at **v1.6.0-alpha - Multi-Agent OS Foundation**, with Prompt 52 Coding Agent Foundation implemented on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at **v1.6.0-alpha - Multi-Agent OS Foundation**, with Phase 3 Batch 2 implemented through Prompt 60 on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
 For the central product direction and evidence-based tracking, see [Master Use Cases](docs/JARVIS_USE_CASES.md), [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise status summary is available from the CLI with `project status`; bounded limitation evidence is available through `limitations status`, `limitations open`, and `limitations show <id>`.
 
@@ -11,6 +11,8 @@ Phase 3 adds typed agent contracts, a truthful specialist registry, Prime Agent 
 Prompt 51 adds a local-first Research Agent for deterministic intent and risk classification, bounded plans, metadata-only history, source/evidence policy, and honest plan-only summaries when evidence retrieval is unavailable. It does not browse with side effects, invent citations, call external search APIs, or mutate Persistent Memory. See [docs/RESEARCH_AGENT.md](docs/RESEARCH_AGENT.md).
 
 Prompt 52 adds a plan-only Coding Agent for deterministic coding intent/risk classification, bounded implementation and test plans, read-only Git status inspection, metadata-only diff review, and disabled-by-default side-effecting skills. It cannot edit files, execute commands, install dependencies, commit, push, deploy, or access secrets. See [docs/CODING_AGENT.md](docs/CODING_AGENT.md).
+
+Prompts 53-60 add safe foundations for explicit local documents, read-only browser planning, non-running schedules, draft-only communication, manifest-only MCP/plugins, advanced local-model planning, and local evaluation/observability. These foundations do not send, schedule, browse interactively, install plugins/models, start runtimes, or export telemetry. See [Document Intelligence](docs/DOCUMENT_INTELLIGENCE.md), [Browser Agent](docs/BROWSER_AGENT.md), [Scheduler Agent](docs/SCHEDULER_AGENT.md), [Communication Gateway](docs/COMMUNICATION_GATEWAY.md), [Adapters](docs/ADAPTERS.md), [Advanced Models](docs/ADVANCED_MODEL_PROVIDERS.md), and [Evaluation](docs/EVALUATION_AND_OBSERVABILITY.md).
 
 Autonomous Planning produces provider-backed, validated, reviewable plans without executing them. See [docs/AUTONOMOUS_PLANNING.md](docs/AUTONOMOUS_PLANNING.md).
 

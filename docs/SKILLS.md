@@ -1,5 +1,9 @@
 # Tool and Skill Registry
 
+## Batch 2 Skills
+
+Batch 2 registers metadata-only skills for documents, browser reads, schedule validation, communication drafting, adapter manifests, advanced model comparisons, and local evaluation. Runtime counterparts for OCR/cloud parsing, browser writes, active scheduling, sending, MCP/plugins, provider startup, and model downloads remain disabled.
+
 Updated: 2026-08-10
 
 The Skill Registry is a metadata-only foundation for native capabilities and future plugins. Every manifest declares inputs, outputs, side effects, permissions, provider requirements, locality, risk, approval requirements, status, and limitations.

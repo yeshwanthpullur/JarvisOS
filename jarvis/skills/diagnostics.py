@@ -10,7 +10,9 @@ def render_skill_command(registry: SkillRegistry, command: str, arguments: tuple
         data = registry.registry_summary()
         return "Skill Registry: status=ready mode=plan_only external_plugins=disabled mcp=disabled " + " ".join(f"{key}={value}" for key, value in data.items())
     if command == "skill list":
-        return "Skills: " + ", ".join(f"{item.skill_id}:{item.status.value}" for item in registry.list_skills()[:30])
+        skills = registry.list_skills()
+        bounded = tuple(item for item in skills if item.enabled)[:20] + tuple(item for item in skills if not item.enabled)[:10]
+        return "Skills: " + ", ".join(f"{item.skill_id}:{item.status.value}" for item in bounded)
     if command == "skill capabilities":
         return "Skill capabilities: " + ", ".join(f"{skill}.{capability}:{kind}" for skill, capability, kind in registry.list_capabilities()[:45])
     if command == "skill diagnostics":
@@ -27,4 +29,3 @@ def render_skill_command(registry: SkillRegistry, command: str, arguments: tuple
         return f"Skill permissions {skill.skill_id}: permissions={permissions} approval_required={'yes' if skill.requires_approval else 'no'} execution_mode={skill.execution_mode.value}."
     capabilities = ", ".join(item.name for item in skill.capabilities) or "none"
     return f"Skill {skill.skill_id}: status={skill.status.value} enabled={'yes' if skill.enabled else 'no'} category={skill.category} capabilities={capabilities} local_only={'yes' if skill.local_only else 'no'}."
-

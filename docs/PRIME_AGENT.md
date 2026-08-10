@@ -1,5 +1,9 @@
 # Prime Agent
 
+## Batch 2 Routing
+
+Prime routes document, webpage, reminder, draft communication, MCP/plugin, and advanced model requests to governed foundations. CAPTCHA bypass, secret access, spam, private-person monitoring, destructive adapter execution, and credential requests are critical-risk blocked. Routing remains advisory.
+
 Updated: 2026-08-10
 
 The Prime Agent is a controlled routing and delegation-planning layer under Executive JARVIS. It classifies broad intent and risk, inspects the Agent Registry, consults Model Router metadata, references Skill Registry metadata, and returns a bounded decision or plan.

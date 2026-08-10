@@ -1,5 +1,9 @@
 # Research Agent
 
+## Batch 2 Integration
+
+Research planning may reference approved document evidence, read-only browser source policy, and advanced-provider comparisons. It does not gain autonomous browsing, hidden ingestion, fabricated citations, or external APIs.
+
 Updated: 2026-08-10
 
 JARVIS OS now includes a local-first Research Agent foundation for bounded research planning and evidence summaries.

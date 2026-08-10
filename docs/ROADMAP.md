@@ -40,11 +40,19 @@ Updated: 2026-08-11
 - Prompt 50 - Phase 3 Release, Status Checkpoint, and Continuation Plan.
 - Prompt 51 - Research Agent Foundation.
 - Prompt 52 - Coding Agent Foundation.
+- Prompt 53 - Document Intelligence Foundation.
+- Prompt 54 - Browser Agent Foundation.
+- Prompt 55 - Scheduler and Cron Workflow Foundation.
+- Prompt 56 - Communication Gateway Foundation.
+- Prompt 57 - MCP and External Plugin Adapter Foundation.
+- Prompt 58 - Advanced Model Provider Planning.
+- Prompt 59 - Phase 3 Hardening, Evaluation, and Observability.
+- Prompt 60 - Phase 3 Batch 2 Implementation, Integration, and Verification.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Next Milestone
 
-Prompt 53 has not started. Its implementation requires explicit user approval and a complete specification before any code or tracking change is made.
+Phase 3 Batch 2 is implemented through Prompt 60. The next milestone is release approval; Phase 4 has not started.
 
 ## Preserved Deferred Themes
 

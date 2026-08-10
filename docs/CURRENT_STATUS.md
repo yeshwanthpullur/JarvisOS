@@ -42,6 +42,7 @@ python main.py --ui
 - Research Agent foundation: bounded research planning, safety classification, source policy, and read-only summaries are now available as a local-first specialist stub.
 - research_agent_status is tracked explicitly in project-health metadata so the current bounded read-only foundation stays visible without overstating retrieval coverage.
 - Coding Agent foundation: bounded coding plans, test recommendations, read-only Git status inspection, metadata-only diff review, risk classification, and safe history are available in `plan_only` mode.
+- Phase 3 Batch 2: explicit bounded text-document extraction, read-only browser planning, schedule validation without a runner, draft-only communication, manifest-only adapters, advanced-provider planning, and local evaluation/observability are integrated.
 
 ## Partially Working Features
 
@@ -52,6 +53,7 @@ python main.py --ui
 - Multi-Agent OS Foundation: registries, risk/approval metadata, routing, planning, and diagnostics work; specialist execution, external plugins, MCP, and cloud model routes remain unavailable.
 - Research Agent foundation is available for bounded planning and evidence summaries, but read-only source retrieval remains limited by the existing local web/document foundations.
 - Coding Agent is ready for planning and read-only repository diagnostics, but autonomous edits, command execution, dependency installation, commits, pushes, and deployments are not implemented.
+- Batch 2 remains intentionally partial: no PDF/Office/OCR runtime, interactive browser, active scheduler, notification/message sending, MCP/plugin execution, advanced model runtime, cloud telemetry, or remote logging is enabled.
 - Memory and Knowledge: authoritative local storage, persistent personal context, and non-destructive retention/duplicate compaction work; cross-device policy is not implemented.
 - Online deployment foundation: the canonical `jarvis-os` project is Ready and remains status-only.
 - Online Sync foundation: disabled-by-default manual queueing, strict summary schemas, atomic persistence, deduplication, bounded audit/retention, conflict detection, and truthful unavailable remote behavior work. No real encrypted remote adapter is configured.
@@ -99,7 +101,7 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 
 ## Next Recommended Prompt
 
-Awaiting explicit user approval for Prompt 53. Prompt 52 is implemented; Prompt 53 has not started.
+Phase 3 Batch 2 is implemented through Prompt 60. Awaiting release approval; Phase 4 has not started.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
@@ -118,6 +120,9 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - Prompt 52 Coding/Phase 3/tracking integration suite: 98 passed, 0 skipped, 0 failed, 0 errors.
 - Prompt 52 cross-subsystem regression suite: 420 passed, 0 skipped, 0 failed, 0 errors.
 - Prompt 52 final full suite: 1,703 passed, 0 skipped, 0 failed, 0 errors.
+- Phase 3 Batch 2 focused integration suite: 115 passed, 0 skipped, 0 failed, 0 errors.
+- Phase 3 Batch 2 tracking and Vercel contract suite: 32 passed, 0 skipped, 0 failed, 0 errors.
+- Phase 3 Batch 2 final full suite: 1,727 passed, 0 skipped, 0 failed, 0 errors.
 - Real Ollama chat: working locally.
 - Local Ollama LLaVA vision: working locally.
 - Local Vosk microphone input with an Indian-English model and `voice listen send`: working locally.

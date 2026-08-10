@@ -1,5 +1,9 @@
 # Coding Agent Foundation
 
+## Batch 2 Integration
+
+Coding plans may describe adapters and future model-provider integration, but cannot install plugins/models, start runtimes, create scheduler jobs, send communication, or bypass existing write/command/commit/push blocks.
+
 Updated: 2026-08-11
 
 ## Scope

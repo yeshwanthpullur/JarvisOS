@@ -9,10 +9,20 @@ from .types import (
     ModelCapability, ModelPrivacyMode, ModelProvider, ModelProviderStatus,
     ModelProviderType, ModelRequest, ModelRiskLevel, ModelRoute,
 )
+from .advanced import (
+    AdvancedModelPlanner, AdvancedModelResult, AdvancedModelRiskLevel,
+    AdvancedProviderProfile, AdvancedProviderStatus, HardwareCapability,
+    ModelRuntimePlan, ModelSelectionPlan, ProviderComparison,
+    default_advanced_providers, render_advanced_model_command,
+)
 
 __all__ = [
     "ModelCapability", "ModelPrivacyMode", "ModelProvider", "ModelProviderRegistry",
     "ModelProviderRegistryError", "ModelProviderStatus", "ModelProviderType", "ModelRequest",
     "ModelRiskLevel", "ModelRoute", "ModelRouter", "build_default_model_registry",
     "render_model_command", "safe_hardware_summary",
+    "AdvancedModelPlanner", "AdvancedModelResult", "AdvancedModelRiskLevel",
+    "AdvancedProviderProfile", "AdvancedProviderStatus", "HardwareCapability",
+    "ModelRuntimePlan", "ModelSelectionPlan", "ProviderComparison",
+    "default_advanced_providers", "render_advanced_model_command",
 ]

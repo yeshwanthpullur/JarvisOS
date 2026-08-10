@@ -1,5 +1,9 @@
 # Agent Protocol and Registry
 
+## Phase 3 Batch 2
+
+`document_agent`, `browser_agent`, `scheduler_agent`, `communication_agent`, `adapter_agent`, and `evaluation_agent` are truthful foundations. Their modes are text-only/plan-only, read-only, plan-only without a runner, draft-only, manifest-only, and local-only. `model_agent` exposes advanced-provider planning while all advanced runtimes remain unavailable.
+
 Updated: 2026-08-10
 
 JARVIS OS now has a typed, local-first registry for governed agent metadata. The registry describes agents, capabilities, risk, permissions, approval requirements, health, requests, decisions, and results. It does not launch autonomous workers or grant new authority.

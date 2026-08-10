@@ -34,11 +34,11 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Communication Assistance | Not Started | 0% | No call, contact, calendar, messaging, or communication connector is integrated. | Repository inspection | Define consent and connector boundaries in Prompt 47. |
 | Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 94% | Prompt 52 focused/integration checks pass and the final 1,703-test full suite passes with no skips, failures, or errors. | Coding, Phase 3, tracking, regression, and full suites | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 96% | Phase 3 Batch 2 focused, tracking, Vercel-contract, and final 1,727-test suites pass with no skips, failures, or errors. | Batch 2, Phase 3, tracking, regression, and full suites | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
-**84%** toward the broader local-first JARVIS MVP described by the roadmap.
+**87%** toward the broader local-first JARVIS MVP described by the roadmap. The increase reflects tested local planning and hardening foundations, not production external execution.
 
 This is not a mathematical average of feature labels. The one-point increase from 83% reflects the dedicated Coding Agent foundation, including safe repository diagnostics, planning, CLI, configuration, and registry integration. It remains conservative because code edits, commands, commits, pushes, dependency installation, deployments, and provider-backed coding execution are not implemented.
 
@@ -47,3 +47,5 @@ Machine-readable details: [`project_health.json`](project_health.json).
 ## Limitations
 
 The audited register remains **47 total**, **24 fixed**, and **23 still open**. Phase 3 improves infrastructure but does not close the broad specialist or external-tool limitations. Future agents and skills are visible as disabled metadata rather than being counted as working integrations. Evidence, severity, and future ownership remain in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).
+
+Phase 3 Batch 2 adds explicit document text handling, read-only browser planning, scheduler planning, draft-only communication, manifest-only adapters, advanced-provider planning, and local evaluation. Runtime limitations remain open: no sending, background scheduling, interactive browsing, MCP/plugin execution, model installation/startup, cloud telemetry, or remote logging.

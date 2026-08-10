@@ -34,6 +34,14 @@ class ModelCapability(str, Enum):
     TEXT_TO_SPEECH = "text_to_speech"
     TOOL_CALLING = "tool_calling"
     STRUCTURED_OUTPUT = "structured_output"
+    RESEARCH = "research"
+    DOCUMENT_QUESTION_ANSWERING = "document_question_answering"
+    BROWSER_SUMMARIZATION = "browser_summarization"
+    SCHEDULER_PLANNING = "scheduler_planning"
+    COMMUNICATION_DRAFTING = "communication_drafting"
+    ADAPTER_PLANNING = "adapter_planning"
+    AGENT_PLANNING = "agent_planning"
+    SUMMARIZATION = "summarization"
     UNKNOWN = "unknown"
 
 
@@ -121,4 +129,3 @@ class ModelRequest:
     def __post_init__(self) -> None:
         if len(self.prompt_preview) > 300 or len(self.required_capabilities) > 8:
             raise ValueError("model_request_metadata_limit_exceeded")
-

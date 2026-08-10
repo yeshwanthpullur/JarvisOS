@@ -74,6 +74,9 @@ class AgentCapabilityType(str, Enum):
     RESEARCH = "research"
     CODING = "coding"
     DOCUMENTS = "documents"
+    SCHEDULER = "scheduler"
+    ADAPTER = "adapter"
+    EVALUATION = "evaluation"
     TOOLS = "tools"
     WORKFLOW = "workflow"
     SYSTEM = "system"
@@ -214,4 +217,3 @@ class AgentResult:
             raise ValueError("agent_result_text_too_long")
         if len(self.evidence) > MAX_ITEMS or len(self.warnings) > MAX_ITEMS:
             raise ValueError("agent_result_items_exceeded")
-

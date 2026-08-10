@@ -195,6 +195,35 @@ class CodingConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class DocumentsConfig:
+    enabled: bool = True; default_mode: str = "plan_only"; max_file_bytes: int = 1000000; max_extract_chars: int = 4000; max_history_items: int = 25; allow_pdf: bool = False; allow_office: bool = False; allow_ocr: bool = False; allow_cloud_parsing: bool = False; allow_bulk_ingestion: bool = False; save_history: bool = True; store_extracted_content: bool = False; local_only: bool = True
+
+@dataclass(frozen=True, slots=True)
+class BrowserAgentConfig:
+    enabled: bool = True; default_mode: str = "read_only"; allow_interactive: bool = False; allow_login: bool = False; allow_forms: bool = False; allow_purchases: bool = False; allow_downloads: bool = False; allow_cookies: bool = False; allow_sessions: bool = False; allow_external_automation: bool = False; max_history_items: int = 25; save_history: bool = True; local_only: bool = True
+
+@dataclass(frozen=True, slots=True)
+class SchedulerConfig:
+    enabled: bool = True; default_mode: str = "plan_only"; allow_background_runner: bool = False; allow_os_cron: bool = False; allow_task_scheduler: bool = False; allow_notifications: bool = False; minimum_cadence_minutes: int = 60; max_runs: int = 100; max_history_items: int = 25; save_history: bool = True; local_only: bool = True
+
+@dataclass(frozen=True, slots=True)
+class CommunicationConfig:
+    enabled: bool = True; default_mode: str = "draft_only"; allow_sending: bool = False; allow_external_providers: bool = False; allow_contact_access: bool = False; allow_bulk_messages: bool = False; allow_social_posting: bool = False; allow_credentials_access: bool = False; max_history_items: int = 25; save_history: bool = True; local_only: bool = True
+
+@dataclass(frozen=True, slots=True)
+class AdaptersConfig:
+    enabled: bool = True; default_mode: str = "plan_only"; allow_mcp_runtime: bool = False; allow_plugin_install: bool = False; allow_external_tool_execution: bool = False; allow_network_connectors: bool = False; allow_webhooks: bool = False; allow_command_execution: bool = False; allow_file_writes: bool = False; allow_message_sending: bool = False; allow_background_servers: bool = False; allow_credentials_access: bool = False; max_plan_steps: int = 8; max_manifests_listed: int = 25; max_history_items: int = 25; save_history: bool = True; redact_sensitive_values: bool = True
+
+@dataclass(frozen=True, slots=True)
+class AdvancedModelsConfig:
+    enabled: bool = True; default_mode: str = "planning_only"; local_first: bool = True; allow_cloud_providers: bool = False; allow_provider_install: bool = False; allow_model_download: bool = False; allow_runtime_start: bool = False; allow_docker: bool = False; allow_gpu_diagnostics: bool = False; allow_credentials_access: bool = False; max_plan_steps: int = 8; max_providers_listed: int = 25; max_history_items: int = 25; save_history: bool = True; redact_sensitive_values: bool = True; block_cloud_without_approval: bool = True; require_approval_for_runtime: bool = True; require_approval_for_downloads: bool = True
+
+@dataclass(frozen=True, slots=True)
+class EvaluationConfig:
+    enabled: bool = True; default_mode: str = "local_only"; allow_cloud_telemetry: bool = False; allow_remote_logging: bool = False; allow_background_runner: bool = False; save_history: bool = True; max_cases_per_suite: int = 100; max_output_chars: int = 8000; max_history_items: int = 25; redact_sensitive_values: bool = True; block_private_paths: bool = True; require_local_only: bool = True; fail_on_truthfulness_mismatch: bool = True; fail_on_secret_leakage: bool = True; fail_on_path_leakage: bool = True
+
+
+@dataclass(frozen=True, slots=True)
 class ToolsConfig:
     """Governed tool execution limits."""
 
@@ -400,6 +429,13 @@ class AppSettings:
     skills: SkillsConfig = field(default_factory=SkillsConfig)
     research: ResearchConfig = field(default_factory=ResearchConfig)
     coding: CodingConfig = field(default_factory=CodingConfig)
+    documents: DocumentsConfig = field(default_factory=DocumentsConfig)
+    browser: BrowserAgentConfig = field(default_factory=BrowserAgentConfig)
+    scheduler: SchedulerConfig = field(default_factory=SchedulerConfig)
+    communication: CommunicationConfig = field(default_factory=CommunicationConfig)
+    adapters: AdaptersConfig = field(default_factory=AdaptersConfig)
+    advanced_models: AdvancedModelsConfig = field(default_factory=AdvancedModelsConfig)
+    evaluation: EvaluationConfig = field(default_factory=EvaluationConfig)
     conversation: ConversationIntelligenceConfig = field(default_factory=ConversationIntelligenceConfig)
     tools: ToolsConfig = field(default_factory=ToolsConfig)
     planning: PlanningConfig = field(default_factory=PlanningConfig)

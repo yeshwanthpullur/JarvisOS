@@ -20,6 +20,16 @@ TASK_CAPABILITIES = {
     "text_to_speech": ModelCapability.TEXT_TO_SPEECH,
     "research": ModelCapability.REASONING,
     "research_planning": ModelCapability.REASONING,
+    "document": ModelCapability.DOCUMENT_QUESTION_ANSWERING,
+    "document_question_answering": ModelCapability.DOCUMENT_QUESTION_ANSWERING,
+    "browser": ModelCapability.BROWSER_SUMMARIZATION,
+    "browser_summarization": ModelCapability.BROWSER_SUMMARIZATION,
+    "scheduler": ModelCapability.SCHEDULER_PLANNING,
+    "scheduler_planning": ModelCapability.SCHEDULER_PLANNING,
+    "communication": ModelCapability.COMMUNICATION_DRAFTING,
+    "communication_drafting": ModelCapability.COMMUNICATION_DRAFTING,
+    "adapter": ModelCapability.ADAPTER_PLANNING,
+    "adapter_planning": ModelCapability.ADAPTER_PLANNING,
 }
 
 

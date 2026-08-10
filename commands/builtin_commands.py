@@ -13,9 +13,15 @@ from conversation.conversation_response import ConversationResponse
 from providers import ProviderRequest
 from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
 from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents, render_agent_command, render_prime_command, ResearchAgent, render_research_command
-from jarvis.models import ModelProviderRegistry, ModelRouter, build_default_model_registry, render_model_command
+from jarvis.models import AdvancedModelPlanner, ModelProviderRegistry, ModelRouter, build_default_model_registry, render_advanced_model_command, render_model_command
 from jarvis.skills import SkillRegistry, build_default_skill_registry, render_skill_command
 from jarvis.coding import CodingAgent, CodingHistoryStore, CodingPlanner, DiffReviewer, RepoInspector, render_coding_command
+from jarvis.documents import DocumentAgent, render_document_command
+from jarvis.browser import BrowserAgent, render_browser_command
+from jarvis.scheduler import SchedulerAgent, render_scheduler_command
+from jarvis.communication import CommunicationAgent, render_communication_command
+from jarvis.adapters import AdapterAgent, render_adapter_command
+from jarvis.evaluation import EvaluationRunner, render_evaluation_command
 
 
 def _manager(context: CommandContext):
@@ -227,6 +233,42 @@ def _coding_agent(context: CommandContext) -> CodingAgent:
     return CodingAgent(RepoInspector(root), DiffReviewer(root), CodingPlanner(), CodingHistoryStore(root / "data" / "coding"))
 
 
+def _foundation_instance(context: CommandContext, name: str, factory):
+    conversation = context.conversation_context
+    direct = getattr(conversation, name, None) if conversation is not None else None
+    metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
+    return direct or metadata.get(name) or factory()
+
+
+def _document_agent(context: CommandContext) -> DocumentAgent:
+    root = Path(__file__).resolve().parents[1]
+    return _foundation_instance(context, "document_agent", lambda: DocumentAgent(root))
+
+
+def _browser_agent(context: CommandContext) -> BrowserAgent:
+    return _foundation_instance(context, "browser_agent", BrowserAgent)
+
+
+def _scheduler_agent(context: CommandContext) -> SchedulerAgent:
+    return _foundation_instance(context, "scheduler_agent", SchedulerAgent)
+
+
+def _communication_agent(context: CommandContext) -> CommunicationAgent:
+    return _foundation_instance(context, "communication_agent", CommunicationAgent)
+
+
+def _adapter_agent(context: CommandContext) -> AdapterAgent:
+    return _foundation_instance(context, "adapter_agent", AdapterAgent)
+
+
+def _advanced_model_planner(context: CommandContext) -> AdvancedModelPlanner:
+    return _foundation_instance(context, "advanced_model_planner", AdvancedModelPlanner)
+
+
+def _evaluation_runner(context: CommandContext) -> EvaluationRunner:
+    return _foundation_instance(context, "evaluation_runner", lambda: EvaluationRunner(_prime_agent(context), _adapter_agent(context), _advanced_model_planner(context)))
+
+
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
     if session is None:
         return default
@@ -271,12 +313,22 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         research_status = research_agent.status()
         coding_agent = _coding_agent(context)
         coding_status = coding_agent.status()
+        document_status = _document_agent(context).status()
+        browser_status = _browser_agent(context).status()
+        scheduler_status = _scheduler_agent(context).status()
+        communication_status = _communication_agent(context).status()
+        adapter_status = _adapter_agent(context).status()
+        advanced_status = _advanced_model_planner(context).status()
+        evaluation_status = _evaluation_runner(context).status()
         phase3_text = (
             "phase3="
             f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
             f"/foundation:{foundation_agents}/future:{future_agents} "
             f"prime:{prime_status['status']} model_router:{model_router.router_status()['status']} "
-            f"research:{research_status['status']} coding:{coding_status['status']} skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
+            f"research:{research_status['status']} coding:{coding_status['status']} document:{document_status['status']} "
+            f"browser:{browser_status['status']} scheduler:{scheduler_status['status']} communication:{communication_status['status']} "
+            f"adapter:{adapter_status['status']} advanced_models:{advanced_status['status']} evaluation:{evaluation_status['status']} "
+            f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
         )
@@ -294,6 +346,13 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "coding_default_mode": coding_status["default_mode"],
             "coding_write_operations": coding_status["write_operations"],
             "coding_command_execution": coding_status["command_execution"],
+            "document_agent_status": document_status["status"],
+            "browser_agent_status": browser_status["status"],
+            "scheduler_agent_status": scheduler_status["status"],
+            "communication_agent_status": communication_status["status"],
+            "adapter_agent_status": adapter_status["status"],
+            "advanced_model_status": advanced_status["status"],
+            "evaluation_status": evaluation_status["status"],
             "skill_registry_status": "ready" if skill_summary["valid"] else "error",
             "approval_required_capabilities": agent_summary["approval_required_capabilities"],
             "high_risk_capabilities": agent_summary["high_risk_capabilities"],
@@ -394,6 +453,73 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("coding tests", "Plan coding test coverage", "coding", (), CommandPermission.DIAGNOSTIC),
         ("coding show", "Show one coding job", "coding", (), CommandPermission.DIAGNOSTIC),
         ("coding history", "Show bounded coding history", "coding", (), CommandPermission.DIAGNOSTIC),
+        ("document status", "Show Document Intelligence status", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document help", "Show document command help", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document plan", "Plan bounded document work", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document safety", "Evaluate document safety", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document types", "Show safe document type policy", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document inspect", "Inspect explicit document metadata", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document extract", "Extract bounded safe text", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document summarize", "Summarize bounded safe text", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document ask", "Plan bounded document Q&A", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document show", "Show one document job", "document", (), CommandPermission.DIAGNOSTIC),
+        ("document history", "Show bounded document history", "document", (), CommandPermission.DIAGNOSTIC),
+        ("browser status", "Show Browser Agent status", "browser", (), CommandPermission.DIAGNOSTIC),
+        ("browser help", "Show browser command help", "browser", (), CommandPermission.DIAGNOSTIC),
+        ("browser plan", "Plan read-only browser work", "browser", (), CommandPermission.DIAGNOSTIC),
+        ("browser safety", "Evaluate browser safety", "browser", (), CommandPermission.DIAGNOSTIC),
+        ("browser capabilities", "Show browser capability policy", "browser", (), CommandPermission.DIAGNOSTIC),
+        ("browser sources", "Show read-only source plan", "browser", (), CommandPermission.DIAGNOSTIC),
+        ("browser summarize", "Plan bounded webpage summary", "browser", (), CommandPermission.DIAGNOSTIC),
+        ("browser show", "Show one browser job", "browser", (), CommandPermission.DIAGNOSTIC),
+        ("browser history", "Show bounded browser history", "browser", (), CommandPermission.DIAGNOSTIC),
+        ("scheduler status", "Show Scheduler Agent status", "scheduler", (), CommandPermission.DIAGNOSTIC),
+        ("scheduler help", "Show scheduler command help", "scheduler", (), CommandPermission.DIAGNOSTIC),
+        ("scheduler plan", "Plan a schedule without creating it", "scheduler", (), CommandPermission.DIAGNOSTIC),
+        ("scheduler safety", "Evaluate schedule safety", "scheduler", (), CommandPermission.DIAGNOSTIC),
+        ("scheduler validate", "Validate bounded schedule text", "scheduler", (), CommandPermission.DIAGNOSTIC),
+        ("scheduler preview", "Preview schedule metadata", "scheduler", (), CommandPermission.DIAGNOSTIC),
+        ("scheduler capabilities", "Show scheduler capability policy", "scheduler", (), CommandPermission.DIAGNOSTIC),
+        ("scheduler show", "Show one schedule job", "scheduler", (), CommandPermission.DIAGNOSTIC),
+        ("scheduler history", "Show bounded scheduler history", "scheduler", (), CommandPermission.DIAGNOSTIC),
+        ("communication status", "Show Communication Gateway status", "communication", (), CommandPermission.DIAGNOSTIC),
+        ("communication help", "Show communication command help", "communication", (), CommandPermission.DIAGNOSTIC),
+        ("communication providers", "List disabled communication providers", "communication", (), CommandPermission.DIAGNOSTIC),
+        ("communication plan", "Plan draft-only communication", "communication", (), CommandPermission.DIAGNOSTIC),
+        ("communication safety", "Evaluate communication safety", "communication", (), CommandPermission.DIAGNOSTIC),
+        ("communication draft", "Create an unsent draft", "communication", (), CommandPermission.DIAGNOSTIC),
+        ("communication notify-plan", "Plan an unsent notification", "communication", (), CommandPermission.DIAGNOSTIC),
+        ("communication show", "Show one communication job", "communication", (), CommandPermission.DIAGNOSTIC),
+        ("communication history", "Show bounded communication history", "communication", (), CommandPermission.DIAGNOSTIC),
+        ("adapter status", "Show Adapter foundation status", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("adapter help", "Show adapter command help", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("adapter list", "List adapter manifests", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("adapter show", "Show one adapter manifest", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("adapter plan", "Plan an adapter without execution", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("adapter safety", "Evaluate adapter safety", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("adapter permissions", "Show ungranted adapter permissions", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("adapter capabilities", "Show adapter capability policy", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("adapter show-job", "Show one adapter job", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("adapter history", "Show bounded adapter history", "adapter", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced status", "Show advanced provider planning status", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced providers", "List planned advanced providers", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced show", "Show one advanced provider", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced plan", "Plan an advanced provider", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced compare", "Compare advanced provider metadata", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced hardware", "Show broad hardware categories", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced route", "Plan an advanced model route", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced safety", "Evaluate advanced model safety", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced checklist", "Show non-executing provider checklist", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("model advanced history", "Show bounded provider planning history", "provider", (), CommandPermission.DIAGNOSTIC),
+        ("evaluation status", "Show local evaluation status", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        ("evaluation help", "Show evaluation command help", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        ("evaluation run", "Run bounded local evaluation", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        ("evaluation routing", "Run deterministic routing fixtures", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        ("evaluation safety", "Run safety fixtures", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        ("evaluation truthfulness", "Check capability truthfulness", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        ("evaluation observability", "Show local metadata snapshot", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        ("evaluation show", "Show one evaluation result", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        ("evaluation history", "Show bounded evaluation history", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("health", "Show health status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("clear", "Clear the console", "utility", (), CommandPermission.UTILITY),
         ("exit", "Exit the command loop", "utility", ("quit",), CommandPermission.UTILITY),
@@ -705,6 +831,8 @@ def _handler_for(name: str):
             return _text_response(render_agent_command(_phase3_agent_registry(context), name, context.arguments))
         if name.startswith("prime "):
             return _text_response(render_prime_command(_prime_agent(context), name, context.arguments))
+        if name.startswith("model advanced "):
+            return _text_response(render_advanced_model_command(_advanced_model_planner(context), name, context.arguments))
         if name.startswith("model "):
             registry, router = _model_foundation(context)
             return _text_response(render_model_command(registry, router, name, context.arguments))
@@ -714,6 +842,18 @@ def _handler_for(name: str):
             return _text_response(render_research_command(_research_agent(context), name, context.arguments))
         if name.startswith("coding "):
             return _text_response(render_coding_command(_coding_agent(context), name, context.arguments))
+        if name.startswith("document "):
+            return _text_response(render_document_command(_document_agent(context), name, context.arguments))
+        if name.startswith("browser "):
+            return _text_response(render_browser_command(_browser_agent(context), name, context.arguments))
+        if name.startswith("scheduler "):
+            return _text_response(render_scheduler_command(_scheduler_agent(context), name, context.arguments))
+        if name.startswith("communication "):
+            return _text_response(render_communication_command(_communication_agent(context), name, context.arguments))
+        if name.startswith("adapter "):
+            return _text_response(render_adapter_command(_adapter_agent(context), name, context.arguments))
+        if name.startswith("evaluation "):
+            return _text_response(render_evaluation_command(_evaluation_runner(context), name, context.arguments))
         if name.startswith("multiagent "):
             agent_manager = _agent_manager(context)
             orchestrator = getattr(agent_manager, "orchestrator", None)
