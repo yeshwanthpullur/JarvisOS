@@ -18,7 +18,7 @@ class ParsedCommand:
 
 _SUBCOMMANDS = {
     "provider list", "provider status", "provider health", "provider enable", "provider disable", "provider test",
-    "plugin list", "plugin status", "agent list", "agent status", "agent capabilities", "agent show", "agent find", "agent diagnostics", "multiagent status", "multiagent list", "multiagent show", "multiagent cancel", "multiagent limits", "multiagent mode",
+    "plugin list", "plugin status", "agent list", "agent status", "agent capabilities", "agent show", "agent find", "agent diagnostics", "agent ready", "agent unavailable", "agent future", "agent risks", "agent approvals", "multiagent status", "multiagent list", "multiagent show", "multiagent cancel", "multiagent limits", "multiagent mode",
     "department list", "memory status", "memory help", "memory list", "memory search", "memory show", "memory remember", "memory forget", "memory update", "memory archive", "memory recent", "memory preferences", "memory projects", "memory audit", "memory cleanup", "memory consolidate", "memory count", "memory export", "memory import", "knowledge search", "task list", "task status", "workflow list", "config show", "logs recent", "project status",
     "profile show", "profile list", "profile explain", "profile update", "profile forget", "profile confirm", "profile reject",
     "context show", "context recent", "context clear", "context pause", "context resume", "context previous", "objective show",

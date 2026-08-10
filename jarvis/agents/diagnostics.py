@@ -41,5 +41,18 @@ def render_agent_command(registry: AgentRegistry, command: str, arguments: tuple
     if command == "agent diagnostics":
         data = agent_diagnostics(registry)
         return "Agent diagnostics: " + ", ".join(f"{key}={value}" for key, value in data.items() if key != "validation_errors")
+    if command in {"agent ready", "agent unavailable", "agent future"}:
+        if command == "agent ready":
+            selected = tuple(item for item in entries if item.status.value == "ready")
+        elif command == "agent future":
+            selected = tuple(item for item in entries if item.health == "future")
+        else:
+            selected = tuple(item for item in entries if item.status.value != "ready")
+        return command.title() + ": " + (", ".join(f"{item.name}:{item.health}" for item in selected[:25]) or "none")
+    if command == "agent risks":
+        values = tuple((entry.name, cap.name, cap.risk_level.value) for entry in entries for cap in entry.capabilities if cap.risk_level.value in {"high", "critical"})
+        return "Agent risks: " + (", ".join(f"{agent}.{capability}:{risk}" for agent, capability, risk in values[:30]) or "none")
+    if command == "agent approvals":
+        values = tuple((entry.name, cap.name) for entry in entries for cap in entry.capabilities if cap.requires_approval)
+        return "Agent approvals: " + (", ".join(f"{agent}.{capability}" for agent, capability in values[:30]) or "none")
     return "Agent command unavailable."
-

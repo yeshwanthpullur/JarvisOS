@@ -12,7 +12,7 @@ from commands.command_registry import CommandRecord, CommandRegistry
 from conversation.conversation_response import ConversationResponse
 from providers import ProviderRequest
 from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
-from jarvis.agents import AgentRegistry, PrimeAgent, render_agent_command, render_prime_command
+from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents, render_agent_command, render_prime_command
 from jarvis.models import ModelProviderRegistry, ModelRouter, build_default_model_registry, render_model_command
 from jarvis.skills import SkillRegistry, build_default_skill_registry, render_skill_command
 
@@ -91,7 +91,7 @@ def _phase3_agent_registry(context: CommandContext) -> AgentRegistry:
         return direct
     metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
     registry = metadata.get("agent_registry")
-    return registry if isinstance(registry, AgentRegistry) else AgentRegistry()
+    return registry if isinstance(registry, AgentRegistry) else register_specialist_agents(AgentRegistry())
 
 
 def _prime_agent(context: CommandContext) -> PrimeAgent:
@@ -315,6 +315,11 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("agent show", "Show one governed agent", "agent", (), CommandPermission.AGENT),
         ("agent find", "Find agents by capability", "agent", (), CommandPermission.AGENT),
         ("agent diagnostics", "Validate the governed agent registry", "agent", (), CommandPermission.DIAGNOSTIC),
+        ("agent ready", "List ready specialist agents", "agent", (), CommandPermission.AGENT),
+        ("agent unavailable", "List unavailable specialist agents", "agent", (), CommandPermission.AGENT),
+        ("agent future", "List future specialist placeholders", "agent", (), CommandPermission.AGENT),
+        ("agent risks", "List high-risk specialist capabilities", "agent", (), CommandPermission.DIAGNOSTIC),
+        ("agent approvals", "List approval-required capabilities", "agent", (), CommandPermission.DIAGNOSTIC),
         ("prime status", "Show Prime Agent routing status", "agent", (), CommandPermission.AGENT),
         ("prime route", "Route a request without execution", "agent", (), CommandPermission.AGENT),
         ("prime plan", "Create a side-effect-free delegation plan", "agent", (), CommandPermission.AGENT),
@@ -572,7 +577,7 @@ def _handler_for(name: str):
             return _text_response(f"Command history: {len(manager.history.list_history())} entries")
         if name == "metrics" and manager is not None:
             return _text_response(f"Commands executed: {manager.metrics.commands_executed}")
-        if name in {"agents", "agent status", "agent list", "agent capabilities", "agent show", "agent find", "agent diagnostics"}:
+        if name in {"agents", "agent status", "agent list", "agent capabilities", "agent show", "agent find", "agent diagnostics", "agent ready", "agent unavailable", "agent future", "agent risks", "agent approvals"}:
             return _text_response(render_agent_command(_phase3_agent_registry(context), name, context.arguments))
         if name.startswith("prime "):
             return _text_response(render_prime_command(_prime_agent(context), name, context.arguments))

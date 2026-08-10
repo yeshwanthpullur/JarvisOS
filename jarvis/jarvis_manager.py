@@ -8,7 +8,7 @@ from pathlib import Path
 
 from jarvis.jarvis_cache import JarvisCache
 from jarvis.jarvis_context import JarvisContext
-from jarvis.agents import AgentRegistry, PrimeAgent
+from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents
 from jarvis.models import ModelRouter, build_default_model_registry
 from jarvis.skills import build_default_skill_registry
 from jarvis.jarvis_controller import JarvisController
@@ -175,6 +175,7 @@ class JarvisManager:
             allow_cloud_providers=getattr(model_config, "allow_cloud_providers", False),
         )
         self.skill_registry = build_default_skill_registry()
+        register_specialist_agents(self.agent_registry, vision_ready=vision_ready)
         prime_config = getattr(context.settings, "prime", None) if context else None
         self.prime_agent = PrimeAgent(
             self.agent_registry,

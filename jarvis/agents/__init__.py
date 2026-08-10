@@ -21,6 +21,7 @@ from .prime import (
     classify_intent, classify_risk, render_prime_command,
 )
 from .registry import AgentRegistry, AgentRegistryError
+from .specialists import register_specialist_agents, specialist_entries
 
 __all__ = [
     "AgentApprovalState", "AgentCapability", "AgentCapabilityType", "AgentDecision",
@@ -30,4 +31,5 @@ __all__ = [
     "PrimeAgent", "PrimeDecision", "PrimeExecutionPlan", "PrimeRequest", "PrimeResult",
     "approval_summary", "classify_intent", "classify_risk", "is_execution_allowed",
     "render_prime_command", "requires_approval",
+    "register_specialist_agents", "specialist_entries",
 ]
