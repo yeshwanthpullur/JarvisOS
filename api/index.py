@@ -13,7 +13,7 @@ STATUS: Final[dict[str, str]] = {
     "status": "online",
     "deployment_mode": "status-foundation",
     "primary_mode": "local-cli",
-    "release": "v1.3.0-alpha",
+    "release": "v1.5.0-alpha",
     "vision": "working_local_ollama",
     "online_sync": "partial_local_queue",
     "web_automation": "partial_read_only",
@@ -21,6 +21,10 @@ STATUS: Final[dict[str, str]] = {
     "video_editing": "partial_workflow_foundation",
     "voice_input": "working_local_vosk",
     "image_generation": "partial_workflow_foundation",
+    "multi_agent_os": "partial_plan_only_foundation",
+    "prime_agent": "partial_plan_only",
+    "model_router": "partial_metadata_only",
+    "skill_registry": "partial_metadata_only",
 }
 
 ROOT_PAGE: Final[str] = """<!doctype html>

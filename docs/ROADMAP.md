@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated: 2026-08-05
+Updated: 2026-08-10
 
 ## Completed Milestones
 
@@ -29,65 +29,69 @@ Updated: 2026-08-05
 - Prompt 39 - Conversation Intelligence.
 - Prompt 40 - Limitations Review, Prioritization, and Safe Fix Pass.
 - Prompt 41 - Image Generation Workflow Foundation.
+- Prompt 42 - Video Editing Workflow Foundation.
+- Prompt 43 - Phase 3 Intake and Current-State Reconciliation.
+- Prompt 44 - Agent Protocol and Agent Registry Foundation.
+- Prompt 45 - Prime Agent and Delegation Foundation.
+- Prompt 46 - Model Provider Registry and Model Router Foundation.
+- Prompt 47 - Tool and Skill Registry Foundation.
+- Prompt 48 - Specialist Agent Stubs and Diagnostics.
+- Prompt 49 - Phase 3 Integration, Tests, Documentation, and Verification.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Next Milestone
-
-### Prompt 42 - Video Editing Workflow Foundation
-
-**Goal:** Add scripts, shot lists, clip organization, captions, and non-destructive editing plans before editor integration.
-
-**Acceptance:** No silent uploads or destructive edits; source files and exports remain explicit and reviewable.
-
-## Future Milestones
-
-### Prompt 43 - Real Encrypted Remote Sync Backend
-
-**Goal:** Implement an authenticated encrypted adapter behind the existing local-first Sync foundation.
-
-**Acceptance:** End-to-end encryption, strict schemas, conflict handling, revocation, audit, offline queues, and no secret synchronization.
-
-### Prompt 44 - Cross-Device Sync
-
-**Goal:** Synchronize approved summaries and project state among trusted devices.
-
-**Acceptance:** Device enrollment, least privilege, deletion propagation, conflict resolution, and offline behavior are verified.
-
-### Prompt 45 - Async Voice and Push-to-Talk Conversation
-
-**Goal:** Improve conversational ergonomics after the STT and playback foundations.
-
-**Acceptance:** Interruption, cancellation, text fallback, sensitive-content filtering, and correlated voice sessions work.
-
-### Prompt 46 - Approval-Gated Interactive Web Automation
-
-**Goal:** Add narrowly scoped clicking and typing behind explicit approval and the existing Web Automation Manager.
-
-**Acceptance:** No login, submission, purchase, communication, or account change without scoped approval; stop and audit are complete.
-
-### Prompt 47 - Safe Communication and Call Assistance Foundation
-
-**Goal:** Support drafts, agendas, reminders, and future scoped connectors without impersonation or silent communication.
-
-**Acceptance:** Nothing is sent or recorded without clear consent; private content is minimized and auditable.
-
-### Prompt 48 - Wake Word and Continuous Listening Safety Layer
-
-**Goal:** Evaluate opt-in wake word and bounded listening after push-to-talk is stable.
-
-**Acceptance:** Disabled by default, visible capture state, local processing, immediate stop, and no secret background recording.
-
-### Prompt 49 - Personal Workspace / Multi-Tool Replacement Layer
-
-**Goal:** Unify approved chat, projects, study, research, creation, and automation workflows without duplicating authoritative systems.
-
-**Acceptance:** One coherent workspace with selective context, user-controlled memory, clear status, and no hidden cross-tool data sharing.
 
 ### Prompt 50 - v1.0 MVP Hardening
 
 **Goal:** Stabilize supported workflows, reduce open high-severity limitations, and prepare a trustworthy v1.0.
 
 **Acceptance:** Full regression and security review, documented support matrix, migration/recovery checks, clean release artifacts, and real acceptance evidence.
+
+## Preserved Deferred Themes
+
+The following earlier Prompt 43-49 assignments remain valid product-direction themes in their original order. Phase 3 reused those prompt numbers for the Multi-Agent OS Foundation; this record preserves the earlier sequence without claiming that any theme was implemented or reordering future work.
+
+### Real Encrypted Remote Sync Backend
+
+**Goal:** Implement an authenticated encrypted adapter behind the existing local-first Sync foundation.
+
+**Acceptance:** End-to-end encryption, strict schemas, conflict handling, revocation, audit, offline queues, and no secret synchronization.
+
+### Cross-Device Sync
+
+**Goal:** Synchronize approved summaries and project state among trusted devices.
+
+**Acceptance:** Device enrollment, least privilege, deletion propagation, conflict resolution, and offline behavior are verified.
+
+### Async Voice and Push-to-Talk Conversation
+
+**Goal:** Improve conversational ergonomics after the STT and playback foundations.
+
+**Acceptance:** Interruption, cancellation, text fallback, sensitive-content filtering, and correlated voice sessions work.
+
+### Approval-Gated Interactive Web Automation
+
+**Goal:** Add narrowly scoped clicking and typing behind explicit approval and the existing Web Automation Manager.
+
+**Acceptance:** No login, submission, purchase, communication, or account change without scoped approval; stop and audit are complete.
+
+### Safe Communication and Call Assistance Foundation
+
+**Goal:** Support drafts, agendas, reminders, and future scoped connectors without impersonation or silent communication.
+
+**Acceptance:** Nothing is sent or recorded without clear consent; private content is minimized and auditable.
+
+### Wake Word and Continuous Listening Safety Layer
+
+**Goal:** Evaluate opt-in wake word and bounded listening after push-to-talk is stable.
+
+**Acceptance:** Disabled by default, visible capture state, local processing, immediate stop, and no secret background recording.
+
+### Personal Workspace / Multi-Tool Replacement Layer
+
+**Goal:** Unify approved chat, projects, study, research, creation, and automation workflows without duplicating authoritative systems.
+
+**Acceptance:** One coherent workspace with selective context, user-controlled memory, clear status, and no hidden cross-tool data sharing.
 
 ## Product-Direction Themes
 

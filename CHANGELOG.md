@@ -1,5 +1,31 @@
 # Changelog
 
+## Unreleased - Multi-Agent OS Foundation
+
+### Added
+
+- Added typed Agent Protocol models, a deterministic Agent Registry, duplicate validation, and bounded diagnostics.
+- Added truthful current/foundation/future specialist entries with explicit capabilities, risks, permissions, approvals, locality, and limitations.
+- Added Prime Agent deterministic intent/risk classification, approval metadata, plan-only delegation, safe fallbacks, and critical-risk blocking.
+- Added a provider-neutral Model Provider Registry and Model Router with local-only routing, cloud-disabled defaults, unavailable provider metadata, and safe hardware hints.
+- Added a permission-aware Skill Registry with current manifests, disabled future placeholders, and conceptual native/external/MCP provider contracts.
+- Added bounded `agent`, `prime`, `model`, and `skill` CLI diagnostics and a concise Phase 3 project-status summary.
+- Added Phase 3 architecture, agent, Prime Agent, model-router, and skill documentation.
+- Stabilized bounded oversized local-interface request rejection on Windows by draining only modest rejected bodies before returning HTTP 413.
+
+### Verification
+
+- Focused Phase 3 integration/tracking suite: 66 passed.
+- Cross-subsystem regression suite: 448 passed with 1 environment-dependent skip.
+- Full suite: 1,658 passed with 3 environment-dependent skips, 0 failed, and 0 errors (1,661 total).
+
+### Safety
+
+- No new command executes agents, tools, models, plugins, MCP servers, network requests, hardware actions, communication actions, or background workers.
+- Default execution remains `plan_only`; high-risk capabilities require approval metadata and critical future actions are blocked.
+- Cloud providers, external plugins, and MCP remain disabled. Existing local chat, vision, voice, memory, web, sync, image, and video paths retain their established authorities.
+- Vercel remains a bounded status-only surface.
+
 ## Unreleased - Video Editing Workflow Foundation
 
 - Added a governed local-first video editing workflow foundation with prompt validation, safety review, provider abstraction, dry-run planning, bounded history, and truthful unavailable-provider handling.

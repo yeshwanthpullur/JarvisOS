@@ -305,7 +305,17 @@ class LocalInterfaceService:
             self._security_rejection(handler, reason)
             return
         content_length = int(handler.headers.get("Content-Length", "0") or 0)
-        if content_length <= 0 or content_length > self.config.max_request_size:
+        if content_length <= 0:
+            self._write_json(handler, HTTPStatus.REQUEST_ENTITY_TOO_LARGE, {"status": "rejected", "error": "invalid_request_size"})
+            return
+        if content_length > self.config.max_request_size:
+            # Drain only modest rejected bodies so Windows can deliver the 413
+            # instead of resetting a connection that still has unread bytes.
+            drain_limit = min(max(self.config.max_request_size * 2, 65_536), 131_072)
+            if content_length <= drain_limit:
+                handler.rfile.read(content_length)
+            else:
+                handler.close_connection = True
             self._write_json(handler, HTTPStatus.REQUEST_ENTITY_TOO_LARGE, {"status": "rejected", "error": "invalid_request_size"})
             return
         try:

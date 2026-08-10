@@ -20,7 +20,7 @@ def render_agent_command(registry: AgentRegistry, command: str, arguments: tuple
             f"unavailable={data['unavailable_agents']} capabilities={data['total_capabilities']}."
         )
     if command == "agent list":
-        return "Agents: " + (", ".join(f"{item.name}:{item.status.value}" for item in entries[:25]) or "none")
+        return "agent list: " + (", ".join(f"{item.name}:{item.status.value}" for item in entries[:25]) or "none")
     if command == "agent capabilities":
         values = registry.list_capabilities()[:40]
         return "Agent capabilities: " + (", ".join(f"{agent}.{name}:{kind}" for agent, name, kind in values) or "none")

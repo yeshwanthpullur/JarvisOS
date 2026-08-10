@@ -40,6 +40,7 @@ class VercelDeploymentTests(unittest.TestCase):
         required = {
             "service", "status", "deployment_mode", "primary_mode", "release",
             "vision", "voice_input", "online_sync", "web_automation", "mobile_automation", "video_editing", "image_generation",
+            "multi_agent_os", "prime_agent", "model_router", "skill_registry",
         }
         for path in ("/api/health", "/api/status", "/api/status?source=test"):
             with self.subTest(path=path):
@@ -54,6 +55,10 @@ class VercelDeploymentTests(unittest.TestCase):
                 self.assertEqual(payload["video_editing"], "partial_workflow_foundation")
                 self.assertEqual(payload["voice_input"], "working_local_vosk")
                 self.assertEqual(payload["image_generation"], "partial_workflow_foundation")
+                self.assertEqual(payload["multi_agent_os"], "partial_plan_only_foundation")
+                self.assertEqual(payload["prime_agent"], "partial_plan_only")
+                self.assertEqual(payload["model_router"], "partial_metadata_only")
+                self.assertEqual(payload["skill_registry"], "partial_metadata_only")
 
     def test_status_exposes_no_secrets_or_local_paths(self) -> None:
         body = json.dumps(STATUS)

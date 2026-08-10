@@ -1,13 +1,13 @@
 # Current Status
 
-Updated: 2026-08-05
+Updated: 2026-08-10
 
 ## Current Release
 
-- Release: `v1.3.0-alpha - Limitations Review and Memory Lifecycle Fix`
-- Baseline commit: `e8a528156952f341f1ab31351a24943698900be2`
+- Release: `v1.5.0-alpha - Video Editing Workflow Foundation`
+- Phase 3 implementation baseline: `8a0ff6d` plus final integration
 - Branch: `main`
-- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v1.3.0-alpha`
+- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v1.5.0-alpha`
 
 ## Stable Launch
 
@@ -38,6 +38,7 @@ python main.py --ui
 - Image generation workflow foundation with governed prompt validation, safety review, provider registry, dry-run planning, bounded metadata, and truthful unavailable-provider handling.
 - Video editing workflow foundation with governed prompt validation, safety review, provider registry, dry-run planning, bounded metadata, and truthful unavailable-provider handling.
 - Playback-only speech produces no permanent audio file by default; temporary voice audio is bounded and user-cleanable.
+- Phase 3 registry and diagnostics: typed agents, deterministic Prime Agent plan-only routing, provider-neutral model route planning, permission-aware skill metadata, and truthful specialist status.
 
 ## Partially Working Features
 
@@ -45,6 +46,7 @@ python main.py --ui
 - Tool Intelligence: safe built-ins work, while broad external tool integrations are future work.
 - Autonomous Planning: advisory plans work, but autonomous execution is intentionally not enabled.
 - Multi-Agent Intelligence: governed planner/reviewer coordination exists, but broad specialist coverage is limited.
+- Multi-Agent OS Foundation: registries, risk/approval metadata, routing, planning, and diagnostics work; specialist execution, external plugins, MCP, and cloud model routes remain unavailable.
 - Memory and Knowledge: authoritative local storage, persistent personal context, and non-destructive retention/duplicate compaction work; cross-device policy is not implemented.
 - Online deployment foundation: the canonical `jarvis-os` project is Ready and remains status-only.
 - Online Sync foundation: disabled-by-default manual queueing, strict summary schemas, atomic persistence, deduplication, bounded audit/retention, conflict detection, and truthful unavailable remote behavior work. No real encrypted remote adapter is configured.
@@ -90,7 +92,7 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 
 ## Next Recommended Prompt
 
-Prompt 43 - Real Encrypted Remote Sync Backend. Prompt 42 completed the video-editing workflow foundation without changing roadmap order.
+Prompt 50 - v1.0 MVP Hardening. Phase 3 Prompts 43-49 are implemented as a controlled multi-agent foundation without starting Prompt 50.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
@@ -99,7 +101,10 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - Prompt 41 focused image-generation suite: 13 passed, 0 skipped, 0 failed, 0 errors.
 - Prompt 42 focused video-editing suite: 49 passed, 0 skipped, 0 failed, 0 errors.
 - Tracking, limitations, product-vision, and Vercel contract suite: 49 passed, 0 skipped, 0 failed, 0 errors.
-- Full suite: 1,612 passed, 3 environment-dependent skips, 0 failed, 0 errors.
+- Pre-Phase-3 full suite: 1,612 passed, 3 environment-dependent skips, 0 failed, 0 errors.
+- Phase 3 focused integration/tracking suite: 66 passed, 0 skipped, 0 failed, 0 errors.
+- Cross-subsystem regression suite: 448 passed, 1 environment-dependent skip, 0 failed, 0 errors.
+- Full suite: 1,658 passed, 3 environment-dependent skips, 0 failed, 0 errors (1,661 total).
 - Real Ollama chat: working locally.
 - Local Ollama LLaVA vision: working locally.
 - Local Vosk microphone input with an Indian-English model and `voice listen send`: working locally.
@@ -117,4 +122,6 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - [x] Run `image safety "create explicit unsafe content"`.
 - [x] Run `image generate "create explicit unsafe content" --dry-run`.
 - [x] Run `limitations show LIM-029` and `limitations status`.
+- [x] Run bounded `agent`, `prime`, `model`, and `skill` diagnostics.
+- [x] Confirm future agents, cloud providers, MCP, and external plugins remain unavailable and no route/plan command performs side effects.
 - [x] Confirm safe prompts are allowed, unsafe prompts are blocked, dry-run creates no real output, provider unavailability is truthful, and outputs stay bounded.

@@ -1,6 +1,6 @@
 # Project Health
 
-Updated: 2026-08-05
+Updated: 2026-08-10
 
 Status values are evidence-based: **Working**, **Partial**, **Experimental**, **Not Started**, or **Blocked**. Confidence describes confidence in the status assessment, not percentage feature completion. Values are conservative and should change only after code, tests, or manual evidence changes.
 
@@ -11,9 +11,11 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Local AI | Working | 92% | Real Ollama text chat and free-form routing are manually verified through Provider Router. | Normal local-only questions; provider tests | Keep truthful unavailable handling when the PC or Ollama is offline. |
 | Conversation Intelligence | Working | 80% | Bounded multi-turn state, topics, entities, follow-up intent, references, clarification, repair, modes, confidence, and summaries are integrated with normal chat. | Conversation intelligence tests; multi-turn CLI sequence | Improve language understanding from observed ambiguity without hidden persistence. |
 | Cloud Provider Foundation | Partial | 65% | Provider-neutral adapters, policy, mocks, and commands exist; no routine paid live verification. | Cloud mock tests; `cloud status` | Add opt-in provider smoke checks when authorized. |
-| Tools | Partial | 72% | Governed registry and safe calculator/text tools execute; external catalog is limited. | `tools status`; focused tool tests | Add tools only with schemas and permissions. |
+| Tools | Partial | 75% | Governed calculator/text tools execute; Skill Registry adds explicit permission, risk, side-effect, approval, and availability metadata. | `tools status`; `skill diagnostics`; focused tests | Add executable skills only through separately verified owning milestones. |
 | Planning | Partial | 65% | Advisory provider-backed plans and validation exist; execution remains controlled. | Autonomous planning tests; `plan status` | Improve evidence and review UX without auto-execution. |
-| Multi-Agent System | Partial | 65% | Governed planner/reviewer coordination and bounded synthesis exist. | Multi-agent tests; local planner/reviewer scenario | Expand specialists after capability evidence exists. |
+| Multi-Agent System | Partial | 78% | Typed protocols, a validated registry, specialist metadata, bounded diagnostics, and Prime Agent plan-only delegation work without side effects. | `agent diagnostics`; `prime status`; Phase 3 tests | Expand executable specialists only with evidence and scoped approvals. |
+| Model Router | Partial | 76% | Provider-neutral metadata, local-only route planning, unavailable fallbacks, cloud-disabled policy, and safe hardware hints are tested. | `model status`; `model policy`; router tests | Add providers only through explicit tested local adapters. |
+| Skill Registry | Partial | 76% | Native/future manifests declare permissions, side effects, risk, approvals, locality, and truthful status; plugins and MCP remain disabled. | `skill diagnostics`; registry tests | Keep external loading disabled until separately governed. |
 | Voice Output | Working | 96% | Windows SAPI explicit/automatic playback, long safe replies, background playback, and stop/resume/cancel/interrupt/repeat controls are manually verified without persistent audio. | `voice speaking status`; playback-control tests; manual long reply | Preserve bounded interruption and safe speech filtering. |
 | Voice Input | Working | 88% | Local Vosk microphone capture with an Indian-English model and explicit `voice listen send` handoff are manually verified; no hidden recording or raw-audio persistence is enabled. | `voice input status`; `voice listen send`; STT tests | Add continuous conversation or multilingual switching only through separate privacy-reviewed work. |
 | Memory | Working | 82% | Persistent context, explicit controls, bounded retrieval, safe summaries, and non-destructive startup retention/duplicate compaction are tested. | Memory lifecycle, retrieval, and command tests | Review lifecycle outcomes from real use without automatic deletion. |
@@ -30,16 +32,16 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Communication Assistance | Not Started | 0% | No call, contact, calendar, messaging, or communication connector is integrated. | Repository inspection | Define consent and connector boundaries in Prompt 47. |
 | Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 92% | Prompt 41 focused image-generation tests, tracking checks, and the 1,600-test full suite pass with three environment-dependent skips. | `tests/test_image_generation.py`; tracking tests; full suite | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 93% | Phase 3 focused checks pass and the 1,661-test full suite passes with three environment-dependent skips. | Phase 3 tests; tracking tests; full suite | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
-**80%** toward the broader local-first JARVIS MVP described by the roadmap.
+**81%** toward the broader local-first JARVIS MVP described by the roadmap.
 
-This is not a mathematical average of feature labels. The increase reflects real governed image-generation and video-editing workflow foundations added on top of manually verified local chat, voice, vision, and memory, while keeping the claims conservative because no default local image or video model is configured and several major capabilities remain intentionally deferred or blocked.
+This is not a mathematical average of feature labels. The one-point increase reflects verified typed registries, deterministic plan-only routing, approval/risk metadata, specialist diagnostics, and provider-neutral planning. It remains conservative because Phase 3 adds no autonomous execution, external plugins, cloud providers, or new real specialist integrations.
 
 Machine-readable details: [`project_health.json`](project_health.json).
 
 ## Limitations
 
-The audited register currently records **47 total**, **24 fixed**, and **23 still open** limitations. Conversation Intelligence, Voice Input, Vision, Memory, and the core runtime remain Working for their bounded verified local scopes. Online Sync, Web Automation, Mobile Automation, Study/Research, Builder, Hardware, Creative Media, Security/Permissions, and Personal Workspace remain Partial; the Web Interface remains Experimental; continuous voice conversation, live camera/video, and automatic cross-device retention are not implemented. Evidence, severity, and future ownership are maintained in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).
+The audited register remains **47 total**, **24 fixed**, and **23 still open**. Phase 3 improves infrastructure but does not close the broad specialist or external-tool limitations. Future agents and skills are visible as disabled metadata rather than being counted as working integrations. Evidence, severity, and future ownership remain in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).

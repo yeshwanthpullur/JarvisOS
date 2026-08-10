@@ -64,3 +64,45 @@ sync cleanup
 ```
 
 Sync starts disabled. `sync on` enables a manual local queue only; it does not enable background or remote uploading. `sync add project_status` queues a compact allowlisted health snapshot. `sync run` truthfully returns unavailable until an authenticated encrypted remote adapter exists. The Vercel status endpoint is not a sync backend.
+
+## Multi-Agent OS Foundation
+
+Phase 3 commands inspect metadata and create plan-only routing decisions. They do not execute agents, skills, model calls, external plugins, or side effects.
+
+```text
+agent status
+agent list
+agent capabilities
+agent show <agent_name>
+agent find <capability>
+agent diagnostics
+agent ready
+agent unavailable
+agent future
+agent risks
+agent approvals
+
+prime status
+prime route "<request>"
+prime plan "<request>"
+prime risk "<request>"
+prime explain "<request>"
+
+model status
+model providers
+model capabilities
+model route "<task>"
+model explain "<task>"
+model hardware
+model policy
+
+skill status
+skill list
+skill capabilities
+skill show <skill_id>
+skill find <capability_or_category>
+skill permissions <skill_id>
+skill diagnostics
+```
+
+Future agents and skills appear in diagnostics so missing dependencies and safety restrictions are visible. They remain disabled or unavailable. Cloud providers, external plugins, and MCP are disabled by default; Nemotron is listed as not configured rather than installed. High-risk capabilities declare approval requirements, critical future actions are blocked, and `plan_only` is the default execution mode.

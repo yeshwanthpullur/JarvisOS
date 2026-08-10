@@ -84,6 +84,31 @@ def _agent_manager(context: CommandContext):
     return metadata.get("agent_manager")
 
 
+def _existing_ollama_state(context: CommandContext) -> tuple[bool, tuple[str, ...], bool]:
+    """Read already-discovered Ollama metadata without probing a provider."""
+    manager = _provider_manager(context)
+    records = getattr(getattr(manager, "registry", None), "all", lambda: ())()
+    for record in records:
+        config = getattr(record, "config", None)
+        kind = getattr(getattr(config, "kind", None), "value", getattr(config, "kind", ""))
+        if str(getattr(config, "provider_id", "")).lower() != "ollama" and str(kind).lower() != "ollama":
+            continue
+        provider = getattr(record, "provider", None)
+        models = tuple(
+            str(getattr(item, "model_id", ""))
+            for item in getattr(provider, "_models", ())
+            if getattr(item, "model_id", "")
+        )
+        ready = bool(provider and getattr(getattr(provider, "health", None), "available", False) and models)
+        vision_ready = any(
+            "llava" in model.lower()
+            or any(getattr(capability, "value", str(capability)).lower() == "vision" for capability in getattr(item, "capabilities", ()))
+            for item, model in zip(getattr(provider, "_models", ()), models)
+        )
+        return ready, models, vision_ready
+    return False, (), False
+
+
 def _phase3_agent_registry(context: CommandContext) -> AgentRegistry:
     conversation = context.conversation_context
     direct = getattr(conversation, "agent_registry", None) if conversation is not None else None
@@ -91,7 +116,10 @@ def _phase3_agent_registry(context: CommandContext) -> AgentRegistry:
         return direct
     metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
     registry = metadata.get("agent_registry")
-    return registry if isinstance(registry, AgentRegistry) else register_specialist_agents(AgentRegistry())
+    if isinstance(registry, AgentRegistry):
+        return registry
+    _, _, vision_ready = _existing_ollama_state(context)
+    return register_specialist_agents(AgentRegistry(), vision_ready=vision_ready)
 
 
 def _prime_agent(context: CommandContext) -> PrimeAgent:
@@ -101,7 +129,10 @@ def _prime_agent(context: CommandContext) -> PrimeAgent:
         return direct
     metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
     prime = metadata.get("prime_agent")
-    return prime if isinstance(prime, PrimeAgent) else PrimeAgent(_phase3_agent_registry(context))
+    if isinstance(prime, PrimeAgent):
+        return prime
+    _, router = _model_foundation(context)
+    return PrimeAgent(_phase3_agent_registry(context), model_router=router, skill_registry=_skill_registry(context))
 
 
 def _model_foundation(context: CommandContext) -> tuple[ModelProviderRegistry, ModelRouter]:
@@ -112,7 +143,12 @@ def _model_foundation(context: CommandContext) -> tuple[ModelProviderRegistry, M
     registry = registry if isinstance(registry, ModelProviderRegistry) else metadata.get("model_registry")
     router = router if isinstance(router, ModelRouter) else metadata.get("model_router")
     if not isinstance(registry, ModelProviderRegistry):
-        registry = build_default_model_registry()
+        ollama_ready, models, vision_ready = _existing_ollama_state(context)
+        registry = build_default_model_registry(
+            ollama_ready=ollama_ready,
+            ollama_models=models,
+            vision_ready=vision_ready,
+        )
     if not isinstance(router, ModelRouter):
         router = ModelRouter(registry)
     return registry, router
@@ -173,7 +209,7 @@ def _cloud_policy(session: object | None, default: str = "automatic") -> str:
     return str(metadata.get("execution_policy") or metadata.get("provider_policy") or default)
 
 
-def _project_health_summary() -> ConversationResponse:
+def _project_health_summary(context: CommandContext | None = None) -> ConversationResponse:
     docs_path = Path(__file__).resolve().parents[1] / "docs"
     path = docs_path / "project_health.json"
     try:
@@ -195,6 +231,38 @@ def _project_health_summary() -> ConversationResponse:
     restricted_limitations = int(review_counts.get("intentionally_restricted", 0))
     blocked_limitations = int(review_counts.get("blocked_hardware_environment", 0)) + int(review_counts.get("blocked_external_service_cost", 0))
     limitation_focus = str(limitations.get("next_major_limitation_id", "unknown"))
+    phase3_text = ""
+    phase3_metadata: dict[str, object] = {}
+    if context is not None:
+        agent_registry = _phase3_agent_registry(context)
+        agent_summary = agent_registry.registry_summary()
+        agent_entries = agent_registry.list_agents()
+        foundation_agents = sum(item.health not in {"ready", "future"} for item in agent_entries)
+        future_agents = sum(item.health == "future" for item in agent_entries)
+        _, model_router = _model_foundation(context)
+        skill_summary = _skill_registry(context).registry_summary()
+        prime_status = _prime_agent(context).status()
+        phase3_text = (
+            "phase3="
+            f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
+            f"/foundation:{foundation_agents}/future:{future_agents} "
+            f"prime:{prime_status['status']} model_router:{model_router.router_status()['status']} "
+            f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
+            f"approvals:{agent_summary['approval_required_capabilities']} "
+            f"high_risk:{agent_summary['high_risk_capabilities']} "
+        )
+        phase3_metadata = {
+            "agent_system_status": "ready",
+            "total_agents": agent_summary["total_agents"],
+            "ready_agents": agent_summary["ready_agents"],
+            "foundation_agents": foundation_agents,
+            "future_agents": future_agents,
+            "prime_agent_status": prime_status["status"],
+            "model_router_status": model_router.router_status()["status"],
+            "skill_registry_status": "ready" if skill_summary["valid"] else "error",
+            "approval_required_capabilities": agent_summary["approval_required_capabilities"],
+            "high_risk_capabilities": agent_summary["high_risk_capabilities"],
+        }
     return _text_response(
         "Project status: "
         f"release={health.get('release', 'unknown')} "
@@ -203,6 +271,7 @@ def _project_health_summary() -> ConversationResponse:
         f"working={working} experimental={experimental} "
         f"limitations=fixed:{fixed_limitations}/open:{open_limitations}/restricted:{restricted_limitations}/blocked:{blocked_limitations} "
         f"focus={limitation_focus} "
+        f"{phase3_text}"
         f"next={health.get('next_milestone', 'unknown')}. "
         "Details: docs/PROJECT_HEALTH.md and docs/LIMITATIONS_REGISTER.md",
         release=health.get("release"),
@@ -216,6 +285,7 @@ def _project_health_summary() -> ConversationResponse:
         blocked_limitations=blocked_limitations,
         limitation_focus=limitation_focus,
         next_milestone=health.get("next_milestone"),
+        **phase3_metadata,
     )
 
 
@@ -534,7 +604,7 @@ def _handler_for(name: str):
         if name == "help" and manager is not None:
             return _text_response(manager.help.render(manager.registry))
         if name == "project status":
-            return _project_health_summary()
+            return _project_health_summary(context)
         if name.startswith("limitations "):
             try:
                 return _text_response(LimitationsRegister().command(name, context.arguments))

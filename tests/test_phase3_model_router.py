@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from types import SimpleNamespace
 
 from commands import CommandManager
 from conversation import ConversationContext, ConversationSession
@@ -80,6 +81,20 @@ class Phase3ModelRouterTests(unittest.TestCase):
             self.assertTrue(response)
             self.assertLess(len(response), 5000)
             self.assertNotIn("C:\\Users", response)
+
+    def test_cli_uses_existing_provider_metadata_without_probing(self) -> None:
+        model = SimpleNamespace(model_id="llava:latest", capabilities=(SimpleNamespace(value="vision"),))
+        provider = SimpleNamespace(_models=(model,), health=SimpleNamespace(available=True))
+        record = SimpleNamespace(
+            config=SimpleNamespace(provider_id="ollama", kind=SimpleNamespace(value="ollama")),
+            provider=provider,
+        )
+        provider_manager = SimpleNamespace(registry=SimpleNamespace(all=lambda: (record,)))
+        context = ConversationContext(session=ConversationSession(), provider_manager=provider_manager)
+        commands = CommandManager(); commands.initialize()
+        self.assertIn("ollama_text:ready", commands.execute("model providers", context).response)
+        self.assertIn("provider=ollama_text", commands.execute("model route conversation", context).response)
+        self.assertIn("vision_agent:ready", commands.execute("agent list", context).response)
 
     def test_config_defaults_block_cloud(self) -> None:
         from config import load_settings

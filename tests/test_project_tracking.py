@@ -29,6 +29,11 @@ REQUIRED_DOCS = (
     "VOICE_INPUT.md",
     "IMAGE_GENERATION.md",
     "VIDEO_EDITING.md",
+    "AGENTS.md",
+    "PRIME_AGENT.md",
+    "MODEL_ROUTER.md",
+    "SKILLS.md",
+    "MULTI_AGENT_OS_FOUNDATION.md",
 )
 
 
@@ -42,9 +47,9 @@ class ProjectTrackingTests(unittest.TestCase):
     def test_project_health_json_is_valid_and_bounded(self) -> None:
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(health["release"], "v1.3.0-alpha")
-        self.assertEqual(health["commit"], "e8a528156952f341f1ab31351a24943698900be2")
-        self.assertEqual(health["next_milestone"], "Prompt 43 - Real Encrypted Remote Sync Backend")
+        self.assertEqual(health["release"], "v1.5.0-alpha")
+        self.assertEqual(health["commit"], "8a0ff6d")
+        self.assertEqual(health["next_milestone"], "Prompt 50 - v1.0 MVP Hardening")
         vision = next(item for item in health["categories"] if item["name"] == "Vision")
         self.assertEqual(vision["status"], "Working")
         memory = next(item for item in health["categories"] if item["name"] == "Memory")
@@ -65,7 +70,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertEqual(mobile["status"], "Partial")
         conversation = next(item for item in health["categories"] if item["name"] == "Conversation Intelligence")
         self.assertEqual(conversation["status"], "Working")
-        self.assertEqual(len(health["categories"]), 25)
+        self.assertEqual(len(health["categories"]), 27)
         allowed = {"Working", "Partial", "Experimental", "Not Started", "Blocked"}
         for category in health["categories"]:
             self.assertIn(category["status"], allowed)
@@ -105,7 +110,8 @@ class ProjectTrackingTests(unittest.TestCase):
             self.assertIn(f"Prompt {milestone}", text)
         self.assertIn("v0.3.0-alpha", text)
         self.assertIn("Prompt 42 - Video Editing Workflow Foundation", text)
-        self.assertIn("Prompt 43 - Real Encrypted Remote Sync Backend", text)
+        self.assertIn("Prompt 49 - Phase 3 Integration", text)
+        self.assertIn("Prompt 50 - v1.0 MVP Hardening", text)
 
     def test_release_checklist_contains_core_gates(self) -> None:
         text = (DOCS / "RELEASE_CHECKLIST.md").read_text(encoding="utf-8")
@@ -118,6 +124,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("Limitations Review and Safe Fix Pass", text)
         self.assertIn("1,600 passed", text)
         self.assertIn("Video Editing Workflow Foundation", text)
+        self.assertIn("Multi-Agent OS Foundation", text)
 
     def test_tracking_docs_are_readable_and_nonempty(self) -> None:
         paths = tuple(DOCS / name for name in REQUIRED_DOCS) + (ROOT / "CHANGELOG.md",)
@@ -149,15 +156,22 @@ class ProjectTrackingTests(unittest.TestCase):
         commands = CommandManager()
         commands.initialize()
         response = commands.execute("project status")
-        self.assertIn("release=v1.3.0-alpha", response.response)
-        self.assertIn("MVP=80%", response.response)
-        self.assertIn("Prompt 43", response.response)
+        self.assertIn("release=v1.5.0-alpha", response.response)
+        self.assertIn("MVP=81%", response.response)
+        self.assertIn("Prompt 50", response.response)
         self.assertIn("limitations=fixed:24/open:23/restricted:5/blocked:2", response.response)
         self.assertIn("focus=LIM-045", response.response)
-        self.assertLess(len(response.response), 500)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 80)
+        self.assertIn("phase3=agents:", response.response)
+        self.assertIn("prime:ready", response.response)
+        self.assertIn("model_router:ready", response.response)
+        self.assertLess(len(response.response), 700)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 81)
         self.assertEqual(response.metadata["fixed_limitations"], 24)
         self.assertEqual(response.metadata["open_limitations"], 23)
+        self.assertEqual(response.metadata["total_agents"], 21)
+        self.assertEqual(response.metadata["prime_agent_status"], "ready")
+        self.assertEqual(response.metadata["model_router_status"], "ready")
+        self.assertEqual(response.metadata["skill_registry_status"], "ready")
 
     def test_sync_tracking_is_honest_and_local_first(self) -> None:
         status = (DOCS / "CURRENT_STATUS.md").read_text(encoding="utf-8")

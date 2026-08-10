@@ -1,10 +1,12 @@
 # JARVIS OS
 
-JARVIS OS is currently at **v1.3.0-alpha - Limitations Review and Memory Lifecycle Fix**, with later local chat, voice, vision, memory, conversation, and image-workflow work verified on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at **v1.5.0-alpha - Video Editing Workflow Foundation**, with the Phase 3 Multi-Agent OS Foundation implemented and verified locally on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
 For the central product direction and evidence-based tracking, see [Master Use Cases](docs/JARVIS_USE_CASES.md), [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise status summary is available from the CLI with `project status`; bounded limitation evidence is available through `limitations status`, `limitations open`, and `limitations show <id>`.
 
 Tool Intelligence provides governed capability matching, schema validation, risk and approval checks, dry runs, bounded execution, normalized results, and command access through the existing Executive path. See [docs/TOOL_INTELLIGENCE.md](docs/TOOL_INTELLIGENCE.md).
+
+Phase 3 adds typed agent contracts, a truthful specialist registry, Prime Agent plan-only delegation, provider-neutral model routing, and a permission-aware Skill Registry. These systems plan and diagnose; they do not create unrestricted autonomy or bypass existing authorities. See [docs/MULTI_AGENT_OS_FOUNDATION.md](docs/MULTI_AGENT_OS_FOUNDATION.md), [docs/AGENTS.md](docs/AGENTS.md), [docs/PRIME_AGENT.md](docs/PRIME_AGENT.md), [docs/MODEL_ROUTER.md](docs/MODEL_ROUTER.md), and [docs/SKILLS.md](docs/SKILLS.md).
 
 Autonomous Planning produces provider-backed, validated, reviewable plans without executing them. See [docs/AUTONOMOUS_PLANNING.md](docs/AUTONOMOUS_PLANNING.md).
 
@@ -20,7 +22,7 @@ The Vercel deployment is a deliberately limited online status foundation. Root `
 
 The Local Desktop Interface provides real localhost chat, commands, activity, provider, voice, tool, planning, multi-agent, health, safe-log, approval, and settings views without bypassing existing JARVIS authority. See [docs/LOCAL_DESKTOP_INTERFACE.md](docs/LOCAL_DESKTOP_INTERFACE.md).
 
-JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes verified local Ollama chat, governed provider routing, safe tools, advisory planning, multi-agent coordination foundations, context and goal intelligence, local Vosk push-to-talk input, interruptible Windows SAPI voice output, local Ollama LLaVA image analysis, partial Online Sync, bounded read-only public page inspection, planning-only Mobile Automation, and a governed image/video creative-media foundation. Encrypted remote sync, interactive browsing, wake word, continuous conversation, live camera vision, live phone control, and real local media editing are not implemented by default.
+JARVIS OS is a modular local-first AI assistant foundation written in Python 3.12+. It includes verified local Ollama chat, governed provider routing, safe tools, advisory planning, a plan-only Multi-Agent OS foundation, context and goal intelligence, local Vosk push-to-talk input, interruptible Windows SAPI voice output, local Ollama LLaVA image analysis, partial Online Sync, bounded read-only public page inspection, planning-only Mobile Automation, and governed image/video workflow foundations. Encrypted remote sync, interactive browsing, wake word, continuous conversation, live camera vision, live phone control, external plugins, and autonomous specialist execution are not implemented by default.
 
 Prompt 38 adds persistent local memory intelligence: bounded memory commands, safe retrieval into chat context, explicit remember/forget/update/archive flows, and secret-aware automatic session summaries. The memory layer stays local and does not replace the existing command or conversation authority.
 

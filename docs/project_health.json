@@ -1,10 +1,10 @@
 {
-  "release": "v1.3.0-alpha",
-  "commit": "e8a528156952f341f1ab31351a24943698900be2",
-  "updated_at": "2026-08-05",
+  "release": "v1.5.0-alpha",
+  "commit": "8a0ff6d",
+  "updated_at": "2026-08-10",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 43 - Real Encrypted Remote Sync Backend",
-  "overall_mvp_readiness": 80,
+  "next_milestone": "Prompt 50 - v1.0 MVP Hardening",
+  "overall_mvp_readiness": 81,
   "limitations": {
     "total": 47,
     "fixed": 24,
@@ -17,9 +17,11 @@
     {"name": "Local AI", "status": "Working", "confidence": 92, "evidence": "Real Ollama text chat and free-form routing are manually verified through Provider Router.", "next_action": "Keep truthful unavailable handling when the PC or Ollama is offline."},
     {"name": "Conversation Intelligence", "status": "Working", "confidence": 80, "evidence": "Bounded multi-turn state, topics, entities, follow-up intent, references, clarification, repair, modes, confidence, and summaries are integrated with normal chat.", "next_action": "Improve language understanding from observed ambiguity without hidden persistence."},
     {"name": "Cloud Provider Foundation", "status": "Partial", "confidence": 65, "evidence": "Adapters, policy, normalization, commands, and mocked tests exist.", "next_action": "Add opt-in live smoke checks when authorized."},
-    {"name": "Tools", "status": "Partial", "confidence": 72, "evidence": "Governed calculator and text tools execute; external breadth is limited.", "next_action": "Add schema- and permission-validated tools."},
+    {"name": "Tools", "status": "Partial", "confidence": 75, "evidence": "Governed calculator/text tools execute and the metadata-only Skill Registry declares permissions, side effects, approval, and future integrations; external breadth remains limited.", "next_action": "Add executable skills only through separately verified owning milestones."},
     {"name": "Planning", "status": "Partial", "confidence": 65, "evidence": "Advisory plans and validation exist without automatic execution.", "next_action": "Improve evidence and review UX."},
-    {"name": "Multi-Agent System", "status": "Partial", "confidence": 65, "evidence": "Bounded planner/reviewer coordination and synthesis exist.", "next_action": "Expand specialists only with capability evidence."},
+    {"name": "Multi-Agent System", "status": "Partial", "confidence": 78, "evidence": "Typed protocols, a validated registry, truthful specialist metadata, bounded diagnostics, and Prime Agent plan-only delegation are tested without side effects.", "next_action": "Expand executable specialists only with capability evidence and scoped approvals."},
+    {"name": "Model Router", "status": "Partial", "confidence": 76, "evidence": "Provider-neutral model metadata, local-only deterministic routing, unavailable fallbacks, policy diagnostics, and safe hardware hints are tested; routing does not execute models.", "next_action": "Integrate additional local providers only through explicit tested adapters."},
+    {"name": "Skill Registry", "status": "Partial", "confidence": 76, "evidence": "Native and future skill manifests declare permissions, risk, side effects, approval, locality, and availability; external plugins and MCP remain disabled.", "next_action": "Keep external plugins disabled until trust, installation, and execution policies are separately implemented."},
     {"name": "Voice Output", "status": "Working", "confidence": 96, "evidence": "Windows SAPI long replies and non-blocking stop, resume, cancel, interrupt, repeat, and replay controls are manually verified without persistent audio.", "next_action": "Preserve bounded interruption and safe speech filtering."},
     {"name": "Voice Input", "status": "Working", "confidence": 88, "evidence": "Local Vosk microphone input with an Indian-English model and explicit voice listen send handoff are manually verified.", "next_action": "Keep wake word, continuous conversation, and multilingual switching separate and privacy-reviewed."},
     {"name": "Memory", "status": "Working", "confidence": 82, "evidence": "Local memory, explicit controls, bounded retrieval, safe summaries, and non-destructive startup retention/duplicate compaction are tested.", "next_action": "Review lifecycle outcomes from real use without automatic deletion."},
@@ -32,10 +34,22 @@
     {"name": "Study and Research Workflows", "status": "Partial", "confidence": 45, "evidence": "Conversation, retrieval, research, goals, planning, and read-only web foundations exist; no dedicated study workflow composes them.", "next_action": "Keep this partial until a dedicated future study workflow milestone is implemented."},
     {"name": "Advanced Builder Workflows", "status": "Partial", "confidence": 35, "evidence": "Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized.", "next_action": "Formalize the governed workflow in a future dedicated milestone."},
     {"name": "Raspberry Pi and Hardware", "status": "Partial", "confidence": 20, "evidence": "General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exists.", "next_action": "Keep hardware work deferred to a future dedicated milestone."},
-    {"name": "Creative Media Workflows", "status": "Partial", "confidence": 44, "evidence": "Governed image-generation and video-editing workflow foundations now exist with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation and real local editing still require configured providers.", "next_action": "Keep Prompt 43 focused on encrypted remote sync and add real local media providers only with approved integrations."},
-    {"name": "Communication Assistance", "status": "Not Started", "confidence": 0, "evidence": "No call, contact, calendar, messaging, or communication connector is integrated.", "next_action": "Define consent and connector boundaries in Prompt 47."},
-    {"name": "Personal Workspace", "status": "Partial", "confidence": 30, "evidence": "CLI access and project tracking exist, but capabilities are not unified into a complete multi-tool replacement workspace.", "next_action": "Compose approved capabilities in Prompt 49 without duplicating authorities."},
+    {"name": "Creative Media Workflows", "status": "Partial", "confidence": 44, "evidence": "Governed image-generation and video-editing workflow foundations exist with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation and real local editing still require configured providers.", "next_action": "Add real local media providers only with approved integrations."},
+    {"name": "Communication Assistance", "status": "Not Started", "confidence": 0, "evidence": "Future communication agent and skill metadata is visible, but no call, contact, calendar, messaging, or communication connector is integrated.", "next_action": "Define consent and connector boundaries in a future communication milestone."},
+    {"name": "Personal Workspace", "status": "Partial", "confidence": 34, "evidence": "CLI access, project tracking, and Phase 3 routing metadata compose capabilities without replacing their authoritative subsystems; a complete multi-tool workspace remains future work.", "next_action": "Harden the current local-first experience without duplicating authorities."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 75, "evidence": "Permission, approval, locality, tool, provider, and UI boundaries are tested.", "next_action": "Threat-review every external integration."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 92, "evidence": "Prompt 41 focused image-generation tests, tracking checks, and the 1600-test full suite pass with three environment-dependent skips.", "next_action": "Keep release evidence and status docs current."}
-  ]
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 93, "evidence": "Phase 3 focused checks and the 1661-test full suite pass with three environment-dependent skips.", "next_action": "Keep release evidence and status docs current."}
+  ],
+  "phase3": {
+    "status": "Partial - plan-only multi-agent foundation",
+    "agent_system": "ready_metadata_foundation",
+    "prime_agent": "ready_plan_only",
+    "model_router": "ready_metadata_only",
+    "skill_registry": "ready_metadata_only",
+    "total_agents": 21,
+    "default_execution_mode": "plan_only",
+    "cloud_providers_enabled": false,
+    "external_plugins_enabled": false,
+    "mcp_enabled": false
+  }
 }
