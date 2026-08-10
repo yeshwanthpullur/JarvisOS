@@ -1,0 +1,1 @@
+SCHEDULER_HISTORY_POLICY="metadata_only_no_active_tasks"
