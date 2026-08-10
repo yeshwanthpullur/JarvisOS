@@ -26,6 +26,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Web Automation | Partial | 62% | The bounded read-only HTTP adapter and status path work with DNS/IP and redirect validation, sanitized previews, permissions, and redacted audit. Interactive browser actions remain blocked. | `web status`; `web open https://example.com`; web tests | Design approval-gated interactive actions only after a separate threat review. |
 | Mobile Automation | Partial | 45% | Planning-only manager, strict policy, CLI, adapters, and redacted bounded audit are tested; no phone is accessed. | `python -m unittest tests.test_mobile_automation` | Keep live control blocked until a separately approved adapter milestone. |
 | Study and Research Workflows | Partial | 45% | Conversation, retrieval, research, goals, planning, and public-page inspection exist; no dedicated study workflow composes them yet. | Research/retrieval tests; product vision review | Keep this partial until a dedicated future study workflow milestone is implemented. |
+| Research Agent | Partial | 52% | Research planning, bounded safety filtering, evidence handling, and read-only source policy are available as a local-first foundation; source retrieval stays limited by existing read-only web/document systems. | `research status`; focused research tests | Keep the foundation plan-first and add source retrieval only through governed read-only integrations. |
 | Advanced Builder Workflows | Partial | 35% | Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized. | Planning/tool/agent tests; repository inspection | Formalize the governed workflow in a future dedicated milestone. |
 | Raspberry Pi and Hardware | Partial | 20% | General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exist. | Repository inspection | Keep hardware work deferred to a future dedicated milestone. |
 | Creative Media Workflows | Partial | 44% | Governed image-generation and video-editing workflow foundations now exist with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation and real local editing still require configured providers. | `image status`; `image plan`; `image safety`; `video status`; `video plan`; image/video workflow tests | Keep Prompt 43 focused on encrypted remote sync and add real local media providers only with approved integrations. |
@@ -36,9 +37,9 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 
 ## Overall MVP Readiness
 
-**81%** toward the broader local-first JARVIS MVP described by the roadmap.
+**82%** toward the broader local-first JARVIS MVP described by the roadmap.
 
-This is not a mathematical average of feature labels. The one-point increase reflects verified typed registries, deterministic plan-only routing, approval/risk metadata, specialist diagnostics, and provider-neutral planning. It remains conservative because Phase 3 adds no autonomous execution, external plugins, cloud providers, or new real specialist integrations.
+This is not a mathematical average of feature labels. The one-point increase reflects verified typed registries, deterministic plan-only routing, approval/risk metadata, specialist diagnostics, provider-neutral planning, and a bounded research foundation. It remains conservative because Phase 3 adds no autonomous execution, external plugins, cloud providers, or new real specialist integrations.
 
 Machine-readable details: [`project_health.json`](project_health.json).
 

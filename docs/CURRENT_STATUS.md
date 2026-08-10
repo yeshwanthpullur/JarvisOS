@@ -4,10 +4,10 @@ Updated: 2026-08-10
 
 ## Current Release
 
-- Release: `v1.5.0-alpha - Video Editing Workflow Foundation`
-- Phase 3 implementation baseline: `8a0ff6d` plus final integration
+- Release: `v1.6.0-alpha - Multi-Agent OS Foundation`
+- Phase 3 implementation baseline: `c8300e498e89a01e4f85297eaf510040e029215e`
 - Branch: `main`
-- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v1.5.0-alpha`
+- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v1.6.0-alpha`
 
 ## Stable Launch
 
@@ -39,6 +39,8 @@ python main.py --ui
 - Video editing workflow foundation with governed prompt validation, safety review, provider registry, dry-run planning, bounded metadata, and truthful unavailable-provider handling.
 - Playback-only speech produces no permanent audio file by default; temporary voice audio is bounded and user-cleanable.
 - Phase 3 registry and diagnostics: typed agents, deterministic Prime Agent plan-only routing, provider-neutral model route planning, permission-aware skill metadata, and truthful specialist status.
+- Research Agent foundation: bounded research planning, safety classification, source policy, and read-only summaries are now available as a local-first specialist stub.
+- research_agent_status is tracked explicitly in project-health metadata so the current bounded read-only foundation stays visible without overstating retrieval coverage.
 
 ## Partially Working Features
 
@@ -47,6 +49,7 @@ python main.py --ui
 - Autonomous Planning: advisory plans work, but autonomous execution is intentionally not enabled.
 - Multi-Agent Intelligence: governed planner/reviewer coordination exists, but broad specialist coverage is limited.
 - Multi-Agent OS Foundation: registries, risk/approval metadata, routing, planning, and diagnostics work; specialist execution, external plugins, MCP, and cloud model routes remain unavailable.
+- Research Agent foundation is available for bounded planning and evidence summaries, but read-only source retrieval remains limited by the existing local web/document foundations.
 - Memory and Knowledge: authoritative local storage, persistent personal context, and non-destructive retention/duplicate compaction work; cross-device policy is not implemented.
 - Online deployment foundation: the canonical `jarvis-os` project is Ready and remains status-only.
 - Online Sync foundation: disabled-by-default manual queueing, strict summary schemas, atomic persistence, deduplication, bounded audit/retention, conflict detection, and truthful unavailable remote behavior work. No real encrypted remote adapter is configured.
@@ -86,13 +89,14 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 - Local AI requires the PC and Ollama to be running.
 - Persistent memory is working locally with bounded startup retention and exact-duplicate compaction; lifecycle changes are non-destructive.
 - Dedicated study, formal Builder Mode, Raspberry Pi profiles, communication/call assistance, and the unified personal workspace remain future milestones.
+- Research Agent is a foundation milestone, not a fully autonomous internet researcher.
 - Runtime state is local and some conversation/interface state is not durable across restarts.
 - The former Vercel failure occurred because automatic detection treated root `main.py` as a Python function even though it is intentionally CLI-only. `vercel.json` now builds only `api/index.py`; the deployed surface remains status-only and is not online JARVIS or sync.
 - The canonical production deployment for `jarvis-os` is Ready. `jarvis-os-6oy2` remains a duplicate historical project and should stay unused or be removed manually.
 
 ## Next Recommended Prompt
 
-Prompt 50 - v1.0 MVP Hardening. Phase 3 Prompts 43-49 are implemented as a controlled multi-agent foundation without starting Prompt 50.
+Prompt 51 - Research Agent Foundation. Phase 3 Batch 1 is complete and the continuation plan begins with the research specialist foundation.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
@@ -109,6 +113,7 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - Local Ollama LLaVA vision: working locally.
 - Local Vosk microphone input with an Indian-English model and `voice listen send`: working locally.
 - Windows SAPI playback with non-blocking controls: working locally.
+- Research Agent foundation: plan-only research planning and bounded summaries are now available.
 
 ## Manual Verification Checklist
 

@@ -58,10 +58,11 @@ class Phase3IntegrationTests(unittest.TestCase):
     def test_project_status_contains_bounded_phase3_summary(self) -> None:
         response = self.commands.execute("project status")
         self.assertIn("phase3=agents:", response.response)
-        self.assertEqual(response.metadata["total_agents"], 21)
+        self.assertEqual(response.metadata["total_agents"], 22)
         self.assertEqual(response.metadata["prime_agent_status"], "ready")
         self.assertEqual(response.metadata["model_router_status"], "ready")
         self.assertEqual(response.metadata["skill_registry_status"], "ready")
+        self.assertEqual(response.metadata["research_agent_status"], "partial")
 
     def test_vercel_metadata_remains_status_only(self) -> None:
         source = (ROOT / "api" / "index.py").read_text(encoding="utf-8")
@@ -69,6 +70,7 @@ class Phase3IntegrationTests(unittest.TestCase):
         self.assertNotIn("PrimeAgent(", source)
         self.assertNotIn("ModelRouter(", source)
         self.assertNotIn("SkillRegistry(", source)
+        self.assertNotIn("ResearchAgent(", source)
         config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
         self.assertNotIn("main.py", json.dumps(config))
 

@@ -94,6 +94,7 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 
 - Central master use-cases and product-vision document with long-term capability, safety, completion, and milestone ownership rules.
 - Roadmap alignment through Prompt 50 for mobile, STT, vision, study/research, builder, hardware, media, sync, voice, web interaction, communication, workspace, and v1.0 hardening.
+- Research Agent foundation for bounded planning, safety filtering, source policy, and read-only summaries.
 - Standard-library read-only public page inspection with title, description, status, content type, byte count, redirect summary, and sanitized text preview.
 - DNS/IP SSRF protection and per-redirect URL revalidation with bounded timeout, redirect, response, and preview limits.
 - Provider-neutral Web Automation foundation with strict URL policy, scoped permissions, normalized results, bounded redacted audit, and CLI status/read-only commands.

@@ -1,15 +1,22 @@
 {
-  "release": "v1.5.0-alpha",
-  "commit": "8a0ff6d",
+  "release": "v1.6.0-alpha",
+  "commit": "c8300e498e89a01e4f85297eaf510040e029215e",
   "updated_at": "2026-08-10",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 50 - v1.0 MVP Hardening",
-  "overall_mvp_readiness": 81,
+  "next_milestone": "Prompt 51 - Research Agent Foundation",
+  "overall_mvp_readiness": 82,
   "limitations": {
     "total": 47,
     "fixed": 24,
     "still_open": 23,
     "register": "docs/limitations_register.json"
+  },
+  "phase3": {
+    "agent_system_status": "ready",
+    "prime_agent_status": "ready",
+    "model_router_status": "ready",
+    "skill_registry_status": "ready",
+    "research_agent_status": "partial"
   },
   "categories": [
     {"name": "Core Runtime", "status": "Working", "confidence": 90, "evidence": "Startup, shutdown, health, and full regression coverage remain broad.", "next_action": "Keep startup checks bounded."},
@@ -46,7 +53,7 @@
     "prime_agent": "ready_plan_only",
     "model_router": "ready_metadata_only",
     "skill_registry": "ready_metadata_only",
-    "total_agents": 21,
+    "total_agents": 22,
     "default_execution_mode": "plan_only",
     "cloud_providers_enabled": false,
     "external_plugins_enabled": false,

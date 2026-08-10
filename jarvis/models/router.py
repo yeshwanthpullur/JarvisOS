@@ -19,6 +19,7 @@ TASK_CAPABILITIES = {
     "speech_to_text": ModelCapability.SPEECH_TO_TEXT,
     "text_to_speech": ModelCapability.TEXT_TO_SPEECH,
     "research": ModelCapability.REASONING,
+    "research_planning": ModelCapability.REASONING,
 }
 
 

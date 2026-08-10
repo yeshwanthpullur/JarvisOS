@@ -12,7 +12,7 @@ from commands.command_registry import CommandRecord, CommandRegistry
 from conversation.conversation_response import ConversationResponse
 from providers import ProviderRequest
 from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
-from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents, render_agent_command, render_prime_command
+from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents, render_agent_command, render_prime_command, ResearchAgent, render_research_command
 from jarvis.models import ModelProviderRegistry, ModelRouter, build_default_model_registry, render_model_command
 from jarvis.skills import SkillRegistry, build_default_skill_registry, render_skill_command
 
@@ -200,6 +200,17 @@ def _mobile_manager(context:CommandContext):
 def _conversation_intelligence(context:CommandContext):
     conversation=context.conversation_context
     return None if conversation is None else (getattr(conversation,"metadata",{}) or {}).get("conversation_intelligence_manager")
+def _research_agent(context: CommandContext) -> ResearchAgent:
+    conversation = context.conversation_context
+    direct = getattr(conversation, "research_agent", None) if conversation is not None else None
+    if isinstance(direct, ResearchAgent):
+        return direct
+    metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
+    research = metadata.get("research_agent")
+    if isinstance(research, ResearchAgent):
+        return research
+    _, _, vision_ready = _existing_ollama_state(context)
+    return ResearchAgent(enabled=True, web_available=True, documents_available=True)
 
 
 def _cloud_policy(session: object | None, default: str = "automatic") -> str:
@@ -242,12 +253,14 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         _, model_router = _model_foundation(context)
         skill_summary = _skill_registry(context).registry_summary()
         prime_status = _prime_agent(context).status()
+        research_agent = _research_agent(context)
+        research_status = research_agent.status()
         phase3_text = (
             "phase3="
             f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
             f"/foundation:{foundation_agents}/future:{future_agents} "
             f"prime:{prime_status['status']} model_router:{model_router.router_status()['status']} "
-            f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
+            f"research:{research_status['status']} skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
         )
@@ -259,6 +272,8 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "future_agents": future_agents,
             "prime_agent_status": prime_status["status"],
             "model_router_status": model_router.router_status()["status"],
+            "research_agent_status": research_status["status"],
+            "research_source_policy": research_status["source_policy"],
             "skill_registry_status": "ready" if skill_summary["valid"] else "error",
             "approval_required_capabilities": agent_summary["approval_required_capabilities"],
             "high_risk_capabilities": agent_summary["high_risk_capabilities"],
@@ -340,6 +355,15 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("conversation mode", "Show conversation mode", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation confidence", "Show conversation confidence", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation topic", "Show active conversation topic", "conversation", (), CommandPermission.CONVERSATION),
+        ("research status", "Show research planning readiness", "research", (), CommandPermission.DIAGNOSTIC),
+        ("research help", "Show research command help", "research", (), CommandPermission.DIAGNOSTIC),
+        ("research plan", "Plan a bounded research request", "research", (), CommandPermission.DIAGNOSTIC),
+        ("research safety", "Evaluate research safety", "research", (), CommandPermission.DIAGNOSTIC),
+        ("research sources", "Show possible source policy", "research", (), CommandPermission.DIAGNOSTIC),
+        ("research summarize", "Summarize bounded research evidence", "research", (), CommandPermission.DIAGNOSTIC),
+        ("research evidence", "Show research evidence metadata", "research", (), CommandPermission.DIAGNOSTIC),
+        ("research show", "Show one research result", "research", (), CommandPermission.DIAGNOSTIC),
+        ("research history", "Show bounded research history", "research", (), CommandPermission.DIAGNOSTIC),
         ("health", "Show health status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("clear", "Clear the console", "utility", (), CommandPermission.UTILITY),
         ("exit", "Exit the command loop", "utility", ("quit",), CommandPermission.UTILITY),
@@ -656,6 +680,8 @@ def _handler_for(name: str):
             return _text_response(render_model_command(registry, router, name, context.arguments))
         if name.startswith("skill "):
             return _text_response(render_skill_command(_skill_registry(context), name, context.arguments))
+        if name.startswith("research "):
+            return _text_response(render_research_command(_research_agent(context), name, context.arguments))
         if name.startswith("multiagent "):
             agent_manager = _agent_manager(context)
             orchestrator = getattr(agent_manager, "orchestrator", None)

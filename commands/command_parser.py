@@ -35,10 +35,12 @@ _SUBCOMMANDS = {
     "web status", "web open", "web title", "web url", "web snapshot", "web close", "web audit", "web policy", "web session",
     "mobile status", "mobile policy", "mobile capabilities", "mobile setup", "mobile plan", "mobile audit", "mobile close", "mobile devices", "mobile session",
     "conversation status", "conversation reset", "conversation summary", "conversation mode", "conversation confidence", "conversation topic",
+    "research status", "research help", "research plan", "research safety", "research sources", "research summarize", "research evidence", "research show", "research history",
     "limitations status", "limitations list", "limitations open", "limitations fixed", "limitations show", "limitations category", "limitations next", "limitations summary",
     "prime status", "prime route", "prime plan", "prime risk", "prime explain",
     "model status", "model providers", "model capabilities", "model route", "model explain", "model hardware", "model policy",
     "skill status", "skill list", "skill capabilities", "skill show", "skill find", "skill permissions", "skill diagnostics",
+    "research status", "research help", "research plan", "research safety", "research sources", "research summarize", "research evidence", "research show", "research history",
 }
 
 

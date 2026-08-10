@@ -24,6 +24,11 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("project_status_skill", "system", "project_status", "Read bounded project health.", permissions=(P.SYSTEM_STATUS,)),
         _ready("limitations_skill", "system", "limitations", "Read bounded limitation metadata.", permissions=(P.SYSTEM_STATUS,)),
         _ready("vision_status_skill", "vision", "vision_status", "Read local vision status."),
+        _ready("research_planning_skill", "research", "research_planning", "Plan bounded research requests."),
+        _ready("evidence_summary_skill", "research", "evidence_summary", "Summarize bounded evidence."),
+        _ready("source_policy_skill", "research", "source_policy", "Explain safe source policy."),
+        _ready("project_research_skill", "research", "project_research", "Plan repo and project research."),
+        _ready("web_research_skill", "research", "web_research", "Plan read-only web research.", permissions=(P.BROWSER_READ,)),
         _ready("image_workflow_skill", "image", "image_workflow", "Validate and plan image workflows only."),
         _ready("video_workflow_skill", "video", "video_workflow", "Validate and plan video workflows only."),
         _ready("web_read_only_skill", "web", "web_read", "Read public web metadata under policy.", permissions=(P.BROWSER_READ,)),
@@ -31,13 +36,13 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("voice_status_skill", "conversation", "voice_status", "Read voice subsystem status."),
     )
     future = (
-        _future("telegram_skill", "communication", P.SEND_MESSAGE), _future("discord_skill", "communication", P.SEND_MESSAGE),
+        _future("academic_search_skill", "research", P.NETWORK_ACCESS), _future("citation_manager_skill", "research", P.READ_CONTEXT), _future("external_search_api_skill", "research", P.NETWORK_ACCESS),
+        _future("mcp_gateway_skill", "developer", P.NETWORK_ACCESS), _future("telegram_skill", "communication", P.SEND_MESSAGE), _future("discord_skill", "communication", P.SEND_MESSAGE),
         _future("email_skill", "email", P.SEND_EMAIL), _future("calendar_skill", "calendar", P.CALENDAR_WRITE),
         _future("browser_write_skill", "browser", P.BROWSER_WRITE), _future("coding_agent_skill", "coding", P.WRITE_FILES),
         _future("research_agent_skill", "research", P.NETWORK_ACCESS), _future("document_intelligence_skill", "documents", P.READ_FILES),
         _future("robotics_skill", "robotics", P.HARDWARE_WRITE), _future("drone_skill", "drone", P.HARDWARE_WRITE),
-        _future("social_media_skill", "social", P.SOCIAL_POST), _future("mcp_gateway_skill", "developer", P.NETWORK_ACCESS),
+        _future("social_media_skill", "social", P.SOCIAL_POST),
         _future("scheduler_skill", "workflow", P.EXECUTE_COMMANDS),
     )
     return SkillRegistry(builtins + future)
-
