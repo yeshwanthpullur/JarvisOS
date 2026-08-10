@@ -1,5 +1,9 @@
 # Communication Gateway
 
+## Notification Boundary
+
+Local console notifications are the only Phase 4 delivery mechanism. They are not messages, email, social posts, or native OS toasts. Communication providers remain disabled and no external recipient can be contacted.
+
 Prompt 56 adds draft-only communication planning, disabled provider manifests, recipient-resolution placeholders, and anti-spam/anti-abuse policy.
 
 Telegram, Discord, SMTP, Slack, notifications, and social providers are not configured. JARVIS cannot send, post, scrape contacts, read provider tokens, or perform bulk messaging. Draft output is bounded and remains unsent.

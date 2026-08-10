@@ -48,11 +48,21 @@ Updated: 2026-08-11
 - Prompt 58 - Advanced Model Provider Planning.
 - Prompt 59 - Phase 3 Hardening, Evaluation, and Observability.
 - Prompt 60 - Phase 3 Batch 2 Implementation, Integration, and Verification.
+- Prompt 61 - Phase 4 Intake, Release Checkpoint, and Controlled Execution Policy.
+- Prompt 62 - Approval System Foundation.
+- Prompt 63 - Safe Tool Execution Broker.
+- Prompt 64 - Approved Local File Operation Execution.
+- Prompt 65 - Approved Command Execution Sandbox.
+- Prompt 66 - Approved Git Operation Execution.
+- Prompt 67 - Controlled Browser Read Execution.
+- Prompt 68 - Local Notification Execution Foundation.
+- Prompt 69 - Manual/Approved Local Scheduler Runner.
+- Prompt 70 - Phase 4 Implementation, Hardening, and Verification.
 - Release `v0.3.0-alpha - Local Voice and CLI Stability`.
 
 ## Next Milestone
 
-Phase 3 Batch 2 is implemented through Prompt 60. The next milestone is release approval; Phase 4 has not started.
+Phase 4 is implemented through Prompt 70. The next milestone is a separately approved Phase 4 release checkpoint; Phase 5 has not started.
 
 ## Preserved Deferred Themes
 

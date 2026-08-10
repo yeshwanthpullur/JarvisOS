@@ -22,6 +22,7 @@ from jarvis.scheduler import SchedulerAgent, render_scheduler_command
 from jarvis.communication import CommunicationAgent, render_communication_command
 from jarvis.adapters import AdapterAgent, render_adapter_command
 from jarvis.evaluation import EvaluationRunner, render_evaluation_command
+from jarvis.execution.cli import get_phase4_runtime, render_phase4_command
 
 
 def _manager(context: CommandContext):
@@ -320,6 +321,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         adapter_status = _adapter_agent(context).status()
         advanced_status = _advanced_model_planner(context).status()
         evaluation_status = _evaluation_runner(context).status()
+        phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
         phase3_text = (
             "phase3="
             f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
@@ -331,6 +333,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
+            "phase4=controlled_local/manual/no_daemon "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -356,6 +359,17 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "skill_registry_status": "ready" if skill_summary["valid"] else "error",
             "approval_required_capabilities": agent_summary["approval_required_capabilities"],
             "high_risk_capabilities": agent_summary["high_risk_capabilities"],
+            "execution_policy_status": "ready",
+            "approval_system_status": "ready_explicit_only",
+            "execution_broker_status": "ready",
+            "file_execution_status": "approved_scoped",
+            "command_execution_status": "approved_sandbox",
+            "git_execution_status": "approved_controlled",
+            "browser_read_execution_status": "approved_public_read",
+            "notification_status": "approved_local_only",
+            "scheduler_runtime_status": "manual_only",
+            "background_execution": False,
+            "public_execution_api": False,
         }
     return _text_response(
         "Project status: "
@@ -520,6 +534,15 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("evaluation observability", "Show local metadata snapshot", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("evaluation show", "Show one evaluation result", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("evaluation history", "Show bounded evaluation history", "evaluation", (), CommandPermission.DIAGNOSTIC),
+        *((f"execution {op}", f"Phase 4 execution {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","policy","permissions","readiness","risk","plan","capabilities","show","history")),
+        *((f"approval {op}", f"Explicit approval {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","request","pending","list","show","approve","deny","cancel","revoke","expire","validate")),
+        *((f"broker {op}", f"Execution broker {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","capabilities","plan","validate","dry-run","execute","show","history")),
+        *((f"file-exec {op}", f"Approved file execution {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","policy","validate","plan","dry-run","create","write","append","mkdir","rename","move","delete","rollback","show","history")),
+        *((f"command {op}", f"Approved command sandbox {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","policy","allowlist","validate","plan","dry-run","execute","show","history")),
+        *((f"git-exec {op}", f"Approved Git execution {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","policy","inspect","files","validate","plan","dry-run","stage","unstage","commit","push","show","history")),
+        *((f"notification {op}", f"Local notification {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","providers","policy","plan","validate","dry-run","send","test","show","history")),
+        *((f"scheduler {op}", f"Manual scheduler runtime {op}", "scheduler", (), CommandPermission.DIAGNOSTIC) for op in ("runtime-status","jobs","due","create","run","run-due","pause","resume","cancel","runs","runtime-policy")),
+        *((f"browser {op}", f"Controlled browser read {op}", "browser", (), CommandPermission.DIAGNOSTIC) for op in ("policy","validate","dry-run","read","read-show","read-history")),
         ("health", "Show health status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("clear", "Clear the console", "utility", (), CommandPermission.UTILITY),
         ("exit", "Exit the command loop", "utility", ("quit",), CommandPermission.UTILITY),
@@ -842,6 +865,8 @@ def _handler_for(name: str):
             return _text_response(render_research_command(_research_agent(context), name, context.arguments))
         if name.startswith("coding "):
             return _text_response(render_coding_command(_coding_agent(context), name, context.arguments))
+        if name.split(" ", 1)[0] in {"execution","approval","broker","file-exec","command","git-exec","notification"} or name in {"browser policy","browser validate","browser dry-run","browser read","browser read-show","browser read-history","scheduler runtime-status","scheduler jobs","scheduler due","scheduler create","scheduler run","scheduler run-due","scheduler pause","scheduler resume","scheduler cancel","scheduler runs","scheduler runtime-policy"}:
+            return _text_response(render_phase4_command(get_phase4_runtime(Path(__file__).resolve().parents[1]), name, context.arguments, context.flags))
         if name.startswith("document "):
             return _text_response(render_document_command(_document_agent(context), name, context.arguments))
         if name.startswith("browser "):

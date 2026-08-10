@@ -38,7 +38,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 
 ## Overall MVP Readiness
 
-**87%** toward the broader local-first JARVIS MVP described by the roadmap. The increase reflects tested local planning and hardening foundations, not production external execution.
+**91%** toward the broader local-first JARVIS MVP described by the roadmap. The increase reflects tested, narrowly scoped local approvals and execution; it does not imply autonomous, external, or unrestricted execution.
 
 This is not a mathematical average of feature labels. The one-point increase from 83% reflects the dedicated Coding Agent foundation, including safe repository diagnostics, planning, CLI, configuration, and registry integration. It remains conservative because code edits, commands, commits, pushes, dependency installation, deployments, and provider-backed coding execution are not implemented.
 
@@ -48,4 +48,4 @@ Machine-readable details: [`project_health.json`](project_health.json).
 
 The audited register remains **47 total**, **24 fixed**, and **23 still open**. Phase 3 improves infrastructure but does not close the broad specialist or external-tool limitations. Future agents and skills are visible as disabled metadata rather than being counted as working integrations. Evidence, severity, and future ownership remain in [`LIMITATIONS_REGISTER.md`](LIMITATIONS_REGISTER.md) and [`limitations_register.json`](limitations_register.json).
 
-Phase 3 Batch 2 adds explicit document text handling, read-only browser planning, scheduler planning, draft-only communication, manifest-only adapters, advanced-provider planning, and local evaluation. Runtime limitations remain open: no sending, background scheduling, interactive browsing, MCP/plugin execution, model installation/startup, cloud telemetry, or remote logging.
+Phase 4 adds exact local approvals and a central broker for scoped files, allowlisted commands, dedicated Git writes, public-page reads, console notifications, and manual notification schedules. Runtime limitations remain open: no autonomous execution, broad deletion, force-push, secret access, external sending, background scheduling, interactive browsing, MCP/plugin execution, cloud execution, or remote logging.

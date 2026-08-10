@@ -58,7 +58,7 @@ class Phase3IntegrationTests(unittest.TestCase):
     def test_project_status_contains_bounded_phase3_summary(self) -> None:
         response = self.commands.execute("project status")
         self.assertIn("phase3=agents:", response.response)
-        self.assertEqual(response.metadata["total_agents"], 25)
+        self.assertEqual(response.metadata["total_agents"], 29)
         self.assertEqual(response.metadata["prime_agent_status"], "ready")
         self.assertEqual(response.metadata["model_router_status"], "ready")
         self.assertEqual(response.metadata["skill_registry_status"], "ready")

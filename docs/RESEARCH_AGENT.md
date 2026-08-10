@@ -1,5 +1,9 @@
 # Research Agent
 
+## Phase 4 Boundary
+
+Research remains read-only. Controlled browser reads may retrieve bounded public text after approval, but research cannot log in, submit forms, bypass access controls, store findings in memory automatically, or invoke external search APIs.
+
 ## Batch 2 Integration
 
 Research planning may reference approved document evidence, read-only browser source policy, and advanced-provider comparisons. It does not gain autonomous browsing, hidden ingestion, fabricated citations, or external APIs.

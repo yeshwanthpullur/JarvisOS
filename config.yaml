@@ -392,3 +392,51 @@ evaluation:
   fail_on_truthfulness_mismatch: true
   fail_on_secret_leakage: true
   fail_on_path_leakage: true
+
+execution:
+  enabled: true
+  default_mode: plan_only
+  local_first: true
+  allow_file_writes: true
+  allow_command_execution: true
+  allow_git_writes: true
+  allow_browser_read: true
+  allow_browser_actions: false
+  allow_notifications: true
+  allow_scheduler_runner: true
+  allow_communication_send: false
+  allow_mcp_execution: false
+  allow_model_runtime_start: false
+  allow_external_network: false
+  allow_background_execution: false
+  allow_secrets_access: false
+  allow_credentials_access: false
+  require_approval_for_side_effects: true
+  block_critical_actions: true
+
+approvals:
+  enabled: true
+  default_mode: explicit_only
+  require_explicit_approval: true
+  allow_implied_approval: false
+  allow_broad_approval: false
+  allow_permanent_approval: false
+  allow_secret_access_approval: false
+  allow_critical_action_approval: false
+  default_ttl_seconds: 900
+  require_resource_scope: true
+  require_permission_scope: true
+
+broker:
+  enabled: true
+  default_mode: dry_run
+  allow_actual_execution: true
+  allow_unapproved_execution: false
+  require_policy_check: true
+  require_approval_for_side_effects: true
+  require_permission_scope: true
+  allow_external_tools: false
+  allow_network_tools: false
+  allow_background_tools: false
+  block_critical_actions: true
+  store_payloads: false

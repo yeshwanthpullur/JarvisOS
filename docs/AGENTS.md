@@ -1,5 +1,9 @@
 # Agent Protocol and Registry
 
+## Phase 4 Execution Specialists
+
+The registry now includes `execution_agent`, `approval_agent`, `broker_agent`, and `notification_agent`. They expose policy and readiness metadata and route only to the controlled execution foundation. They do not bypass the broker or grant approvals, and future or critical capabilities remain unavailable.
+
 ## Phase 3 Batch 2
 
 `document_agent`, `browser_agent`, `scheduler_agent`, `communication_agent`, `adapter_agent`, and `evaluation_agent` are truthful foundations. Their modes are text-only/plan-only, read-only, plan-only without a runner, draft-only, manifest-only, and local-only. `model_agent` exposes advanced-provider planning while all advanced runtimes remain unavailable.

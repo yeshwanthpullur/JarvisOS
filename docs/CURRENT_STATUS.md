@@ -4,10 +4,10 @@ Updated: 2026-08-11
 
 ## Current Release
 
-- Release: `v1.6.0-alpha - Multi-Agent OS Foundation`
-- Phase 3 implementation baseline: `c8300e498e89a01e4f85297eaf510040e029215e`
+- Release: `v1.7.0-alpha - Phase 3 Batch 2 Foundation`
+- Phase 4 starting baseline: `d2fe98726183b9c8d0f776663330d169f172f0b7`
 - Branch: `main`
-- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v1.6.0-alpha`
+- Release page: `https://github.com/yeshwanthpullur/JarvisOS/releases/tag/v1.7.0-alpha`
 
 ## Stable Launch
 
@@ -43,6 +43,7 @@ python main.py --ui
 - research_agent_status is tracked explicitly in project-health metadata so the current bounded read-only foundation stays visible without overstating retrieval coverage.
 - Coding Agent foundation: bounded coding plans, test recommendations, read-only Git status inspection, metadata-only diff review, risk classification, and safe history are available in `plan_only` mode.
 - Phase 3 Batch 2: explicit bounded text-document extraction, read-only browser planning, schedule validation without a runner, draft-only communication, manifest-only adapters, advanced-provider planning, and local evaluation/observability are integrated.
+- Phase 4 controlled execution: exact local approvals and a central broker now govern narrowly scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations.
 
 ## Partially Working Features
 
@@ -101,7 +102,7 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 
 ## Next Recommended Prompt
 
-Phase 3 Batch 2 is implemented through Prompt 60. Awaiting release approval; Phase 4 has not started.
+Phase 4 is implemented through Prompt 70. Awaiting a separately approved Phase 4 release checkpoint; Phase 5 has not started.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 

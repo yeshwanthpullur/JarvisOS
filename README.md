@@ -1,6 +1,8 @@
 # JARVIS OS
 
-JARVIS OS is currently at **v1.6.0-alpha - Multi-Agent OS Foundation**, with Phase 3 Batch 2 implemented through Prompt 60 on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at **v1.7.0-alpha - Phase 3 Batch 2 Foundation**, with the Phase 4 controlled-execution foundation implemented through Prompt 70 on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+
+Phase 4 adds explicit local approvals and a central execution broker for narrowly scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations. Execution remains `plan_only` by default; critical actions, secrets, force-push, browser writes, external messaging, and hidden/background operation remain blocked.
 
 For the central product direction and evidence-based tracking, see [Master Use Cases](docs/JARVIS_USE_CASES.md), [Current Status](docs/CURRENT_STATUS.md), [Project Health](docs/PROJECT_HEALTH.md), and [Roadmap](docs/ROADMAP.md). The same concise status summary is available from the CLI with `project status`; bounded limitation evidence is available through `limitations status`, `limitations open`, and `limitations show <id>`.
 

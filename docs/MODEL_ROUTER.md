@@ -1,5 +1,9 @@
 # Model Provider Registry and Router
 
+## Execution Boundary
+
+Model routing remains advisory and does not execute tools. Phase 4 approvals authorize exact executor actions, never model-generated free-form tool calls. Cloud providers remain disabled by default.
+
 ## Batch 2 Capabilities
 
 The metadata router represents document Q&A, browser summarization, scheduler planning, communication drafting, adapter planning, research, and summarization. Advanced-provider profiles remain planning-only and do not alter existing Ollama execution paths.

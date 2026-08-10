@@ -1,10 +1,10 @@
 {
-  "release": "v1.6.0-alpha",
-  "commit": "c8300e498e89a01e4f85297eaf510040e029215e",
+  "release": "v1.7.0-alpha",
+  "commit": "d2fe98726183b9c8d0f776663330d169f172f0b7",
   "updated_at": "2026-08-11",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Phase 3 Batch 2 complete; awaiting release approval",
-  "overall_mvp_readiness": 87,
+  "next_milestone": "Phase 4 implemented; awaiting separate release approval",
+  "overall_mvp_readiness": 91,
   "limitations": {
     "total": 47,
     "fixed": 24,
@@ -18,7 +18,7 @@
     {"name": "Conversation Intelligence", "status": "Working", "confidence": 80, "evidence": "Bounded multi-turn state, topics, entities, follow-up intent, references, clarification, repair, modes, confidence, and summaries are integrated with normal chat.", "next_action": "Improve language understanding from observed ambiguity without hidden persistence."},
     {"name": "Cloud Provider Foundation", "status": "Partial", "confidence": 65, "evidence": "Adapters, policy, normalization, commands, and mocked tests exist.", "next_action": "Add opt-in live smoke checks when authorized."},
     {"name": "Tools", "status": "Partial", "confidence": 75, "evidence": "Governed calculator/text tools execute and the metadata-only Skill Registry declares permissions, side effects, approval, and future integrations; external breadth remains limited.", "next_action": "Add executable skills only through separately verified owning milestones."},
-    {"name": "Planning", "status": "Partial", "confidence": 65, "evidence": "Advisory plans and validation exist without automatic execution.", "next_action": "Improve evidence and review UX."},
+    {"name": "Planning", "status": "Partial", "confidence": 76, "evidence": "Advisory plans can hand exact supported actions to a local approval and broker path; autonomous execution remains unavailable.", "next_action": "Keep execution explicit, scoped, and reversible where possible."},
     {"name": "Multi-Agent System", "status": "Partial", "confidence": 85, "evidence": "Typed protocols, Prime routing, and plan-only Document, Browser, Scheduler, Communication, Adapter, advanced-model, and evaluation foundations are integrated with truthful unavailable states.", "next_action": "Add execution only through separately approved providers and scoped permissions."},
     {"name": "Model Router", "status": "Partial", "confidence": 82, "evidence": "Provider-neutral local routing now includes document, browser, scheduler, communication, and adapter planning plus disabled advanced-provider profiles; routing does not execute models.", "next_action": "Integrate additional local runtimes only through explicit tested adapters."},
     {"name": "Skill Registry", "status": "Partial", "confidence": 82, "evidence": "Batch 2 skills declare bounded planning capabilities and disabled runtime counterparts; external plugins, MCP, sending, browser writes, scheduling, and model startup remain disabled.", "next_action": "Keep runtime skills disabled until separately approved."},
@@ -39,7 +39,8 @@
     {"name": "Creative Media Workflows", "status": "Partial", "confidence": 44, "evidence": "Governed image-generation and video-editing workflow foundations exist with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation and real local editing still require configured providers.", "next_action": "Add real local media providers only with approved integrations."},
     {"name": "Communication Assistance", "status": "Partial", "confidence": 35, "evidence": "A draft-only Communication Gateway, disabled provider registry, anti-spam policy, and bounded CLI planning are implemented; no message, email, notification, or social post can be sent.", "next_action": "Keep sending disabled until consent, enrollment, credentials, approvals, and provider tests exist."},
     {"name": "Personal Workspace", "status": "Partial", "confidence": 34, "evidence": "CLI access, project tracking, and Phase 3 routing metadata compose capabilities without replacing their authoritative subsystems; a complete multi-tool workspace remains future work.", "next_action": "Harden the current local-first experience without duplicating authorities."},
-    {"name": "Security/Permissions", "status": "Partial", "confidence": 75, "evidence": "Permission, approval, locality, tool, provider, and UI boundaries are tested.", "next_action": "Threat-review every external integration."},
+    {"name": "Controlled Execution", "status": "Partial", "confidence": 78, "evidence": "Exact approvals and a central broker govern scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations.", "next_action": "Keep unsupported and critical actions blocked; require separate review for every new executor."},
+    {"name": "Security/Permissions", "status": "Partial", "confidence": 86, "evidence": "Execution modes, risk, exact approvals, locality, protected resources, timeout, rollback metadata, and executor-specific boundaries are tested.", "next_action": "Threat-review every new execution surface."},
     {"name": "Testing/Release Readiness", "status": "Working", "confidence": 96, "evidence": "Phase 3 Batch 2 focused, tracking, Vercel-contract, and final 1727-test suites pass with no skips, failures, or errors.", "next_action": "Keep release evidence and status docs current."}
   ],
   "phase3": {
@@ -67,10 +68,26 @@
     "evaluation": "ready_local_only",
     "cloud_telemetry_enabled": false,
     "background_runner_enabled": false,
-    "total_agents": 25,
+    "total_agents": 29,
     "default_execution_mode": "plan_only",
     "cloud_providers_enabled": false,
     "external_plugins_enabled": false,
     "mcp_enabled": false
+  },
+  "phase4": {
+    "status": "Partial - controlled local execution foundation",
+    "default_execution_mode": "plan_only",
+    "approval_system": "ready_local_bounded",
+    "execution_broker": "ready_policy_enforced",
+    "file_execution": "ready_scoped_approved",
+    "command_execution": "ready_allowlisted_approved",
+    "git_execution": "ready_explicit_approved",
+    "browser_read_execution": "ready_public_get_approved",
+    "notification_execution": "ready_console_local_approved",
+    "scheduler_runtime": "ready_manual_notification_only",
+    "critical_actions_blocked": true,
+    "background_execution_enabled": false,
+    "external_communication_enabled": false,
+    "vercel_execution_enabled": false
   }
 }

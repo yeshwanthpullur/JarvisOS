@@ -61,6 +61,16 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("web_read_only_skill", "web", "web_read", "Read public web metadata under policy.", permissions=(P.BROWSER_READ,)),
         _ready("sync_status_skill", "sync", "sync_status", "Read local sync queue status."),
         _ready("voice_status_skill", "conversation", "voice_status", "Read voice subsystem status."),
+        _ready("execution_policy_skill", "system", "execution_policy", "Classify controlled execution policy and risk."),
+        _ready("approval_request_skill", "system", "approval_request", "Manage explicit scope-bound approvals."),
+        _ready("broker_validation_skill", "tools", "broker_validation", "Validate policy, approval, permissions, and capabilities."),
+        _ready("file_write_execution_skill", "files", "approved_file_write", "Execute scoped approved text-file operations.", permissions=(P.WRITE_FILES,)),
+        _ready("approved_command_execution_skill", "coding", "approved_command_execution", "Run allowlisted approved commands with shell disabled.", permissions=(P.EXECUTE_COMMANDS,)),
+        _ready("git_commit_skill", "coding", "approved_git_commit", "Create an approved normal Git commit after protected-file scans.", permissions=(P.GIT_WRITE,)),
+        _ready("git_push_skill", "coding", "approved_git_push", "Push an exact approved branch to an allowed remote.", permissions=(P.GIT_WRITE,)),
+        _ready("browser_public_read_skill", "browser", "approved_public_read", "Fetch bounded public text with SSRF protection.", permissions=(P.BROWSER_READ,P.NETWORK_ACCESS)),
+        _ready("local_notification_execution_skill", "communication", "approved_local_notification", "Display a bounded local-only notification.", permissions=(P.SEND_MESSAGE,)),
+        _ready("scheduler_manual_runner_skill", "workflow", "approved_manual_scheduler", "Manually run bounded due local notification jobs.", permissions=(P.EXECUTE_COMMANDS,)),
     )
     future = (
         _future("academic_search_skill", "research", P.NETWORK_ACCESS), _future("citation_manager_skill", "research", P.READ_CONTEXT), _future("external_search_api_skill", "research", P.NETWORK_ACCESS),

@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased - Phase 4 Controlled Execution Foundation
+
+### Added
+
+- Added bounded approval lifecycle, exact authorization matching, central execution policy, and a controlled execution broker.
+- Added workspace-scoped file operations, allowlisted shell-free commands, dedicated approved Git writes, SSRF-protected public-page reads, local console notifications, and a manual-only notification scheduler.
+- Added `execution`, `approval`, `broker`, `file-exec`, `command`, `git-exec`, `notification`, browser execution, and scheduler runtime CLI controls.
+- Integrated controlled execution metadata with Prime routing, Agent Registry, Skill Registry, configuration, and project status.
+
+### Safety
+
+- Default execution remains `plan_only`; high-risk actions require exact approval and critical actions are blocked.
+- Secret access, force-push, arbitrary shells, broad deletion, browser writes, external communication, hidden capture, autonomous workers, and scheduled commands remain unavailable.
+- Vercel remains status-only and no executor is exposed online.
+
+### Verification
+
+- Added focused policy, approval, broker, executor, CLI, and cross-system regression coverage. Final totals are recorded after the complete Prompt 70 verification pass.
+
 ## Unreleased - Phase 3 Batch 2 Foundations
 
 ### Added

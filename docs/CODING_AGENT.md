@@ -1,5 +1,9 @@
 # Coding Agent Foundation
 
+## Phase 4 Boundary
+
+The Coding Agent remains plan-only. Dedicated file, command, and Git executors may perform only their narrow approved operations; Coding Agent output cannot silently edit, run, commit, push, install, or deploy.
+
 ## Batch 2 Integration
 
 Coding plans may describe adapters and future model-provider integration, but cannot install plugins/models, start runtimes, create scheduler jobs, send communication, or bypass existing write/command/commit/push blocks.

@@ -222,6 +222,16 @@ class AdvancedModelsConfig:
 class EvaluationConfig:
     enabled: bool = True; default_mode: str = "local_only"; allow_cloud_telemetry: bool = False; allow_remote_logging: bool = False; allow_background_runner: bool = False; save_history: bool = True; max_cases_per_suite: int = 100; max_output_chars: int = 8000; max_history_items: int = 25; redact_sensitive_values: bool = True; block_private_paths: bool = True; require_local_only: bool = True; fail_on_truthfulness_mismatch: bool = True; fail_on_secret_leakage: bool = True; fail_on_path_leakage: bool = True
 
+@dataclass(frozen=True, slots=True)
+class ExecutionConfig:
+    enabled: bool = True; default_mode: str = "plan_only"; local_first: bool = True; allow_file_writes: bool = True; allow_command_execution: bool = True; allow_git_writes: bool = True; allow_browser_read: bool = True; allow_browser_actions: bool = False; allow_notifications: bool = True; allow_scheduler_runner: bool = True; allow_communication_send: bool = False; allow_mcp_execution: bool = False; allow_model_runtime_start: bool = False; allow_external_network: bool = False; allow_background_execution: bool = False; allow_secrets_access: bool = False; allow_credentials_access: bool = False; require_approval_for_side_effects: bool = True; block_critical_actions: bool = True; max_plan_steps: int = 8; max_history_items: int = 50; save_history: bool = True; redact_sensitive_values: bool = True; block_private_paths: bool = True
+@dataclass(frozen=True, slots=True)
+class ApprovalsConfig:
+    enabled: bool = True; default_mode: str = "explicit_only"; require_explicit_approval: bool = True; allow_implied_approval: bool = False; allow_broad_approval: bool = False; allow_permanent_approval: bool = False; allow_secret_access_approval: bool = False; allow_critical_action_approval: bool = False; default_ttl_seconds: int = 900; max_pending: int = 50; max_history_items: int = 100; save_history: bool = True; redact_sensitive_values: bool = True; block_private_paths: bool = True; require_resource_scope: bool = True; require_permission_scope: bool = True
+@dataclass(frozen=True, slots=True)
+class BrokerConfig:
+    enabled: bool = True; default_mode: str = "dry_run"; allow_actual_execution: bool = True; allow_unapproved_execution: bool = False; require_policy_check: bool = True; require_approval_for_side_effects: bool = True; require_permission_scope: bool = True; allow_external_tools: bool = False; allow_network_tools: bool = False; allow_background_tools: bool = False; block_critical_actions: bool = True; max_plan_steps: int = 8; max_history_items: int = 50; save_history: bool = True; redact_sensitive_values: bool = True; block_private_paths: bool = True; store_payloads: bool = False
+
 
 @dataclass(frozen=True, slots=True)
 class ToolsConfig:
@@ -436,6 +446,9 @@ class AppSettings:
     adapters: AdaptersConfig = field(default_factory=AdaptersConfig)
     advanced_models: AdvancedModelsConfig = field(default_factory=AdvancedModelsConfig)
     evaluation: EvaluationConfig = field(default_factory=EvaluationConfig)
+    execution: ExecutionConfig = field(default_factory=ExecutionConfig)
+    approvals: ApprovalsConfig = field(default_factory=ApprovalsConfig)
+    broker: BrokerConfig = field(default_factory=BrokerConfig)
     conversation: ConversationIntelligenceConfig = field(default_factory=ConversationIntelligenceConfig)
     tools: ToolsConfig = field(default_factory=ToolsConfig)
     planning: PlanningConfig = field(default_factory=PlanningConfig)

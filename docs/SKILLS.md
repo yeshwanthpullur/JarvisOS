@@ -1,5 +1,9 @@
 # Tool and Skill Registry
 
+## Phase 4 Skills
+
+Metadata now describes execution policy, approvals, broker validation, scoped files, allowlisted commands, approved Git writes, controlled browser reads, local notifications, and manual scheduler execution. These skills declare side effects and permissions explicitly. Registry readiness does not authorize execution.
+
 ## Batch 2 Skills
 
 Batch 2 registers metadata-only skills for documents, browser reads, schedule validation, communication drafting, adapter manifests, advanced model comparisons, and local evaluation. Runtime counterparts for OCR/cloud parsing, browser writes, active scheduling, sending, MCP/plugins, provider startup, and model downloads remain disabled.

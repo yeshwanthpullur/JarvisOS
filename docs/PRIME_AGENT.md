@@ -1,5 +1,9 @@
 # Prime Agent
 
+## Controlled Execution Routing
+
+Prime recognizes execution, approval, and notification intents, but its decisions remain plans. Force-push, broad deletion, secret access, and similar critical requests are blocked. A Prime route never substitutes for exact approval or the broker's immediate policy validation.
+
 ## Batch 2 Routing
 
 Prime routes document, webpage, reminder, draft communication, MCP/plugin, and advanced model requests to governed foundations. CAPTCHA bypass, secret access, spam, private-person monitoring, destructive adapter execution, and credential requests are critical-risk blocked. Routing remains advisory.

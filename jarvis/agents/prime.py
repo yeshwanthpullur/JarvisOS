@@ -115,6 +115,9 @@ _INTENT_TERMS: tuple[tuple[AgentCapabilityType, tuple[str, ...]], ...] = (
     (AgentCapabilityType.DOCUMENTS, ("document", "pdf", "presentation", "summarize this pdf")),
     (AgentCapabilityType.RESEARCH, ("research", "sources", "evidence")),
     (AgentCapabilityType.SYSTEM, ("project status", "system status", "health", "limitations", "hardware")),
+    (AgentCapabilityType.APPROVAL, ("approve approval", "deny approval", "revoke approval", "approval status")),
+    (AgentCapabilityType.EXECUTION, ("create a file", "create notes file", "write this file", "run this command", "commit these", "push current", "run due")),
+    (AgentCapabilityType.NOTIFICATION, ("local notification", "notify me locally", "show me a local notification")),
     (AgentCapabilityType.DRONE, ("drone", "flight controller", "fly ")),
     (AgentCapabilityType.ROBOTICS, ("robot", "robotics", "motor control", "sensor")),
 )
@@ -135,7 +138,7 @@ def classify_intent(text: str) -> AgentCapabilityType:
 def classify_risk(text: str, intent: AgentCapabilityType | None = None) -> AgentRiskLevel:
     lowered = text.lower()
     intent = intent or classify_intent(text)
-    if intent is AgentCapabilityType.DRONE or any(term in lowered for term in ("steal credential", "bypass security", "bypass captcha", "captcha", "read my .env", ".env", "spam this", "100 people", "friend's location", "unlock device")):
+    if intent is AgentCapabilityType.DRONE or any(term in lowered for term in ("steal credential", "bypass security", "bypass captcha", "captcha", "read my .env", ".env", "spam this", "100 people", "friend's location", "unlock device", "force push", "delete all")):
         return AgentRiskLevel.CRITICAL
     if any(term in lowered for term in ("post", "send email", "send message", "delete", "purchase", "deploy", "account", "control", "write file", "fix automatically", "commit", "push", "install dependency", "microphone", "camera")):
         return AgentRiskLevel.HIGH
@@ -162,6 +165,9 @@ _AGENT_FOR_INTENT = {
     AgentCapabilityType.ROBOTICS: "robotics_agent",
     AgentCapabilityType.DRONE: "drone_agent",
     AgentCapabilityType.SYSTEM: "model_agent",
+    AgentCapabilityType.EXECUTION: "execution_agent",
+    AgentCapabilityType.APPROVAL: "approval_agent",
+    AgentCapabilityType.NOTIFICATION: "notification_agent",
 }
 
 
