@@ -37,6 +37,7 @@ _SUBCOMMANDS = {
     "conversation status", "conversation reset", "conversation summary", "conversation mode", "conversation confidence", "conversation topic",
     "limitations status", "limitations list", "limitations open", "limitations fixed", "limitations show", "limitations category", "limitations next", "limitations summary",
     "prime status", "prime route", "prime plan", "prime risk", "prime explain",
+    "model status", "model providers", "model capabilities", "model route", "model explain", "model hardware", "model policy",
 }
 
 

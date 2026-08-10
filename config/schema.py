@@ -82,6 +82,17 @@ class ModelsConfig:
     default_model: str
     fallback_model: str
     allow_local_models: bool
+    enabled: bool = True
+    local_only_default: bool = True
+    allow_cloud_providers: bool = False
+    default_chat_provider: str = "ollama_text"
+    default_reasoning_provider: str = "ollama_text"
+    default_coding_provider: str = "ollama_text"
+    default_vision_provider: str = "ollama_vision"
+    max_providers: int = 32
+    max_models_per_provider: int = 32
+    max_route_explanations: int = 8
+    hardware_discovery_enabled: bool = True
 
 
 @dataclass(frozen=True, slots=True)

@@ -13,6 +13,7 @@ from conversation.conversation_response import ConversationResponse
 from providers import ProviderRequest
 from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
 from jarvis.agents import AgentRegistry, PrimeAgent, render_agent_command, render_prime_command
+from jarvis.models import ModelProviderRegistry, ModelRouter, build_default_model_registry, render_model_command
 
 
 def _manager(context: CommandContext):
@@ -100,6 +101,20 @@ def _prime_agent(context: CommandContext) -> PrimeAgent:
     metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
     prime = metadata.get("prime_agent")
     return prime if isinstance(prime, PrimeAgent) else PrimeAgent(_phase3_agent_registry(context))
+
+
+def _model_foundation(context: CommandContext) -> tuple[ModelProviderRegistry, ModelRouter]:
+    conversation = context.conversation_context
+    metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
+    registry = getattr(conversation, "model_registry", None) if conversation is not None else None
+    router = getattr(conversation, "model_router", None) if conversation is not None else None
+    registry = registry if isinstance(registry, ModelProviderRegistry) else metadata.get("model_registry")
+    router = router if isinstance(router, ModelRouter) else metadata.get("model_router")
+    if not isinstance(registry, ModelProviderRegistry):
+        registry = build_default_model_registry()
+    if not isinstance(router, ModelRouter):
+        router = ModelRouter(registry)
+    return registry, router
 
 
 def _tool_manager(context: CommandContext):
@@ -296,6 +311,13 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("prime plan", "Create a side-effect-free delegation plan", "agent", (), CommandPermission.AGENT),
         ("prime risk", "Classify request risk and approval needs", "agent", (), CommandPermission.AGENT),
         ("prime explain", "Explain a delegation decision", "agent", (), CommandPermission.AGENT),
+        ("model status", "Show model router status", "provider", (), CommandPermission.PROVIDER),
+        ("model providers", "List provider-neutral model routes", "provider", (), CommandPermission.PROVIDER),
+        ("model capabilities", "List model capabilities", "provider", (), CommandPermission.PROVIDER),
+        ("model route", "Plan a model route without execution", "provider", (), CommandPermission.PROVIDER),
+        ("model explain", "Explain a model route", "provider", (), CommandPermission.PROVIDER),
+        ("model hardware", "Show bounded local hardware hints", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("model policy", "Show model routing privacy policy", "provider", (), CommandPermission.PROVIDER),
         ("multiagent status", "Show multi-agent status", "agent", (), CommandPermission.AGENT),
         ("multiagent list", "List recent coordinations", "agent", (), CommandPermission.AGENT),
         ("multiagent show", "Show a coordination", "agent", (), CommandPermission.AGENT),
@@ -538,6 +560,9 @@ def _handler_for(name: str):
             return _text_response(render_agent_command(_phase3_agent_registry(context), name, context.arguments))
         if name.startswith("prime "):
             return _text_response(render_prime_command(_prime_agent(context), name, context.arguments))
+        if name.startswith("model "):
+            registry, router = _model_foundation(context)
+            return _text_response(render_model_command(registry, router, name, context.arguments))
         if name.startswith("multiagent "):
             agent_manager = _agent_manager(context)
             orchestrator = getattr(agent_manager, "orchestrator", None)

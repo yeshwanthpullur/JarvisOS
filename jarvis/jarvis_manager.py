@@ -9,6 +9,7 @@ from pathlib import Path
 from jarvis.jarvis_cache import JarvisCache
 from jarvis.jarvis_context import JarvisContext
 from jarvis.agents import AgentRegistry, PrimeAgent
+from jarvis.models import ModelRouter, build_default_model_registry
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
 from jarvis.jarvis_diagnostics import JarvisDiagnostics
@@ -156,9 +157,26 @@ class JarvisManager:
         self.mobile_automation = MobileAutomationManager((context.settings.data_dir / "mobile-automation") if context and context.settings else Path("data/mobile-automation"), context.settings if context else None, logger=self.logger)
         agent_limit = getattr(getattr(context.settings, "agents", None), "max_agents", 64) if context else 64
         self.agent_registry = AgentRegistry(max_agents=agent_limit)
+        provider_manager = context.metadata.get("provider_manager") if context else None
+        ollama_record = getattr(getattr(provider_manager, "registry", None), "get", lambda _name: None)("ollama")
+        ollama_ready = bool(ollama_record and ollama_record.health and ollama_record.health.available)
+        stored_models = tuple(
+            getattr(item, "model_id", "")
+            for item in getattr(getattr(ollama_record, "provider", None), "_models", ())
+            if getattr(item, "model_id", "")
+        )
+        vision_ready = any("llava" in model.lower() for model in stored_models)
+        self.model_registry = build_default_model_registry(ollama_ready=ollama_ready, ollama_models=stored_models, vision_ready=vision_ready)
+        model_config = getattr(context.settings, "models", None) if context else None
+        self.model_router = ModelRouter(
+            self.model_registry,
+            local_only_default=getattr(model_config, "local_only_default", True),
+            allow_cloud_providers=getattr(model_config, "allow_cloud_providers", False),
+        )
         prime_config = getattr(context.settings, "prime", None) if context else None
         self.prime_agent = PrimeAgent(
             self.agent_registry,
+            model_router=self.model_router,
             enabled=getattr(prime_config, "enabled", True),
             max_plan_steps=getattr(prime_config, "max_plan_steps", 8),
             block_critical_risk=getattr(prime_config, "block_critical_risk", True),
@@ -211,6 +229,8 @@ class JarvisManager:
             "mobile_automation": self.mobile_automation,
             "agent_registry": self.agent_registry,
             "prime_agent": self.prime_agent,
+            "model_registry": self.model_registry,
+            "model_router": self.model_router,
             "skills": self.skills,
             "workflow": self.workflow,
             "retrieval": self.retrieval,
@@ -288,6 +308,8 @@ class JarvisManager:
             agent_creator=base.agent_creator if base else None,
             agent_registry=self.agent_registry,
             prime_agent=self.prime_agent,
+            model_registry=self.model_registry,
+            model_router=self.model_router,
             tool_manager=self.tools,
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,

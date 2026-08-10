@@ -57,6 +57,8 @@ class JarvisContext:
     agent_creator: Any | None = None
     agent_registry: Any | None = None
     prime_agent: Any | None = None
+    model_registry: Any | None = None
+    model_router: Any | None = None
     tool_manager: Any | None = None
     autonomous_planning: Any | None = None
     voice_intelligence: Any | None = None
