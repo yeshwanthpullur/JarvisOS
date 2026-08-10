@@ -1291,6 +1291,9 @@ def _handler_for(name: str):
                                 model=model_id,
                                 request_id="command-local-test",
                                 local_only=True,
+                                # A cold local model can need longer than the interactive
+                                # default while it is loaded into Ollama.
+                                timeout_seconds=120,
                             )
                         )
                     )
