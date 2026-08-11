@@ -1,5 +1,7 @@
 # Communication Gateway
 
+Drafting models never receive communication-provider credentials and cannot send messages.
+
 Native communication providers remain authoritative. MCP messaging cannot bypass their destination, egress, approval, rate, or Broker policies.
 
 Prompt 73 routes authorized Telegram text through this gateway. Telegram cannot elevate trust, mutate memory automatically, select an unsafe model route, or bypass execution policy.

@@ -13,7 +13,7 @@ from conversation.conversation_response import ConversationResponse
 from providers import ProviderRequest
 from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
 from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents, render_agent_command, render_prime_command, ResearchAgent, render_research_command
-from jarvis.models import AdvancedModelPlanner, ModelProviderRegistry, ModelRouter, build_default_model_registry, render_advanced_model_command, render_model_command
+from jarvis.models import AdvancedModelPlanner, AdvancedModelRuntime, ModelProviderRegistry, ModelRouter, build_default_model_registry, render_advanced_model_command, render_model_command, render_runtime_command
 from jarvis.skills import SkillRegistry, build_default_skill_registry, render_skill_command
 from jarvis.coding import CodingAgent, CodingHistoryStore, CodingPlanner, DiffReviewer, RepoInspector, render_coding_command
 from jarvis.documents import DocumentAgent, render_document_command
@@ -325,6 +325,9 @@ def _adapter_agent(context: CommandContext) -> AdapterAgent:
 def _advanced_model_planner(context: CommandContext) -> AdvancedModelPlanner:
     return _foundation_instance(context, "advanced_model_planner", AdvancedModelPlanner)
 
+def _advanced_model_runtime(context: CommandContext) -> AdvancedModelRuntime:
+    return _foundation_instance(context, "advanced_model_runtime", AdvancedModelRuntime)
+
 
 def _evaluation_runner(context: CommandContext) -> EvaluationRunner:
     return _foundation_instance(context, "evaluation_runner", lambda: EvaluationRunner(_prime_agent(context), _adapter_agent(context), _advanced_model_planner(context)))
@@ -393,6 +396,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         github_status=_github_provider(context).status()
         mcp_status=_mcp_runtime(context).status()
         plugin_status=_plugin_runtime(context).status()
+        model_runtime_status=_advanced_model_runtime(context).status()
         phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
         phase3_text = (
             "phase3="
@@ -401,11 +405,11 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"prime:{prime_status['status']} model_router:{model_router.router_status()['status']} "
             f"research:{research_status['status']} coding:{coding_status['status']} document:{document_status['status']} "
             f"browser:{browser_status['status']} scheduler:{scheduler_status['status']} communication:{communication_status['status']} "
-            f"adapter:{adapter_status['status']} advanced_models:{advanced_status['status']} evaluation:{evaluation_status['status']} "
+            f"adapter:{adapter_status['status']} adv:{advanced_status['status']} evaluation:{evaluation_status['status']} "
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
-            f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} p85={release_status.status.value} "
+            f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} mrt:R p85={release_status.status.value} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -415,6 +419,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "github_provider_status":github_status["state"],"github_repository_scope":github_status["repository_scope"],
             "mcp_runtime_status":"ready_registry","mcp_registered_servers":mcp_status["registered"],"mcp_remote_enabled":mcp_status["remote_http"],
             "plugin_runtime_status":"ready_registry","plugin_registered":plugin_status["registered"],"plugin_enabled":plugin_status["enabled"],"plugin_external_execution":plugin_status["external_execution"],
+            "advanced_model_runtime_status":"ready_control_plane","nemotron_ultra_status":model_runtime_status["nemotron_ultra"],"nemotron_super_status":model_runtime_status["nemotron_super"],"model_auto_download":model_runtime_status["auto_download"],
             "total_agents": agent_summary["total_agents"],
             "ready_agents": agent_summary["ready_agents"],
             "foundation_agents": foundation_agents,
@@ -617,6 +622,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("model advanced safety", "Evaluate advanced model safety", "provider", (), CommandPermission.DIAGNOSTIC),
         ("model advanced checklist", "Show non-executing provider checklist", "provider", (), CommandPermission.DIAGNOSTIC),
         ("model advanced history", "Show bounded provider planning history", "provider", (), CommandPermission.DIAGNOSTIC),
+        *((f"model {op}", "Advanced runtime control-plane command", "provider", (), CommandPermission.DIAGNOSTIC) for op in ("runtime-status","runtimes","runtime-show","runtime-health","profiles","profile-show","provider-health","compatibility","resource-plan","route-explain","start-plan","start","stop","download-plan","download-status","fallback-status","circuit-status","aliases","alias-show")),
         ("evaluation status", "Show local evaluation status", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("evaluation help", "Show evaluation command help", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("evaluation run", "Run bounded local evaluation", "evaluation", (), CommandPermission.DIAGNOSTIC),
@@ -959,6 +965,8 @@ def _handler_for(name: str):
             return _text_response(render_prime_command(_prime_agent(context), name, context.arguments))
         if name.startswith("model advanced "):
             return _text_response(render_advanced_model_command(_advanced_model_planner(context), name, context.arguments))
+        if name in {f"model {op}" for op in ("runtime-status","runtimes","runtime-show","runtime-health","profiles","profile-show","provider-health","compatibility","resource-plan","route-explain","start-plan","start","stop","download-plan","download-status","fallback-status","circuit-status","aliases","alias-show")}:
+            return _text_response(render_runtime_command(name,context.arguments,_advanced_model_runtime(context)))
         if name.startswith("model "):
             registry, router = _model_foundation(context)
             return _text_response(render_model_command(registry, router, name, context.arguments))

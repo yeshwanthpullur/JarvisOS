@@ -1,5 +1,7 @@
 # Model Provider Registry and Router
 
+Prompt 78 adds an advanced runtime control plane beside the existing advisory router; local-first, capability, privacy, cost, context, fallback, and circuit policies remain explicit.
+
 ## Execution Boundary
 
 Model routing remains advisory and does not execute tools. Phase 4 approvals authorize exact executor actions, never model-generated free-form tool calls. Cloud providers remain disabled by default.

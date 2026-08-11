@@ -1,5 +1,7 @@
 # Current Status
 
+Advanced Model Runtime: implemented control plane. Ollama remains supported; vLLM and llama.cpp are optional local runtimes; NIM is configuration-dependent; Nemotron aliases are unresolved; remote, paid, auto-start, and auto-download defaults are off.
+
 Plugin Runtime: implemented as a strict registry and inspection foundation. External plugins remain untrusted and disabled; no installation, arbitrary runtime execution, automatic update, scheduled execution, or authority grant is enabled.
 
 MCP Runtime: implemented foundation with zero registered servers. Explicitly configured local stdio/HTTP are supported by policy; remote HTTP, installation, scheduled execution, and global tool execution default disabled.

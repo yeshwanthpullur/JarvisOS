@@ -105,6 +105,14 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("advanced_model_planning_skill", "system", "advanced_model_planning", "Plan advanced providers without installation or startup."),
         _ready("model_provider_comparison_skill", "system", "model_provider_comparison", "Compare provider metadata without benchmarks."),
         _ready("hardware_capability_planning_skill", "system", "hardware_capability_planning", "Show broad safe hardware categories."),
+        _ready("model_runtime_status_skill","system","model_runtime_status","Inspect bounded runtime and model readiness."),
+        _ready("model_hardware_discovery_skill","system","model_hardware_discovery","Inspect privacy-safe hardware classes."),
+        _ready("model_compatibility_skill","system","model_compatibility","Evaluate model/runtime compatibility metadata."),
+        _ready("model_resource_plan_skill","system","model_resource_plan","Plan conservative RAM, VRAM, disk, context, and concurrency."),
+        _ready("model_provider_health_skill","system","model_provider_health","Inspect bounded provider health without expensive inference."),
+        _ready("model_route_skill","system","model_route","Select a policy-compliant model route."),
+        _ready("model_fallback_skill","system","model_fallback","Apply bounded capability-preserving provider fallback."),
+        _ready("model_circuit_breaker_skill","system","model_circuit_breaker","Track provider failures without logging prompts."),
         _ready("evaluation_routing_skill", "system", "evaluation_routing", "Run deterministic local routing fixtures."),
         _ready("capability_truthfulness_skill", "system", "capability_truthfulness", "Verify disabled capabilities are not reported ready."),
         _ready("local_observability_skill", "system", "local_observability", "Create bounded local metadata snapshots."),
@@ -145,5 +153,6 @@ def build_default_skill_registry() -> SkillRegistry:
         _future("mcp_server_install_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_arbitrary_execute_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_scheduled_execute_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_admin_skill","developer",P.SYSTEM_MODIFY),
         _future("plugin_safe_execute_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_auto_install_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_auto_update_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_unrestricted_execute_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_scheduled_execute_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_admin_skill","developer",P.SYSTEM_MODIFY),
         _future("nemotron_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("nvidia_nim_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("vllm_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("llama_cpp_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("model_download_skill", "system", P.NETWORK_ACCESS),
+        _future("model_runtime_start_skill","system",P.EXECUTE_COMMANDS),_future("model_runtime_stop_skill","system",P.EXECUTE_COMMANDS),_future("model_auto_download_skill","system",P.NETWORK_ACCESS),_future("model_auto_install_runtime_skill","system",P.EXECUTE_COMMANDS),_future("model_paid_provider_auto_use_skill","system",P.NETWORK_ACCESS),
     )
     return SkillRegistry(builtins + future, max_skills=512)

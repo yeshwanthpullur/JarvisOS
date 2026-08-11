@@ -1,5 +1,7 @@
 # CLI Guide
 
+Advanced runtime commands include `model runtime-status`, `model runtimes`, runtime/profile/alias inspection, hardware and compatibility plans, route explanations, fallback/circuit status, and non-executing start/stop/download plans. Existing model commands remain supported.
+
 The `plugin` namespace provides bounded status, inspection, capability, permission, dependency, health, integrity, and history commands. Lifecycle commands produce safe plans or require exact approval; installation and executable external runtimes remain disabled.
 
 The `mcp` namespace exposes bounded status, server/tool/resource/prompt metadata, health, classification, lifecycle plans, guarded call plans/dry-runs/calls, and metadata-only history. It has no unrestricted install command.

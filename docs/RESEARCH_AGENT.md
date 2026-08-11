@@ -1,5 +1,7 @@
 # Research Agent
 
+Research may prefer reasoning and long-context profiles, but remote inference remains data-egress gated.
+
 Research may identify plugin candidates, but discovery evidence never makes a candidate trusted, installed, or executable.
 
 Research may use approved read-only MCP search/retrieval with provenance. It receives no MCP mutation tools.

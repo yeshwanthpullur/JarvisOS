@@ -1,5 +1,7 @@
 # Execution Policy
 
+Heavy model start, stop, install, and download are separate controlled side effects; ordinary configured local inference does not grant tool authority.
+
 A plugin may add capability but never authority; all side effects still require local policy, exact permission, approval, and Broker validation.
 
 MCP discovery, resource read, read tool, and side-effect tool calls are distinct classes. Arbitrary shell/filesystem, secret export, admin, and installation remain blocked.

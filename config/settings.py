@@ -188,6 +188,10 @@ def load_settings(
             max_models_per_provider=int(raw_config["models"]["max_models_per_provider"]),
             max_route_explanations=int(raw_config["models"]["max_route_explanations"]),
             hardware_discovery_enabled=_coerce_bool(raw_config["models"]["hardware_discovery_enabled"]),
+            **{key: raw_config["models"][key] for key in (
+                "runtime_enabled","runtime_default_policy","runtime_prefer_local","runtime_allow_remote","runtime_allow_paid",
+                "runtime_allow_auto_start","runtime_allow_auto_download","runtime_max_concurrent","runtime_default_timeout_seconds",
+                "runtime_health_cache_seconds","runtime_max_fallbacks","runtime_resource_reserve_ratio","runtime_save_history","runtime_redact_sensitive_values")},
         ),
         providers=ProvidersConfig(
             default_provider=str(raw_config["providers"]["default_provider"]),

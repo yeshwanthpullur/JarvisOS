@@ -1,5 +1,7 @@
 # Approval System
 
+Runtime start/stop and model download plans require exact future approval binding to runtime, model artifact, resources, and operation.
+
 Plugin approvals bind plugin ID, version, capability, permission, resources/input fingerprint, and expiry; a changed version invalidates scope.
 
 MCP side-effect approval binds server, tool, capability, input fingerprint, target, permission, and expiry. No MCP-local approval database exists.

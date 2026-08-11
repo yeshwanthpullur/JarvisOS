@@ -1,5 +1,7 @@
 # External Integrations
 
+Remote model runtimes are external integrations and remain disabled by default.
+
 External plugin manifests are capability proposals, not authority grants; providers remain controlled by the Provider Registry and local policy.
 
 MCP local and remote provider profiles feed a separate server/tool registry. Remote MCP stays off; configuration does not imply trust or execution.

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Prompt 78 Advanced Model Runtime
+
+- Added distinct model profile, runtime, endpoint, hardware, resource, route, result, fallback, and circuit models.
+- Added truthful optional-runtime detection and unresolved Nemotron Ultra/Super aliases.
+- Added local-first routing, remote/paid/secret gates, context and structured-output validation, bounded fallback, and model runtime CLI diagnostics.
+- Kept automatic runtime installation/start, model download, public binding, and paid-provider use disabled.
+
 ## Unreleased - Prompt 77 Secure Plugin Runtime
 
 - Added strict versioned plugin manifests, lifecycle registry, provenance, compatibility, integrity, dependency, permission, and trust checks.

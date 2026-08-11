@@ -1,5 +1,7 @@
 # External Provider Registry
 
+Model endpoints reuse provider security boundaries; remote inference requires explicit configuration, HTTPS, credential isolation, and data-egress policy.
+
 Provider plugins may contribute metadata and adapters, but cannot self-report ready without independent runtime health verification.
 
 `mcp_local` and `mcp_remote` remain provider-level profiles; MCP Registry owns granular server, tool, resource, trust, and lifecycle metadata.

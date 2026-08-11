@@ -1,5 +1,7 @@
 # Execution Broker
 
+Model runtime start is registered as a controlled capability; Prompt 78 exposes planning only and no new executor.
+
 There is no direct agent-to-plugin execution path. Any future side-effecting plugin executor must register an exact Broker tool.
 
 Only specifically trusted/classified MCP side-effect tools may route through `mcp_executor`; server metadata alone never registers authority.

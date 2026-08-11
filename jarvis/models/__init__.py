@@ -15,6 +15,7 @@ from .advanced import (
     ModelRuntimePlan, ModelSelectionPlan, ProviderComparison,
     default_advanced_providers, render_advanced_model_command,
 )
+from .runtime_control import *
 
 __all__ = [
     "ModelCapability", "ModelPrivacyMode", "ModelProvider", "ModelProviderRegistry",
@@ -25,4 +26,5 @@ __all__ = [
     "AdvancedProviderProfile", "AdvancedProviderStatus", "HardwareCapability",
     "ModelRuntimePlan", "ModelSelectionPlan", "ProviderComparison",
     "default_advanced_providers", "render_advanced_model_command",
+    "AdvancedModelRuntime", "ModelProfile", "InferenceRuntime", "InferenceEndpoint", "InferenceResourcePlan", "HardwareSnapshot", "AdvancedRoute", "InferenceResult", "RuntimePolicy", "RuntimeType", "RuntimeState", "ArtifactState", "RouteMode", "CircuitBreaker", "CircuitState", "render_runtime_command",
 ]

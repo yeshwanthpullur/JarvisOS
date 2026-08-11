@@ -1,5 +1,7 @@
 # Evaluation And Observability
 
+Model observability records bounded route, latency, health, fallback, error, circuit, and resource metadata without full prompts or responses.
+
 Plugin observability records bounded lifecycle counts and error categories only, never secrets or raw private payloads.
 
 MCP telemetry is metadata-only: server/tool counts, state, trust, reads/calls, blocks, timeouts, rate limits, and safe errors. Raw content and credentials are not persisted.

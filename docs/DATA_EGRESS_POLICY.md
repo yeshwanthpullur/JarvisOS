@@ -1,5 +1,7 @@
 # Data Egress Policy
 
+Remote inference is blocked by default, secret-shaped prompts are rejected, and fallback cannot silently cross the local/remote boundary.
+
 Remote plugin capabilities remain subject to destination allowlists and data classification; secrets are never exposed as general plugin input.
 
 Remote MCP payloads are classified before transmission. Secret, credential, and restricted payloads are blocked outside the declared transport-authentication boundary.

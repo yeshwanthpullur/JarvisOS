@@ -50,6 +50,7 @@ _SUBCOMMANDS = {
     *{f"mcp {x}" for x in ("status","help","servers","server-show","server-health","tools","tool-show","classify","capabilities","resources","resource-show","resource-read","prompts","start","stop","call-plan","call-dry-run","call","history")},
     "adapter status", "adapter help", "adapter list", "adapter show", "adapter plan", "adapter safety", "adapter permissions", "adapter capabilities", "adapter show-job", "adapter history",
     "model advanced",
+    *{f"model {x}" for x in ("runtime-status","runtimes","runtime-show","runtime-health","profiles","profile-show","provider-health","compatibility","resource-plan","route-explain","start-plan","start","stop","download-plan","download-status","fallback-status","circuit-status","aliases","alias-show")},
     "evaluation status", "evaluation help", "evaluation run", "evaluation routing", "evaluation safety", "evaluation truthfulness", "evaluation observability", "evaluation show", "evaluation history",
     "release-readiness status", "release-readiness help", "release-readiness gates", "release-readiness contracts", "release-readiness missing", "release-readiness candidate",
     *{f"execution {x}" for x in ("status","help","policy","permissions","readiness","risk","plan","capabilities","show","history")},

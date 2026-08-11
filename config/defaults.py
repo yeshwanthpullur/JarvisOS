@@ -68,6 +68,11 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "max_models_per_provider": 32,
         "max_route_explanations": 8,
         "hardware_discovery_enabled": True,
+        "runtime_enabled": True, "runtime_default_policy": "local_preferred", "runtime_prefer_local": True,
+        "runtime_allow_remote": False, "runtime_allow_paid": False, "runtime_allow_auto_start": False,
+        "runtime_allow_auto_download": False, "runtime_max_concurrent": 2, "runtime_default_timeout_seconds": 60,
+        "runtime_health_cache_seconds": 60, "runtime_max_fallbacks": 2, "runtime_resource_reserve_ratio": 0.2,
+        "runtime_save_history": True, "runtime_redact_sensitive_values": True,
     },
     "providers": {
         "default_provider": "ollama",

@@ -1,5 +1,7 @@
 # Tool and Skill Registry
 
+Runtime status, hardware, compatibility, resource, routing, fallback, and circuit skills are metadata-safe; start/download skills remain disabled.
+
 Plugin-derived skills retain provenance and remain unavailable until the plugin, capability, permissions, and runtime are independently validated.
 
 MCP registry/status/discovery/classification/resource/health/planning skills are available. Installation, arbitrary/admin, and scheduled execution skills remain disabled.

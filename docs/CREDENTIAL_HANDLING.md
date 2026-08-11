@@ -1,5 +1,7 @@
 # Credential Handling
 
+NIM and compatible providers receive only adapter-bound credential references; keys never appear in endpoint URLs, status, history, or prompts.
+
 Plugins may declare exact credential references but cannot enumerate credentials, inspect `.env`, or receive unrelated values.
 
 An MCP subprocess receives only explicitly declared credential references permitted for that server. The full JARVIS environment and unrelated provider credentials are never forwarded.

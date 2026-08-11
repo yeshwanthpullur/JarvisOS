@@ -93,6 +93,20 @@ class ModelsConfig:
     max_models_per_provider: int = 32
     max_route_explanations: int = 8
     hardware_discovery_enabled: bool = True
+    runtime_enabled: bool = True
+    runtime_default_policy: str = "local_preferred"
+    runtime_prefer_local: bool = True
+    runtime_allow_remote: bool = False
+    runtime_allow_paid: bool = False
+    runtime_allow_auto_start: bool = False
+    runtime_allow_auto_download: bool = False
+    runtime_max_concurrent: int = 2
+    runtime_default_timeout_seconds: int = 60
+    runtime_health_cache_seconds: int = 60
+    runtime_max_fallbacks: int = 2
+    runtime_resource_reserve_ratio: float = 0.2
+    runtime_save_history: bool = True
+    runtime_redact_sensitive_values: bool = True
 
 
 @dataclass(frozen=True, slots=True)

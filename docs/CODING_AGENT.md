@@ -1,5 +1,7 @@
 # Coding Agent Foundation
 
+Coding model routes are advisory and do not grant command, file, Git, dependency, or deployment authority.
+
 Coding may inspect local plugin manifests or source without running third-party install, build, or test scripts.
 
 Coding may use trusted developer-oriented MCP reads but cannot bypass Command Sandbox, local Git Executor, approval, or Broker.

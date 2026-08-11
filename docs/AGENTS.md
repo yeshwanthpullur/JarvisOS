@@ -1,5 +1,7 @@
 # Agent Protocol and Registry
 
+Models are shared infrastructure for agents; no separate trusted agent is created merely because a model profile exists.
+
 Plugins cannot replace protected agents; external agent declarations register as review-required metadata only.
 
 Adapter Agent coordinates MCP; Research and Coding receive bounded reads; Communication and Scheduler retain their native authority boundaries.
