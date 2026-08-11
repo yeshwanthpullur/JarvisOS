@@ -1,5 +1,7 @@
 # Credential Handling
 
+Plugins may declare exact credential references but cannot enumerate credentials, inspect `.env`, or receive unrelated values.
+
 An MCP subprocess receives only explicitly declared credential references permitted for that server. The full JARVIS environment and unrelated provider credentials are never forwarded.
 
 GitHub authentication may reuse a secure `gh` session or environment credential reference. Tokens, authorization headers, and credential-store data are never persisted or displayed.

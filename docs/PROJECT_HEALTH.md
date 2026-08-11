@@ -1,5 +1,7 @@
 # Project Health
 
+Prompt 77 plugin security is implemented: versioned manifests, provenance/integrity/dependency checks, bounded diagnostics, capability/permission mapping, and fail-closed protected-name rules. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
+
 Prompt 76: MCP registry/runtime, trust, bounded discovery/resource, and approval/Broker tool foundations are implemented with zero configured servers. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
 
 Prompt 75: scoped GitHub reads and controlled service-write architecture are implemented; runtime defaults disabled/unverified. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.

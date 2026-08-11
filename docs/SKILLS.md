@@ -1,5 +1,7 @@
 # Tool and Skill Registry
 
+Plugin-derived skills retain provenance and remain unavailable until the plugin, capability, permissions, and runtime are independently validated.
+
 MCP registry/status/discovery/classification/resource/health/planning skills are available. Installation, arbitrary/admin, and scheduled execution skills remain disabled.
 
 GitHub status/read and conditional issue/PR/release write skills are registered. Merge, workflow execution, secret, admin, and deletion skills remain disabled placeholders.

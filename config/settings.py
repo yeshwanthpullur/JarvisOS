@@ -281,6 +281,12 @@ def load_settings(
             auto_discover=_coerce_bool(raw_config["plugins"]["auto_discover"]),
             auto_enable=_coerce_bool(raw_config["plugins"]["auto_enable"]),
             compatibility_version=str(raw_config["plugins"]["compatibility_version"]),
+            **{key: raw_config["plugins"][key] for key in (
+                "allow_external","allow_local_development","allow_inprocess_external","allow_subprocess",
+                "allow_network","allow_filesystem_write","allow_installation","allow_updates","allow_uninstall",
+                "require_integrity_check","require_approval_for_enable","require_approval_for_side_effects",
+                "max_registered","max_enabled","max_output_chars","execution_timeout_seconds","max_concurrent",
+                "save_history","max_history_items","redact_sensitive_values")},
         ),
         downloads=DownloadsConfig(
             download_dir=_resolve_path(raw_config["downloads"]["download_dir"]),

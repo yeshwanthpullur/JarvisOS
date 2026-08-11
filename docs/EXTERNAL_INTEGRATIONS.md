@@ -1,5 +1,7 @@
 # External Integrations
 
+External plugin manifests are capability proposals, not authority grants; providers remain controlled by the Provider Registry and local policy.
+
 MCP local and remote provider profiles feed a separate server/tool registry. Remote MCP stays off; configuration does not imply trust or execution.
 
 GitHub is a scoped developer-service provider, separate from local Git. It defaults off and cannot enumerate repositories, merge PRs, execute workflows, administer repositories, mutate secrets, or clone/execute arbitrary code.

@@ -1,5 +1,7 @@
 # Agent Protocol and Registry
 
+Plugins cannot replace protected agents; external agent declarations register as review-required metadata only.
+
 Adapter Agent coordinates MCP; Research and Coding receive bounded reads; Communication and Scheduler retain their native authority boundaries.
 
 Coding Agent owns GitHub service planning, Research Agent receives read-only metadata, and Prime only routes. No agent gains GitHub administration or local Git authority through this provider.

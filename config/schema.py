@@ -398,6 +398,26 @@ class PluginsConfig:
     auto_discover: bool
     auto_enable: bool
     compatibility_version: str
+    allow_external: bool = True
+    allow_local_development: bool = True
+    allow_inprocess_external: bool = False
+    allow_subprocess: bool = False
+    allow_network: bool = False
+    allow_filesystem_write: bool = False
+    allow_installation: bool = False
+    allow_updates: bool = False
+    allow_uninstall: bool = False
+    require_integrity_check: bool = True
+    require_approval_for_enable: bool = True
+    require_approval_for_side_effects: bool = True
+    max_registered: int = 64
+    max_enabled: int = 8
+    max_output_chars: int = 8000
+    execution_timeout_seconds: int = 30
+    max_concurrent: int = 1
+    save_history: bool = True
+    max_history_items: int = 100
+    redact_sensitive_values: bool = True
 
 
 @dataclass(frozen=True, slots=True)

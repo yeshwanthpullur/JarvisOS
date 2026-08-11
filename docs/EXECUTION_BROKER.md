@@ -1,5 +1,7 @@
 # Execution Broker
 
+There is no direct agent-to-plugin execution path. Any future side-effecting plugin executor must register an exact Broker tool.
+
 Only specifically trusted/classified MCP side-effect tools may route through `mcp_executor`; server metadata alone never registers authority.
 
 Issue create/comment, PR create/comment, and release create each have an action-specific network Broker tool; direct mutation cannot bypass validation.

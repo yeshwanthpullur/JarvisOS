@@ -1,5 +1,7 @@
 # Roadmap
 
+- Prompt 77 - External Plugin Runtime and Skill Ecosystem: complete and verified. Next: Prompt 78, Advanced Model Runtime. Roadmap order is unchanged.
+
 - Prompt 76 - MCP Runtime and Secure Tool-Server Integration: complete and verified. Next: Prompt 77, External Plugin Runtime and Skill Ecosystem.
 
 - Prompt 75 - GitHub External Provider and Developer-Service Connector: complete and verified. Next: Prompt 76, MCP Runtime and Secure Tool-Server Integration.

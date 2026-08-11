@@ -103,7 +103,7 @@ class PrimeResult:
 
 _INTENT_TERMS: tuple[tuple[AgentCapabilityType, tuple[str, ...]], ...] = (
     (AgentCapabilityType.CODING, ("github issue", "github pr", "github pull request", "github release", "github workflow", "github checks")),
-    (AgentCapabilityType.ADAPTER, (" mcp", "plugin adapter", "external plugin", "connect github")),
+    (AgentCapabilityType.ADAPTER, (" mcp", " plugin", "plugin adapter", "external plugin", "connect github")),
     (AgentCapabilityType.SCHEDULER, ("remind me", "schedule", "tomorrow at", "every hour", "every day", "cron")),
     (AgentCapabilityType.COMMUNICATION, ("instagram", "telegram", "discord", "slack", "email this", "send email", "send message", "draft an email", "draft email", "post this", "send this everywhere")),
     (AgentCapabilityType.IMAGE, ("generate an image", "create an image", "image prompt", "picture of")),

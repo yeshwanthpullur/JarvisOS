@@ -1,5 +1,7 @@
 # Prime Agent
 
+Prime may inspect and plan plugin capabilities, but cannot enable, install, execute, or broaden plugin authority silently.
+
 Prime routes MCP requests through Adapter Agent and registry trust/policy. It cannot grant trust or call side-effect tools directly.
 
 Prime routes GitHub service requests to Coding Agent or read-only Research context. Ordinary commit, tag, and push remain local Git operations, and Prime receives no direct provider authority.

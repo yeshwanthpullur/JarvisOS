@@ -27,6 +27,7 @@ from jarvis.release_readiness import ReleaseReadinessEvaluator, render_release_c
 from jarvis.integrations import ExternalIntegrationControlPlane, GitHubProvider, build_outbound_connectors, render_connector_command, render_external_command, render_github_command
 from jarvis.integrations.telegram import TelegramRuntime, render_telegram_command
 from jarvis.mcp_runtime import MCPRuntime,render_mcp_command
+from jarvis.plugin_runtime import PluginRuntime,render_plugin_command
 
 
 def _manager(context: CommandContext):
@@ -219,6 +220,15 @@ def _mcp_runtime(context:CommandContext):
         except Exception:pass
     return runtime
 
+def _plugin_runtime(context:CommandContext):
+    conversation=context.conversation_context;runtime=getattr(conversation,"secure_plugin_runtime",None) if conversation is not None else None
+    if isinstance(runtime,PluginRuntime):return runtime
+    runtime=PluginRuntime()
+    if conversation is not None:
+        try:setattr(conversation,"secure_plugin_runtime",runtime)
+        except Exception:pass
+    return runtime
+
 
 def _tool_manager(context: CommandContext):
     conversation = context.conversation_context
@@ -382,6 +392,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         outbound_status={key:value.status()["state"] for key,value in _outbound_connectors(context).items()}
         github_status=_github_provider(context).status()
         mcp_status=_mcp_runtime(context).status()
+        plugin_status=_plugin_runtime(context).status()
         phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
         phase3_text = (
             "phase3="
@@ -394,7 +405,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
-            f"phase4=local ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} p85={release_status.status.value} "
+            f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} p85={release_status.status.value} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -403,6 +414,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "discord_connector_status":outbound_status["discord"],"email_connector_status":outbound_status["email_smtp"],"slack_connector_status":outbound_status["slack"],
             "github_provider_status":github_status["state"],"github_repository_scope":github_status["repository_scope"],
             "mcp_runtime_status":"ready_registry","mcp_registered_servers":mcp_status["registered"],"mcp_remote_enabled":mcp_status["remote_http"],
+            "plugin_runtime_status":"ready_registry","plugin_registered":plugin_status["registered"],"plugin_enabled":plugin_status["enabled"],"plugin_external_execution":plugin_status["external_execution"],
             "total_agents": agent_summary["total_agents"],
             "ready_agents": agent_summary["ready_agents"],
             "foundation_agents": foundation_agents,
@@ -661,8 +673,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("cloud only on", "Enable cloud-only mode", "provider", (), CommandPermission.PROVIDER),
         ("cloud only off", "Disable cloud-only mode", "provider", (), CommandPermission.PROVIDER),
         ("plugins", "Show plugin summary", "plugin", (), CommandPermission.PLUGIN),
-        ("plugin list", "List plugins", "plugin", (), CommandPermission.PLUGIN),
-        ("plugin status", "Show plugin status", "plugin", (), CommandPermission.PLUGIN),
+        *((f"plugin {op}", "Secure plugin registry command", "plugin", (), CommandPermission.PLUGIN) for op in ("status","help","list","show","inspect","capabilities","permissions","dependencies","health","history","enable-plan","enable","disable-plan","disable","install-plan","update-plan","uninstall-plan","verify")),
         ("agents", "Show agent summary", "agent", (), CommandPermission.AGENT),
         ("agent list", "List agents", "agent", (), CommandPermission.AGENT),
         ("agent status", "Show agent status", "agent", (), CommandPermission.AGENT),
@@ -903,6 +914,8 @@ def _handler_for(name: str):
             return _text_response(render_github_command(name,context.arguments,_github_provider(context)))
         if name.startswith("mcp "):
             return _text_response(render_mcp_command(name,context.arguments,_mcp_runtime(context)))
+        if name == "plugins" or name.startswith("plugin "):
+            return _text_response(render_plugin_command("plugin status" if name=="plugins" else name,context.arguments,_plugin_runtime(context)))
         if name.startswith("conversation "):
             intelligence = _conversation_intelligence(context)
             if intelligence is None:

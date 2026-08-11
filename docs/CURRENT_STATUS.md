@@ -1,5 +1,7 @@
 # Current Status
 
+Plugin Runtime: implemented as a strict registry and inspection foundation. External plugins remain untrusted and disabled; no installation, arbitrary runtime execution, automatic update, scheduled execution, or authority grant is enabled.
+
 MCP Runtime: implemented foundation with zero registered servers. Explicitly configured local stdio/HTTP are supported by policy; remote HTTP, installation, scheduled execution, and global tool execution default disabled.
 
 GitHub Provider: implemented and repository-scoped, but disabled/unverified by default. Reads require verified authentication; issue/PR/release writes remain approval/Broker-gated. Merge, workflow execution, secrets, and administration are blocked.

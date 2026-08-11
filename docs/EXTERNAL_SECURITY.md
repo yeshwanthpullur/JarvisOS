@@ -1,5 +1,7 @@
 # External Integration Security
 
+External plugins default to untrusted and disabled, with installation, arbitrary execution, updates, and scheduled execution blocked.
+
 MCP servers are untrusted and cannot self-authorize. Local subprocesses receive a minimal environment; remote endpoints require explicit policy and cannot weaken Browser Read SSRF controls.
 
 GitHub access is allowlisted to explicit repositories. External code is untrusted, structured `gh` calls never use a shell, and service mutations require egress checks, exact approval, and Broker validation.

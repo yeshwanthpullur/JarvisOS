@@ -1,5 +1,7 @@
 # CLI Guide
 
+The `plugin` namespace provides bounded status, inspection, capability, permission, dependency, health, integrity, and history commands. Lifecycle commands produce safe plans or require exact approval; installation and executable external runtimes remain disabled.
+
 The `mcp` namespace exposes bounded status, server/tool/resource/prompt metadata, health, classification, lifecycle plans, guarded call plans/dry-runs/calls, and metadata-only history. It has no unrestricted install command.
 
 GitHub service commands use the `github` namespace for status/auth/health/scope, bounded reads, write plans, guarded create actions, and metadata-only history. They do not replace local Git commands.

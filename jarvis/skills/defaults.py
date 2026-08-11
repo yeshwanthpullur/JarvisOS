@@ -94,6 +94,14 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("mcp_health_skill","developer","mcp_health","Check MCP lifecycle without tool side effects."),
         _ready("mcp_execution_plan_skill","developer","mcp_execution_plan","Plan exact scoped MCP calls."),
         _ready("mcp_safe_tool_execute_skill","developer","mcp_safe_tool_execute","Execute only specifically trusted tools through approval and Broker.",permissions=(P.EXECUTE_COMMANDS,)),
+        _ready("plugin_registry_skill","developer","plugin_registry","Inspect secure plugin metadata."),
+        _ready("plugin_inspection_skill","developer","plugin_inspection","Inspect bounded plugin metadata without execution."),
+        _ready("plugin_manifest_validation_skill","developer","plugin_manifest_validation","Validate strict versioned plugin manifests."),
+        _ready("plugin_compatibility_skill","developer","plugin_compatibility","Check bounded compatibility metadata."),
+        _ready("plugin_integrity_skill","developer","plugin_integrity","Verify declared SHA-256 integrity without execution."),
+        _ready("plugin_permission_analysis_skill","developer","plugin_permission_analysis","Map requested permissions without granting authority."),
+        _ready("plugin_health_skill","developer","plugin_health","Inspect bounded plugin lifecycle health."),
+        _ready("plugin_enable_plan_skill","developer","plugin_enable_plan","Plan exact approval-bound plugin enablement."),
         _ready("advanced_model_planning_skill", "system", "advanced_model_planning", "Plan advanced providers without installation or startup."),
         _ready("model_provider_comparison_skill", "system", "model_provider_comparison", "Compare provider metadata without benchmarks."),
         _ready("hardware_capability_planning_skill", "system", "hardware_capability_planning", "Show broad safe hardware categories."),
@@ -135,6 +143,7 @@ def build_default_skill_registry() -> SkillRegistry:
         _future("scheduler_runtime_skill", "workflow", P.EXECUTE_COMMANDS), _future("notification_send_skill", "communication", P.SEND_MESSAGE),
         _future("mcp_runtime_skill", "developer", P.EXECUTE_COMMANDS), _future("plugin_install_skill", "developer", P.EXECUTE_COMMANDS), _future("external_tool_execution_skill", "developer", P.EXECUTE_COMMANDS),
         _future("mcp_server_install_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_arbitrary_execute_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_scheduled_execute_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_admin_skill","developer",P.SYSTEM_MODIFY),
+        _future("plugin_safe_execute_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_auto_install_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_auto_update_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_unrestricted_execute_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_scheduled_execute_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_admin_skill","developer",P.SYSTEM_MODIFY),
         _future("nemotron_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("nvidia_nim_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("vllm_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("llama_cpp_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("model_download_skill", "system", P.NETWORK_ACCESS),
     )
     return SkillRegistry(builtins + future, max_skills=512)

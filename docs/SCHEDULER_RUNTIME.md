@@ -1,5 +1,7 @@
 # Manual Scheduler Runtime
 
+Scheduled plugin execution remains disabled; no cron job may invoke arbitrary plugin capability.
+
 Scheduled MCP execution remains disabled; no cron job can invoke arbitrary MCP tools.
 
 Prompt 73 does not permit scheduled Telegram sends; scheduler execution remains limited to its existing local notification boundary.

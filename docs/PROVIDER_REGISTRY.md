@@ -1,5 +1,7 @@
 # External Provider Registry
 
+Provider plugins may contribute metadata and adapters, but cannot self-report ready without independent runtime health verification.
+
 `mcp_local` and `mcp_remote` remain provider-level profiles; MCP Registry owns granular server, tool, resource, trust, and lifecycle metadata.
 
 The `github` provider exposes separate GitHub API authentication, repository access, and ready states. Git remote readiness is not API readiness; the runtime is disabled and unverified by default.

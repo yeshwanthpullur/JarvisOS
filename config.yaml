@@ -288,9 +288,29 @@ plugins:
   enabled: true
   plugin_dir: plugins
   allow_user_plugins: false
-  auto_discover: true
-  auto_enable: true
+  auto_discover: false
+  auto_enable: false
   compatibility_version: "0.1"
+  allow_external: true
+  allow_local_development: true
+  allow_inprocess_external: false
+  allow_subprocess: false
+  allow_network: false
+  allow_filesystem_write: false
+  allow_installation: false
+  allow_updates: false
+  allow_uninstall: false
+  require_integrity_check: true
+  require_approval_for_enable: true
+  require_approval_for_side_effects: true
+  max_registered: 64
+  max_enabled: 8
+  max_output_chars: 8000
+  execution_timeout_seconds: 30
+  max_concurrent: 1
+  save_history: true
+  max_history_items: 100
+  redact_sensitive_values: true
 
 downloads:
   download_dir: data/downloads

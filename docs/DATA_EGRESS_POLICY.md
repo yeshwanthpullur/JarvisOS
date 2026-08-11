@@ -1,5 +1,7 @@
 # Data Egress Policy
 
+Remote plugin capabilities remain subject to destination allowlists and data classification; secrets are never exposed as general plugin input.
+
 Remote MCP payloads are classified before transmission. Secret, credential, and restricted payloads are blocked outside the declared transport-authentication boundary.
 
 GitHub issue, PR, comment, and release content is external egress. Secret, credential, restricted-data, and private-path checks run before any guarded mutation.

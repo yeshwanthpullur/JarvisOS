@@ -1,5 +1,7 @@
 # JARVIS OS
 
+Prompt 77 adds a secure, metadata-first Plugin Runtime and Skill Ecosystem. External plugins are untrusted and disabled by default; installation, arbitrary code execution, dependency installation, updates, and scheduled plugin runs remain disabled. See [Plugin Runtime](docs/PLUGIN_RUNTIME.md).
+
 Prompt 76 adds a secure MCP registry/runtime foundation. No servers are registered by default; remote MCP, installation, scheduled execution, and global tool execution stay disabled.
 
 Prompt 75 adds a disabled-by-default, repository-scoped GitHub service provider. Bounded reads require authentication and allowlist verification; issue, PR, and release writes require exact approval and Broker routing. Local Git remains authoritative for commit, tag, and push.

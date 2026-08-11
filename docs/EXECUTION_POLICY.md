@@ -1,5 +1,7 @@
 # Execution Policy
 
+A plugin may add capability but never authority; all side effects still require local policy, exact permission, approval, and Broker validation.
+
 MCP discovery, resource read, read tool, and side-effect tool calls are distinct classes. Arbitrary shell/filesystem, secret export, admin, and installation remain blocked.
 
 GitHub issue, PR, and release writes use distinct high-risk actions. Merge, workflow execution, secrets, administration, repository deletion, and force push remain blocked.

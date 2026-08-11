@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Prompt 77 Secure Plugin Runtime
+
+- Added strict versioned plugin manifests, lifecycle registry, provenance, compatibility, integrity, dependency, permission, and trust checks.
+- Added bounded plugin CLI diagnostics and safe lifecycle planning with independent MCP trust.
+- Disabled automatic discovery/enablement, installation, updates, external execution, and scheduled plugin runs by default.
+
 ## Unreleased - Prompt 76 Secure MCP Runtime
 
 - Added MCP server registry, trust states, transport boundaries, bounded discovery/resources, tool classification, and guarded calls.
