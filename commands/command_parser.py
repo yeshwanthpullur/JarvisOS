@@ -47,6 +47,7 @@ _SUBCOMMANDS = {
     *{f"email {x}" for x in ("status","help","providers","health","validate-address","send-plan","send-dry-run","send","rate-status","history")},
     *{f"slack {x}" for x in ("status","help","health","destinations","validate-destination","send-plan","send-dry-run","send","rate-status","history")},
     *{f"github {x}" for x in ("status","help","auth-status","health","repo","capabilities","rate-status","issues","issue-show","issue-plan","issue-create","prs","pr-show","pr-plan","pr-create","releases","release-show","release-plan","release-create","workflows","checks","history")},
+    *{f"mcp {x}" for x in ("status","help","servers","server-show","server-health","tools","tool-show","classify","capabilities","resources","resource-show","resource-read","prompts","start","stop","call-plan","call-dry-run","call","history")},
     "adapter status", "adapter help", "adapter list", "adapter show", "adapter plan", "adapter safety", "adapter permissions", "adapter capabilities", "adapter show-job", "adapter history",
     "model advanced",
     "evaluation status", "evaluation help", "evaluation run", "evaluation routing", "evaluation safety", "evaluation truthfulness", "evaluation observability", "evaluation show", "evaluation history",

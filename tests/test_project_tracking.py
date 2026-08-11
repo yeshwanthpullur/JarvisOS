@@ -40,6 +40,11 @@ REQUIRED_DOCS = (
     "SLACK_CONNECTOR.md",
     "GITHUB_PROVIDER.md",
     "GITHUB_SECURITY.md",
+    "MCP_RUNTIME.md",
+    "MCP_SECURITY.md",
+    "MCP_SERVER_REGISTRY.md",
+    "MCP_TOOL_POLICY.md",
+    "ADAPTER_AGENT.md",
 )
 
 
@@ -55,7 +60,7 @@ class ProjectTrackingTests(unittest.TestCase):
         health = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(health["release"], "v1.7.0-alpha")
         self.assertEqual(health["commit"], "d2fe98726183b9c8d0f776663330d169f172f0b7")
-        self.assertEqual(health["next_milestone"], "Prompt 85 validation blocked; P76 next")
+        self.assertEqual(health["next_milestone"], "Prompt 85 validation blocked; P77 next")
         self.assertEqual(health["overall_mvp_readiness"], 93)
         self.assertEqual(health["phase3"]["coding_agent"], "ready_plan_only")
         self.assertFalse(health["phase3"]["coding_write_operations_enabled"])

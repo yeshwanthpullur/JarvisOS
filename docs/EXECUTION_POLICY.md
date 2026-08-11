@@ -1,5 +1,7 @@
 # Execution Policy
 
+MCP discovery, resource read, read tool, and side-effect tool calls are distinct classes. Arbitrary shell/filesystem, secret export, admin, and installation remain blocked.
+
 GitHub issue, PR, and release writes use distinct high-risk actions. Merge, workflow execution, secrets, administration, repository deletion, and force push remain blocked.
 
 Telegram reply, independent send, pairing, unpairing, polling start, and polling stop are distinct actions. Independent send is high-risk and approval-required; critical requests remain blocked regardless of transport.

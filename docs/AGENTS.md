@@ -1,5 +1,7 @@
 # Agent Protocol and Registry
 
+Adapter Agent coordinates MCP; Research and Coding receive bounded reads; Communication and Scheduler retain their native authority boundaries.
+
 Coding Agent owns GitHub service planning, Research Agent receives read-only metadata, and Prime only routes. No agent gains GitHub administration or local Git authority through this provider.
 
 The Communication Agent can now plan and validate Telegram text and report its configuration state. It does not handle credentials and cannot call the adapter around the Broker.

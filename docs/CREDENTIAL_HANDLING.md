@@ -1,5 +1,7 @@
 # Credential Handling
 
+An MCP subprocess receives only explicitly declared credential references permitted for that server. The full JARVIS environment and unrelated provider credentials are never forwarded.
+
 GitHub authentication may reuse a secure `gh` session or environment credential reference. Tokens, authorization headers, and credential-store data are never persisted or displayed.
 
 `TELEGRAM_BOT_TOKEN` is a runtime reference only. Identity checks may report credential presence and bounded bot metadata, never the token value, Authorization header, or raw provider error.

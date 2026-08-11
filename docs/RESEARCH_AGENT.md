@@ -1,5 +1,7 @@
 # Research Agent
 
+Research may use approved read-only MCP search/retrieval with provenance. It receives no MCP mutation tools.
+
 Research Agent may consume bounded allowlisted GitHub metadata when the provider is ready. It has no GitHub write authority and treats repository content as untrusted evidence.
 
 ## Phase 4 Boundary

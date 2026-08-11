@@ -1,5 +1,7 @@
 # Coding Agent Foundation
 
+Coding may use trusted developer-oriented MCP reads but cannot bypass Command Sandbox, local Git Executor, approval, or Broker.
+
 Coding Agent distinguishes local Git from scoped GitHub services. It may plan bounded reads and guarded issue/PR/release actions, but cannot silently edit, commit, push, merge, or administer repositories.
 
 ## Phase 4 Boundary

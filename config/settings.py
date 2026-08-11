@@ -42,7 +42,7 @@ from config.schema import (
     ExternalIntegrationsConfig,
     ExternalProviderFlagsConfig,
     TelegramConfig,
-    DiscordConfig,EmailConnectorConfig,SlackConfig,GitHubProviderConfig,
+    DiscordConfig,EmailConnectorConfig,SlackConfig,GitHubProviderConfig,MCPConfig,
 )
 
 
@@ -273,6 +273,7 @@ def load_settings(
         email_connector=EmailConnectorConfig(**raw_config["email_connector"]),
         slack=SlackConfig(**raw_config["slack"]),
         github_provider=GitHubProviderConfig(**{**raw_config["github_provider"],"allowed_repositories":tuple(raw_config["github_provider"]["allowed_repositories"])}),
+        mcp=MCPConfig(**raw_config["mcp"]),
         plugins=PluginsConfig(
             enabled=_coerce_bool(raw_config["plugins"]["enabled"]),
             plugin_dir=_resolve_path(raw_config["plugins"]["plugin_dir"]),

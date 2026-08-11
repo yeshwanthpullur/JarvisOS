@@ -1,5 +1,7 @@
 # Prime Agent
 
+Prime routes MCP requests through Adapter Agent and registry trust/policy. It cannot grant trust or call side-effect tools directly.
+
 Prime routes GitHub service requests to Coding Agent or read-only Research context. Ordinary commit, tag, and push remain local Git operations, and Prime receives no direct provider authority.
 
 Prime recognizes Telegram status and send intent, routes it to the Communication Agent, and preserves high-risk approval requirements. Routing never sends a message or chooses a Telegram-specific model.

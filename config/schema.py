@@ -252,6 +252,10 @@ class SlackConfig:
 class GitHubProviderConfig:
  enabled:bool=False;transport:str="gh_cli";allow_read:bool=True;allow_issue_write:bool=False;allow_pr_write:bool=False;allow_release_write:bool=False;allow_merge:bool=False;allow_workflow_execute:bool=False;allow_admin:bool=False;allowed_repositories:tuple[str,...]=("yeshwanthpullur/JarvisOS",);require_approval_for_writes:bool=True;max_results:int=20;max_body_chars:int=4000;max_retries:int=1;health_cache_seconds:int=60;save_history:bool=True;redact_sensitive_values:bool=True
 
+@dataclass(frozen=True,slots=True)
+class MCPConfig:
+ enabled:bool=True;allow_local_stdio:bool=True;allow_local_http:bool=True;allow_remote_http:bool=False;allow_tool_execution:bool=False;allow_resource_read:bool=True;allow_prompts:bool=False;allow_installation:bool=False;allow_scheduled_execution:bool=False;require_approval_for_side_effects:bool=True;max_servers:int=16;max_tools_per_server:int=50;max_resources_per_server:int=50;max_result_chars:int=8000;max_concurrent_calls:int=2;startup_timeout_seconds:int=10;call_timeout_seconds:int=30;max_retries:int=1;health_cache_seconds:int=60;save_history:bool=True;max_history_items:int=100;redact_sensitive_values:bool=True
+
 @dataclass(frozen=True, slots=True)
 class ExecutionConfig:
     enabled: bool = True; default_mode: str = "plan_only"; local_first: bool = True; allow_file_writes: bool = True; allow_command_execution: bool = True; allow_git_writes: bool = True; allow_browser_read: bool = True; allow_browser_actions: bool = False; allow_notifications: bool = True; allow_scheduler_runner: bool = True; allow_communication_send: bool = False; allow_mcp_execution: bool = False; allow_model_runtime_start: bool = False; allow_external_network: bool = False; allow_background_execution: bool = False; allow_secrets_access: bool = False; allow_credentials_access: bool = False; require_approval_for_side_effects: bool = True; block_critical_actions: bool = True; max_plan_steps: int = 8; max_history_items: int = 50; save_history: bool = True; redact_sensitive_values: bool = True; block_private_paths: bool = True
@@ -484,6 +488,7 @@ class AppSettings:
     email_connector: EmailConnectorConfig = field(default_factory=EmailConnectorConfig)
     slack: SlackConfig = field(default_factory=SlackConfig)
     github_provider: GitHubProviderConfig = field(default_factory=GitHubProviderConfig)
+    mcp: MCPConfig = field(default_factory=MCPConfig)
     execution: ExecutionConfig = field(default_factory=ExecutionConfig)
     approvals: ApprovalsConfig = field(default_factory=ApprovalsConfig)
     broker: BrokerConfig = field(default_factory=BrokerConfig)

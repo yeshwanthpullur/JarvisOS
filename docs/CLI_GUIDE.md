@@ -1,5 +1,7 @@
 # CLI Guide
 
+The `mcp` namespace exposes bounded status, server/tool/resource/prompt metadata, health, classification, lifecycle plans, guarded call plans/dry-runs/calls, and metadata-only history. It has no unrestricted install command.
+
 GitHub service commands use the `github` namespace for status/auth/health/scope, bounded reads, write plans, guarded create actions, and metadata-only history. They do not replace local Git commands.
 
 Prompt 73 adds `telegram status`, `help`, `capabilities`, `identity`, `auth-status`, `pair`, `pair-status`, `unpair`, `chats`, `validate-chat`, `polling-status`, `start`, `stop`, `send-plan`, `send-dry-run`, `send`, `rate-status`, `history`, and `health`. Status never exposes the token, and `send` never bypasses scoped approval and Broker dispatch.

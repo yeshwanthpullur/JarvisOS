@@ -1,5 +1,7 @@
 # Evaluation And Observability
 
+MCP telemetry is metadata-only: server/tool counts, state, trust, reads/calls, blocks, timeouts, rate limits, and safe errors. Raw content and credentials are not persisted.
+
 GitHub observability stores bounded provider/action state, scope and policy failures, rate limits, and safe errors. It stores no tokens, bodies, patches, or repository copies.
 
 Telegram observability is bounded metadata only: provider state, poll/update counts, authorization outcomes, sends, failures, rate limits, duplicates, and approval events. Tokens, message bodies, raw updates, and chat profiles are excluded.

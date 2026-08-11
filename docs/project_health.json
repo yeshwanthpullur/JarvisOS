@@ -3,7 +3,7 @@
   "commit": "d2fe98726183b9c8d0f776663330d169f172f0b7",
   "updated_at": "2026-08-11",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 85 validation blocked; P76 next",
+  "next_milestone": "Prompt 85 validation blocked; P77 next",
   "overall_mvp_readiness": 93,
   "limitations": {
     "total": 47,
@@ -100,6 +100,7 @@
     "prompt_73_telegram_connector": "implemented_runtime_unconfigured",
     "prompt_74_discord_email_slack": "implemented_runtimes_unconfigured",
     "prompt_75_github_provider": "implemented_runtime_unconfigured",
+    "prompt_76_mcp_runtime": "implemented_no_servers_configured",
     "release_candidate": "blocked",
     "v2_tag_created": false,
     "github_release_created": false,

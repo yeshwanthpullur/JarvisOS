@@ -1,5 +1,7 @@
 # JARVIS OS
 
+Prompt 76 adds a secure MCP registry/runtime foundation. No servers are registered by default; remote MCP, installation, scheduled execution, and global tool execution stay disabled.
+
 Prompt 75 adds a disabled-by-default, repository-scoped GitHub service provider. Bounded reads require authentication and allowlist verification; issue, PR, and release writes require exact approval and Broker routing. Local Git remains authoritative for commit, tag, and push.
 
 Prompt 73 adds a secure [Telegram Connector](docs/TELEGRAM_CONNECTOR.md) with explicit [pairing](docs/TELEGRAM_PAIRING.md), text-only Bot API transport, bounded polling, and approval/Broker-gated independent sends. It is disabled and unconfigured by default; attachments, groups, webhooks, scheduled delivery, and all other external providers remain unavailable.

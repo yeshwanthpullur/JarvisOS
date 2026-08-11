@@ -85,6 +85,15 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("adapter_manifest_skill", "developer", "adapter_manifest", "Inspect bounded adapter manifests."),
         _ready("adapter_permission_review_skill", "developer", "adapter_permission_review", "Review ungranted adapter permissions."),
         _ready("mcp_planning_skill", "developer", "mcp_planning", "Plan MCP integrations without starting servers."),
+        _ready("mcp_registry_skill","developer","mcp_registry","Inspect configured MCP server metadata."),
+        _ready("mcp_server_status_skill","developer","mcp_server_status","Inspect bounded MCP health metadata."),
+        _ready("mcp_discovery_skill","developer","mcp_discovery","Discover bounded metadata from explicitly trusted servers."),
+        _ready("mcp_tool_classification_skill","developer","mcp_tool_classification","Classify MCP tools under local policy."),
+        _ready("mcp_resource_list_skill","developer","mcp_resource_list","List bounded trusted resource metadata."),
+        _ready("mcp_resource_read_skill","developer","mcp_resource_read","Read bounded trusted MCP resources.",permissions=(P.NETWORK_ACCESS,)),
+        _ready("mcp_health_skill","developer","mcp_health","Check MCP lifecycle without tool side effects."),
+        _ready("mcp_execution_plan_skill","developer","mcp_execution_plan","Plan exact scoped MCP calls."),
+        _ready("mcp_safe_tool_execute_skill","developer","mcp_safe_tool_execute","Execute only specifically trusted tools through approval and Broker.",permissions=(P.EXECUTE_COMMANDS,)),
         _ready("advanced_model_planning_skill", "system", "advanced_model_planning", "Plan advanced providers without installation or startup."),
         _ready("model_provider_comparison_skill", "system", "model_provider_comparison", "Compare provider metadata without benchmarks."),
         _ready("hardware_capability_planning_skill", "system", "hardware_capability_planning", "Show broad safe hardware categories."),
@@ -125,6 +134,7 @@ def build_default_skill_registry() -> SkillRegistry:
         _future("browser_login_skill", "browser", P.BROWSER_WRITE), _future("browser_form_skill", "browser", P.BROWSER_WRITE), _future("browser_purchase_skill", "browser", P.BROWSER_WRITE),
         _future("scheduler_runtime_skill", "workflow", P.EXECUTE_COMMANDS), _future("notification_send_skill", "communication", P.SEND_MESSAGE),
         _future("mcp_runtime_skill", "developer", P.EXECUTE_COMMANDS), _future("plugin_install_skill", "developer", P.EXECUTE_COMMANDS), _future("external_tool_execution_skill", "developer", P.EXECUTE_COMMANDS),
+        _future("mcp_server_install_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_arbitrary_execute_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_scheduled_execute_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_admin_skill","developer",P.SYSTEM_MODIFY),
         _future("nemotron_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("nvidia_nim_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("vllm_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("llama_cpp_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("model_download_skill", "system", P.NETWORK_ACCESS),
     )
     return SkillRegistry(builtins + future, max_skills=512)

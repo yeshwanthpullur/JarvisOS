@@ -1,5 +1,7 @@
 # Data Egress Policy
 
+Remote MCP payloads are classified before transmission. Secret, credential, and restricted payloads are blocked outside the declared transport-authentication boundary.
+
 GitHub issue, PR, comment, and release content is external egress. Secret, credential, restricted-data, and private-path checks run before any guarded mutation.
 
 Telegram direct replies are correlated to an authorized inbound chat. Independent text sends are data egress and require exact destination-scoped approval; secrets, credentials, attachments, bulk, and scheduled egress remain blocked.

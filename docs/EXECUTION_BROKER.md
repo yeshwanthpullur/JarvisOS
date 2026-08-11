@@ -1,5 +1,7 @@
 # Execution Broker
 
+Only specifically trusted/classified MCP side-effect tools may route through `mcp_executor`; server metadata alone never registers authority.
+
 Issue create/comment, PR create/comment, and release create each have an action-specific network Broker tool; direct mutation cannot bypass validation.
 
 Prompt 73 registers `telegram_send_tool` for bounded text egress. Independent sends require `send_message` and `network_access` permissions plus exact approval; direct adapter bypass is unsupported.

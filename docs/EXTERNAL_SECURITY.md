@@ -1,5 +1,7 @@
 # External Integration Security
 
+MCP servers are untrusted and cannot self-authorize. Local subprocesses receive a minimal environment; remote endpoints require explicit policy and cannot weaken Browser Read SSRF controls.
+
 GitHub access is allowlisted to explicit repositories. External code is untrusted, structured `gh` calls never use a shell, and service mutations require egress checks, exact approval, and Broker validation.
 
 Telegram applies private-owner pairing, replay protection, fixed endpoints, bounded input, content-free audit, and exact approval/Broker gates. Unknown users, groups, unsupported media, and policy-changing prompts remain untrusted or blocked.

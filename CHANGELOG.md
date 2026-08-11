@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Prompt 76 Secure MCP Runtime
+
+- Added MCP server registry, trust states, transport boundaries, bounded discovery/resources, tool classification, and guarded calls.
+- Added Adapter/Prime/Research/Coding/Document integration metadata, CLI, configuration, skills, tests, and security guidance.
+- Remote MCP, installation, unknown/critical tools, scheduled calls, arbitrary shell/filesystem, and authority bypass remain disabled.
+
 ## Unreleased - Prompt 75 Secure GitHub Provider
 
 - Added scoped GitHub metadata reads and approval-gated issue, PR, and release service actions.
