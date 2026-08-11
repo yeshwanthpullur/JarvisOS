@@ -1,5 +1,7 @@
 # JARVIS OS
 
+Prompt 81 adds bounded multi-agent orchestration: validated execution graphs, request-scoped versioned context, immutable session messages, finite budgets, dependency scheduling, cancellation, partial-success recovery, and metadata-only audit/metrics. Executive, Prime, Approval, Broker, and subsystem authority boundaries remain unchanged.
+
 Prompt 80 adds controlled Knowledge Intelligence: explicit source registration, deterministic chunking/checksums, local lexical retrieval, privacy/trust/freshness filtering, bounded context, and end-to-end provenance. Knowledge remains untrusted evidence and distinct from Persistent Memory; semantic retrieval and automatic admission are disabled until configured.
 
 Prompt 79 adds a bounded evidence-driven research runtime with quick/standard/deep budgets, provider-neutral search states, source provenance, claim/evidence mapping, citations, freshness, contradiction handling, prompt-injection defense, and TTL-bound knowledge candidates. Live external search remains unconfigured by default; research cannot execute actions or write memory. See [Autonomous Research](docs/AUTONOMOUS_RESEARCH.md).

@@ -236,6 +236,10 @@ class CodingConfig:
 class KnowledgeConfig:
     enabled: bool=True; default_retrieval_mode:str="auto"; allow_persistent_index:bool=True; allow_remote_embeddings:bool=False; allow_remote_reranking:bool=False; auto_admit_research:bool=False; max_sources:int=100; max_records:int=1000; max_chunks_per_record:int=50; max_chunk_chars:int=800; chunk_overlap_chars:int=80; max_results:int=5; max_context_chunks:int=5; max_context_chars:int=4000; prefer_fresh:bool=True; prefer_primary_sources:bool=True; enable_lexical:bool=True; enable_semantic:bool=False; enable_hybrid:bool=False; enable_reranking:bool=False; save_history:bool=True; redact_sensitive_values:bool=True
 
+@dataclass(frozen=True, slots=True)
+class OrchestratorConfig:
+    enabled:bool=True;max_parallel_agents:int=2;max_sessions:int=25;default_timeout_seconds:int=180;max_retry_count:int=1;enable_parallel_execution:bool=True;enable_partial_results:bool=True;enable_recovery:bool=True;enable_event_log:bool=True;enable_metrics:bool=True;enable_audit:bool=True;max_context_versions:int=10;max_event_history:int=200;max_message_history:int=100;max_delegation_depth:int=3
+
 
 @dataclass(frozen=True, slots=True)
 class DocumentsConfig:
@@ -537,6 +541,7 @@ class AppSettings:
     research: ResearchConfig = field(default_factory=ResearchConfig)
     coding: CodingConfig = field(default_factory=CodingConfig)
     knowledge_index: KnowledgeConfig = field(default_factory=KnowledgeConfig)
+    orchestrator: OrchestratorConfig = field(default_factory=OrchestratorConfig)
     documents: DocumentsConfig = field(default_factory=DocumentsConfig)
     browser: BrowserAgentConfig = field(default_factory=BrowserAgentConfig)
     scheduler: SchedulerConfig = field(default_factory=SchedulerConfig)

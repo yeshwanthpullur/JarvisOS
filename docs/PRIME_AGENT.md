@@ -1,5 +1,7 @@
 # Prime Agent
 
+Prompt 81 keeps Prime as the single orchestration owner and coordinator. Delegation creates bounded task metadata; it does not grant permissions, approval, provider credentials, or execution authority.
+
 Research requests route to `research_agent`; retrieved text cannot grant approval or authority, and Research cannot execute discovered actions.
 
 Prime requests capability profiles such as reasoning, coding, research, or vision; the Model Router selects physical routes under policy.

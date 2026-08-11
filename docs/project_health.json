@@ -3,7 +3,7 @@
   "commit": "d2fe98726183b9c8d0f776663330d169f172f0b7",
   "updated_at": "2026-08-11",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 81",
+  "next_milestone": "Prompt 82",
   "overall_mvp_readiness": 93,
   "limitations": {
     "total": 47,
@@ -35,6 +35,7 @@
     {"name": "Study and Research Workflows", "status": "Partial", "confidence": 45, "evidence": "Conversation, retrieval, research, goals, planning, and read-only web foundations exist; no dedicated study workflow composes them.", "next_action": "Keep this partial until a dedicated future study workflow milestone is implemented."},
     {"name": "Research Agent", "status": "Partial", "confidence": 78, "evidence": "Bounded research orchestration, provider states, provenance, citations, claim/evidence support, freshness, contradiction representation, injection defense, and knowledge candidates are implemented; live search is unconfigured by default.", "next_action": "Configure only governed read-only providers while keeping execution and memory writes disabled."},
     {"name": "Knowledge Retrieval", "status": "Partial", "confidence": 72, "evidence": "Explicit sources, deterministic chunks/checksums, local lexical retrieval, privacy filters, provenance, and bounded context are implemented; semantic embeddings are unavailable.", "next_action": "Add a governed local embedding provider without enabling automatic ingestion or memory promotion."},
+    {"name": "Multi-Agent Orchestrator", "status": "Partial", "confidence": 80, "evidence": "Validated graphs, segmented request context, immutable message references, finite budgets, cancellation, partial recovery, audit, and metrics are implemented without execution authority.", "next_action": "Keep every side effect behind existing Approval and Broker controls."},
     {"name": "Coding Agent", "status": "Partial", "confidence": 66, "evidence": "Typed planning, deterministic intent/risk policy, read-only Git inspection, metadata-only diff review, bounded history, Prime routing, registry skills, and safe configuration are integrated; autonomous edits are not.", "next_action": "Keep write, command, commit, push, install, and deployment operations disabled until separately approved."},
     {"name": "Advanced Builder Workflows", "status": "Partial", "confidence": 35, "evidence": "Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized.", "next_action": "Formalize the governed workflow in a future dedicated milestone."},
     {"name": "Raspberry Pi and Hardware", "status": "Partial", "confidence": 20, "evidence": "General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exists.", "next_action": "Keep hardware work deferred to a future dedicated milestone."},

@@ -22,6 +22,7 @@ from agents.agent_result import AgentResult, AgentResultStatus
 from agents.agent_state import AgentState
 from agents.agent_status import AgentStatus
 from agents.agent_task import AgentTask
+from agents.orchestration_runtime import MultiAgentOrchestrationRuntime
 
 
 def utc_now() -> datetime:
@@ -296,6 +297,7 @@ class AgentOrchestrator:
         self.store = CoordinationStore(workspace_dir / "coordinations" if workspace_dir else None)
         self._logger = logger or logging.getLogger(__name__)
         self._cancellations: dict[str, threading.Event] = {}
+        self.runtime = MultiAgentOrchestrationRuntime(max_sessions=25, enable_parallel=self.limits.maximum_parallel_executions > 1)
         self.initialized = True
 
     def receive_objective(self, goal: AgentGoal) -> AgentOrchestrationPlan:

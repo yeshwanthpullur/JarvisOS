@@ -1,5 +1,7 @@
 # Approval System
 
+Approval remains operation-scoped. Approval for one orchestration node or provider never becomes session-wide authorization and never transfers to unrelated subtasks.
+
 Runtime start/stop and model download plans require exact future approval binding to runtime, model artifact, resources, and operation.
 
 Plugin approvals bind plugin ID, version, capability, permission, resources/input fingerprint, and expiry; a changed version invalidates scope.

@@ -1,5 +1,7 @@
 # Current Status
 
+Multi-Agent Orchestrator: implemented as a bounded coordination-only runtime. Execution graph, shared request context, session messaging, resource budgets, cancellation, partial recovery, audit, and metrics are enabled. Authority escalation and automatic permission elevation are disabled.
+
 Knowledge Retrieval: implemented with an in-memory local index and lexical search. Semantic/hybrid retrieval is unavailable until an embedding provider is configured. Persistent source mutations are controlled; research auto-admission and direct knowledge-to-memory writes are disabled.
 
 Autonomous Research Runtime: implemented and evidence-driven. Quick/standard/deep planning, provider abstraction, budgets, provenance, citations, claim support, freshness, contradictions, cancellation, and knowledge candidates are available. Live external search is unconfigured by default; Browser/GitHub/MCP/plugin reads remain governed by their owning policies. Direct memory writes and autonomous execution are disabled.

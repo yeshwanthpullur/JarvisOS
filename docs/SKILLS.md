@@ -1,5 +1,7 @@
 # Tool and Skill Registry
 
+Orchestration graph, context, messaging, budget, cancellation, and observability skills are metadata-only. Tool execution remains owned by registered skills and the Broker.
+
 Prompt 79 registers bounded planning, query, search, ranking, retrieval, evidence, verification, contradiction, freshness, citation, synthesis, and knowledge-candidate skills. Auto-install, auto-execute, auto-publish, and direct-memory-write research skills remain unavailable.
 
 Runtime status, hardware, compatibility, resource, routing, fallback, and circuit skills are metadata-safe; start/download skills remain disabled.

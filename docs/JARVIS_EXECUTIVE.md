@@ -1,5 +1,7 @@
 # Executive JARVIS Core
 
+Executive JARVIS remains authoritative above Prime and the Prompt 81 Orchestrator. Coordination changes execution ordering only; it does not alter user authority or subsystem ownership.
+
 JARVIS is the permanent Executive Intelligence layer of JARVIS OS. It is not an agent. Every future request enters JARVIS first, then flows through intent detection, decision metadata, reasoning, retrieval planning, goal intelligence, task intelligence, research intelligence, personal intelligence, planning, workflow orchestration, dispatch, reflection, adaptive intelligence, existing managers, response building, and history.
 
 JARVIS never talks directly to AI providers. Provider work must route through the existing Provider Router.

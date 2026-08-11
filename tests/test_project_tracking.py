@@ -72,7 +72,7 @@ class ProjectTrackingTests(unittest.TestCase):
         health = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(health["release"], "v1.7.0-alpha")
         self.assertEqual(health["commit"], "d2fe98726183b9c8d0f776663330d169f172f0b7")
-        self.assertEqual(health["next_milestone"], "Prompt 81")
+        self.assertEqual(health["next_milestone"], "Prompt 82")
         self.assertEqual(health["overall_mvp_readiness"], 93)
         self.assertEqual(health["phase3"]["coding_agent"], "ready_plan_only")
         self.assertFalse(health["phase3"]["coding_write_operations_enabled"])
@@ -97,7 +97,7 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertEqual(mobile["status"], "Partial")
         conversation = next(item for item in health["categories"] if item["name"] == "Conversation Intelligence")
         self.assertEqual(conversation["status"], "Working")
-        self.assertEqual(len(health["categories"]), 32)
+        self.assertEqual(len(health["categories"]), 33)
         allowed = {"Working", "Partial", "Experimental", "Not Started", "Blocked"}
         for category in health["categories"]:
             self.assertIn(category["status"], allowed)
@@ -188,7 +188,7 @@ class ProjectTrackingTests(unittest.TestCase):
         response = commands.execute("project status")
         self.assertIn("release=v1.7.0-alpha", response.response)
         self.assertIn("MVP=93%", response.response)
-        self.assertIn("next=Prompt 81", response.response)
+        self.assertIn("next=Prompt 82", response.response)
         self.assertIn("p85=blocked", response.response)
         self.assertIn("coding:ready_plan_only", response.response)
         self.assertIn("limitations=fixed:24/open:23/restricted:5/blocked:2", response.response)

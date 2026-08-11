@@ -1,5 +1,7 @@
 # Execution Policy
 
+Every orchestration node carries policy identity, version, effective permissions, and execution class. Delegation may narrow these fields but cannot broaden them.
+
 Heavy model start, stop, install, and download are separate controlled side effects; ordinary configured local inference does not grant tool authority.
 
 A plugin may add capability but never authority; all side effects still require local policy, exact permission, approval, and Broker validation.

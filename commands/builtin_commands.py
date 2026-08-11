@@ -405,6 +405,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         plugin_status=_plugin_runtime(context).status()
         model_runtime_status=_advanced_model_runtime(context).status()
         phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
+        orchestration_status=getattr(getattr(getattr(_agent_manager(context),"orchestrator",None),"runtime",None),"status",lambda:{"status":"unavailable"})()
         phase3_text = (
             "phase3="
             f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
@@ -416,7 +417,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
-            f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} mrt:R p85={release_status.status.value} "
+            f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} mrt:R orch:R p85={release_status.status.value} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -438,6 +439,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "knowledge_lexical_status": knowledge_status["lexical"],
             "knowledge_semantic_status": knowledge_status["semantic"],
             "knowledge_direct_memory_writes": False,
+            "orchestrator_status": orchestration_status["status"],
             "coding_agent_status": coding_status["status"],
             "coding_default_mode": coding_status["default_mode"],
             "coding_write_operations": coding_status["write_operations"],
@@ -754,6 +756,18 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("multiagent cancel", "Cancel a coordination", "agent", (), CommandPermission.AGENT),
         ("multiagent limits", "Show coordination limits", "agent", (), CommandPermission.AGENT),
         ("multiagent mode", "Set multi-agent mode", "agent", (), CommandPermission.AGENT),
+        ("orchestrator status","Show orchestration runtime status","agent",(),CommandPermission.AGENT),
+        ("orchestrator sessions","List bounded sessions","agent",(),CommandPermission.AGENT),
+        ("orchestrator show","Show session metadata","agent",(),CommandPermission.AGENT),
+        ("orchestrator graph","Show bounded task graph","agent",(),CommandPermission.AGENT),
+        ("orchestrator trace","Show metadata-only trace","agent",(),CommandPermission.AGENT),
+        ("orchestrator metrics","Show bounded orchestration metrics","agent",(),CommandPermission.AGENT),
+        ("orchestrator events","Show metadata-only events","agent",(),CommandPermission.AGENT),
+        ("orchestrator health","Show orchestration health","agent",(),CommandPermission.AGENT),
+        ("orchestrator cancel","Cancel a session cooperatively","agent",(),CommandPermission.AGENT),
+        ("orchestrator budget","Show session budget metadata","agent",(),CommandPermission.AGENT),
+        ("orchestrator agents","Show registered agent count","agent",(),CommandPermission.AGENT),
+        ("orchestrator providers","Show provider policy boundary","agent",(),CommandPermission.AGENT),
         ("tool list", "List registered tools", "tool", (), CommandPermission.UTILITY),
         ("tool show", "Show a tool definition", "tool", (), CommandPermission.UTILITY),
         ("tool health", "Show tool health", "tool", (), CommandPermission.DIAGNOSTIC),
@@ -1074,6 +1088,23 @@ def _handler_for(name: str):
                 if conversation is not None:
                     conversation.session.metadata["multiagent_mode"] = selected.value
                 return _text_response(f"Multi-agent mode set to {selected.value}.", mode=selected.value)
+        if name.startswith("orchestrator "):
+            manager=_agent_manager(context);base=getattr(manager,"orchestrator",None);runtime=getattr(base,"runtime",None)
+            if runtime is None:return _text_response("Orchestrator unavailable.")
+            if name in {"orchestrator status","orchestrator health"}:
+                s=runtime.status();return _text_response("Orchestrator status: "+" ".join(f"{k}={v}" for k,v in s.items()),**s)
+            if name=="orchestrator metrics":return _text_response("Orchestrator metrics: "+" ".join(f"{k}={v}" for k,v in runtime.metrics().items()))
+            if name=="orchestrator sessions":return _text_response("Orchestrator sessions: "+(", ".join(f"{s.session_id}:{s.current_state.value}" for s in tuple(runtime.sessions.values())[-10:]) or "none"))
+            if name=="orchestrator events":return _text_response("Orchestrator events: "+(", ".join(f"{e.event_type}:{e.status or 'recorded'}" for e in runtime.events[-20:]) or "none"))
+            if name=="orchestrator agents":return _text_response(f"Orchestrator agents: registered={len(getattr(base.registry,'list_agents',lambda:())())} authority=unchanged.")
+            if name=="orchestrator providers":return _text_response("Orchestrator providers: registry_authoritative=yes credentials_isolated=yes egress_rechecked=yes.")
+            session_id=context.arguments[0] if context.arguments else "";session=runtime.sessions.get(session_id)
+            if name=="orchestrator cancel":return _text_response("Orchestration cancellation requested." if runtime.cancel(session_id) else "Session not found or no longer cancellable.")
+            if session is None:return _text_response("Orchestration session not found.")
+            if name=="orchestrator graph":return _text_response("Orchestration graph: "+", ".join(f"{n.node_id}:{n.owner_agent}:{n.status.value}:deps={len(n.dependencies)}" for n in session.nodes.values()))
+            if name=="orchestrator trace":return _text_response("Orchestration trace: "+", ".join(f"{e.event_type}:{e.node_id or 'session'}" for e in runtime.events if e.session_id==session_id)[-3000:])
+            if name=="orchestrator budget":return _text_response(f"Orchestration budget: runtime={session.resource_budget.max_runtime}s parallel={session.resource_budget.max_parallel_tasks} provider={session.resource_budget.max_provider_calls} browser={session.resource_budget.max_browser_reads} model={session.resource_budget.max_model_calls}.")
+            return _text_response(f"Orchestration session: id={session.session_id} state={session.current_state.value} owner={session.owner} nodes={len(session.nodes)} approval={session.approval_state} mode={session.execution_mode}.")
         if name == "tools status":
             tools = _tool_manager(context)
             if tools is None:

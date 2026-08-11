@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased - Prompt 81 Unified Multi-Agent Orchestration
+
+- Added bounded DAG validation, dependency scheduling, context versioning/segmentation, immutable session messages, inherited budgets, cancellation, failure propagation, partial success, audit events, and metrics.
+- Attached the runtime to the existing Agent Orchestrator without adding execution authority or bypassing Approval/Broker policy.
+
 ## Unreleased - Prompt 80 Provenance-Aware Knowledge Retrieval
 
 - Added explicit knowledge sources, records, chunks, checksums, deduplication, privacy scopes, freshness, provenance, and source-scoped removal.

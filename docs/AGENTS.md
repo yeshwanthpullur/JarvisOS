@@ -1,5 +1,7 @@
 # Agent Protocol and Registry
 
+Agents coordinate only through the Prompt 81 runtime using session-scoped references and least-context segments. No hidden direct agent call grants authority.
+
 `research_agent` now has a bounded evidence runtime. It remains read/analyze oriented; command, Git, communication, plugin/MCP trust, task, goal, and memory mutation remain outside its authority.
 
 Models are shared infrastructure for agents; no separate trusted agent is created merely because a model profile exists.
