@@ -1,5 +1,7 @@
 # Model Provider Registry and Router
 
+Prompt 83 adds advisory provider/model health, circuit, and capacity signals. Routing may avoid an unhealthy route, but the reliability layer cannot start runtimes, download models, enable cloud providers, or execute inference.
+
 Prompt 78 adds an advanced runtime control plane beside the existing advisory router; local-first, capability, privacy, cost, context, fallback, and circuit policies remain explicit.
 
 ## Execution Boundary

@@ -1,5 +1,7 @@
 # Execution Broker
 
+The Prompt 83 reliability runtime has no executor. Any future approved privileged recovery must still be dispatched through this Broker to a registered, policy-allowed executor.
+
 Prompt 82 can submit an already-authorized step to a supplied Broker route, but it has no executor of its own. Missing or blocked Broker results become waiting or failed workflow states and never synthetic success.
 
 The Orchestrator has no executor and cannot route around the Broker. Side effects still require policy validation, exact approval where applicable, capability/permission checks, and the owning executor.

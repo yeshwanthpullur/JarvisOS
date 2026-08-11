@@ -279,6 +279,22 @@ workflow:
   max_artifacts: 50
   max_runtime_hours: 4
 
+reliability:
+  enabled: true
+  monitor_interval_seconds: 30
+  enable_metrics: true
+  enable_diagnostics: true
+  enable_health_dashboard: true
+  enable_alerts: true
+  enable_circuit_breakers: true
+  enable_fault_isolation: true
+  enable_self_healing: true
+  max_retry_attempts: 2
+  max_health_history: 200
+  max_alert_history: 100
+  max_metric_history: 500
+  max_parallel_health_checks: 4
+
 web_automation:
   enabled: true
   mode: "read_only"

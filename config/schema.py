@@ -260,6 +260,10 @@ class WorkflowConfig:
     max_artifacts: int = 50
     max_runtime_hours: int = 4
 
+@dataclass(frozen=True, slots=True)
+class ReliabilityConfig:
+    enabled:bool=True;monitor_interval_seconds:int=30;enable_metrics:bool=True;enable_diagnostics:bool=True;enable_health_dashboard:bool=True;enable_alerts:bool=True;enable_circuit_breakers:bool=True;enable_fault_isolation:bool=True;enable_self_healing:bool=True;max_retry_attempts:int=2;max_health_history:int=200;max_alert_history:int=100;max_metric_history:int=500;max_parallel_health_checks:int=4
+
 
 @dataclass(frozen=True, slots=True)
 class DocumentsConfig:
@@ -563,6 +567,7 @@ class AppSettings:
     knowledge_index: KnowledgeConfig = field(default_factory=KnowledgeConfig)
     orchestrator: OrchestratorConfig = field(default_factory=OrchestratorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
+    reliability: ReliabilityConfig = field(default_factory=ReliabilityConfig)
     documents: DocumentsConfig = field(default_factory=DocumentsConfig)
     browser: BrowserAgentConfig = field(default_factory=BrowserAgentConfig)
     scheduler: SchedulerConfig = field(default_factory=SchedulerConfig)

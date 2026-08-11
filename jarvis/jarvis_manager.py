@@ -14,6 +14,7 @@ from jarvis.skills import build_default_skill_registry
 from jarvis.research import ResearchAgent, ResearchEvidenceCollector, ResearchHistoryStore, ResearchPlanner
 from jarvis.knowledge import InMemoryKnowledgeIndex
 from jarvis.coding import CodingAgent, CodingHistoryStore, CodingPlanner, DiffReviewer, RepoInspector
+from jarvis.reliability import ReliabilityLimits, ReliabilityRuntime, build_default_reliability_runtime
 from jarvis.integrations import ExternalIntegrationControlPlane
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
@@ -267,6 +268,20 @@ class JarvisManager:
         coordinating_orchestrator = getattr(coordinating_manager, "orchestrator", None)
         if coordinating_orchestrator is not None:
             coordinating_orchestrator.workflow_runtime = self.workflow.runtime
+        reliability_config = getattr(context.settings, "reliability", None) if context else None
+        self.reliability = ReliabilityRuntime(ReliabilityLimits(
+            monitor_interval_seconds=getattr(reliability_config,"monitor_interval_seconds",30),
+            max_retry_attempts=getattr(reliability_config,"max_retry_attempts",2),
+            max_health_history=getattr(reliability_config,"max_health_history",200),
+            max_alert_history=getattr(reliability_config,"max_alert_history",100),
+            max_metric_history=getattr(reliability_config,"max_metric_history",500),
+            max_parallel_health_checks=getattr(reliability_config,"max_parallel_health_checks",4),
+        ))
+        defaults=build_default_reliability_runtime()
+        for service in defaults.services.values(): self.reliability.register_service(service)
+        for name,health in defaults.health.items(): self.reliability.record_health(name,health.state,health.health_score)
+        self.prime_agent.reliability_runtime=self.reliability
+        self.workflow.runtime.reliability_runtime=self.reliability
         self.retrieval = RetrievalManager()
         self.department_registry = JarvisDepartmentRegistry()
         self.metrics = JarvisMetrics()
@@ -323,6 +338,7 @@ class JarvisManager:
             "telegram_runtime": self.telegram_runtime,
             "skills": self.skills,
             "workflow": self.workflow,
+            "reliability": self.reliability,
             "retrieval": self.retrieval,
             "reasoning": self.reasoning,
             "reflection": self.reflection,
@@ -413,5 +429,5 @@ class JarvisManager:
             web_automation=self.web_automation,
             mobile_automation=self.mobile_automation,
             logger=self.logger,
-            metadata={**(base.metadata if base else {}), "external_integrations": self.external_integrations, "telegram_runtime": self.telegram_runtime, "workflow_runtime": self.workflow.runtime, **request.metadata},
+            metadata={**(base.metadata if base else {}), "external_integrations": self.external_integrations, "telegram_runtime": self.telegram_runtime, "workflow_runtime": self.workflow.runtime, "reliability_runtime": self.reliability, **request.metadata},
         )

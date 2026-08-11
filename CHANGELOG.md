@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Prompt 83 Production Reliability Runtime
+
+- Added bounded component/dependency health, resource and queue thresholds, circuit breakers, fault isolation, diagnostics, alerts, metrics, capacity planning, and governed recovery plans.
+- Added on-demand reliability CLI and central configuration without busy polling, cloud telemetry, or privileged self-healing.
+- Preserved Executive, Policy, Approval, Broker, provider, memory, context, and workflow authority boundaries.
+
 ## Unreleased - Prompt 82 Workflow Checkpoint And Recovery Runtime
 
 - Extended the existing Workflow Engine with bounded graphs, dependency validation, pause/resume/cancel, retries, timeouts, resources, metadata-only artifacts, ordered events, and simulation.

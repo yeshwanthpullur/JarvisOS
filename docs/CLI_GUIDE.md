@@ -1,5 +1,7 @@
 # CLI Guide
 
+Prompt 83 reliability commands: `runtime status`, `health`, `components`, `dependencies`, `metrics`, `diagnostics`, `alerts`, `providers`, `models`, `queues`, `resources`, `breakers`, `recovery-plan`, `recovery-history`, `events`, `dashboard`, `profile`, `capacity`, and `verify`. They expose bounded metadata and cannot authorize recovery.
+
 Prompt 82 workflow controls: `workflow status`, `list`, `show <id>`, `graph <id>`, `trace <id>`, `events <id>`, `checkpoints <id>`, `checkpoint-show <id>`, `pause <id>`, `resume <id>`, `cancel <id>`, `simulate`, `health`, `metrics`, `cleanup-plan`, `artifact-list`, and `artifact-show <id>`. These commands coordinate or inspect bounded state; they do not grant execution authority.
 
 Prompt 81 diagnostics: `orchestrator status`, `sessions`, `show`, `graph`, `trace`, `metrics`, `events`, `health`, `cancel`, `budget`, `agents`, and `providers`. Output is bounded metadata without context payloads, credentials, private paths, or stack traces.

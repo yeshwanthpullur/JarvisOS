@@ -1,5 +1,7 @@
 # Multi-Agent Orchestration
 
+Prompt 83 attaches bounded reliability metadata to the orchestrator. Health, capacity, dependency, and recovery-plan information remain advisory and do not grant execution authority or create background agent loops.
+
 Prompt 82 workflows can reference multi-agent participants and bounded artifacts while the Prompt 81 orchestrator remains the specialist coordination authority. Workflow graphs do not duplicate agent task graphs or grant agent execution authority.
 
 Prompt 81 adds one bounded coordination runtime beneath Executive JARVIS and Prime. Coordination is not authority: the runtime validates DAGs, schedules ready metadata tasks, versions shared context, routes immutable references, tracks budgets, cancellation, failures, partial success, events, and metrics. It has no tool executor and cannot bypass Execution Policy, Approval, Broker, provider, privacy, credential, or data-egress controls.

@@ -1,5 +1,7 @@
 # Roadmap
 
+- Prompt 83 - Production Reliability, Distributed Runtime, Self-Healing, and High Availability: complete and verified as a bounded monitoring and recovery-planning control plane. Next: Prompt 84. Roadmap order is unchanged.
+
 - Prompt 82 - Autonomous Workflow Engine, Long-Running Task Runtime, and Checkpoint Recovery: complete and verified. Next: Prompt 83. Roadmap order is unchanged.
 
 - Prompt 80 - External Knowledge Index, Retrieval Augmentation, and Evidence Memory: complete and verified with local lexical retrieval. Next: Prompt 81. Roadmap order is unchanged.
@@ -80,13 +82,13 @@ Updated: 2026-08-11
 - Prompt 72 - External Communication Provider Foundation: implemented and verified on `main`.
 - Prompt 73 - Telegram Connector and Secure Bot Communication: implemented and verified on `main`; runtime unconfigured by default.
 - Prompt 74 - Discord, Email, and Slack Communication Connectors: implemented and verified on `main`; runtimes unconfigured by default.
-- Prompts 75-82: implemented sequentially and verified on `main`.
-- Prompts 83-84: specification-only; not started.
+- Prompts 75-83: implemented sequentially and verified on `main`.
+- Prompt 84: specification-only; not started.
 - Prompt 85 validation remains blocked until every prerequisite is implemented.
 
 ## Next Milestone
 
-Prompt 82 is complete. Prompt 83 - Production Reliability, Distributed Runtime, Self-Healing, and High Availability - is next. Prompt 85 validation remains blocked until Prompts 83-84 are complete. No Phase 6 work has started.
+Prompt 83 is complete. Prompt 84 - Enterprise Security, Governance, Zero-Trust Policy, Compliance, and Audit - is next. Prompt 85 validation remains blocked until Prompt 84 is complete. No Phase 6 work has started.
 
 ## Blocked Phase 5 Validation
 

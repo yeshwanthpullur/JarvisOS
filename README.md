@@ -1,5 +1,7 @@
 # JARVIS OS
 
+Prompt 83 adds bounded on-demand runtime health, dependency diagnostics, circuit breakers, fault isolation, resource/queue thresholds, alerts, metrics, capacity estimates, and governed recovery plans. Health is informational; privileged self-healing, distributed clustering, and cloud telemetry are disabled.
+
 Prompt 82 extends the existing Workflow Engine with bounded dependency graphs, metadata-only checkpoints, recovery, pause/resume/cancel, retries, timeouts, simulation, artifact metadata, audit, and metrics. It coordinates but never authorizes side effects; Executive JARVIS, Execution Policy, Approval, and the Execution Broker remain authoritative.
 
 Prompt 81 adds bounded multi-agent orchestration: validated execution graphs, request-scoped versioned context, immutable session messages, finite budgets, dependency scheduling, cancellation, partial-success recovery, and metadata-only audit/metrics. Executive, Prime, Approval, Broker, and subsystem authority boundaries remain unchanged.

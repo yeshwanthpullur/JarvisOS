@@ -64,6 +64,7 @@ _SUBCOMMANDS = {
     *{f"scheduler {x}" for x in ("runtime-status","jobs","due","create","run","run-due","pause","resume","cancel","runs","runtime-policy")},
     *{f"browser {x}" for x in ("policy","validate","dry-run","read","read-show","read-history")},
     "limitations status", "limitations list", "limitations open", "limitations fixed", "limitations show", "limitations category", "limitations next", "limitations summary",
+    *{f"runtime {x}" for x in ("status","health","components","dependencies","metrics","diagnostics","alerts","providers","models","queues","resources","breakers","recovery-plan","recovery-history","events","dashboard","profile","capacity","verify")},
     "prime status", "prime route", "prime plan", "prime risk", "prime explain",
     "model status", "model providers", "model capabilities", "model route", "model explain", "model hardware", "model policy",
     "skill status", "skill list", "skill capabilities", "skill show", "skill find", "skill permissions", "skill diagnostics",

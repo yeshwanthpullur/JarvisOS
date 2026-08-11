@@ -31,6 +31,7 @@ from jarvis.integrations.telegram import TelegramRuntime, render_telegram_comman
 from jarvis.mcp_runtime import MCPRuntime,render_mcp_command
 from jarvis.plugin_runtime import PluginRuntime,render_plugin_command
 from workflow import WorkflowRuntime, render_workflow_command
+from jarvis.reliability import ReliabilityRuntime, build_default_reliability_runtime, render_runtime_command as render_reliability_command
 
 
 def _manager(context: CommandContext):
@@ -105,6 +106,10 @@ def _workflow_runtime(context: CommandContext) -> WorkflowRuntime:
     metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
     runtime = metadata.get("workflow_runtime")
     return runtime if isinstance(runtime, WorkflowRuntime) else WorkflowRuntime()
+
+def _reliability_runtime(context: CommandContext) -> ReliabilityRuntime:
+    conversation=context.conversation_context;metadata=getattr(conversation,"metadata",{}) or {} if conversation is not None else {};runtime=metadata.get("reliability_runtime")
+    return runtime if isinstance(runtime,ReliabilityRuntime) else build_default_reliability_runtime()
 
 
 def _existing_ollama_state(context: CommandContext) -> tuple[bool, tuple[str, ...], bool]:
@@ -425,7 +430,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
-            f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} mrt:R orch:R wf:R p85={release_status.status.value} "
+            f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} mrt:R o:R w:R r:R p85={release_status.status.value} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -912,6 +917,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("workflow", "Show workflow summary", "workflow", (), CommandPermission.WORKFLOW),
         ("workflow list", "List workflows", "workflow", (), CommandPermission.WORKFLOW),
         *tuple((f"workflow {operation}", f"Workflow {operation}", "workflow", (), CommandPermission.WORKFLOW) for operation in ("status", "show", "graph", "trace", "events", "checkpoints", "checkpoint-show", "pause", "resume", "cancel", "simulate", "health", "metrics", "cleanup-plan", "artifact-list", "artifact-show")),
+        *tuple((f"runtime {operation}", f"Runtime reliability {operation}", "runtime", (), CommandPermission.SYSTEM) for operation in ("status","health","components","dependencies","metrics","diagnostics","alerts","providers","models","queues","resources","breakers","recovery-plan","recovery-history","events","dashboard","profile","capacity","verify")),
         ("config", "Show config summary", "configuration", (), CommandPermission.CONFIGURATION),
         ("config show", "Show configuration metadata", "configuration", (), CommandPermission.CONFIGURATION),
         ("profile", "Show personal intelligence summary", "personal", (), CommandPermission.CONVERSATION),
@@ -1036,6 +1042,8 @@ def _handler_for(name: str):
             return _text_response(render_research_command(_research_agent(context), name, context.arguments))
         if name.startswith("workflow "):
             return _text_response(render_workflow_command(_workflow_runtime(context), name, context.arguments))
+        if name.startswith("runtime "):
+            return _text_response(render_reliability_command(_reliability_runtime(context),name,context.arguments))
         if name.startswith("knowledge "):
             return _text_response(render_knowledge_command(_knowledge_index(context),name,context.arguments))
         if name.startswith("coding "):

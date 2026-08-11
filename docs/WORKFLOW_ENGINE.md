@@ -1,5 +1,7 @@
 # Workflow Engine
 
+Prompt 83 makes workflow health visible through the reliability control plane. Reliability may diagnose or propose recovery, but workflow state remains authoritative and any privileged recovery still requires Policy, Approval, and Broker enforcement.
+
 ## Prompt 82 Runtime
 
 The existing Workflow Engine now owns a bounded long-running coordination runtime. It provides versioned workflow and step state, typed dependency edges, cycle validation, deterministic ready-step selection, bounded parallel readiness, retries, timeouts, resource counters, checkpoints, pause/resume/cancel, recovery, temporary artifact metadata, ordered audit events, health, and simulation.

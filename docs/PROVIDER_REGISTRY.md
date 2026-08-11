@@ -1,5 +1,7 @@
 # External Provider Registry
 
+Prompt 83 observes provider readiness and circuit state as bounded metadata. A healthy provider remains subject to locality, credential, egress, cost, capability, and execution policy; health never grants authority.
+
 Model endpoints reuse provider security boundaries; remote inference requires explicit configuration, HTTPS, credential isolation, and data-egress policy.
 
 Provider plugins may contribute metadata and adapters, but cannot self-report ready without independent runtime health verification.

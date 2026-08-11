@@ -1,5 +1,7 @@
 # Approval System
 
+Prompt 83 recovery metadata may describe an approval requirement, but only this Approval System can issue an exact bounded approval. No broad or session-wide recovery approval is inferred.
+
 Approval dependencies pause Prompt 82 workflows at a checkpoint. Resume does not manufacture or extend approval; exact action and resource scope must still validate through the Approval System.
 
 Approval remains operation-scoped. Approval for one orchestration node or provider never becomes session-wide authorization and never transfers to unrelated subtasks.
