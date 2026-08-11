@@ -50,6 +50,7 @@ class VercelDeploymentTests(unittest.TestCase):
                 self.assertEqual(content_type, "application/json; charset=utf-8")
                 self.assertEqual(set(payload), required)
                 self.assertEqual(payload, STATUS)
+                self.assertEqual(payload["release"], "v1.7.0-alpha")
                 self.assertEqual(payload["web_automation"], "partial_read_only")
                 self.assertEqual(payload["mobile_automation"], "partial_planning_only")
                 self.assertEqual(payload["video_editing"], "partial_workflow_foundation")

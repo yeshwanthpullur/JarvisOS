@@ -13,7 +13,7 @@ STATUS: Final[dict[str, str]] = {
     "status": "online",
     "deployment_mode": "status-foundation",
     "primary_mode": "local-cli",
-    "release": "v1.5.0-alpha",
+    "release": "v1.7.0-alpha",
     "vision": "working_local_ollama",
     "online_sync": "partial_local_queue",
     "web_automation": "partial_read_only",
