@@ -2,6 +2,8 @@
 
 Prompt 79 research commands include `research providers`, `research provider-health`, `research budget`, `research quick <question>`, `research standard <question>`, `research deep <question>`, `research search <query>`, `research verify <claim>`, `research citations <id>`, `research contradictions <id>`, and `research knowledge-candidates <id>`. Live search reports unavailable until governed configuration exists.
 
+Prompt 80 adds `knowledge status`, `knowledge sources`, source metadata, registration/ingestion/reindex/removal plans, `knowledge search`, provenance, embedding/backend health, and metadata-only history. It intentionally omits ingest-everything, crawling, trust-all, and all-repository indexing.
+
 Advanced runtime commands include `model runtime-status`, `model runtimes`, runtime/profile/alias inspection, hardware and compatibility plans, route explanations, fallback/circuit status, and non-executing start/stop/download plans. Existing model commands remain supported.
 
 The `plugin` namespace provides bounded status, inspection, capability, permission, dependency, health, integrity, and history commands. Lifecycle commands produce safe plans or require exact approval; installation and executable external runtimes remain disabled.

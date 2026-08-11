@@ -12,6 +12,7 @@ from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents
 from jarvis.models import ModelRouter, build_default_model_registry
 from jarvis.skills import build_default_skill_registry
 from jarvis.research import ResearchAgent, ResearchEvidenceCollector, ResearchHistoryStore, ResearchPlanner
+from jarvis.knowledge import InMemoryKnowledgeIndex
 from jarvis.coding import CodingAgent, CodingHistoryStore, CodingPlanner, DiffReviewer, RepoInspector
 from jarvis.integrations import ExternalIntegrationControlPlane
 from jarvis.jarvis_controller import JarvisController
@@ -194,6 +195,8 @@ class JarvisManager:
         self.research_agent.runtime.allow_github = getattr(research_config, "allow_github", True)
         self.research_agent.runtime.allow_mcp = getattr(research_config, "allow_mcp", True)
         self.research_agent.runtime.allow_plugins = getattr(research_config, "allow_plugins", True)
+        knowledge_config = getattr(context.settings, "knowledge_index", None) if context else None
+        self.knowledge_index = InMemoryKnowledgeIndex(max_chunk_chars=getattr(knowledge_config,"max_chunk_chars",800),overlap_chars=getattr(knowledge_config,"chunk_overlap_chars",80),max_chunks_per_record=getattr(knowledge_config,"max_chunks_per_record",50))
         coding_config = getattr(context.settings, "coding", None) if context else None
         coding_root = context.settings.base_dir if context and context.settings else Path.cwd()
         coding_max_files = getattr(coding_config, "max_files_listed", 20)
@@ -290,6 +293,7 @@ class JarvisManager:
             "sync_intelligence": self.sync_intelligence,
             "web_automation": self.web_automation,
             "research_agent": self.research_agent,
+            "knowledge_index": self.knowledge_index,
             "coding_agent": self.coding_agent,
             "mobile_automation": self.mobile_automation,
             "agent_registry": self.agent_registry,

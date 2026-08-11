@@ -125,6 +125,13 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("research_citation_skill", "research", "research_citation", "Create citations only from retrieved source records."),
         _ready("research_synthesis_skill", "research", "research_synthesis", "Synthesize bounded evidence with uncertainty."),
         _ready("research_knowledge_candidate_skill", "research", "research_knowledge_candidate", "Create TTL-bound candidates without writing memory."),
+        _ready("knowledge_status_skill","research","knowledge_status","Inspect bounded knowledge index health."),
+        _ready("knowledge_source_skill","research","knowledge_source","Inspect explicitly registered source metadata."),
+        _ready("knowledge_retrieval_skill","research","knowledge_retrieval","Retrieve privacy-scoped evidence without increasing authority."),
+        _ready("knowledge_lexical_search_skill","research","knowledge_lexical_search","Run deterministic local lexical retrieval."),
+        _ready("knowledge_provenance_skill","research","knowledge_provenance","Trace retrieval to chunk, record, and source."),
+        _ready("knowledge_freshness_skill","research","knowledge_freshness","Preserve freshness and stale warnings."),
+        _ready("knowledge_admission_plan_skill","research","knowledge_admission_plan","Plan explicit candidate admission without auto-persistence."),
         _ready("evaluation_routing_skill", "system", "evaluation_routing", "Run deterministic local routing fixtures."),
         _ready("capability_truthfulness_skill", "system", "capability_truthfulness", "Verify disabled capabilities are not reported ready."),
         _ready("local_observability_skill", "system", "local_observability", "Create bounded local metadata snapshots."),
@@ -165,6 +172,7 @@ def build_default_skill_registry() -> SkillRegistry:
         _future("mcp_server_install_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_arbitrary_execute_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_scheduled_execute_skill","developer",P.EXECUTE_COMMANDS),_future("mcp_admin_skill","developer",P.SYSTEM_MODIFY),
         _future("plugin_safe_execute_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_auto_install_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_auto_update_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_unrestricted_execute_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_scheduled_execute_skill","developer",P.EXECUTE_COMMANDS),_future("plugin_admin_skill","developer",P.SYSTEM_MODIFY),
         _future("nemotron_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("nvidia_nim_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("vllm_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("llama_cpp_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("model_download_skill", "system", P.NETWORK_ACCESS),
+        _future("knowledge_semantic_search_skill","research"),_future("knowledge_hybrid_search_skill","research"),_future("knowledge_rerank_skill","research"),_future("knowledge_auto_crawl_skill","research",P.NETWORK_ACCESS),_future("knowledge_unrestricted_ingest_skill","research",P.READ_FILES),_future("knowledge_direct_memory_write_skill","memory",P.WRITE_MEMORY),
         _future("model_runtime_start_skill","system",P.EXECUTE_COMMANDS),_future("model_runtime_stop_skill","system",P.EXECUTE_COMMANDS),_future("model_auto_download_skill","system",P.NETWORK_ACCESS),_future("model_auto_install_runtime_skill","system",P.EXECUTE_COMMANDS),_future("model_paid_provider_auto_use_skill","system",P.NETWORK_ACCESS),
     )
     return SkillRegistry(builtins + future, max_skills=512)

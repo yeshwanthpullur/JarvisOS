@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Prompt 80 Provenance-Aware Knowledge Retrieval
+
+- Added explicit knowledge sources, records, chunks, checksums, deduplication, privacy scopes, freshness, provenance, and source-scoped removal.
+- Added deterministic lexical retrieval and bounded context with truthful semantic/hybrid fallback.
+- Kept research auto-admission, remote embeddings, crawlers, scheduled ingestion, and direct memory writes disabled.
+
 ## Unreleased - Prompt 79 Evidence-Driven Autonomous Research
 
 - Added bounded quick, standard, and deep research orchestration with finite budgets, cancellation, deduplication, and provider-unavailable handling.

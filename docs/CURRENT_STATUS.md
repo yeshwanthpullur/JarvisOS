@@ -1,5 +1,7 @@
 # Current Status
 
+Knowledge Retrieval: implemented with an in-memory local index and lexical search. Semantic/hybrid retrieval is unavailable until an embedding provider is configured. Persistent source mutations are controlled; research auto-admission and direct knowledge-to-memory writes are disabled.
+
 Autonomous Research Runtime: implemented and evidence-driven. Quick/standard/deep planning, provider abstraction, budgets, provenance, citations, claim support, freshness, contradictions, cancellation, and knowledge candidates are available. Live external search is unconfigured by default; Browser/GitHub/MCP/plugin reads remain governed by their owning policies. Direct memory writes and autonomous execution are disabled.
 
 Advanced Model Runtime: implemented control plane. Ollama remains supported; vLLM and llama.cpp are optional local runtimes; NIM is configuration-dependent; Nemotron aliases are unresolved; remote, paid, auto-start, and auto-download defaults are off.

@@ -232,6 +232,10 @@ class CodingConfig:
     require_approval_for_push: bool = True
     block_secrets_access: bool = True
 
+@dataclass(frozen=True, slots=True)
+class KnowledgeConfig:
+    enabled: bool=True; default_retrieval_mode:str="auto"; allow_persistent_index:bool=True; allow_remote_embeddings:bool=False; allow_remote_reranking:bool=False; auto_admit_research:bool=False; max_sources:int=100; max_records:int=1000; max_chunks_per_record:int=50; max_chunk_chars:int=800; chunk_overlap_chars:int=80; max_results:int=5; max_context_chunks:int=5; max_context_chars:int=4000; prefer_fresh:bool=True; prefer_primary_sources:bool=True; enable_lexical:bool=True; enable_semantic:bool=False; enable_hybrid:bool=False; enable_reranking:bool=False; save_history:bool=True; redact_sensitive_values:bool=True
+
 
 @dataclass(frozen=True, slots=True)
 class DocumentsConfig:
@@ -532,6 +536,7 @@ class AppSettings:
     skills: SkillsConfig = field(default_factory=SkillsConfig)
     research: ResearchConfig = field(default_factory=ResearchConfig)
     coding: CodingConfig = field(default_factory=CodingConfig)
+    knowledge_index: KnowledgeConfig = field(default_factory=KnowledgeConfig)
     documents: DocumentsConfig = field(default_factory=DocumentsConfig)
     browser: BrowserAgentConfig = field(default_factory=BrowserAgentConfig)
     scheduler: SchedulerConfig = field(default_factory=SchedulerConfig)

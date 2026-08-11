@@ -13,6 +13,8 @@ from conversation.conversation_response import ConversationResponse
 from providers import ProviderRequest
 from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
 from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents, render_agent_command, render_prime_command, ResearchAgent, render_research_command
+from jarvis.knowledge import InMemoryKnowledgeIndex
+from jarvis.knowledge.cli import render_knowledge_command
 from jarvis.models import AdvancedModelPlanner, AdvancedModelRuntime, ModelProviderRegistry, ModelRouter, build_default_model_registry, render_advanced_model_command, render_model_command, render_runtime_command
 from jarvis.skills import SkillRegistry, build_default_skill_registry, render_skill_command
 from jarvis.coding import CodingAgent, CodingHistoryStore, CodingPlanner, DiffReviewer, RepoInspector, render_coding_command
@@ -279,6 +281,10 @@ def _research_agent(context: CommandContext) -> ResearchAgent:
         return research
     _, _, vision_ready = _existing_ollama_state(context)
     return ResearchAgent(enabled=True, web_available=True, documents_available=True)
+def _knowledge_index(context:CommandContext)->InMemoryKnowledgeIndex:
+    conversation=context.conversation_context;metadata=getattr(conversation,"metadata",{}) or {} if conversation else {}
+    value=metadata.get("knowledge_index")
+    return value if isinstance(value,InMemoryKnowledgeIndex) else InMemoryKnowledgeIndex()
 
 
 def _coding_agent(context: CommandContext) -> CodingAgent:
@@ -380,6 +386,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         prime_status = _prime_agent(context).status()
         research_agent = _research_agent(context)
         research_status = research_agent.status()
+        knowledge_status = _knowledge_index(context).status()
         coding_agent = _coding_agent(context)
         coding_status = coding_agent.status()
         document_status = _document_agent(context).status()
@@ -403,7 +410,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
             f"/foundation:{foundation_agents}/future:{future_agents} "
             f"prime:{prime_status['status']} model_router:{model_router.router_status()['status']} "
-            f"research:{research_status['status']} coding:{coding_status['status']} document:{document_status['status']} "
+            f"research:{research_status['status']} knowledge:{knowledge_status['lexical']}/{knowledge_status['semantic']} coding:{coding_status['status']} document:{document_status['status']} "
             f"browser:{browser_status['status']} scheduler:{scheduler_status['status']} communication:{communication_status['status']} "
             f"adapter:{adapter_status['status']} adv:{advanced_status['status']} evaluation:{evaluation_status['status']} "
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
@@ -428,6 +435,9 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "model_router_status": model_router.router_status()["status"],
             "research_agent_status": research_status["status"],
             "research_source_policy": research_status["source_policy"],
+            "knowledge_lexical_status": knowledge_status["lexical"],
+            "knowledge_semantic_status": knowledge_status["semantic"],
+            "knowledge_direct_memory_writes": False,
             "coding_agent_status": coding_status["status"],
             "coding_default_mode": coding_status["default_mode"],
             "coding_write_operations": coding_status["write_operations"],
@@ -558,6 +568,22 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("research knowledge-candidates", "Show non-authoritative knowledge candidates", "research", (), CommandPermission.DIAGNOSTIC),
         ("research show", "Show one research result", "research", (), CommandPermission.DIAGNOSTIC),
         ("research history", "Show bounded research history", "research", (), CommandPermission.DIAGNOSTIC),
+        ("knowledge status","Show knowledge retrieval status","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge help","Show knowledge commands","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge sources","List bounded registered sources","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge source-show","Show source metadata","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge source-status","Show source status","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge register-plan","Plan controlled registration","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge ingest-plan","Plan controlled ingestion","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge search","Search permitted indexed evidence","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge show","Show bounded item metadata","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge provenance","Show item provenance","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge reindex-plan","Plan bounded reindex","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge remove-plan","Plan source removal","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge embedding-status","Show embedding status","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge backend-status","Show backend status","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge health","Show knowledge health","knowledge",(),CommandPermission.DIAGNOSTIC),
+        ("knowledge history","Show metadata-only history","knowledge",(),CommandPermission.DIAGNOSTIC),
         ("coding status", "Show Coding Agent readiness", "coding", (), CommandPermission.DIAGNOSTIC),
         ("coding help", "Show Coding Agent command help", "coding", (), CommandPermission.DIAGNOSTIC),
         ("coding inspect", "Inspect bounded repository metadata", "coding", (), CommandPermission.DIAGNOSTIC),
@@ -985,6 +1011,8 @@ def _handler_for(name: str):
             return _text_response(render_skill_command(_skill_registry(context), name, context.arguments))
         if name.startswith("research "):
             return _text_response(render_research_command(_research_agent(context), name, context.arguments))
+        if name.startswith("knowledge "):
+            return _text_response(render_knowledge_command(_knowledge_index(context),name,context.arguments))
         if name.startswith("coding "):
             return _text_response(render_coding_command(_coding_agent(context), name, context.arguments))
         if name.split(" ", 1)[0] in {"execution","approval","broker","file-exec","command","git-exec","notification"} or name in {"browser policy","browser validate","browser dry-run","browser read","browser read-show","browser read-history","scheduler runtime-status","scheduler jobs","scheduler due","scheduler create","scheduler run","scheduler run-due","scheduler pause","scheduler resume","scheduler cancel","scheduler runs","scheduler runtime-policy"}:

@@ -1,5 +1,7 @@
 # Project Health
 
+Prompt 80 adds explicit controlled knowledge sources, deterministic chunks/checksums, lexical retrieval, privacy filtering, provenance, and bounded non-authoritative context. Semantic retrieval remains unavailable. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
+
 Prompt 79 adds a tested bounded external-research runtime, provenance, citations, claim/evidence support, freshness, contradiction, injection defense, and non-authoritative knowledge candidates. Live search remains unconfigured. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
 
 Prompt 78 adds tested runtime/profile/endpoint/resource/fallback/circuit architecture without claiming unavailable models ready. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.

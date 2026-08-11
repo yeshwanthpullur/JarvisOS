@@ -1,5 +1,7 @@
 # Roadmap
 
+- Prompt 80 - External Knowledge Index, Retrieval Augmentation, and Evidence Memory: complete and verified with local lexical retrieval. Next: Prompt 81. Roadmap order is unchanged.
+
 - Prompt 79 - Autonomous Research, External Search, and Knowledge Acquisition Runtime: complete and verified as bounded evidence architecture. Next: Prompt 80. Roadmap order is unchanged.
 
 - Prompt 78 - Advanced Model Runtime: complete and verified as a control plane with optional runtimes truthful. Next: Prompt 79. Roadmap order is unchanged.
