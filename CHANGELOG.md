@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Prompt 82 Workflow Checkpoint And Recovery Runtime
+
+- Extended the existing Workflow Engine with bounded graphs, dependency validation, pause/resume/cancel, retries, timeouts, resources, metadata-only artifacts, ordered events, and simulation.
+- Added versioned metadata-only checkpoints and fail-closed recovery without granting execution authority.
+- Added bounded workflow CLI diagnostics, central safe configuration, focused tests, and security/observability documentation.
+
 ## Unreleased - Prompt 81 Unified Multi-Agent Orchestration
 
 - Added bounded DAG validation, dependency scheduling, context versioning/segmentation, immutable session messages, inherited budgets, cancellation, failure propagation, partial success, audit events, and metrics.

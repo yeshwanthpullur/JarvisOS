@@ -261,6 +261,24 @@ sync:
   sync_conversations: false
   sync_secrets: false
 
+workflow:
+  enabled: true
+  max_active: 4
+  max_parallel_steps: 2
+  max_pending: 25
+  default_timeout_seconds: 300
+  max_retry_count: 2
+  default_checkpoint_interval: 1
+  enable_parallel_execution: true
+  enable_pause_resume: true
+  enable_recovery: true
+  enable_metrics: true
+  enable_audit: true
+  max_event_history: 200
+  max_checkpoint_history: 50
+  max_artifacts: 50
+  max_runtime_hours: 4
+
 web_automation:
   enabled: true
   mode: "read_only"

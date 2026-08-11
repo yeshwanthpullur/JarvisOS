@@ -1,5 +1,13 @@
 # Workflow Engine
 
+## Prompt 82 Runtime
+
+The existing Workflow Engine now owns a bounded long-running coordination runtime. It provides versioned workflow and step state, typed dependency edges, cycle validation, deterministic ready-step selection, bounded parallel readiness, retries, timeouts, resource counters, checkpoints, pause/resume/cancel, recovery, temporary artifact metadata, ordered audit events, health, and simulation.
+
+The engine does not authorize or directly perform side effects. A side-effecting step must retain its approval requirement and route through the existing Execution Policy, Approval System, and Execution Broker. Background and scheduled modes are represented for planning but unrestricted execution is disabled.
+
+CLI: `workflow status`, `list`, `show`, `graph`, `trace`, `events`, `checkpoints`, `checkpoint-show`, `pause`, `resume`, `cancel`, `simulate`, `health`, `metrics`, `cleanup-plan`, `artifact-list`, and `artifact-show`.
+
 The Workflow Engine coordinates structured execution in JARVIS OS.
 
 It is responsible for:

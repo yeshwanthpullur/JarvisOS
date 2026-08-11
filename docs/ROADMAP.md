@@ -1,6 +1,6 @@
 # Roadmap
 
-- Prompt 81 - Multi-Agent External Intelligence Orchestration and Delegation Runtime: complete and verified. Next: Prompt 82. Roadmap order is unchanged.
+- Prompt 82 - Autonomous Workflow Engine, Long-Running Task Runtime, and Checkpoint Recovery: complete and verified. Next: Prompt 83. Roadmap order is unchanged.
 
 - Prompt 80 - External Knowledge Index, Retrieval Augmentation, and Evidence Memory: complete and verified with local lexical retrieval. Next: Prompt 81. Roadmap order is unchanged.
 
@@ -80,12 +80,13 @@ Updated: 2026-08-11
 - Prompt 72 - External Communication Provider Foundation: implemented and verified on `main`.
 - Prompt 73 - Telegram Connector and Secure Bot Communication: implemented and verified on `main`; runtime unconfigured by default.
 - Prompt 74 - Discord, Email, and Slack Communication Connectors: implemented and verified on `main`; runtimes unconfigured by default.
-- Prompts 75-84: specification-only; not started.
+- Prompts 75-82: implemented sequentially and verified on `main`.
+- Prompts 83-84: specification-only; not started.
 - Prompt 85 validation remains blocked until every prerequisite is implemented.
 
 ## Next Milestone
 
-Prompt 85's validation layer is implemented, but Phase 5 is **not complete**. Prompt 71 is implemented; Prompts 72-84 remain specifications only, so the production-readiness and `v2.0.0` release gates are blocked. No Phase 6 work has started.
+Prompt 82 is complete. Prompt 83 - Production Reliability, Distributed Runtime, Self-Healing, and High Availability - is next. Prompt 85 validation remains blocked until Prompts 83-84 are complete. No Phase 6 work has started.
 
 ## Blocked Phase 5 Validation
 

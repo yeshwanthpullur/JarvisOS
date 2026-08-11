@@ -43,6 +43,7 @@ from config.schema import (
     ExternalProviderFlagsConfig,
     TelegramConfig,
     DiscordConfig,EmailConnectorConfig,SlackConfig,GitHubProviderConfig,MCPConfig,
+    WorkflowConfig,
 )
 
 
@@ -333,6 +334,7 @@ def load_settings(
         ),
         tools=ToolsConfig(**{key: int(value) for key, value in raw_config["tools"].items()}),
         planning=PlanningConfig(**{key: int(value) for key, value in raw_config["planning"].items()}),
+        workflow=WorkflowConfig(**raw_config["workflow"]),
         voice=VoiceConfig(**{**raw_config["voice"],"enabled":_coerce_bool(raw_config["voice"]["enabled"]),"local_only":_coerce_bool(raw_config["voice"]["local_only"]),"input_enabled":_coerce_bool(raw_config["voice"]["input_enabled"]),"output_enabled":_coerce_bool(raw_config["voice"]["output_enabled"]),"raw_audio_persistence":_coerce_bool(raw_config["voice"]["raw_audio_persistence"]),"wake_word_enabled":_coerce_bool(raw_config["voice"]["wake_word_enabled"]),"interruption_enabled":_coerce_bool(raw_config["voice"]["interruption_enabled"]),"temp_directory":_optional_path(raw_config["voice"]["temp_directory"]),"stt_model_path":_optional_path(raw_config["voice"].get("stt_model_path")),"stt_executable":_optional_path(raw_config["voice"].get("stt_executable")),"allowed_audio_directories":tuple(_resolve_path(x) for x in raw_config["voice"]["allowed_audio_directories"])}),
         vision=VisionConfig(**{**raw_config["vision"],"enabled":_coerce_bool(raw_config["vision"]["enabled"]),"local_only":_coerce_bool(raw_config["vision"]["local_only"]),"audit_enabled":_coerce_bool(raw_config["vision"]["audit_enabled"]),"store_image_content":_coerce_bool(raw_config["vision"]["store_image_content"]),"allowed_directories":tuple(_resolve_path(x) for x in raw_config["vision"]["allowed_directories"])}),
         image_generation=ImageGenerationConfig(

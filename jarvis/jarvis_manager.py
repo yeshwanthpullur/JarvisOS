@@ -248,7 +248,25 @@ class JarvisManager:
             block_critical_risk=getattr(prime_config, "block_critical_risk", True),
         )
         self.skills = JarvisSkills()
-        self.workflow = WorkflowManager()
+        workflow_config = getattr(context.settings, "workflow", None) if context else None
+        from workflow import WorkflowLimits
+        self.workflow = WorkflowManager(limits=WorkflowLimits(
+            max_active=getattr(workflow_config, "max_active", 4),
+            max_parallel_steps=getattr(workflow_config, "max_parallel_steps", 2),
+            max_pending=getattr(workflow_config, "max_pending", 25),
+            default_timeout_seconds=getattr(workflow_config, "default_timeout_seconds", 300),
+            max_retry_count=getattr(workflow_config, "max_retry_count", 2),
+            default_checkpoint_interval=getattr(workflow_config, "default_checkpoint_interval", 1),
+            max_event_history=getattr(workflow_config, "max_event_history", 200),
+            max_checkpoint_history=getattr(workflow_config, "max_checkpoint_history", 50),
+            max_artifacts=getattr(workflow_config, "max_artifacts", 50),
+            max_runtime_hours=getattr(workflow_config, "max_runtime_hours", 4),
+        ))
+        self.prime_agent.workflow_runtime = self.workflow.runtime
+        coordinating_manager = context.agent_manager if context else None
+        coordinating_orchestrator = getattr(coordinating_manager, "orchestrator", None)
+        if coordinating_orchestrator is not None:
+            coordinating_orchestrator.workflow_runtime = self.workflow.runtime
         self.retrieval = RetrievalManager()
         self.department_registry = JarvisDepartmentRegistry()
         self.metrics = JarvisMetrics()
@@ -395,5 +413,5 @@ class JarvisManager:
             web_automation=self.web_automation,
             mobile_automation=self.mobile_automation,
             logger=self.logger,
-            metadata={**(base.metadata if base else {}), "external_integrations": self.external_integrations, "telegram_runtime": self.telegram_runtime, **request.metadata},
+            metadata={**(base.metadata if base else {}), "external_integrations": self.external_integrations, "telegram_runtime": self.telegram_runtime, "workflow_runtime": self.workflow.runtime, **request.metadata},
         )

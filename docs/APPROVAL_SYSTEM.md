@@ -1,5 +1,7 @@
 # Approval System
 
+Approval dependencies pause Prompt 82 workflows at a checkpoint. Resume does not manufacture or extend approval; exact action and resource scope must still validate through the Approval System.
+
 Approval remains operation-scoped. Approval for one orchestration node or provider never becomes session-wide authorization and never transfers to unrelated subtasks.
 
 Runtime start/stop and model download plans require exact future approval binding to runtime, model artifact, resources, and operation.

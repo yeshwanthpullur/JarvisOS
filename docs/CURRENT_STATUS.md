@@ -1,5 +1,7 @@
 # Current Status
 
+Workflow Engine: Prompt 82 is implemented as a bounded long-running coordination runtime with dependency graphs, checkpoints, recovery, pause/resume/cancel, retries, timeouts, simulation, metadata-only artifacts, audit, and metrics. It has no execution authority; unrestricted background and scheduled execution remain disabled.
+
 Multi-Agent Orchestrator: implemented as a bounded coordination-only runtime. Execution graph, shared request context, session messaging, resource budgets, cancellation, partial recovery, audit, and metrics are enabled. Authority escalation and automatic permission elevation are disabled.
 
 Knowledge Retrieval: implemented with an in-memory local index and lexical search. Semantic/hybrid retrieval is unavailable until an embedding provider is configured. Persistent source mutations are controlled; research auto-admission and direct knowledge-to-memory writes are disabled.

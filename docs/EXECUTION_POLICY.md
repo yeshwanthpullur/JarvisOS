@@ -1,5 +1,7 @@
 # Execution Policy
 
+Workflow steps preserve their policy and privacy scope. Prompt 82 never treats a workflow state transition, checkpoint, restore, or simulation as policy authorization.
+
 Every orchestration node carries policy identity, version, effective permissions, and execution class. Delegation may narrow these fields but cannot broaden them.
 
 Heavy model start, stop, install, and download are separate controlled side effects; ordinary configured local inference does not grant tool authority.

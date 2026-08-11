@@ -269,6 +269,13 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "maximum_history": 200,
     },
     "planning": {"maximum_steps":12,"maximum_milestones":5,"maximum_alternatives":3,"maximum_dependencies_per_step":4,"maximum_plan_depth":2,"maximum_retries":1,"maximum_replans":3,"maximum_concurrent":2,"maximum_agents":3,"maximum_tools":4,"maximum_timeout_seconds":90,"maximum_versions":10,"maximum_output_bytes":100000,"maximum_assumptions":8},
+    "workflow": {
+        "enabled": True, "max_active": 4, "max_parallel_steps": 2, "max_pending": 25,
+        "default_timeout_seconds": 300, "max_retry_count": 2, "default_checkpoint_interval": 1,
+        "enable_parallel_execution": True, "enable_pause_resume": True, "enable_recovery": True,
+        "enable_metrics": True, "enable_audit": True, "max_event_history": 200,
+        "max_checkpoint_history": 50, "max_artifacts": 50, "max_runtime_hours": 4,
+    },
     "voice":{"enabled":False,"mode":"off","language":"en-US","local_only":True,"privacy_mode":"standard","input_enabled":False,"output_enabled":False,"input_backend":"offline-stt","output_backend":"windows-sapi","input_device":None,"output_device":None,"confidence_threshold":0.75,"confirmation_threshold":0.6,"max_capture_seconds":30,"silence_timeout_seconds":3,"max_audio_size":20000000,"max_transcript_length":4000,"max_spoken_response_length":500,"max_auto_speech_chars":12000,"rate":0,"volume":100,"raw_audio_persistence":False,"retention_limit":0,"temp_audio_lifetime_seconds":300,"voice_input_audit_retention":50,"stt_model_path":None,"stt_executable":None,"wake_word_enabled":False,"wake_word_backend":None,"activation_phrase":"jarvis","interruption_enabled":True,"temp_directory":"data/voice-temp","allowed_audio_directories":["data/voice-input"]},
     "vision":{"enabled":True,"local_only":True,"privacy_mode":"standard","provider":"ollama","model":"llava","ollama_host":"http://127.0.0.1:11434","max_image_size":20000000,"timeout_seconds":60,"audit_enabled":True,"audit_retention":100,"store_image_content":False,"allowed_directories":[]},
     "image_generation": {

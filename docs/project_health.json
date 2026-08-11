@@ -3,7 +3,7 @@
   "commit": "d2fe98726183b9c8d0f776663330d169f172f0b7",
   "updated_at": "2026-08-11",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 82",
+  "next_milestone": "Prompt 83",
   "overall_mvp_readiness": 93,
   "limitations": {
     "total": 47,
@@ -96,7 +96,7 @@
   "phase5_validation": {
     "prompt85_validator": "implemented",
     "status": "blocked",
-    "prompts_71_84": "prompts_71_78_implemented_prompts_79_84_unimplemented",
+    "prompts_71_84": "prompts_71_82_implemented_prompts_83_84_unimplemented",
     "prompt_71_external_integration_control_plane": "implemented_metadata_only",
     "prompt_72_external_communication_foundation": "implemented_non_sending",
     "prompt_73_telegram_connector": "implemented_runtime_unconfigured",
@@ -105,6 +105,10 @@
     "prompt_76_mcp_runtime": "implemented_no_servers_configured",
     "prompt_77_plugin_runtime": "implemented_registry_external_execution_disabled",
     "prompt_78_advanced_model_runtime": "implemented_optional_runtimes_unconfigured",
+    "prompt_79_research_runtime": "implemented_live_search_unconfigured",
+    "prompt_80_knowledge_runtime": "implemented_lexical_local",
+    "prompt_81_multi_agent_orchestration": "implemented_coordination_only",
+    "prompt_82_workflow_runtime": "implemented_checkpoint_recovery_coordination_only",
     "release_candidate": "blocked",
     "v2_tag_created": false,
     "github_release_created": false,

@@ -1,5 +1,7 @@
 # Executive JARVIS Core
 
+Prompt 82 preserves Executive JARVIS as the authority above Workflow coordination. A workflow may schedule, pause, checkpoint, recover, or simulate steps, but it cannot approve, authorize, or directly perform a side effect.
+
 Executive JARVIS remains authoritative above Prime and the Prompt 81 Orchestrator. Coordination changes execution ordering only; it does not alter user authority or subsystem ownership.
 
 JARVIS is the permanent Executive Intelligence layer of JARVIS OS. It is not an agent. Every future request enters JARVIS first, then flows through intent detection, decision metadata, reasoning, retrieval planning, goal intelligence, task intelligence, research intelligence, personal intelligence, planning, workflow orchestration, dispatch, reflection, adaptive intelligence, existing managers, response building, and history.

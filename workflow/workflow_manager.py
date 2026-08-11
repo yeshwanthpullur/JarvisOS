@@ -20,6 +20,7 @@ from workflow.workflow_recovery import WorkflowRecovery
 from workflow.workflow_scheduler import WorkflowScheduler
 from workflow.workflow_state import WorkflowState, WorkflowStatus
 from workflow.workflow_validator import WorkflowValidator
+from workflow.runtime import WorkflowLimits, WorkflowRuntime
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,7 +37,7 @@ class WorkflowStatistics:
 class WorkflowManager:
     initialized = True
 
-    def __init__(self, logger: logging.Logger | None = None) -> None:
+    def __init__(self, logger: logging.Logger | None = None, limits: WorkflowLimits | None = None) -> None:
         self.logger = logger or logging.getLogger("workflow")
         self.engine = WorkflowEngine()
         self.registry = self.engine.registry
@@ -51,6 +52,7 @@ class WorkflowManager:
         self.recovery = WorkflowRecovery()
         self.checkpoint = WorkflowCheckpoint("bootstrap", "bootstrap", "ready")
         self.diagnostics = WorkflowDiagnostics()
+        self.runtime = WorkflowRuntime(limits)
         self._active = 0
 
     def initialize(self) -> WorkflowStatistics:

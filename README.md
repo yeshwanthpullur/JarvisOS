@@ -1,5 +1,7 @@
 # JARVIS OS
 
+Prompt 82 extends the existing Workflow Engine with bounded dependency graphs, metadata-only checkpoints, recovery, pause/resume/cancel, retries, timeouts, simulation, artifact metadata, audit, and metrics. It coordinates but never authorizes side effects; Executive JARVIS, Execution Policy, Approval, and the Execution Broker remain authoritative.
+
 Prompt 81 adds bounded multi-agent orchestration: validated execution graphs, request-scoped versioned context, immutable session messages, finite budgets, dependency scheduling, cancellation, partial-success recovery, and metadata-only audit/metrics. Executive, Prime, Approval, Broker, and subsystem authority boundaries remain unchanged.
 
 Prompt 80 adds controlled Knowledge Intelligence: explicit source registration, deterministic chunking/checksums, local lexical retrieval, privacy/trust/freshness filtering, bounded context, and end-to-end provenance. Knowledge remains untrusted evidence and distinct from Persistent Memory; semantic retrieval and automatic admission are disabled until configured.

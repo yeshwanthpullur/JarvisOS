@@ -242,6 +242,26 @@ class OrchestratorConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class WorkflowConfig:
+    enabled: bool = True
+    max_active: int = 4
+    max_parallel_steps: int = 2
+    max_pending: int = 25
+    default_timeout_seconds: int = 300
+    max_retry_count: int = 2
+    default_checkpoint_interval: int = 1
+    enable_parallel_execution: bool = True
+    enable_pause_resume: bool = True
+    enable_recovery: bool = True
+    enable_metrics: bool = True
+    enable_audit: bool = True
+    max_event_history: int = 200
+    max_checkpoint_history: int = 50
+    max_artifacts: int = 50
+    max_runtime_hours: int = 4
+
+
+@dataclass(frozen=True, slots=True)
 class DocumentsConfig:
     enabled: bool = True; default_mode: str = "plan_only"; max_file_bytes: int = 1000000; max_extract_chars: int = 4000; max_history_items: int = 25; allow_pdf: bool = False; allow_office: bool = False; allow_ocr: bool = False; allow_cloud_parsing: bool = False; allow_bulk_ingestion: bool = False; save_history: bool = True; store_extracted_content: bool = False; local_only: bool = True
 
@@ -542,6 +562,7 @@ class AppSettings:
     coding: CodingConfig = field(default_factory=CodingConfig)
     knowledge_index: KnowledgeConfig = field(default_factory=KnowledgeConfig)
     orchestrator: OrchestratorConfig = field(default_factory=OrchestratorConfig)
+    workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
     documents: DocumentsConfig = field(default_factory=DocumentsConfig)
     browser: BrowserAgentConfig = field(default_factory=BrowserAgentConfig)
     scheduler: SchedulerConfig = field(default_factory=SchedulerConfig)
