@@ -19,6 +19,12 @@ from .planner import ResearchPlanner, classify_research_intent, classify_researc
 from .safety import ResearchSafetyDecision, evaluate_research_safety, is_research_allowed, research_source_policy
 from .sources import ResearchSourcePolicy, ResearchSourceRequest
 from .storage import ResearchHistoryRecord, ResearchHistoryStore
+from .runtime import (
+    AutonomousResearchRuntime, EvidenceChunk, ExternalResearchPlan,
+    ExternalResearchRequest, ExternalResearchResult, KnowledgeCandidate,
+    ResearchBudget, ResearchClaim, ResearchSource, SearchProviderRegistry,
+    SearchProviderState, SearchResult, SourceType, SupportState, normalize_url,
+)
 
 __all__ = [
     "ResearchAgent",
@@ -39,6 +45,10 @@ __all__ = [
     "ResearchSourceType",
     "ResearchStatus",
     "ResearchSummary",
+    "AutonomousResearchRuntime", "EvidenceChunk", "ExternalResearchPlan",
+    "ExternalResearchRequest", "ExternalResearchResult", "KnowledgeCandidate",
+    "ResearchBudget", "ResearchClaim", "ResearchSource", "SearchProviderRegistry",
+    "SearchProviderState", "SearchResult", "SourceType", "SupportState", "normalize_url",
     "classify_research_intent",
     "classify_research_risk",
     "evaluate_research_safety",

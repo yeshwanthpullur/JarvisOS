@@ -1,5 +1,7 @@
 # Prime Agent
 
+Research requests route to `research_agent`; retrieved text cannot grant approval or authority, and Research cannot execute discovered actions.
+
 Prime requests capability profiles such as reasoning, coding, research, or vision; the Model Router selects physical routes under policy.
 
 Prime may inspect and plan plugin capabilities, but cannot enable, install, execute, or broaden plugin authority silently.

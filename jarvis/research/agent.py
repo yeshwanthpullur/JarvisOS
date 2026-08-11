@@ -19,6 +19,7 @@ from .models import (
 )
 from .planner import ResearchPlanner, classify_research_intent
 from .storage import ResearchHistoryRecord, ResearchHistoryStore
+from .runtime import AutonomousResearchRuntime, ExternalResearchRequest
 
 
 @dataclass(slots=True)
@@ -36,6 +37,7 @@ class ResearchAgent:
     max_results: int = 50
     last_history_error: str | None = None
     history: list[ResearchResult] = field(default_factory=list)
+    runtime: AutonomousResearchRuntime = field(default_factory=AutonomousResearchRuntime)
 
     def __post_init__(self) -> None:
         self.max_results = max(1, min(int(self.max_results), 100))
@@ -134,7 +136,13 @@ class ResearchAgent:
             "research_agent": "partial",
             "history_status": "error" if self.last_history_error else "ready" if self.planner.save_history else "disabled",
             "last_intent": self.history[-1].plan.research_type.value if self.history and self.history[-1].plan else ResearchIntent.UNKNOWN.value,
+            "external_runtime": self.runtime.status()["runtime"],
+            "live_search": self.runtime.status()["external_search"],
+            "direct_memory_writes": False,
         }
+
+    def external(self, query: str, *, mode: ResearchDepth | str = ResearchDepth.STANDARD):
+        return self.runtime.run(ExternalResearchRequest(query, ResearchDepth(mode)))
 
     def show(self, request_id: str) -> ResearchResult | None:
         return next((item for item in reversed(self.history) if item.request_id == request_id), None)

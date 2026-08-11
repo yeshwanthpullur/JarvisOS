@@ -1,5 +1,7 @@
 # Evaluation And Observability
 
+Research evaluation covers budget compliance, provenance completeness, citation coverage, primary-source preference, freshness, contradiction handling, unsupported claims, source diversity, and prompt-injection resistance. Telemetry excludes sensitive queries and provider credentials.
+
 Model observability records bounded route, latency, health, fallback, error, circuit, and resource metadata without full prompts or responses.
 
 Plugin observability records bounded lifecycle counts and error categories only, never secrets or raw private payloads.

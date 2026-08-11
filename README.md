@@ -1,5 +1,7 @@
 # JARVIS OS
 
+Prompt 79 adds a bounded evidence-driven research runtime with quick/standard/deep budgets, provider-neutral search states, source provenance, claim/evidence mapping, citations, freshness, contradiction handling, prompt-injection defense, and TTL-bound knowledge candidates. Live external search remains unconfigured by default; research cannot execute actions or write memory. See [Autonomous Research](docs/AUTONOMOUS_RESEARCH.md).
+
 Prompt 78 adds an advanced local-first model runtime control plane with truthful optional Ollama, vLLM, llama.cpp, NIM, OpenAI-compatible, Nemotron alias, resource, fallback, and circuit metadata. No runtime or model is installed, downloaded, or started automatically.
 
 Prompt 77 adds a secure, metadata-first Plugin Runtime and Skill Ecosystem. External plugins are untrusted and disabled by default; installation, arbitrary code execution, dependency installation, updates, and scheduled plugin runs remain disabled. See [Plugin Runtime](docs/PLUGIN_RUNTIME.md).

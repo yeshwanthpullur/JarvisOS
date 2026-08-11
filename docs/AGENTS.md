@@ -1,5 +1,7 @@
 # Agent Protocol and Registry
 
+`research_agent` now has a bounded evidence runtime. It remains read/analyze oriented; command, Git, communication, plugin/MCP trust, task, goal, and memory mutation remain outside its authority.
+
 Models are shared infrastructure for agents; no separate trusted agent is created merely because a model profile exists.
 
 Plugins cannot replace protected agents; external agent declarations register as review-required metadata only.

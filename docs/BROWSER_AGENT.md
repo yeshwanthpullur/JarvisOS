@@ -1,5 +1,7 @@
 # Browser Agent
 
+Prompt 79 coordinates public retrieval through this read boundary. Research adds no unrestricted HTTP client and does not weaken URL, DNS, redirect, private-network, timeout, download, or content-size controls.
+
 ## Controlled Read Execution
 
 Phase 4 adds an approval-gated public HTTP(S) GET executor with DNS/IP and redirect checks. Interactive browsing, authentication, cookies, JavaScript, forms, uploads, downloads, and account actions remain disabled.

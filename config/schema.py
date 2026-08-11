@@ -189,6 +189,31 @@ class ResearchConfig:
     save_history: bool = True
     local_only: bool = True
     require_citations_for_web_claims: bool = True
+    allow_external_search: bool = False
+    allow_browser_retrieval: bool = True
+    allow_github: bool = True
+    allow_mcp: bool = True
+    allow_plugins: bool = True
+    prefer_primary_sources: bool = True
+    enable_counterevidence: bool = True
+    max_queries_quick: int = 2
+    max_queries_standard: int = 5
+    max_queries_deep: int = 8
+    max_sources_quick: int = 4
+    max_sources_standard: int = 8
+    max_sources_deep: int = 12
+    max_pages_per_domain: int = 3
+    max_chars_per_source: int = 6000
+    max_total_chars: int = 24000
+    max_followup_rounds: int = 2
+    search_timeout_seconds: int = 20
+    retrieval_timeout_seconds: int = 20
+    total_timeout_seconds: int = 120
+    max_concurrent_requests: int = 2
+    cache_enabled: bool = True
+    cache_ttl_seconds: int = 3600
+    max_history_items: int = 25
+    redact_sensitive_values: bool = True
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Prompt 79 Evidence-Driven Autonomous Research
+
+- Added bounded quick, standard, and deep research orchestration with finite budgets, cancellation, deduplication, and provider-unavailable handling.
+- Added provider-neutral search metadata, normalized sources, evidence chunks, claim support states, provenance, citations, freshness, contradiction representation, and non-authoritative knowledge candidates.
+- Preserved Browser SSRF/access controls and blocked research-to-execution, memory, task, goal, Git, communication, install, plugin, MCP-trust, and model-runtime authority.
+
 ## Unreleased - Prompt 78 Advanced Model Runtime
 
 - Added distinct model profile, runtime, endpoint, hardware, resource, route, result, fallback, and circuit models.

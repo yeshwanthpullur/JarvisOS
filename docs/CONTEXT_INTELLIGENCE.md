@@ -1,5 +1,7 @@
 # Context Intelligence
 
+External research enters context with source IDs, trust class, freshness, support state, and warnings. Retrieved content never becomes system authority merely because it was fetched.
+
 Context Intelligence gives JARVIS practical continuity across related interactions without introducing a second conversation, task, workflow, or memory system.
 
 Goal Intelligence can consume resolved context from this layer, but Context Intelligence remains responsible for active and recent work continuity, reference resolution, and continuation state.

@@ -1,5 +1,7 @@
 # Research Agent
 
+Prompt 79 adds the bounded runtime described in [Autonomous Research](AUTONOMOUS_RESEARCH.md), [Research Evidence](RESEARCH_EVIDENCE.md), [Source Policy](RESEARCH_SOURCE_POLICY.md), [Research Security](RESEARCH_SECURITY.md), and [Knowledge Acquisition](KNOWLEDGE_ACQUISITION.md). Existing plan-only commands remain compatible. Live retrieval is truthful and unavailable until a governed provider is configured.
+
 Research may prefer reasoning and long-context profiles, but remote inference remains data-egress gated.
 
 Research may identify plugin candidates, but discovery evidence never makes a candidate trusted, installed, or executable.

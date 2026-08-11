@@ -1,5 +1,7 @@
 # Current Status
 
+Autonomous Research Runtime: implemented and evidence-driven. Quick/standard/deep planning, provider abstraction, budgets, provenance, citations, claim support, freshness, contradictions, cancellation, and knowledge candidates are available. Live external search is unconfigured by default; Browser/GitHub/MCP/plugin reads remain governed by their owning policies. Direct memory writes and autonomous execution are disabled.
+
 Advanced Model Runtime: implemented control plane. Ollama remains supported; vLLM and llama.cpp are optional local runtimes; NIM is configuration-dependent; Nemotron aliases are unresolved; remote, paid, auto-start, and auto-download defaults are off.
 
 Plugin Runtime: implemented as a strict registry and inspection foundation. External plugins remain untrusted and disabled; no installation, arbitrary runtime execution, automatic update, scheduled execution, or authority grant is enabled.

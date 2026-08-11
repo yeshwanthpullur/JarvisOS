@@ -1,5 +1,7 @@
 # Memory Intelligence
 
+Prompt 79 knowledge candidates are TTL-bound recommendations with provenance and `memory_write_allowed=false`. Promotion still requires explicit Persistent Memory authority.
+
 JARVIS OS keeps durable personal context in a local SQLite-backed memory engine. Prompt 38 adds a higher-level memory intelligence layer that makes that store usable from the CLI without turning it into a catch-all archive.
 
 ## What Works

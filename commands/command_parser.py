@@ -36,7 +36,7 @@ _SUBCOMMANDS = {
     "web status", "web open", "web title", "web url", "web snapshot", "web close", "web audit", "web policy", "web session",
     "mobile status", "mobile policy", "mobile capabilities", "mobile setup", "mobile plan", "mobile audit", "mobile close", "mobile devices", "mobile session",
     "conversation status", "conversation reset", "conversation summary", "conversation mode", "conversation confidence", "conversation topic",
-    "research status", "research help", "research plan", "research safety", "research sources", "research summarize", "research evidence", "research show", "research history",
+    "research status", "research help", "research providers", "research provider-health", "research budget", "research plan", "research safety", "research search", "research sources", "research quick", "research standard", "research deep", "research verify", "research summarize", "research evidence", "research contradictions", "research citations", "research knowledge-candidates", "research show", "research history",
     "coding status", "coding help", "coding inspect", "coding plan", "coding risk", "coding diff", "coding review", "coding tests", "coding show", "coding history",
     "document status", "document help", "document plan", "document safety", "document types", "document inspect", "document extract", "document summarize", "document ask", "document show", "document history",
     "browser status", "browser help", "browser plan", "browser safety", "browser capabilities", "browser sources", "browser summarize", "browser show", "browser history",
@@ -66,7 +66,7 @@ _SUBCOMMANDS = {
     "prime status", "prime route", "prime plan", "prime risk", "prime explain",
     "model status", "model providers", "model capabilities", "model route", "model explain", "model hardware", "model policy",
     "skill status", "skill list", "skill capabilities", "skill show", "skill find", "skill permissions", "skill diagnostics",
-    "research status", "research help", "research plan", "research safety", "research sources", "research summarize", "research evidence", "research show", "research history",
+    "research status", "research help", "research providers", "research provider-health", "research budget", "research plan", "research safety", "research search", "research sources", "research quick", "research standard", "research deep", "research verify", "research summarize", "research evidence", "research contradictions", "research citations", "research knowledge-candidates", "research show", "research history",
 }
 
 

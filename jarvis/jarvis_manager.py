@@ -189,6 +189,11 @@ class JarvisManager:
             require_citations_for_web_claims=getattr(research_config, "require_citations_for_web_claims", True),
             default_depth=getattr(research_config, "default_depth", "standard"),
         )
+        self.research_agent.runtime.allow_external_search = getattr(research_config, "allow_external_search", False)
+        self.research_agent.runtime.allow_browser_retrieval = getattr(research_config, "allow_browser_retrieval", True)
+        self.research_agent.runtime.allow_github = getattr(research_config, "allow_github", True)
+        self.research_agent.runtime.allow_mcp = getattr(research_config, "allow_mcp", True)
+        self.research_agent.runtime.allow_plugins = getattr(research_config, "allow_plugins", True)
         coding_config = getattr(context.settings, "coding", None) if context else None
         coding_root = context.settings.base_dir if context and context.settings else Path.cwd()
         coding_max_files = getattr(coding_config, "max_files_listed", 20)

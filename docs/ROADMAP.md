@@ -1,5 +1,7 @@
 # Roadmap
 
+- Prompt 79 - Autonomous Research, External Search, and Knowledge Acquisition Runtime: complete and verified as bounded evidence architecture. Next: Prompt 80. Roadmap order is unchanged.
+
 - Prompt 78 - Advanced Model Runtime: complete and verified as a control plane with optional runtimes truthful. Next: Prompt 79. Roadmap order is unchanged.
 
 - Prompt 77 - External Plugin Runtime and Skill Ecosystem: complete and verified. Next: Prompt 78, Advanced Model Runtime. Roadmap order is unchanged.

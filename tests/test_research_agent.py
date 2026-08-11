@@ -194,6 +194,18 @@ class ResearchFoundationTests(unittest.TestCase):
     def test_render_command_directly(self) -> None:
         self.assertIn("Research status:", render_research_command(self.agent, "research status", ()))
 
+    def test_autonomous_research_cli_routing(self) -> None:
+        for command in (
+            "research providers", "research provider-health", "research budget",
+            'research quick "compare local models"', 'research standard "compare local models"',
+            'research deep "compare local models"', 'research search "compare local models"',
+            'research verify "current local model support"', "research citations missing",
+            "research contradictions missing", "research knowledge-candidates missing",
+        ):
+            response = self.commands.execute(command, self.context()).response
+            self.assertNotIn("Unknown command", response)
+            self.assertLess(len(response), 4000)
+
 
 if __name__ == "__main__":
     unittest.main()
