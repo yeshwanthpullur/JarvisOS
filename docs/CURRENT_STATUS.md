@@ -1,6 +1,6 @@
 # Current Status
 
-Prompt 84 is implemented as a bounded enterprise governance foundation. Zero Trust, identity/role metadata, authorization, policy precedence/conflict detection, contextual trust and risk, audit, advisory compliance, security events, and incidents are available locally. Governance does not authorize execution and no enterprise certification is claimed. Prompt 85 is next.
+Prompt 85 completes the Phase 5 integration and production-readiness validation milestone. All mandatory local validation gates pass across the implemented Prompt 71-84 runtimes. Release publication remains separately authorized: no `v2.0.0` tag or GitHub Release exists, no enterprise certification is claimed, and no Phase 6 work has started.
 
 Runtime Reliability: Prompt 83 implements bounded on-demand health aggregation, dependency validation, resource/queue monitoring, circuit breakers, fault isolation, diagnostics, alerts, capacity estimates, and recovery planning. Automatic privileged recovery and distributed execution remain disabled.
 
@@ -129,18 +129,17 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 
 ## Next Recommended Prompt
 
-Prompt 85 production-readiness validation is implemented and currently **blocked**. Prompt 71 is implemented; Prompts 72-84 remain specifications only. Phase 5 is not complete and Phase 6 has not started.
+No next roadmap prompt starts automatically. Maintenance or a future roadmap requires separate planning and explicit authorization. The optional `v2.0.0` publication checkpoint also requires separate authorization.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
 
 ## Last Verified Tests
 
-- Prompt 85 focused release-readiness tests: 8 passed, 0 skipped, 0 failed, 0 errors.
-- Prompt 85 focused and cross-phase integration gate: 54 passed, 0 skipped, 0 failed, 0 errors.
-- Prompt 85 configuration/tracking validation: 33 passed, 0 skipped, 0 failed, 0 errors.
-- Prompt 85 final full suite: 1,768 passed, 0 skipped, 0 failed, 0 errors.
-- Compilation, JSON validation, secret scan, runtime-artifact scan, absolute-path scan, and `git diff --check` passed.
-- Production-readiness result: blocked because the remaining required Phase 5 components from Prompts 72-84 are absent.
+- Prompt 85 validation covers release gates, 21 authority contracts, 15 compatibility relationships, 14 end-to-end scenarios, and 11 informational scorecard categories.
+- Prompt 85 focused validation: 24 passed; Phase 5 integration: 317 passed; cross-subsystem regression: 499 passed; configuration/tracking: 42 passed.
+- Prompt 85 final full suite: 2,050 passed, 0 skipped, 0 failed, 0 errors.
+- Compilation, JSON/configuration/documentation validation, secret scan, runtime-artifact scan, absolute-path scan, and `git diff --check` are mandatory completion gates.
+- Production-readiness result: mandatory local gates pass; publication and post-push Vercel evidence remain separate checkpoints.
 - Prompt 71 verification: 12 focused tests, 150 focused/cross-system tests, and 1,780 full-suite tests passed with no skips, failures, or errors.
 - Prompt 72 verification: 12 focused tests, 39 focused/cross-system tests, and 1,792 full-suite tests passed with no skips, failures, or errors.
 

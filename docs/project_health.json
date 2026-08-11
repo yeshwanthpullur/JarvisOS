@@ -3,7 +3,7 @@
   "commit": "d2fe98726183b9c8d0f776663330d169f172f0b7",
   "updated_at": "2026-08-11",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Prompt 85",
+  "next_milestone": "Maintenance / future roadmap",
   "overall_mvp_readiness": 93,
   "limitations": {
     "total": 47,
@@ -44,8 +44,8 @@
     {"name": "Personal Workspace", "status": "Partial", "confidence": 34, "evidence": "CLI access, project tracking, and Phase 3 routing metadata compose capabilities without replacing their authoritative subsystems; a complete multi-tool workspace remains future work.", "next_action": "Harden the current local-first experience without duplicating authorities."},
     {"name": "Controlled Execution", "status": "Partial", "confidence": 78, "evidence": "Exact approvals and a central broker govern scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations.", "next_action": "Keep unsupported and critical actions blocked; require separate review for every new executor."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 86, "evidence": "Execution modes, risk, exact approvals, locality, protected resources, timeout, rollback metadata, and executor-specific boundaries are tested.", "next_action": "Threat-review every new execution surface."},
-    {"name": "Enterprise Governance", "status": "Partial", "confidence": 82, "evidence": "Zero-trust identity, authorization, policy, risk, trust, tamper-evident bounded audit, compliance, security event, and incident foundations are tested without execution authority.", "next_action": "Run Prompt 85 production-readiness validation without claiming certification."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 96, "evidence": "Phase 3 Batch 2 focused, tracking, Vercel-contract, and final 1727-test suites pass with no skips, failures, or errors.", "next_action": "Keep release evidence and status docs current."}
+    {"name": "Enterprise Governance", "status": "Partial", "confidence": 82, "evidence": "Zero-trust identity, authorization, policy, risk, trust, tamper-evident bounded audit, compliance, security event, and incident foundations are tested without execution authority.", "next_action": "Retain bounded governance and review future extensions only under a separately authorized roadmap."},
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 97, "evidence": "Prompt 85 focused validation, 317-test Phase 5 integration, 499-test regression, and final 2050-test suites pass with no skips, failures, or errors.", "next_action": "Keep release evidence and status docs current."}
   ],
   "phase3": {
     "status": "Partial - plan-only multi-agent foundation",
@@ -95,8 +95,8 @@
     "vercel_execution_enabled": false
   },
   "phase5_validation": {
-    "prompt85_validator": "implemented",
-    "status": "ready_for_prompt_85_validation",
+    "prompt85_validator": "complete_validation_only",
+    "status": "validated_release_checkpoint_not_authorized",
     "prompts_71_84": "implemented_sequentially",
     "prompt_71_external_integration_control_plane": "implemented_metadata_only",
     "prompt_72_external_communication_foundation": "implemented_non_sending",
@@ -112,7 +112,7 @@
     "prompt_82_workflow_runtime": "implemented_checkpoint_recovery_coordination_only",
     "prompt_83_reliability_runtime": "implemented_bounded_monitoring_recovery_planning_only",
     "prompt_84_governance_runtime": "implemented_zero_trust_audit_compliance_coordination_only",
-    "release_candidate": "blocked",
+    "release_candidate": "ready_validation_only_release_not_authorized",
     "v2_tag_created": false,
     "github_release_created": false,
     "phase6_started": false,

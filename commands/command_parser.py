@@ -53,7 +53,7 @@ _SUBCOMMANDS = {
     "model advanced",
     *{f"model {x}" for x in ("runtime-status","runtimes","runtime-show","runtime-health","profiles","profile-show","provider-health","compatibility","resource-plan","route-explain","start-plan","start","stop","download-plan","download-status","fallback-status","circuit-status","aliases","alias-show")},
     "evaluation status", "evaluation help", "evaluation run", "evaluation routing", "evaluation safety", "evaluation truthfulness", "evaluation observability", "evaluation show", "evaluation history",
-    "release-readiness status", "release-readiness help", "release-readiness gates", "release-readiness contracts", "release-readiness missing", "release-readiness candidate",
+    "release-readiness status", "release-readiness help", "release-readiness gates", "release-readiness contracts", "release-readiness missing", "release-readiness candidate", "release-readiness matrix", "release-readiness scenarios", "release-readiness scorecard", "release-readiness checklist", "release-readiness verify",
     *{f"execution {x}" for x in ("status","help","policy","permissions","readiness","risk","plan","capabilities","show","history")},
     *{f"approval {x}" for x in ("status","help","request","pending","list","show","approve","deny","cancel","revoke","expire","validate")},
     *{f"broker {x}" for x in ("status","help","capabilities","plan","validate","dry-run","execute","show","history")},

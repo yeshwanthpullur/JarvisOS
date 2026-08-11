@@ -1,5 +1,11 @@
 # CLI Guide
 
+## Phase 5 Validation
+
+Use `release-readiness status`, `gates`, `contracts`, `missing`, `candidate`, `matrix`, `scenarios`, `scorecard`, `checklist`, and `verify` for bounded Prompt 85 evidence. These commands only inspect local project metadata. They never create a tag, GitHub Release, deployment, approval, or execution action.
+
+The overall status remains `warning` while publication is unauthorized or external post-push evidence is pending. `release-readiness verify` separately reports whether every mandatory local gate passed.
+
 Enterprise governance diagnostics: `security status`, `health`, `identities`, `permissions`, `policies`, `trust`, `incidents`, `audit`, `compliance`, `risks`, `governance`, `events`, `metrics`, `dashboard`, `validate`, `verify`, plus bounded `policy-show`, `incident-show`, `audit-show`, and `trust-show` lookups. These commands do not execute or approve actions.
 
 Prompt 83 reliability commands: `runtime status`, `health`, `components`, `dependencies`, `metrics`, `diagnostics`, `alerts`, `providers`, `models`, `queues`, `resources`, `breakers`, `recovery-plan`, `recovery-history`, `events`, `dashboard`, `profile`, `capacity`, and `verify`. They expose bounded metadata and cannot authorize recovery.

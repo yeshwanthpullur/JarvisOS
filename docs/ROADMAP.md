@@ -1,6 +1,8 @@
 # Roadmap
 
-- Prompt 84 - Enterprise Security, Governance, Zero-Trust Policy, Compliance, and Audit: complete and verified as a bounded coordination layer without execution authority. Next: Prompt 85. Roadmap order is unchanged.
+- Prompt 85 - Phase 5 Final Integration, System Validation, and Production Readiness: complete and verified as validation-only. No tag or release was authorized, and no future phase starts automatically.
+
+- Prompt 84 - Enterprise Security, Governance, Zero-Trust Policy, Compliance, and Audit: complete and verified as a bounded coordination layer without execution authority. Roadmap order is unchanged.
 
 - Prompt 83 - Production Reliability, Distributed Runtime, Self-Healing, and High Availability: complete and verified as a bounded monitoring and recovery-planning control plane. Next: Prompt 84. Roadmap order is unchanged.
 
@@ -85,17 +87,17 @@ Updated: 2026-08-11
 - Prompt 73 - Telegram Connector and Secure Bot Communication: implemented and verified on `main`; runtime unconfigured by default.
 - Prompt 74 - Discord, Email, and Slack Communication Connectors: implemented and verified on `main`; runtimes unconfigured by default.
 - Prompts 75-84: implemented sequentially and verified on `main`.
-- Prompt 85 production-readiness validation is next.
+- Prompt 85 production-readiness validation is complete; the optional `v2.0.0` publication checkpoint remains separately authorized.
 
 ## Next Milestone
 
-Prompt 84 is complete. Prompt 85 - Phase 5 Final Integration, System Validation, and Production Readiness - is next. No Phase 6 work has started.
+Prompt 85 is complete as an integration and validation milestone. No Phase 6 work has started, and future roadmap work requires separate planning and authorization.
 
-## Blocked Phase 5 Validation
+## Phase 5 Validation Boundaries
 
-- Prompts 71-84 require separate implementation authorization and verified checkpoint work.
-- Prompt 85 cannot substitute validation for missing provider, MCP, plugin, model, research, knowledge, workflow, reliability, or governance runtimes.
-- No `v2.0.0` tag or release may be created while blocking gates remain.
+- Prompts 71-84 were implemented sequentially and verified before Prompt 85.
+- Prompt 85 validates integration and does not substitute optional provider configuration or enterprise certification.
+- No `v2.0.0` tag or release is created without separate explicit authorization.
 
 ## Preserved Deferred Themes
 

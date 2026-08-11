@@ -1,7 +1,7 @@
 # Production Readiness
 
-Production readiness is evaluated through blocking gates for architecture, security, privacy, configuration, repository hygiene, Phase 5 integration, governance, reliability, workflow, and release validation.
+Production readiness uses mandatory architecture, compilation, testing, security, privacy, governance, reliability, workflow, documentation, and configuration gates. A mandatory `failed`, `blocked`, `manual_review`, or `not_started` state blocks readiness. Optional repository, external deployment, and publication checkpoints remain visible and truthful.
 
-A gate may be `running`, `passed`, `warning`, `failed`, or `blocked`. Any blocking `failed` or `blocked` gate prevents release readiness. Warnings never silently become passes.
+Prompt 85 passes all mandatory local gates. Post-push origin and canonical Vercel verification are reported separately. Release publication remains unauthorized, so `v2.0.0` is only candidate metadata and no tag or GitHub Release exists.
 
-The current Prompt 85 assessment is blocked because required Phase 5 runtimes are absent. Existing local chat, memory, voice, vision, planning, and controlled Phase 4 execution remain available at their previously verified levels; this assessment does not downgrade them or overstate enterprise readiness.
+Readiness does not mean every optional provider is configured or that enterprise certification, unrestricted autonomy, distributed clustering, autonomous recovery, public local-model access, or release automation exists. See the integration checklist, system validation matrix, scorecard, operations runbook, and disaster recovery plan for evidence and boundaries.

@@ -10,7 +10,6 @@ Use this checklist for every JARVIS OS release. Record exact results in the rele
 - [ ] `CHANGELOG.md` includes the release version and verified limitations.
 - [ ] `docs/LIMITATIONS_REGISTER.md` and `docs/limitations_register.json` have consistent counts and owners.
 - [ ] Limitation review categories reconcile, fixed records include evidence and tests, and bounded CLI status matches project health.
-- [ ] Limitation review categories reconcile, fixed records include evidence and tests, and bounded CLI status matches project health.
 
 ## Repository Safety
 
@@ -36,8 +35,15 @@ Use this checklist for every JARVIS OS release. Record exact results in the rele
 - [ ] Security, permissions, local-only policy, and command separation are verified.
 - [ ] Sync queue artifacts remain ignored; safe schemas, secret/path rejection, offline behavior, conflict handling, and bounded retention are verified.
 - [ ] Web automation URLs, permissions, blocked sensitive actions, audit redaction, and browser runtime artifact exclusions are verified.
+- [ ] Authority, ownership, compatibility, and public contract matrices are reviewed.
+- [ ] End-to-end, graceful-degradation, recovery, Zero Trust, and exact-approval scenarios pass.
+- [ ] Configuration has no duplicate/conflicting unsafe settings and all release side effects remain disabled until authorized.
+- [ ] Documentation, JSON, secret-shaped values, runtime artifacts, and absolute-path leakage are validated.
+- [ ] Canonical `jarvis-os` reaches READY and `/api/status` remains bounded or protected.
 
 ## Release
+
+These steps require separate release authorization. Prompt 85 validation alone does not perform them.
 
 - [ ] Release commit exists on the intended branch and remote.
 - [ ] Annotated tag points to the exact verified commit.

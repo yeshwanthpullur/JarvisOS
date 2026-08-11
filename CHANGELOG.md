@@ -92,18 +92,19 @@
 - Every external provider remains disabled and unconfigured; paid/cloud execution, MCP, plugins, sending, remote GitHub actions, and remote models remain unavailable.
 - Phase 4 approvals, Execution Policy, and Broker remain authoritative. No credentials are read and no network calls occur.
 
-## Unreleased - Prompt 85 Production-Readiness Validation
+## Unreleased - Prompt 85 Phase 5 Final Integration and Validation
 
 ### Added
 
-- Added typed release gates, system authority contracts, a blocked release-candidate model, and deterministic Phase 5 prerequisite detection.
-- Added bounded `release-readiness` CLI diagnostics and safe release-validation configuration with tag, release, and deployment actions disabled.
-- Added production-readiness and operations documentation.
+- Added typed gates, authority/compatibility contracts, scenarios, scorecard, and deterministic Phase 5 prerequisite checks.
+- Added bounded `release-readiness` matrix, scenario, scorecard, checklist, and verification diagnostics.
+- Added integration, recovery, and production-readiness documentation.
 
 ### Status
 
-- Prompt 85 validation is implemented, but Phase 5 readiness is blocked because Prompts 71-84 remain unimplemented specifications.
-- No provider, MCP, plugin, governance, reliability, or workflow capability was fabricated; no tag or release was created.
+- Prompts 71-84 validate and all mandatory local gates pass.
+- Publication remains unauthorized; no provider capability, tag, release, or deployment is fabricated.
+- Verified 24 focused, 317 integration, 499 regression, and 2,050 full-suite tests with no skips or failures.
 
 ## Unreleased - Phase 4 Controlled Execution Foundation
 

@@ -502,8 +502,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         f"limitations=fixed:{fixed_limitations}/open:{open_limitations}/restricted:{restricted_limitations}/blocked:{blocked_limitations} "
         f"focus={limitation_focus} "
         f"{phase3_text}"
-        f"next={health.get('next_milestone', 'unknown')}. "
-        "Details: docs/PROJECT_HEALTH.md and docs/LIMITATIONS_REGISTER.md",
+        f"next={health.get('next_milestone', 'unknown')}.",
         release=health.get("release"),
         primary_mode=health.get("primary_mode"),
         overall_mvp_readiness=health.get("overall_mvp_readiness"),
@@ -691,7 +690,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("evaluation observability", "Show local metadata snapshot", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("evaluation show", "Show one evaluation result", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("evaluation history", "Show bounded evaluation history", "evaluation", (), CommandPermission.DIAGNOSTIC),
-        *((f"release-readiness {op}", f"Prompt 85 release readiness {op}", "evaluation", (), CommandPermission.DIAGNOSTIC) for op in ("status", "help", "gates", "contracts", "missing", "candidate")),
+        *((f"release-readiness {op}", f"Prompt 85 release readiness {op}", "evaluation", (), CommandPermission.DIAGNOSTIC) for op in ("status", "help", "gates", "contracts", "missing", "candidate", "matrix", "scenarios", "scorecard", "checklist", "verify")),
         *((f"execution {op}", f"Phase 4 execution {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","policy","permissions","readiness","risk","plan","capabilities","show","history")),
         *((f"approval {op}", f"Explicit approval {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","request","pending","list","show","approve","deny","cancel","revoke","expire","validate")),
         *((f"broker {op}", f"Execution broker {op}", "execution", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","capabilities","plan","validate","dry-run","execute","show","history")),

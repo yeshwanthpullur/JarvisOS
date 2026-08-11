@@ -55,13 +55,13 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Communication Assistance | Partial | 70% | Prompts 73-74 implement disabled-by-default Telegram, Discord, email, and Slack text connectors with provider-specific validation and exact approval/Broker gates; runtimes are unconfigured. | Connector tests; provider status commands | Implement Prompt 75 independently; keep inbound, inbox, attachments, bulk, and scheduling disabled. |
 | Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 96% | Phase 3 Batch 2 focused, tracking, Vercel-contract, and final 1,727-test suites pass with no skips, failures, or errors. | Batch 2, Phase 3, tracking, regression, and full suites | Keep release evidence and status docs current. |
+| Testing/Release Readiness | Working | 97% | Prompt 85 focused validation, 317-test Phase 5 integration, 499-test regression, and final 2,050-test suites pass without skips, failures, or errors. | Prompt 85 validation, tracking, regression, and full suites | Keep release evidence and status docs current. |
 
 ## Overall MVP Readiness
 
-**92%** toward the broader local-first JARVIS MVP described by the roadmap. The one-point increase reflects the verified external integration security and provider-control architecture, not working external providers.
+**93%** toward the broader local-first JARVIS MVP described by the roadmap. Prompt 85 does not increase this score because it adds validation evidence rather than new product capability.
 
-Prompt 85 adds release-readiness validation. The current Phase 5 release assessment remains blocked because only Prompt 71 is implemented and Prompts 72-84 are not.
+Prompt 85 validates the integrated Prompt 71-84 architecture with mandatory local gates passing. The `v2.0.0` tag and GitHub Release remain uncreated because publication requires separate explicit authorization.
 
 Prompt 71 verification: 12 focused external-integration tests, 150 focused/cross-system tests, and the full 1,780-test suite pass with no skips, failures, or errors. Compilation, JSON validation, and required static scans pass.
 
