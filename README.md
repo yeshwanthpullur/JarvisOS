@@ -2,6 +2,8 @@
 
 Prompt 73 adds a secure [Telegram Connector](docs/TELEGRAM_CONNECTOR.md) with explicit [pairing](docs/TELEGRAM_PAIRING.md), text-only Bot API transport, bounded polling, and approval/Broker-gated independent sends. It is disabled and unconfigured by default; attachments, groups, webhooks, scheduled delivery, and all other external providers remain unavailable.
 
+Prompt 74 adds disabled-by-default outbound text connectors for [Discord](docs/DISCORD_CONNECTOR.md), [email](docs/EMAIL_CONNECTOR.md), and [Slack](docs/SLACK_CONNECTOR.md). Each uses provider-specific validation, credential references, approvals, and Broker tools; inbound access, attachments, bulk, and scheduling remain disabled.
+
 JARVIS OS is currently at **v1.7.0-alpha - Phase 3 Batch 2 Foundation**, with the Phase 4 controlled-execution foundation implemented through Prompt 70 on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
 Phase 4 adds explicit local approvals and a central execution broker for narrowly scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations. Execution remains `plan_only` by default; critical actions, secrets, force-push, browser writes, external messaging, and hidden/background operation remain blocked.

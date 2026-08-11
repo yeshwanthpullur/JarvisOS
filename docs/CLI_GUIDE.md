@@ -2,6 +2,8 @@
 
 Prompt 73 adds `telegram status`, `help`, `capabilities`, `identity`, `auth-status`, `pair`, `pair-status`, `unpair`, `chats`, `validate-chat`, `polling-status`, `start`, `stop`, `send-plan`, `send-dry-run`, `send`, `rate-status`, `history`, and `health`. Status never exposes the token, and `send` never bypasses scoped approval and Broker dispatch.
 
+Prompt 74 adds parallel `discord`, `email`, and `slack` namespaces for status, help, health, explicit destination validation, send planning/dry-run, approved send entry points, rate status, and bounded history. CLI output contains no credential values or recipient lists.
+
 ## Prompt 71 External Integration Controls
 
 Use `integration status`, `integration policy`, `provider show <id>`, `provider capabilities`, `provider health <id>`, `provider policy`, `provider validate <id>`, `provider history`, `credential status <id>`, and `credential required`. These commands display bounded metadata only. They never reveal credential values, contact a provider, enable paid/cloud execution, launch MCP/plugins, or replace Phase 4 approvals and Broker authority.

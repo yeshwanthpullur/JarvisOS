@@ -65,7 +65,8 @@ Updated: 2026-08-11
 - Prompt 71 - External Integration Security and Provider Architecture: implemented and verified on `main`.
 - Prompt 72 - External Communication Provider Foundation: implemented and verified on `main`.
 - Prompt 73 - Telegram Connector and Secure Bot Communication: implemented and verified on `main`; runtime unconfigured by default.
-- Prompts 74-84: specification-only; not started.
+- Prompt 74 - Discord, Email, and Slack Communication Connectors: implemented and verified on `main`; runtimes unconfigured by default.
+- Prompts 75-84: specification-only; not started.
 - Prompt 85 validation remains blocked until every prerequisite is implemented.
 
 ## Next Milestone

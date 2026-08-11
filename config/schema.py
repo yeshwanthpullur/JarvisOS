@@ -153,7 +153,7 @@ class SkillsConfig:
     allow_external_plugins: bool = False
     allow_mcp: bool = False
     default_execution_mode: str = "plan_only"
-    max_skills: int = 64
+    max_skills: int = 512
     max_capabilities_per_skill: int = 32
     max_output_chars: int = 8000
     require_approval_for_side_effects: bool = True
@@ -237,6 +237,16 @@ class ExternalProviderFlagsConfig:
 @dataclass(frozen=True, slots=True)
 class TelegramConfig:
     enabled:bool=False; transport:str="long_polling"; polling_enabled:bool=False; webhook_enabled:bool=False; require_authorized_chat:bool=True; allow_inbound_text:bool=True; allow_outbound_text:bool=True; allow_commands:bool=True; allow_media:bool=False; allow_documents:bool=False; allow_voice:bool=False; allow_group_chats:bool=False; allow_channel_posts:bool=False; allow_scheduled_send:bool=False; require_approval_for_send:bool=True; max_message_chars:int=3900; max_updates_per_poll:int=20; poll_timeout_seconds:int=10; max_retries:int=2; rate_limit_window:int=60; max_sends_per_window:int=5; save_history:bool=True; redact_sensitive_values:bool=True
+
+@dataclass(frozen=True,slots=True)
+class DiscordConfig:
+ enabled:bool=False;transport:str="bot_api";allow_send:bool=False;allow_inbound:bool=False;allow_webhook:bool=False;allow_attachments:bool=False;require_approval:bool=True;max_message_chars:int=1900;max_sends_per_window:int=3;max_retries:int=1
+@dataclass(frozen=True,slots=True)
+class EmailConnectorConfig:
+ smtp_enabled:bool=False;api_enabled:bool=False;allow_send:bool=False;allow_read:bool=False;allow_html:bool=False;allow_attachments:bool=False;allow_cc:bool=False;allow_bcc:bool=False;allow_bulk:bool=False;require_approval:bool=True;max_recipients:int=1;max_body_chars:int=10000;max_retries:int=1
+@dataclass(frozen=True,slots=True)
+class SlackConfig:
+ enabled:bool=False;allow_send:bool=False;allow_inbound:bool=False;allow_attachments:bool=False;require_approval:bool=True;max_message_chars:int=3900;max_sends_per_window:int=3;max_retries:int=1
 
 @dataclass(frozen=True, slots=True)
 class ExecutionConfig:
@@ -466,6 +476,9 @@ class AppSettings:
     external_integrations: ExternalIntegrationsConfig = field(default_factory=ExternalIntegrationsConfig)
     external_provider_flags: ExternalProviderFlagsConfig = field(default_factory=ExternalProviderFlagsConfig)
     telegram: TelegramConfig = field(default_factory=TelegramConfig)
+    discord: DiscordConfig = field(default_factory=DiscordConfig)
+    email_connector: EmailConnectorConfig = field(default_factory=EmailConnectorConfig)
+    slack: SlackConfig = field(default_factory=SlackConfig)
     execution: ExecutionConfig = field(default_factory=ExecutionConfig)
     approvals: ApprovalsConfig = field(default_factory=ApprovalsConfig)
     broker: BrokerConfig = field(default_factory=BrokerConfig)

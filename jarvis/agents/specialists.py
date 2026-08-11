@@ -43,10 +43,11 @@ def specialist_entries(*, vision_ready: bool = False) -> tuple[E, ...]:
         _entry("scheduler_agent", "Schedule and recurrence planning without an active runner.", (
             _cap("scheduler_planning", T.SCHEDULER, "One-time, recurring, and condition-watch schedule validation and planning.", limitations=("No background runner, OS cron, Task Scheduler, or notifications.",)),
         ), ready=True, health="plan_only", reason="Schedule planning and validation are ready; no task is installed or executed."),
-        _entry("communication_agent", "Communication planning with an optional governed Telegram text connector.", (
+        _entry("communication_agent", "Communication planning with optional governed Telegram, Discord, email, and Slack text connectors.", (
             _cap("communication_drafting", T.COMMUNICATION, "Draft messages, email, and notification plans without sending."),
             _cap("telegram_text", T.COMMUNICATION, "Validate authorized Telegram text and plan exact approved delivery.", risk=R.HIGH, approval=True, side_effects=("external_text_send",), permissions=("send_message","network_access"), limitations=("Available only when Telegram is explicitly configured, paired, and Broker-approved.",)),
-        ), ready=True, health="telegram_optional", reason="Drafting and Telegram text transport are implemented; Telegram runtime is disabled and unconfigured by default."),
+            _cap("external_text_send",T.COMMUNICATION,"Validate and send Discord, email, or Slack text after exact approval.",risk=R.HIGH,approval=True,side_effects=("external_text_send",),permissions=("provider_specific_send","network_access"),limitations=("Available only when the selected provider is explicitly configured and Broker-approved.",)),
+        ), ready=True, health="connectors_optional", reason="Four text connectors are implemented; all external runtimes are disabled and unconfigured by default."),
         _entry("adapter_agent", "Manifest-only MCP and external plugin planning.", (
             _cap("adapter_planning", T.ADAPTER, "Adapter manifests, permission review, and MCP/plugin integration planning.", risk=R.MEDIUM, approval=True, permissions=("manifest_read",), limitations=("MCP runtime, plugin installation/execution, credentials, and network are disabled.",)),
         ), ready=True, health="manifest_only", reason="Manifest and permission planning are ready; no adapter executes."),

@@ -25,6 +25,8 @@ python main.py --ui
 
 ## Working Features
 
+- Prompt 74 outbound connector foundation: Discord, SMTP/API email, and Slack plain-text sends are implemented behind exact approval and Broker routing, with all provider runtimes disabled and unconfigured by default.
+
 - Prompt 73 secure Telegram connector: text-only Bot API transport, explicit private-owner pairing, bounded polling, duplicate/rate controls, and approval/Broker-gated independent sends are implemented. Runtime remains disabled and unconfigured until an approved local token is supplied.
 
 - Prompt 72 external communication foundation: provider profiles, explicit destination validation, outbound egress/content/attachment policy, rate/duplicate metadata, and non-sending CLI dry runs are implemented. External sending remains unavailable.

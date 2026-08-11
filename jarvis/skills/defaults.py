@@ -60,6 +60,15 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("telegram_text_receive_skill", "communication", "telegram_text_receive", "Normalize authorized text-only Telegram updates.", permissions=(P.NETWORK_ACCESS,)),
         _ready("telegram_text_send_skill", "communication", "telegram_text_send", "Send bounded text only through approval and Broker.", permissions=(P.SEND_MESSAGE,P.NETWORK_ACCESS)),
         _ready("telegram_polling_skill", "communication", "telegram_polling", "Run explicit bounded long-poll cycles.", permissions=(P.NETWORK_ACCESS,)),
+        _ready("discord_provider_status_skill","communication","discord_provider_status","Inspect Discord readiness without exposing credentials."),
+        _ready("discord_destination_validation_skill","communication","discord_destination_validation","Validate an explicit Discord channel reference."),
+        _ready("discord_text_send_skill","communication","discord_text_send","Send approved bounded Discord text.",permissions=(P.SEND_MESSAGE,P.NETWORK_ACCESS)),
+        _ready("email_provider_status_skill","communication","email_provider_status","Inspect SMTP/API email readiness without sending."),
+        _ready("email_address_validation_skill","communication","email_address_validation","Validate bounded recipient and header metadata."),
+        _ready("email_text_send_skill","communication","email_text_send","Send approved plain-text email.",permissions=(P.SEND_EMAIL,P.NETWORK_ACCESS)),
+        _ready("slack_provider_status_skill","communication","slack_provider_status","Inspect Slack readiness without exposing credentials."),
+        _ready("slack_destination_validation_skill","communication","slack_destination_validation","Validate an explicit Slack channel reference."),
+        _ready("slack_text_send_skill","communication","slack_text_send","Send approved bounded Slack text.",permissions=(P.SEND_MESSAGE,P.NETWORK_ACCESS)),
         _ready("communication_attachment_validation_skill", "communication", "communication_attachment_validation", "Validate attachment metadata with upload disabled."),
         _ready("adapter_planning_skill", "developer", "adapter_planning", "Plan disabled adapters and integrations."),
         _ready("adapter_manifest_skill", "developer", "adapter_manifest", "Inspect bounded adapter manifests."),
@@ -90,6 +99,7 @@ def build_default_skill_registry() -> SkillRegistry:
     future = (
         _future("academic_search_skill", "research", P.NETWORK_ACCESS), _future("citation_manager_skill", "research", P.READ_CONTEXT), _future("external_search_api_skill", "research", P.NETWORK_ACCESS),
         _future("mcp_gateway_skill", "developer", P.NETWORK_ACCESS), _future("telegram_skill", "communication", P.SEND_MESSAGE), _future("telegram_attachment_skill", "communication", P.SEND_MESSAGE), _future("telegram_voice_skill", "communication", P.MICROPHONE_ACCESS), _future("telegram_video_skill", "communication", P.SEND_MESSAGE), _future("telegram_group_skill", "communication", P.SEND_MESSAGE), _future("telegram_channel_post_skill", "communication", P.SEND_MESSAGE), _future("telegram_scheduled_send_skill", "communication", P.SEND_MESSAGE), _future("telegram_webhook_skill", "communication", P.NETWORK_ACCESS), _future("discord_skill", "communication", P.SEND_MESSAGE),
+        _future("discord_inbound_skill","communication",P.NETWORK_ACCESS),_future("discord_attachment_skill","communication",P.SEND_MESSAGE),_future("email_read_skill","email",P.NETWORK_ACCESS),_future("email_attachment_skill","email",P.SEND_EMAIL),_future("email_bulk_skill","email",P.SEND_EMAIL),_future("slack_inbound_skill","communication",P.NETWORK_ACCESS),_future("slack_attachment_skill","communication",P.SEND_MESSAGE),
         _future("email_skill", "email", P.SEND_EMAIL), _future("calendar_skill", "calendar", P.CALENDAR_WRITE),
         _future("slack_send_skill", "communication", P.SEND_MESSAGE), _future("whatsapp_send_skill", "communication", P.SEND_MESSAGE), _future("external_attachment_send_skill", "communication", P.SEND_MESSAGE), _future("scheduled_external_send_skill", "communication", P.SEND_MESSAGE), _future("bulk_message_skill", "communication", P.SEND_MESSAGE),
         _future("browser_write_skill", "browser", P.BROWSER_WRITE), _future("code_edit_skill", "coding", P.WRITE_FILES),
@@ -105,4 +115,4 @@ def build_default_skill_registry() -> SkillRegistry:
         _future("mcp_runtime_skill", "developer", P.EXECUTE_COMMANDS), _future("plugin_install_skill", "developer", P.EXECUTE_COMMANDS), _future("external_tool_execution_skill", "developer", P.EXECUTE_COMMANDS),
         _future("nemotron_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("nvidia_nim_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("vllm_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("llama_cpp_runtime_skill", "system", P.EXECUTE_COMMANDS), _future("model_download_skill", "system", P.NETWORK_ACCESS),
     )
-    return SkillRegistry(builtins + future, max_skills=128)
+    return SkillRegistry(builtins + future, max_skills=512)

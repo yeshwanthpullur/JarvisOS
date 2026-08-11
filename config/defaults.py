@@ -219,7 +219,7 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "allow_external_plugins": False,
         "allow_mcp": False,
         "default_execution_mode": "plan_only",
-        "max_skills": 64,
+        "max_skills": 512,
         "max_capabilities_per_skill": 32,
         "max_output_chars": 8000,
         "require_approval_for_side_effects": True,
@@ -340,6 +340,9 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
     "external_integrations": {"enabled":True,"default_mode":"metadata_only","allow_remote_providers":False,"allow_paid_providers":False,"allow_external_execution":False,"require_approval_for_external_actions":True,"block_secret_egress":True,"max_providers":32,"max_history_items":50,"health_cache_seconds":60,"max_retries":1},
     "external_provider_flags": {"telegram_enabled":False,"discord_enabled":False,"email_smtp_enabled":False,"email_api_enabled":False,"slack_enabled":False,"matrix_enabled":False,"whatsapp_enabled":False,"github_enabled":False,"mcp_local_enabled":False,"mcp_remote_enabled":False,"external_plugins_enabled":False,"nvidia_nim_enabled":False,"openai_compatible_enabled":False},
     "telegram": {"enabled":False,"transport":"long_polling","polling_enabled":False,"webhook_enabled":False,"require_authorized_chat":True,"allow_inbound_text":True,"allow_outbound_text":True,"allow_commands":True,"allow_media":False,"allow_documents":False,"allow_voice":False,"allow_group_chats":False,"allow_channel_posts":False,"allow_scheduled_send":False,"require_approval_for_send":True,"max_message_chars":3900,"max_updates_per_poll":20,"poll_timeout_seconds":10,"max_retries":2,"rate_limit_window":60,"max_sends_per_window":5,"save_history":True,"redact_sensitive_values":True},
+    "discord":{"enabled":False,"transport":"bot_api","allow_send":False,"allow_inbound":False,"allow_webhook":False,"allow_attachments":False,"require_approval":True,"max_message_chars":1900,"max_sends_per_window":3,"max_retries":1},
+    "email_connector":{"smtp_enabled":False,"api_enabled":False,"allow_send":False,"allow_read":False,"allow_html":False,"allow_attachments":False,"allow_cc":False,"allow_bcc":False,"allow_bulk":False,"require_approval":True,"max_recipients":1,"max_body_chars":10000,"max_retries":1},
+    "slack":{"enabled":False,"allow_send":False,"allow_inbound":False,"allow_attachments":False,"require_approval":True,"max_message_chars":3900,"max_sends_per_window":3,"max_retries":1},
     "desktop": {
         "enabled": True,
         "platform": "windows",

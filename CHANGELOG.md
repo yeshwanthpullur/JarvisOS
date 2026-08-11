@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Prompt 74 Outbound Connectors
+
+- Added outbound-only Discord, email, and Slack text connectors with bounded health, rate limits, duplicate checks, and metadata-only history.
+- Added provider CLI/config, routing, policy actions, and approval-gated Broker tools.
+- Defaults stay off; inbound access, attachments, bulk/scheduled sends, webhooks, enumeration, and credential output stay disabled.
+
 ## Unreleased - Prompt 73 Secure Telegram Connector
 
 - Added text-only Telegram Bot API transport, identity validation, private-owner pairing, authorization, replay protection, explicit polling lifecycle, message chunking, rate limits, and metadata-only observability.

@@ -10,8 +10,8 @@ class SkillRegistryError(ValueError):
 
 
 class SkillRegistry:
-    def __init__(self, skills: tuple[SkillManifest, ...] = (), *, max_skills: int = 64, block_secrets_access: bool = True) -> None:
-        self.max_skills = max(1, min(max_skills, 128))
+    def __init__(self, skills: tuple[SkillManifest, ...] = (), *, max_skills: int = 512, block_secrets_access: bool = True) -> None:
+        self.max_skills = max(1, min(max_skills, 512))
         self.block_secrets_access = block_secrets_access
         self._skills: dict[str, SkillManifest] = {}
         for skill in skills:

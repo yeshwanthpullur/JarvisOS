@@ -42,6 +42,7 @@ from config.schema import (
     ExternalIntegrationsConfig,
     ExternalProviderFlagsConfig,
     TelegramConfig,
+    DiscordConfig,EmailConnectorConfig,SlackConfig,
 )
 
 
@@ -268,6 +269,9 @@ def load_settings(
         external_integrations=ExternalIntegrationsConfig(**raw_config["external_integrations"]),
         external_provider_flags=ExternalProviderFlagsConfig(**raw_config["external_provider_flags"]),
         telegram=TelegramConfig(**raw_config["telegram"]),
+        discord=DiscordConfig(**raw_config["discord"]),
+        email_connector=EmailConnectorConfig(**raw_config["email_connector"]),
+        slack=SlackConfig(**raw_config["slack"]),
         plugins=PluginsConfig(
             enabled=_coerce_bool(raw_config["plugins"]["enabled"]),
             plugin_dir=_resolve_path(raw_config["plugins"]["plugin_dir"]),

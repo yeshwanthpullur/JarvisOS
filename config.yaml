@@ -456,6 +456,40 @@ telegram:
   max_sends_per_window: 5
   save_history: true
   redact_sensitive_values: true
+discord:
+  enabled: false
+  transport: bot_api
+  allow_send: false
+  allow_inbound: false
+  allow_webhook: false
+  allow_attachments: false
+  require_approval: true
+  max_message_chars: 1900
+  max_sends_per_window: 3
+  max_retries: 1
+email_connector:
+  smtp_enabled: false
+  api_enabled: false
+  allow_send: false
+  allow_read: false
+  allow_html: false
+  allow_attachments: false
+  allow_cc: false
+  allow_bcc: false
+  allow_bulk: false
+  require_approval: true
+  max_recipients: 1
+  max_body_chars: 10000
+  max_retries: 1
+slack:
+  enabled: false
+  allow_send: false
+  allow_inbound: false
+  allow_attachments: false
+  require_approval: true
+  max_message_chars: 3900
+  max_sends_per_window: 3
+  max_retries: 1
 
 release_readiness:
   enabled: true

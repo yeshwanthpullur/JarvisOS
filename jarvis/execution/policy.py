@@ -10,12 +10,13 @@ ACTION_MAP=(
     (("http://","https://","read webpage","read this public"),"browser_read"),
     (("notification","notify me","show me a local"),"notification_send"),
     (("telegram send","send this to telegram","message me on telegram"),"telegram_send"),
+    (("discord send","send this to discord"),"discord_send"),(("email send","email this","send email"),"email_send"),(("slack send","send this to slack"),"slack_send"),
     (("remind","run due","schedule"),"scheduler_run"),
 )
 PERMISSIONS={
  "file_write":(ExecutionPermission.WRITE_FILES,), "command_execute":(ExecutionPermission.EXECUTE_COMMANDS,),
  "git_write":(ExecutionPermission.GIT_WRITE,), "browser_read":(ExecutionPermission.BROWSER_READ,ExecutionPermission.NETWORK_ACCESS),
- "notification_send":(ExecutionPermission.SEND_NOTIFICATION,), "scheduler_run":(ExecutionPermission.SCHEDULER_RUN,), "telegram_send":(ExecutionPermission.SEND_MESSAGE,ExecutionPermission.NETWORK_ACCESS),
+ "notification_send":(ExecutionPermission.SEND_NOTIFICATION,), "scheduler_run":(ExecutionPermission.SCHEDULER_RUN,), "telegram_send":(ExecutionPermission.SEND_MESSAGE,ExecutionPermission.NETWORK_ACCESS), "discord_send":(ExecutionPermission.SEND_MESSAGE,ExecutionPermission.NETWORK_ACCESS), "email_send":(ExecutionPermission.SEND_EMAIL,ExecutionPermission.NETWORK_ACCESS), "slack_send":(ExecutionPermission.SEND_MESSAGE,ExecutionPermission.NETWORK_ACCESS),
 }
 
 class ExecutionPolicyEngine:
