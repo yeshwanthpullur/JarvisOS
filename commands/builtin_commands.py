@@ -25,6 +25,7 @@ from jarvis.evaluation import EvaluationRunner, render_evaluation_command
 from jarvis.execution.cli import get_phase4_runtime, render_phase4_command
 from jarvis.release_readiness import ReleaseReadinessEvaluator, render_release_command
 from jarvis.integrations import ExternalIntegrationControlPlane, render_external_command
+from jarvis.integrations.telegram import TelegramRuntime, render_telegram_command
 
 
 def _manager(context: CommandContext):
@@ -177,6 +178,18 @@ def _external_integrations(context: CommandContext) -> ExternalIntegrationContro
     metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
     plane = direct if isinstance(direct, ExternalIntegrationControlPlane) else metadata.get("external_integrations")
     return plane if isinstance(plane, ExternalIntegrationControlPlane) else ExternalIntegrationControlPlane()
+
+def _telegram_runtime(context: CommandContext) -> TelegramRuntime:
+    conversation=context.conversation_context
+    direct=getattr(conversation,"telegram_runtime",None) if conversation is not None else None
+    metadata=getattr(conversation,"metadata",{}) or {} if conversation is not None else {}
+    runtime=direct if isinstance(direct,TelegramRuntime) else metadata.get("telegram_runtime")
+    if isinstance(runtime,TelegramRuntime):return runtime
+    runtime=TelegramRuntime()
+    if conversation is not None:
+        try:setattr(conversation,"telegram_runtime",runtime)
+        except Exception:pass
+    return runtime
 
 
 def _tool_manager(context: CommandContext):
@@ -337,6 +350,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         evaluation_status = _evaluation_runner(context).status()
         release_status = _release_evaluator(context).evaluate()
         external_summary = _external_integrations(context).registry.summary()
+        telegram_status = _telegram_runtime(context).status()
         phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
         phase3_text = (
             "phase3="
@@ -349,10 +363,12 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
-            f"phase4=local ext:{external_summary['enabled']}/{external_summary['total']}/off p85={release_status.status.value} "
+            f"phase4=local ext:{external_summary['enabled']}/{external_summary['total']}/off telegram:{telegram_status['state']} p85={release_status.status.value} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
+            "telegram_connector_status": telegram_status["state"],
+            "telegram_runtime_ready": telegram_status["ready"],
             "total_agents": agent_summary["total_agents"],
             "ready_agents": agent_summary["ready_agents"],
             "foundation_agents": foundation_agents,
@@ -523,6 +539,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("communication help", "Show communication command help", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication providers", "List disabled communication providers", "communication", (), CommandPermission.DIAGNOSTIC),
         *((f"communication {op}", f"External communication {op}", "communication", (), CommandPermission.DIAGNOSTIC) for op in ("provider-status","provider-show","provider-health","destination-validate","send-plan","send-safety","send-dry-run","attachment-check","rate-status")),
+        *((f"telegram {op}", f"Secure Telegram connector {op}", "communication", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","capabilities","identity","auth-status","pair","pair-status","unpair","chats","validate-chat","polling-status","start","stop","send-plan","send-dry-run","send","rate-status","history","health")),
         ("communication plan", "Plan draft-only communication", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication safety", "Evaluate communication safety", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication draft", "Create an unsent draft", "communication", (), CommandPermission.DIAGNOSTIC),
@@ -839,6 +856,8 @@ def _handler_for(name: str):
                 return _text_response(LimitationsRegister().command(name, context.arguments))
             except LimitationsRegisterError as exc:
                 return _text_response(f"Limitations unavailable: {exc}.")
+        if name.startswith("telegram "):
+            return _text_response(render_telegram_command(name,context.arguments,_telegram_runtime(context)))
         if name.startswith("conversation "):
             intelligence = _conversation_intelligence(context)
             if intelligence is None:

@@ -1,6 +1,6 @@
 # Manual Scheduler Runtime
 
-Prompt 72 does not permit scheduled external sends; scheduler execution remains limited to its existing local notification boundary.
+Prompt 73 does not permit scheduled Telegram sends; scheduler execution remains limited to its existing local notification boundary.
 
 The scheduler stores bounded in-memory notification jobs and runs them only when the user explicitly invokes a run command. It supports one-time jobs, recurrence of at least 60 minutes, due inspection, run, run-due, pause, resume, and cancel.
 

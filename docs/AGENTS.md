@@ -1,5 +1,7 @@
 # Agent Protocol and Registry
 
+The Communication Agent can now plan and validate Telegram text and report its configuration state. It does not handle credentials and cannot call the adapter around the Broker.
+
 Communication Agent now understands external provider plans while retaining draft-only execution. It holds no credentials and cannot bypass Approval or Broker.
 
 ## Phase 4 Execution Specialists

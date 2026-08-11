@@ -1,5 +1,7 @@
 # Execution Policy
 
+Telegram reply, independent send, pairing, unpairing, polling start, and polling stop are distinct actions. Independent send is high-risk and approval-required; critical requests remain blocked regardless of transport.
+
 External communication remains disabled globally and per provider. There is no broad external-action switch that bypasses provider policy.
 
 The execution policy classifies actions by risk, permissions, locality, scope, and mode. The default mode is `plan_only`; critical actions are blocked.

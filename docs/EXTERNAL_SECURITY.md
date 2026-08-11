@@ -1,5 +1,7 @@
 # External Integration Security
 
+Telegram applies private-owner pairing, replay protection, fixed endpoints, bounded input, content-free audit, and exact approval/Broker gates. Unknown users, groups, unsupported media, and policy-changing prompts remain untrusted or blocked.
+
 External communication adds exact destination, content fingerprint, attachment, rate, and duplicate checks. Material recipient, content, or attachment changes require a new future approval.
 
 Phase 4 Approval System, Execution Policy, and Broker remain the only authorities for side effects. The control plane cannot grant approval or execute an action.

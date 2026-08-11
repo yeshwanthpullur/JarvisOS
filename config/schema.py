@@ -235,6 +235,10 @@ class ExternalProviderFlagsConfig:
     telegram_enabled: bool = False; discord_enabled: bool = False; email_smtp_enabled: bool = False; email_api_enabled: bool = False; slack_enabled: bool = False; matrix_enabled: bool = False; whatsapp_enabled: bool = False; github_enabled: bool = False; mcp_local_enabled: bool = False; mcp_remote_enabled: bool = False; external_plugins_enabled: bool = False; nvidia_nim_enabled: bool = False; openai_compatible_enabled: bool = False
 
 @dataclass(frozen=True, slots=True)
+class TelegramConfig:
+    enabled:bool=False; transport:str="long_polling"; polling_enabled:bool=False; webhook_enabled:bool=False; require_authorized_chat:bool=True; allow_inbound_text:bool=True; allow_outbound_text:bool=True; allow_commands:bool=True; allow_media:bool=False; allow_documents:bool=False; allow_voice:bool=False; allow_group_chats:bool=False; allow_channel_posts:bool=False; allow_scheduled_send:bool=False; require_approval_for_send:bool=True; max_message_chars:int=3900; max_updates_per_poll:int=20; poll_timeout_seconds:int=10; max_retries:int=2; rate_limit_window:int=60; max_sends_per_window:int=5; save_history:bool=True; redact_sensitive_values:bool=True
+
+@dataclass(frozen=True, slots=True)
 class ExecutionConfig:
     enabled: bool = True; default_mode: str = "plan_only"; local_first: bool = True; allow_file_writes: bool = True; allow_command_execution: bool = True; allow_git_writes: bool = True; allow_browser_read: bool = True; allow_browser_actions: bool = False; allow_notifications: bool = True; allow_scheduler_runner: bool = True; allow_communication_send: bool = False; allow_mcp_execution: bool = False; allow_model_runtime_start: bool = False; allow_external_network: bool = False; allow_background_execution: bool = False; allow_secrets_access: bool = False; allow_credentials_access: bool = False; require_approval_for_side_effects: bool = True; block_critical_actions: bool = True; max_plan_steps: int = 8; max_history_items: int = 50; save_history: bool = True; redact_sensitive_values: bool = True; block_private_paths: bool = True
 @dataclass(frozen=True, slots=True)
@@ -461,6 +465,7 @@ class AppSettings:
     release_readiness: ReleaseReadinessConfig = field(default_factory=ReleaseReadinessConfig)
     external_integrations: ExternalIntegrationsConfig = field(default_factory=ExternalIntegrationsConfig)
     external_provider_flags: ExternalProviderFlagsConfig = field(default_factory=ExternalProviderFlagsConfig)
+    telegram: TelegramConfig = field(default_factory=TelegramConfig)
     execution: ExecutionConfig = field(default_factory=ExecutionConfig)
     approvals: ApprovalsConfig = field(default_factory=ApprovalsConfig)
     broker: BrokerConfig = field(default_factory=BrokerConfig)

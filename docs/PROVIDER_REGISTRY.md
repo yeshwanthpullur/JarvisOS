@@ -1,5 +1,7 @@
 # External Provider Registry
 
+Telegram now has an implemented text adapter with distinct disabled, credential-missing, authentication-unverified, and ready runtime states. Token presence alone never means ready.
+
 Prompt 72 communication profiles reference central provider IDs and cannot elevate central provider state or enable execution.
 
 The registry stores typed provider identity, category, capabilities, risk, permissions, side effects, locality, cost class, credential references, health metadata, and policy. Duplicate identifiers and duplicate per-provider capabilities are rejected.

@@ -41,6 +41,7 @@ from config.schema import (
     ImageGenerationConfig,
     ExternalIntegrationsConfig,
     ExternalProviderFlagsConfig,
+    TelegramConfig,
 )
 
 
@@ -266,6 +267,7 @@ def load_settings(
         ),
         external_integrations=ExternalIntegrationsConfig(**raw_config["external_integrations"]),
         external_provider_flags=ExternalProviderFlagsConfig(**raw_config["external_provider_flags"]),
+        telegram=TelegramConfig(**raw_config["telegram"]),
         plugins=PluginsConfig(
             enabled=_coerce_bool(raw_config["plugins"]["enabled"]),
             plugin_dir=_resolve_path(raw_config["plugins"]["plugin_dir"]),

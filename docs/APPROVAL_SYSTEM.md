@@ -1,5 +1,7 @@
 # Approval System
 
+Telegram approval commands are interface concepts only; they must resolve an authorized, unexpired, exact-scope record in this authoritative system. Prompt 73 creates no parallel approval storage.
+
 Prompt 72 keeps this system authoritative for future external sends. Approval must bind provider, exact destination, content fingerprint/summary, attachments, permission, and expiry; material changes require new approval.
 
 Approvals are local, bounded, in-memory authorization records. A request records an action fingerprint, resource, permissions, risk, expiry, and state. Approval is exact: permission, action, and resource mismatches are rejected.

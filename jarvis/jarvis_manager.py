@@ -226,6 +226,9 @@ class JarvisManager:
         )
         self.skill_registry = build_default_skill_registry()
         self.external_integrations = ExternalIntegrationControlPlane()
+        from jarvis.integrations.telegram import TelegramPolicy, TelegramRuntime
+        telegram_config=getattr(context.settings,"telegram",None) if context else None
+        self.telegram_runtime=TelegramRuntime(policy=TelegramPolicy(**{name:getattr(telegram_config,name) for name in TelegramPolicy.__dataclass_fields__}) if telegram_config else TelegramPolicy())
         register_specialist_agents(self.agent_registry, vision_ready=vision_ready)
         prime_config = getattr(context.settings, "prime", None) if context else None
         self.prime_agent = PrimeAgent(
@@ -290,6 +293,7 @@ class JarvisManager:
             "model_router": self.model_router,
             "skill_registry": self.skill_registry,
             "external_integrations": self.external_integrations,
+            "telegram_runtime": self.telegram_runtime,
             "skills": self.skills,
             "workflow": self.workflow,
             "retrieval": self.retrieval,
@@ -382,5 +386,5 @@ class JarvisManager:
             web_automation=self.web_automation,
             mobile_automation=self.mobile_automation,
             logger=self.logger,
-            metadata={**(base.metadata if base else {}), "external_integrations": self.external_integrations, **request.metadata},
+            metadata={**(base.metadata if base else {}), "external_integrations": self.external_integrations, "telegram_runtime": self.telegram_runtime, **request.metadata},
         )

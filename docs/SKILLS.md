@@ -1,6 +1,6 @@
 # Tool and Skill Registry
 
-Prompt 72 adds ready metadata-only skills for provider health, destination validation, message planning/safety, egress, rate, duplicate, and attachment checks. Provider send, attachment, scheduled, and bulk skills remain future/disabled.
+Prompt 73 adds Telegram status, identity, pairing, destination, text receive/send, and bounded polling skill declarations. Send and network permissions remain approval-gated; attachments, voice, video, groups, channels, scheduling, and webhook skills are future/disabled.
 
 ## Phase 4 Skills
 

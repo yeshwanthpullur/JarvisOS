@@ -432,6 +432,30 @@ external_provider_flags:
   external_plugins_enabled: false
   nvidia_nim_enabled: false
   openai_compatible_enabled: false
+telegram:
+  enabled: false
+  transport: long_polling
+  polling_enabled: false
+  webhook_enabled: false
+  require_authorized_chat: true
+  allow_inbound_text: true
+  allow_outbound_text: true
+  allow_commands: true
+  allow_media: false
+  allow_documents: false
+  allow_voice: false
+  allow_group_chats: false
+  allow_channel_posts: false
+  allow_scheduled_send: false
+  require_approval_for_send: true
+  max_message_chars: 3900
+  max_updates_per_poll: 20
+  poll_timeout_seconds: 10
+  max_retries: 2
+  rate_limit_window: 60
+  max_sends_per_window: 5
+  save_history: true
+  redact_sensitive_values: true
 
 release_readiness:
   enabled: true

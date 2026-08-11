@@ -28,7 +28,7 @@ class Phase3SpecialistAgentTests(unittest.TestCase):
         self.assertEqual(self.agent_registry.get_agent("sync_agent").health, "partial_local_queue")
 
     def test_future_agents_are_unavailable(self) -> None:
-        self.assertEqual(self.agent_registry.get_agent("communication_agent").health, "draft_only")
+        self.assertEqual(self.agent_registry.get_agent("communication_agent").health, "telegram_optional")
         self.assertEqual(self.agent_registry.get_agent("communication_agent").status, AgentStatus.READY)
         for name in ("robotics_agent", "drone_agent", "social_media_agent"):
             entry = self.agent_registry.get_agent(name)

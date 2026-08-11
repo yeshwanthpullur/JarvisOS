@@ -1,5 +1,7 @@
 # Credential Handling
 
+`TELEGRAM_BOT_TOKEN` is a runtime reference only. Identity checks may report credential presence and bounded bot metadata, never the token value, Authorization header, or raw provider error.
+
 Communication profiles expose only required reference names and state booleans. Tokens, webhook URLs, SMTP passwords, sessions, and authorization headers never enter message plans.
 
 The provider registry stores credential reference names and presence booleans only. It never reads or returns values. Redaction covers API keys, bearer and bot tokens, passwords, private keys, authorization headers, cookies, session IDs, webhook secrets, OAuth and refresh tokens, SMTP passwords, and GitHub tokens.

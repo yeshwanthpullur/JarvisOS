@@ -53,6 +53,13 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("external_data_egress_skill", "communication", "external_data_egress", "Classify external message data egress."),
         _ready("outbound_rate_limit_skill", "communication", "outbound_rate_limit", "Inspect bounded outbound rate policy."),
         _ready("duplicate_send_protection_skill", "communication", "duplicate_send_protection", "Plan content-free duplicate suppression."),
+        _ready("telegram_provider_status_skill", "communication", "telegram_provider_status", "Inspect Telegram readiness without exposing credentials."),
+        _ready("telegram_identity_skill", "communication", "telegram_identity", "Verify bounded Telegram bot identity metadata.", permissions=(P.NETWORK_ACCESS,)),
+        _ready("telegram_pairing_skill", "communication", "telegram_pairing", "Create expiring single-use private-chat pairing."),
+        _ready("telegram_destination_validation_skill", "communication", "telegram_destination_validation", "Validate explicit Telegram chat references."),
+        _ready("telegram_text_receive_skill", "communication", "telegram_text_receive", "Normalize authorized text-only Telegram updates.", permissions=(P.NETWORK_ACCESS,)),
+        _ready("telegram_text_send_skill", "communication", "telegram_text_send", "Send bounded text only through approval and Broker.", permissions=(P.SEND_MESSAGE,P.NETWORK_ACCESS)),
+        _ready("telegram_polling_skill", "communication", "telegram_polling", "Run explicit bounded long-poll cycles.", permissions=(P.NETWORK_ACCESS,)),
         _ready("communication_attachment_validation_skill", "communication", "communication_attachment_validation", "Validate attachment metadata with upload disabled."),
         _ready("adapter_planning_skill", "developer", "adapter_planning", "Plan disabled adapters and integrations."),
         _ready("adapter_manifest_skill", "developer", "adapter_manifest", "Inspect bounded adapter manifests."),
@@ -82,7 +89,7 @@ def build_default_skill_registry() -> SkillRegistry:
     )
     future = (
         _future("academic_search_skill", "research", P.NETWORK_ACCESS), _future("citation_manager_skill", "research", P.READ_CONTEXT), _future("external_search_api_skill", "research", P.NETWORK_ACCESS),
-        _future("mcp_gateway_skill", "developer", P.NETWORK_ACCESS), _future("telegram_skill", "communication", P.SEND_MESSAGE), _future("discord_skill", "communication", P.SEND_MESSAGE),
+        _future("mcp_gateway_skill", "developer", P.NETWORK_ACCESS), _future("telegram_skill", "communication", P.SEND_MESSAGE), _future("telegram_attachment_skill", "communication", P.SEND_MESSAGE), _future("telegram_voice_skill", "communication", P.MICROPHONE_ACCESS), _future("telegram_video_skill", "communication", P.SEND_MESSAGE), _future("telegram_group_skill", "communication", P.SEND_MESSAGE), _future("telegram_channel_post_skill", "communication", P.SEND_MESSAGE), _future("telegram_scheduled_send_skill", "communication", P.SEND_MESSAGE), _future("telegram_webhook_skill", "communication", P.NETWORK_ACCESS), _future("discord_skill", "communication", P.SEND_MESSAGE),
         _future("email_skill", "email", P.SEND_EMAIL), _future("calendar_skill", "calendar", P.CALENDAR_WRITE),
         _future("slack_send_skill", "communication", P.SEND_MESSAGE), _future("whatsapp_send_skill", "communication", P.SEND_MESSAGE), _future("external_attachment_send_skill", "communication", P.SEND_MESSAGE), _future("scheduled_external_send_skill", "communication", P.SEND_MESSAGE), _future("bulk_message_skill", "communication", P.SEND_MESSAGE),
         _future("browser_write_skill", "browser", P.BROWSER_WRITE), _future("code_edit_skill", "coding", P.WRITE_FILES),

@@ -1,5 +1,7 @@
 # Evaluation And Observability
 
+Telegram observability is bounded metadata only: provider state, poll/update counts, authorization outcomes, sends, failures, rate limits, duplicates, and approval events. Tokens, message bodies, raw updates, and chat profiles are excluded.
+
 External communication observability is bounded to provider/action/status/rate/error/approval-reference metadata. Message bodies, contact lists, credentials, sessions, and attachments are excluded.
 
 ## Execution Audit

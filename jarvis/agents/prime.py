@@ -140,7 +140,7 @@ def classify_risk(text: str, intent: AgentCapabilityType | None = None) -> Agent
     intent = intent or classify_intent(text)
     if intent is AgentCapabilityType.DRONE or any(term in lowered for term in ("steal credential", "bypass security", "bypass captcha", "captcha", "read my .env", ".env", "spam this", "100 people", "friend's location", "unlock device", "force push", "delete all")):
         return AgentRiskLevel.CRITICAL
-    if any(term in lowered for term in ("post", "send email", "send message", "delete", "purchase", "deploy", "account", "control", "write file", "fix automatically", "commit", "push", "install dependency", "microphone", "camera")):
+    if any(term in lowered for term in ("post", "send email", "send message", "send this to", "message me on", "delete", "purchase", "deploy", "account", "control", "write file", "fix automatically", "commit", "push", "install dependency", "microphone", "camera")):
         return AgentRiskLevel.HIGH
     if any(term in lowered for term in ("inspect file", "process file", "edit video", "generate an image")):
         return AgentRiskLevel.MEDIUM
@@ -212,7 +212,7 @@ class PrimeAgent:
             mode = AgentExecutionMode.BLOCKED
             blocked_reason = "Critical-risk execution is blocked by Phase 3 policy."
         elif risk is AgentRiskLevel.HIGH and intent is AgentCapabilityType.COMMUNICATION:
-            blocked_reason = "External sending/posting is unavailable; communication_agent is draft-only."
+            blocked_reason = "External communication requires a configured provider, exact approval, and Broker routing; no send occurred."
         elif not available:
             blocked_reason = entry.reason if entry else "No registered agent supports this request."
         model_route = None

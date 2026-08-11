@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Prompt 73 Secure Telegram Connector
+
+- Added text-only Telegram Bot API transport, identity validation, private-owner pairing, authorization, replay protection, explicit polling lifecycle, message chunking, rate limits, and metadata-only observability.
+- Added bounded `telegram` CLI controls plus Prime, Communication, Agent, Skill, Execution Policy, Approval, and Broker integration.
+- Independent sends require exact approval and Broker dispatch. The connector is disabled and unconfigured by default; attachments, voice, groups, channels, webhook, scheduled sends, and permanent daemons remain disabled.
+
 ## Unreleased - Prompt 72 External Communication Provider Foundation
 
 - Added provider-neutral communication profiles, destination validation, message planning/validation models, attachment policy, outbound rate metadata, duplicate protection, and bounded CLI diagnostics.

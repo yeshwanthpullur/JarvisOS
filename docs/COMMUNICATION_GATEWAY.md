@@ -1,5 +1,7 @@
 # Communication Gateway
 
+Prompt 73 routes authorized Telegram text through this gateway. Telegram cannot elevate trust, mutate memory automatically, select an unsafe model route, or bypass execution policy.
+
 Prompt 72 extends the draft-only gateway with a non-sending external provider foundation. Provider readiness, destination validity, egress, content/attachment safety, rate policy, duplicate protection, and approval are independently visible; no adapter can send yet.
 
 ## Notification Boundary

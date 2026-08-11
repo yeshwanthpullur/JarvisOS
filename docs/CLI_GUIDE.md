@@ -1,6 +1,6 @@
 # CLI Guide
 
-Prompt 72 adds `communication provider-status`, `provider-show`, `provider-health`, `destination-validate`, `send-plan`, `send-safety`, `send-dry-run`, `attachment-check`, and `rate-status`. They perform no send or upload.
+Prompt 73 adds `telegram status`, `help`, `capabilities`, `identity`, `auth-status`, `pair`, `pair-status`, `unpair`, `chats`, `validate-chat`, `polling-status`, `start`, `stop`, `send-plan`, `send-dry-run`, `send`, `rate-status`, `history`, and `health`. Status never exposes the token, and `send` never bypasses scoped approval and Broker dispatch.
 
 ## Prompt 71 External Integration Controls
 

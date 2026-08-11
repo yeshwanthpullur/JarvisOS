@@ -1,5 +1,7 @@
 # Data Egress Policy
 
+Telegram direct replies are correlated to an authorized inbound chat. Independent text sends are data egress and require exact destination-scoped approval; secrets, credentials, attachments, bulk, and scheduled egress remain blocked.
+
 Outbound messages use the same classes. Secret, credential, and restricted messages are blocked; personal and sensitive content would require explicit warning and approval once a provider exists.
 
 External payloads are classified as `public`, `project_internal`, `personal`, `sensitive`, `secret`, `credential`, or `restricted`. Provider policy explicitly lists allowed classes. Prompt 71 permits no external execution, and secret, credential, and restricted egress are blocked.

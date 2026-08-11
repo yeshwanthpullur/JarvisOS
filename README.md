@@ -1,6 +1,6 @@
 # JARVIS OS
 
-Prompt 72 adds a non-sending [External Communication Foundation](docs/EXTERNAL_COMMUNICATION.md) with truthful [provider profiles](docs/COMMUNICATION_PROVIDERS.md) and [outbound security](docs/OUTBOUND_MESSAGE_SECURITY.md). Bulk, scheduled, attachment, and all real external sends remain disabled.
+Prompt 73 adds a secure [Telegram Connector](docs/TELEGRAM_CONNECTOR.md) with explicit [pairing](docs/TELEGRAM_PAIRING.md), text-only Bot API transport, bounded polling, and approval/Broker-gated independent sends. It is disabled and unconfigured by default; attachments, groups, webhooks, scheduled delivery, and all other external providers remain unavailable.
 
 JARVIS OS is currently at **v1.7.0-alpha - Phase 3 Batch 2 Foundation**, with the Phase 4 controlled-execution foundation implemented through Prompt 70 on `main`. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
 
