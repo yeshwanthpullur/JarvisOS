@@ -1,5 +1,7 @@
 # External Integrations
 
+GitHub is a scoped developer-service provider, separate from local Git. It defaults off and cannot enumerate repositories, merge PRs, execute workflows, administer repositories, mutate secrets, or clone/execute arbitrary code.
+
 Prompt 73 provides the first concrete adapter behind the control plane. Telegram remains disabled until configured, and its fixed Bot API client cannot become a generic URL transport.
 
 Prompt 72 communication validation references this central registry and does not create a competing provider authority.

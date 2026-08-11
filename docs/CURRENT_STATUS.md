@@ -1,5 +1,7 @@
 # Current Status
 
+GitHub Provider: implemented and repository-scoped, but disabled/unverified by default. Reads require verified authentication; issue/PR/release writes remain approval/Broker-gated. Merge, workflow execution, secrets, and administration are blocked.
+
 Updated: 2026-08-11
 
 ## Current Release

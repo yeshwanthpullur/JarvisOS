@@ -1,5 +1,7 @@
 # Tool and Skill Registry
 
+GitHub status/read and conditional issue/PR/release write skills are registered. Merge, workflow execution, secret, admin, and deletion skills remain disabled placeholders.
+
 Prompt 73 adds Telegram status, identity, pairing, destination, text receive/send, and bounded polling skill declarations. Send and network permissions remain approval-gated; attachments, voice, video, groups, channels, scheduling, and webhook skills are future/disabled.
 
 ## Phase 4 Skills

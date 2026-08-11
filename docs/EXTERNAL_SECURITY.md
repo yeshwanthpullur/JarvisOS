@@ -1,5 +1,7 @@
 # External Integration Security
 
+GitHub access is allowlisted to explicit repositories. External code is untrusted, structured `gh` calls never use a shell, and service mutations require egress checks, exact approval, and Broker validation.
+
 Telegram applies private-owner pairing, replay protection, fixed endpoints, bounded input, content-free audit, and exact approval/Broker gates. Unknown users, groups, unsupported media, and policy-changing prompts remain untrusted or blocked.
 
 External communication adds exact destination, content fingerprint, attachment, rate, and duplicate checks. Material recipient, content, or attachment changes require a new future approval.

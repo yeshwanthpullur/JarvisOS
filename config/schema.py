@@ -248,6 +248,10 @@ class EmailConnectorConfig:
 class SlackConfig:
  enabled:bool=False;allow_send:bool=False;allow_inbound:bool=False;allow_attachments:bool=False;require_approval:bool=True;max_message_chars:int=3900;max_sends_per_window:int=3;max_retries:int=1
 
+@dataclass(frozen=True,slots=True)
+class GitHubProviderConfig:
+ enabled:bool=False;transport:str="gh_cli";allow_read:bool=True;allow_issue_write:bool=False;allow_pr_write:bool=False;allow_release_write:bool=False;allow_merge:bool=False;allow_workflow_execute:bool=False;allow_admin:bool=False;allowed_repositories:tuple[str,...]=("yeshwanthpullur/JarvisOS",);require_approval_for_writes:bool=True;max_results:int=20;max_body_chars:int=4000;max_retries:int=1;health_cache_seconds:int=60;save_history:bool=True;redact_sensitive_values:bool=True
+
 @dataclass(frozen=True, slots=True)
 class ExecutionConfig:
     enabled: bool = True; default_mode: str = "plan_only"; local_first: bool = True; allow_file_writes: bool = True; allow_command_execution: bool = True; allow_git_writes: bool = True; allow_browser_read: bool = True; allow_browser_actions: bool = False; allow_notifications: bool = True; allow_scheduler_runner: bool = True; allow_communication_send: bool = False; allow_mcp_execution: bool = False; allow_model_runtime_start: bool = False; allow_external_network: bool = False; allow_background_execution: bool = False; allow_secrets_access: bool = False; allow_credentials_access: bool = False; require_approval_for_side_effects: bool = True; block_critical_actions: bool = True; max_plan_steps: int = 8; max_history_items: int = 50; save_history: bool = True; redact_sensitive_values: bool = True; block_private_paths: bool = True
@@ -479,6 +483,7 @@ class AppSettings:
     discord: DiscordConfig = field(default_factory=DiscordConfig)
     email_connector: EmailConnectorConfig = field(default_factory=EmailConnectorConfig)
     slack: SlackConfig = field(default_factory=SlackConfig)
+    github_provider: GitHubProviderConfig = field(default_factory=GitHubProviderConfig)
     execution: ExecutionConfig = field(default_factory=ExecutionConfig)
     approvals: ApprovalsConfig = field(default_factory=ApprovalsConfig)
     broker: BrokerConfig = field(default_factory=BrokerConfig)

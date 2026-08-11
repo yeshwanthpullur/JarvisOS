@@ -1,5 +1,7 @@
 # External Provider Registry
 
+The `github` provider exposes separate GitHub API authentication, repository access, and ready states. Git remote readiness is not API readiness; the runtime is disabled and unverified by default.
+
 Telegram now has an implemented text adapter with distinct disabled, credential-missing, authentication-unverified, and ready runtime states. Token presence alone never means ready.
 
 Prompt 72 communication profiles reference central provider IDs and cannot elevate central provider state or enable execution.

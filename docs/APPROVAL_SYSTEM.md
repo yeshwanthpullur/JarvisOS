@@ -1,5 +1,7 @@
 # Approval System
 
+GitHub write approvals bind repository, action, content fingerprint, permissions, and expiry. Repository or material content changes invalidate approval.
+
 Telegram approval commands are interface concepts only; they must resolve an authorized, unexpired, exact-scope record in this authoritative system. Prompt 73 creates no parallel approval storage.
 
 Prompt 72 keeps this system authoritative for future external sends. Approval must bind provider, exact destination, content fingerprint/summary, attachments, permission, and expiry; material changes require new approval.

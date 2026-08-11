@@ -24,7 +24,7 @@ from jarvis.adapters import AdapterAgent, render_adapter_command
 from jarvis.evaluation import EvaluationRunner, render_evaluation_command
 from jarvis.execution.cli import get_phase4_runtime, render_phase4_command
 from jarvis.release_readiness import ReleaseReadinessEvaluator, render_release_command
-from jarvis.integrations import ExternalIntegrationControlPlane, build_outbound_connectors, render_connector_command, render_external_command
+from jarvis.integrations import ExternalIntegrationControlPlane, GitHubProvider, build_outbound_connectors, render_connector_command, render_external_command, render_github_command
 from jarvis.integrations.telegram import TelegramRuntime, render_telegram_command
 
 
@@ -200,6 +200,15 @@ def _outbound_connectors(context:CommandContext):
         except Exception:pass
     return values
 
+def _github_provider(context:CommandContext):
+    conversation=context.conversation_context;runtime=getattr(conversation,"github_provider",None) if conversation is not None else None
+    if isinstance(runtime,GitHubProvider):return runtime
+    runtime=GitHubProvider()
+    if conversation is not None:
+        try:setattr(conversation,"github_provider",runtime)
+        except Exception:pass
+    return runtime
+
 
 def _tool_manager(context: CommandContext):
     conversation = context.conversation_context
@@ -361,6 +370,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         external_summary = _external_integrations(context).registry.summary()
         telegram_status = _telegram_runtime(context).status()
         outbound_status={key:value.status()["state"] for key,value in _outbound_connectors(context).items()}
+        github_status=_github_provider(context).status()
         phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
         phase3_text = (
             "phase3="
@@ -373,13 +383,14 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
-            f"phase4=local ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} msg:off p85={release_status.status.value} "
+            f"phase4=local ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} gh:{github_status['state']} p85={release_status.status.value} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
             "telegram_connector_status": telegram_status["state"],
             "telegram_runtime_ready": telegram_status["ready"],
             "discord_connector_status":outbound_status["discord"],"email_connector_status":outbound_status["email_smtp"],"slack_connector_status":outbound_status["slack"],
+            "github_provider_status":github_status["state"],"github_repository_scope":github_status["repository_scope"],
             "total_agents": agent_summary["total_agents"],
             "ready_agents": agent_summary["ready_agents"],
             "foundation_agents": foundation_agents,
@@ -554,6 +565,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         *((f"discord {op}", f"Discord connector {op}", "communication", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","health","destinations","validate-destination","send-plan","send-dry-run","send","rate-status","history")),
         *((f"email {op}", f"Email connector {op}", "communication", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","providers","health","validate-address","send-plan","send-dry-run","send","rate-status","history")),
         *((f"slack {op}", f"Slack connector {op}", "communication", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","health","destinations","validate-destination","send-plan","send-dry-run","send","rate-status","history")),
+        *((f"github {op}", f"GitHub provider {op}", "developer", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","auth-status","health","repo","capabilities","rate-status","issues","issue-show","issue-plan","issue-create","prs","pr-show","pr-plan","pr-create","releases","release-show","release-plan","release-create","workflows","checks","history")),
         ("communication plan", "Plan draft-only communication", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication safety", "Evaluate communication safety", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication draft", "Create an unsent draft", "communication", (), CommandPermission.DIAGNOSTIC),
@@ -874,6 +886,8 @@ def _handler_for(name: str):
             return _text_response(render_telegram_command(name,context.arguments,_telegram_runtime(context)))
         if name.startswith(("discord ","email ","slack ")):
             return _text_response(render_connector_command(name,context.arguments,_outbound_connectors(context)))
+        if name.startswith("github "):
+            return _text_response(render_github_command(name,context.arguments,_github_provider(context)))
         if name.startswith("conversation "):
             intelligence = _conversation_intelligence(context)
             if intelligence is None:

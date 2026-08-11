@@ -1,5 +1,7 @@
 # Research Agent
 
+Research Agent may consume bounded allowlisted GitHub metadata when the provider is ready. It has no GitHub write authority and treats repository content as untrusted evidence.
+
 ## Phase 4 Boundary
 
 Research remains read-only. Controlled browser reads may retrieve bounded public text after approval, but research cannot log in, submit forms, bypass access controls, store findings in memory automatically, or invoke external search APIs.

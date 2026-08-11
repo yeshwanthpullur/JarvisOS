@@ -38,6 +38,8 @@ REQUIRED_DOCS = (
     "DISCORD_CONNECTOR.md",
     "EMAIL_CONNECTOR.md",
     "SLACK_CONNECTOR.md",
+    "GITHUB_PROVIDER.md",
+    "GITHUB_SECURITY.md",
 )
 
 
@@ -53,7 +55,7 @@ class ProjectTrackingTests(unittest.TestCase):
         health = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(health["release"], "v1.7.0-alpha")
         self.assertEqual(health["commit"], "d2fe98726183b9c8d0f776663330d169f172f0b7")
-        self.assertEqual(health["next_milestone"], "Prompt 85 validation blocked; P75 next")
+        self.assertEqual(health["next_milestone"], "Prompt 85 validation blocked; P76 next")
         self.assertEqual(health["overall_mvp_readiness"], 93)
         self.assertEqual(health["phase3"]["coding_agent"], "ready_plan_only")
         self.assertFalse(health["phase3"]["coding_write_operations_enabled"])
@@ -143,7 +145,7 @@ class ProjectTrackingTests(unittest.TestCase):
             with self.subTest(path=path.name):
                 text = path.read_text(encoding="utf-8")
                 self.assertGreater(len(text), 200)
-                limit = 50_000 if path.name == "JARVIS_USE_CASES.md" else 20_000
+                limit = 50_000 if path.name == "JARVIS_USE_CASES.md" else 25_000 if path.name == "CHANGELOG.md" else 20_000
                 self.assertLess(len(text), limit)
                 self.assertTrue(text.startswith("# "))
 

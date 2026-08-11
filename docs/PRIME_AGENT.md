@@ -1,5 +1,7 @@
 # Prime Agent
 
+Prime routes GitHub service requests to Coding Agent or read-only Research context. Ordinary commit, tag, and push remain local Git operations, and Prime receives no direct provider authority.
+
 Prime recognizes Telegram status and send intent, routes it to the Communication Agent, and preserves high-risk approval requirements. Routing never sends a message or chooses a Telegram-specific model.
 
 Prime may route drafts and send plans to Communication Agent, but cannot authorize or dispatch an external message. Bulk and secret-send intents remain blocked.

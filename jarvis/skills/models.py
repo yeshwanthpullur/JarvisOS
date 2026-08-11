@@ -55,6 +55,12 @@ class SkillPermission(str, Enum):
     DEPLOY = "deploy"
     GIT_READ = "git_read"
     GIT_WRITE = "git_write"
+    GITHUB_READ = "github_read"
+    GITHUB_ISSUE_WRITE = "github_issue_write"
+    GITHUB_PR_WRITE = "github_pr_write"
+    GITHUB_RELEASE_WRITE = "github_release_write"
+    GITHUB_MERGE = "github_merge"
+    GITHUB_ADMIN = "github_admin"
     SECRETS_ACCESS = "secrets_access"
 
 
@@ -64,7 +70,8 @@ APPROVAL_PERMISSIONS = {
     SkillPermission.SEND_EMAIL, SkillPermission.CALENDAR_WRITE, SkillPermission.SOCIAL_POST,
     SkillPermission.HARDWARE_WRITE, SkillPermission.CAMERA_ACCESS, SkillPermission.MICROPHONE_ACCESS,
     SkillPermission.LOCATION_ACCESS, SkillPermission.SYSTEM_MODIFY, SkillPermission.DEPLOY,
-    SkillPermission.GIT_WRITE,
+    SkillPermission.GIT_WRITE, SkillPermission.GITHUB_ISSUE_WRITE, SkillPermission.GITHUB_PR_WRITE,
+    SkillPermission.GITHUB_RELEASE_WRITE, SkillPermission.GITHUB_MERGE, SkillPermission.GITHUB_ADMIN,
 }
 
 
@@ -120,4 +127,3 @@ class SkillManifest:
             raise ValueError("skill_approval_required")
         if self.status in {SkillStatus.FUTURE, SkillStatus.UNAVAILABLE, SkillStatus.DISABLED, SkillStatus.NOT_CONFIGURED} and self.enabled:
             raise ValueError("unavailable_skill_cannot_be_enabled")
-

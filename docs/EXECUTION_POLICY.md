@@ -1,5 +1,7 @@
 # Execution Policy
 
+GitHub issue, PR, and release writes use distinct high-risk actions. Merge, workflow execution, secrets, administration, repository deletion, and force push remain blocked.
+
 Telegram reply, independent send, pairing, unpairing, polling start, and polling stop are distinct actions. Independent send is high-risk and approval-required; critical requests remain blocked regardless of transport.
 
 External communication remains disabled globally and per provider. There is no broad external-action switch that bypasses provider policy.

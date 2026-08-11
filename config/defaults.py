@@ -343,6 +343,7 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
     "discord":{"enabled":False,"transport":"bot_api","allow_send":False,"allow_inbound":False,"allow_webhook":False,"allow_attachments":False,"require_approval":True,"max_message_chars":1900,"max_sends_per_window":3,"max_retries":1},
     "email_connector":{"smtp_enabled":False,"api_enabled":False,"allow_send":False,"allow_read":False,"allow_html":False,"allow_attachments":False,"allow_cc":False,"allow_bcc":False,"allow_bulk":False,"require_approval":True,"max_recipients":1,"max_body_chars":10000,"max_retries":1},
     "slack":{"enabled":False,"allow_send":False,"allow_inbound":False,"allow_attachments":False,"require_approval":True,"max_message_chars":3900,"max_sends_per_window":3,"max_retries":1},
+    "github_provider":{"enabled":False,"transport":"gh_cli","allow_read":True,"allow_issue_write":False,"allow_pr_write":False,"allow_release_write":False,"allow_merge":False,"allow_workflow_execute":False,"allow_admin":False,"allowed_repositories":["yeshwanthpullur/JarvisOS"],"require_approval_for_writes":True,"max_results":20,"max_body_chars":4000,"max_retries":1,"health_cache_seconds":60,"save_history":True,"redact_sensitive_values":True},
     "desktop": {
         "enabled": True,
         "platform": "windows",

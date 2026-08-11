@@ -1,5 +1,7 @@
 # JARVIS OS
 
+Prompt 75 adds a disabled-by-default, repository-scoped GitHub service provider. Bounded reads require authentication and allowlist verification; issue, PR, and release writes require exact approval and Broker routing. Local Git remains authoritative for commit, tag, and push.
+
 Prompt 73 adds a secure [Telegram Connector](docs/TELEGRAM_CONNECTOR.md) with explicit [pairing](docs/TELEGRAM_PAIRING.md), text-only Bot API transport, bounded polling, and approval/Broker-gated independent sends. It is disabled and unconfigured by default; attachments, groups, webhooks, scheduled delivery, and all other external providers remain unavailable.
 
 Prompt 74 adds disabled-by-default outbound text connectors for [Discord](docs/DISCORD_CONNECTOR.md), [email](docs/EMAIL_CONNECTOR.md), and [Slack](docs/SLACK_CONNECTOR.md). Each uses provider-specific validation, credential references, approvals, and Broker tools; inbound access, attachments, bulk, and scheduling remain disabled.

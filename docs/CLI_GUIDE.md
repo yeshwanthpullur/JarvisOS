@@ -1,5 +1,7 @@
 # CLI Guide
 
+GitHub service commands use the `github` namespace for status/auth/health/scope, bounded reads, write plans, guarded create actions, and metadata-only history. They do not replace local Git commands.
+
 Prompt 73 adds `telegram status`, `help`, `capabilities`, `identity`, `auth-status`, `pair`, `pair-status`, `unpair`, `chats`, `validate-chat`, `polling-status`, `start`, `stop`, `send-plan`, `send-dry-run`, `send`, `rate-status`, `history`, and `health`. Status never exposes the token, and `send` never bypasses scoped approval and Broker dispatch.
 
 Prompt 74 adds parallel `discord`, `email`, and `slack` namespaces for status, help, health, explicit destination validation, send planning/dry-run, approved send entry points, rate status, and bounded history. CLI output contains no credential values or recipient lists.

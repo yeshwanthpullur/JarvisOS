@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Prompt 75 Secure GitHub Provider
+
+- Added scoped GitHub metadata reads and approval-gated issue, PR, and release service actions.
+- Added bounded CLI, safe `gh` transport, credential redaction, egress checks, provider skills, and agent routing.
+- Local Git stays authoritative; merge, workflows, secrets, administration, force push, deletion, and arbitrary cloning remain blocked.
+
 ## Unreleased - Prompt 74 Outbound Connectors
 
 - Added outbound-only Discord, email, and Slack text connectors with bounded health, rate limits, duplicate checks, and metadata-only history.

@@ -102,6 +102,7 @@ class PrimeResult:
 
 
 _INTENT_TERMS: tuple[tuple[AgentCapabilityType, tuple[str, ...]], ...] = (
+    (AgentCapabilityType.CODING, ("github issue", "github pr", "github pull request", "github release", "github workflow", "github checks")),
     (AgentCapabilityType.ADAPTER, (" mcp", "plugin adapter", "external plugin", "connect github")),
     (AgentCapabilityType.SCHEDULER, ("remind me", "schedule", "tomorrow at", "every hour", "every day", "cron")),
     (AgentCapabilityType.COMMUNICATION, ("instagram", "telegram", "discord", "slack", "email this", "send email", "send message", "draft an email", "draft email", "post this", "send this everywhere")),
@@ -140,7 +141,7 @@ def classify_risk(text: str, intent: AgentCapabilityType | None = None) -> Agent
     intent = intent or classify_intent(text)
     if intent is AgentCapabilityType.DRONE or any(term in lowered for term in ("steal credential", "bypass security", "bypass captcha", "captcha", "read my .env", ".env", "spam this", "100 people", "friend's location", "unlock device", "force push", "delete all")):
         return AgentRiskLevel.CRITICAL
-    if any(term in lowered for term in ("post", "send email", "send message", "send this to", "send this on", "send this everywhere", "message me on", "delete", "purchase", "deploy", "account", "control", "write file", "fix automatically", "commit", "push", "install dependency", "microphone", "camera")):
+    if any(term in lowered for term in ("post", "send email", "send message", "send this to", "send this on", "send this everywhere", "message me on", "create github issue", "create github pr", "create pull request", "create github release", "delete", "purchase", "deploy", "account", "control", "write file", "fix automatically", "commit", "push", "install dependency", "microphone", "camera")):
         return AgentRiskLevel.HIGH
     if any(term in lowered for term in ("inspect file", "process file", "edit video", "generate an image")):
         return AgentRiskLevel.MEDIUM

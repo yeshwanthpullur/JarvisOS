@@ -11,12 +11,14 @@ ACTION_MAP=(
     (("notification","notify me","show me a local"),"notification_send"),
     (("telegram send","send this to telegram","message me on telegram"),"telegram_send"),
     (("discord send","send this to discord"),"discord_send"),(("email send","email this","send email"),"email_send"),(("slack send","send this to slack"),"slack_send"),
+    (("create github issue",),"github_issue_create"),(("comment github issue",),"github_issue_comment"),(("create github pr","create pull request"),"github_pr_create"),(("comment github pr",),"github_pr_comment"),(("create github release",),"github_release_create"),
     (("remind","run due","schedule"),"scheduler_run"),
 )
 PERMISSIONS={
  "file_write":(ExecutionPermission.WRITE_FILES,), "command_execute":(ExecutionPermission.EXECUTE_COMMANDS,),
  "git_write":(ExecutionPermission.GIT_WRITE,), "browser_read":(ExecutionPermission.BROWSER_READ,ExecutionPermission.NETWORK_ACCESS),
  "notification_send":(ExecutionPermission.SEND_NOTIFICATION,), "scheduler_run":(ExecutionPermission.SCHEDULER_RUN,), "telegram_send":(ExecutionPermission.SEND_MESSAGE,ExecutionPermission.NETWORK_ACCESS), "discord_send":(ExecutionPermission.SEND_MESSAGE,ExecutionPermission.NETWORK_ACCESS), "email_send":(ExecutionPermission.SEND_EMAIL,ExecutionPermission.NETWORK_ACCESS), "slack_send":(ExecutionPermission.SEND_MESSAGE,ExecutionPermission.NETWORK_ACCESS),
+ "github_issue_create":(ExecutionPermission.GITHUB_ISSUE_WRITE,ExecutionPermission.NETWORK_ACCESS), "github_issue_comment":(ExecutionPermission.GITHUB_ISSUE_WRITE,ExecutionPermission.NETWORK_ACCESS), "github_pr_create":(ExecutionPermission.GITHUB_PR_WRITE,ExecutionPermission.NETWORK_ACCESS), "github_pr_comment":(ExecutionPermission.GITHUB_PR_WRITE,ExecutionPermission.NETWORK_ACCESS), "github_release_create":(ExecutionPermission.GITHUB_RELEASE_WRITE,ExecutionPermission.NETWORK_ACCESS),
 }
 
 class ExecutionPolicyEngine:

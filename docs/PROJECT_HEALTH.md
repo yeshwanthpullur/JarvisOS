@@ -1,5 +1,7 @@
 # Project Health
 
+Prompt 75: scoped GitHub reads and controlled service-write architecture are implemented; runtime defaults disabled/unverified. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
+
 Updated: 2026-08-11
 
 Status values are evidence-based: **Working**, **Partial**, **Experimental**, **Not Started**, or **Blocked**. Confidence describes confidence in the status assessment, not percentage feature completion. Values are conservative and should change only after code, tests, or manual evidence changes.

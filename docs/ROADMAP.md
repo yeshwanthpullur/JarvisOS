@@ -1,5 +1,7 @@
 # Roadmap
 
+- Prompt 75 - GitHub External Provider and Developer-Service Connector: complete and verified. Next: Prompt 76, MCP Runtime and Secure Tool-Server Integration.
+
 Updated: 2026-08-11
 
 ## Completed Milestones

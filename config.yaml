@@ -490,6 +490,24 @@ slack:
   max_message_chars: 3900
   max_sends_per_window: 3
   max_retries: 1
+github_provider:
+  enabled: false
+  transport: gh_cli
+  allow_read: true
+  allow_issue_write: false
+  allow_pr_write: false
+  allow_release_write: false
+  allow_merge: false
+  allow_workflow_execute: false
+  allow_admin: false
+  allowed_repositories: [yeshwanthpullur/JarvisOS]
+  require_approval_for_writes: true
+  max_results: 20
+  max_body_chars: 4000
+  max_retries: 1
+  health_cache_seconds: 60
+  save_history: true
+  redact_sensitive_values: true
 
 release_readiness:
   enabled: true
