@@ -1,5 +1,7 @@
 # Agent Protocol and Registry
 
+Communication Agent now understands external provider plans while retaining draft-only execution. It holds no credentials and cannot bypass Approval or Broker.
+
 ## Phase 4 Execution Specialists
 
 The registry now includes `execution_agent`, `approval_agent`, `broker_agent`, and `notification_agent`. They expose policy and readiness metadata and route only to the controlled execution foundation. They do not bypass the broker or grant approvals, and future or critical capabilities remain unavailable.

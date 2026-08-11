@@ -208,7 +208,7 @@ class SchedulerConfig:
 
 @dataclass(frozen=True, slots=True)
 class CommunicationConfig:
-    enabled: bool = True; default_mode: str = "draft_only"; allow_sending: bool = False; allow_external_providers: bool = False; allow_contact_access: bool = False; allow_bulk_messages: bool = False; allow_social_posting: bool = False; allow_credentials_access: bool = False; max_history_items: int = 25; save_history: bool = True; local_only: bool = True
+    enabled: bool = True; default_mode: str = "draft_only"; allow_sending: bool = False; allow_external_providers: bool = False; allow_contact_access: bool = False; allow_bulk_messages: bool = False; allow_social_posting: bool = False; allow_credentials_access: bool = False; max_history_items: int = 25; save_history: bool = True; local_only: bool = True; external_enabled: bool = True; external_require_approval: bool = True; external_allow_attachments: bool = False; external_allow_scheduled_send: bool = False; external_max_message_chars: int = 4000; external_max_attachments: int = 0; external_max_sends_per_window: int = 3; external_rate_window_seconds: int = 60; external_max_retries: int = 1; external_duplicate_protection: bool = True; external_redact_sensitive_values: bool = True; external_block_secrets: bool = True
 
 @dataclass(frozen=True, slots=True)
 class AdaptersConfig:
@@ -232,7 +232,7 @@ class ExternalIntegrationsConfig:
 
 @dataclass(frozen=True, slots=True)
 class ExternalProviderFlagsConfig:
-    telegram_enabled: bool = False; discord_enabled: bool = False; email_smtp_enabled: bool = False; email_api_enabled: bool = False; slack_enabled: bool = False; whatsapp_enabled: bool = False; github_enabled: bool = False; mcp_local_enabled: bool = False; mcp_remote_enabled: bool = False; external_plugins_enabled: bool = False; nvidia_nim_enabled: bool = False; openai_compatible_enabled: bool = False
+    telegram_enabled: bool = False; discord_enabled: bool = False; email_smtp_enabled: bool = False; email_api_enabled: bool = False; slack_enabled: bool = False; matrix_enabled: bool = False; whatsapp_enabled: bool = False; github_enabled: bool = False; mcp_local_enabled: bool = False; mcp_remote_enabled: bool = False; external_plugins_enabled: bool = False; nvidia_nim_enabled: bool = False; openai_compatible_enabled: bool = False
 
 @dataclass(frozen=True, slots=True)
 class ExecutionConfig:

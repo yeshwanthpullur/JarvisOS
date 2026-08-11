@@ -361,6 +361,18 @@ communication:
   allow_contact_access: false
   allow_bulk_messages: false
   allow_credentials_access: false
+  external_enabled: true
+  external_require_approval: true
+  external_allow_attachments: false
+  external_allow_scheduled_send: false
+  external_max_message_chars: 4000
+  external_max_attachments: 0
+  external_max_sends_per_window: 3
+  external_rate_window_seconds: 60
+  external_max_retries: 1
+  external_duplicate_protection: true
+  external_redact_sensitive_values: true
+  external_block_secrets: true
 
 adapters:
   enabled: true
@@ -412,6 +424,7 @@ external_provider_flags:
   email_smtp_enabled: false
   email_api_enabled: false
   slack_enabled: false
+  matrix_enabled: false
   whatsapp_enabled: false
   github_enabled: false
   mcp_local_enabled: false

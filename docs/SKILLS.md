@@ -1,5 +1,7 @@
 # Tool and Skill Registry
 
+Prompt 72 adds ready metadata-only skills for provider health, destination validation, message planning/safety, egress, rate, duplicate, and attachment checks. Provider send, attachment, scheduled, and bulk skills remain future/disabled.
+
 ## Phase 4 Skills
 
 Metadata now describes execution policy, approvals, broker validation, scoped files, allowlisted commands, approved Git writes, controlled browser reads, local notifications, and manual scheduler execution. These skills declare side effects and permissions explicitly. Registry readiness does not authorize execution.

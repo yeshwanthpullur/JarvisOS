@@ -1,6 +1,7 @@
 from dataclasses import dataclass,field
 from jarvis.foundation_common import bounded,contains_secret,new_id
 from .models import *
+from .external import ExternalCommunicationFoundation
 def default_communication_providers():
  return tuple(CommunicationProvider(i,n,t,"not_configured",False,False,True,("draft",),("Real sending is disabled." ,)) for i,n,t in (("local_notification","Local notification",CommunicationProviderType.LOCAL_NOTIFICATION),("telegram","Telegram",CommunicationProviderType.TELEGRAM),("discord","Discord",CommunicationProviderType.DISCORD),("email_smtp","Email SMTP",CommunicationProviderType.EMAIL_SMTP),("slack","Slack",CommunicationProviderType.SLACK),("social","Social media",CommunicationProviderType.SOCIAL)))
 def classify_communication_intent(t):
@@ -18,9 +19,9 @@ def communication_safety(t):
  return CommunicationRiskLevel.LOW,True,"Draft-only communication planning is allowed."
 @dataclass(slots=True)
 class CommunicationAgent:
- enabled:bool=True;max_history_items:int=25;providers:tuple[CommunicationProvider,...]=field(default_factory=default_communication_providers);history:list[CommunicationResult]=field(default_factory=list)
+ enabled:bool=True;max_history_items:int=25;providers:tuple[CommunicationProvider,...]=field(default_factory=default_communication_providers);history:list[CommunicationResult]=field(default_factory=list);external:ExternalCommunicationFoundation=field(default_factory=ExternalCommunicationFoundation)
  def _record(self,r):self.history=(self.history+[r])[-self.max_history_items:];return r
- def status(self):return {"status":"ready_draft_only" if self.enabled else "disabled","mode":"draft_only","providers_configured":0,"sending":"disabled","contact_access":"disabled","anti_spam":"enforced"}
+ def status(self):return {"status":"ready_external_foundation" if self.enabled else "disabled","mode":"draft_only","providers_configured":0,"sending":"disabled","contact_access":"disabled","anti_spam":"enforced","external_profiles":len(self.external.profiles),"bulk_send":"disabled","scheduled_send":"disabled"}
  def plan(self,t,draft=False):
   risk,ok,reason=communication_safety(t);intent=classify_communication_intent(t);req=CommunicationRequest(t," ".join(t.lower().split()),intent,risk_level=risk);status=CommunicationStatus.DRAFTED if ok and draft else CommunicationStatus.PLANNED if ok else CommunicationStatus.BLOCKED
   body=bounded(t.replace("draft ","",1),900) if ok and draft else ""

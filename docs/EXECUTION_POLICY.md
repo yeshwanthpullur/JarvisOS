@@ -1,5 +1,7 @@
 # Execution Policy
 
+External communication remains disabled globally and per provider. There is no broad external-action switch that bypasses provider policy.
+
 The execution policy classifies actions by risk, permissions, locality, scope, and mode. The default mode is `plan_only`; critical actions are blocked.
 
 An executable request must name its action, resource, permissions, risk, and expected effect. High-risk requests require an exact unexpired approval. Secret access, unrestricted deletion, force-push, external sending, hidden capture, and uncontrolled hardware actions remain blocked.

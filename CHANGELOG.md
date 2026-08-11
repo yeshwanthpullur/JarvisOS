@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased - Prompt 72 External Communication Provider Foundation
+
+- Added provider-neutral communication profiles, destination validation, message planning/validation models, attachment policy, outbound rate metadata, duplicate protection, and bounded CLI diagnostics.
+- Preserved strict draft/send separation and Phase 4 Approval/Broker authority. No external provider, contact discovery, upload, bulk send, scheduled send, or real message delivery is enabled.
+
 ## Unreleased - Prompt 71 External Integration Control Plane
 
 ### Added

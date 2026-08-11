@@ -338,7 +338,7 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "require_confirmation_for_installers": True,
     },
     "external_integrations": {"enabled":True,"default_mode":"metadata_only","allow_remote_providers":False,"allow_paid_providers":False,"allow_external_execution":False,"require_approval_for_external_actions":True,"block_secret_egress":True,"max_providers":32,"max_history_items":50,"health_cache_seconds":60,"max_retries":1},
-    "external_provider_flags": {"telegram_enabled":False,"discord_enabled":False,"email_smtp_enabled":False,"email_api_enabled":False,"slack_enabled":False,"whatsapp_enabled":False,"github_enabled":False,"mcp_local_enabled":False,"mcp_remote_enabled":False,"external_plugins_enabled":False,"nvidia_nim_enabled":False,"openai_compatible_enabled":False},
+    "external_provider_flags": {"telegram_enabled":False,"discord_enabled":False,"email_smtp_enabled":False,"email_api_enabled":False,"slack_enabled":False,"matrix_enabled":False,"whatsapp_enabled":False,"github_enabled":False,"mcp_local_enabled":False,"mcp_remote_enabled":False,"external_plugins_enabled":False,"nvidia_nim_enabled":False,"openai_compatible_enabled":False},
     "desktop": {
         "enabled": True,
         "platform": "windows",

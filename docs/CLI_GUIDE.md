@@ -1,5 +1,7 @@
 # CLI Guide
 
+Prompt 72 adds `communication provider-status`, `provider-show`, `provider-health`, `destination-validate`, `send-plan`, `send-safety`, `send-dry-run`, `attachment-check`, and `rate-status`. They perform no send or upload.
+
 ## Prompt 71 External Integration Controls
 
 Use `integration status`, `integration policy`, `provider show <id>`, `provider capabilities`, `provider health <id>`, `provider policy`, `provider validate <id>`, `provider history`, `credential status <id>`, and `credential required`. These commands display bounded metadata only. They never reveal credential values, contact a provider, enable paid/cloud execution, launch MCP/plugins, or replace Phase 4 approvals and Broker authority.

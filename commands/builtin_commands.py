@@ -522,6 +522,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("communication status", "Show Communication Gateway status", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication help", "Show communication command help", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication providers", "List disabled communication providers", "communication", (), CommandPermission.DIAGNOSTIC),
+        *((f"communication {op}", f"External communication {op}", "communication", (), CommandPermission.DIAGNOSTIC) for op in ("provider-status","provider-show","provider-health","destination-validate","send-plan","send-safety","send-dry-run","attachment-check","rate-status")),
         ("communication plan", "Plan draft-only communication", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication safety", "Evaluate communication safety", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication draft", "Create an unsent draft", "communication", (), CommandPermission.DIAGNOSTIC),

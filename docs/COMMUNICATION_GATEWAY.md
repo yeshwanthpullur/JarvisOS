@@ -1,5 +1,7 @@
 # Communication Gateway
 
+Prompt 72 extends the draft-only gateway with a non-sending external provider foundation. Provider readiness, destination validity, egress, content/attachment safety, rate policy, duplicate protection, and approval are independently visible; no adapter can send yet.
+
 ## Notification Boundary
 
 Local console notifications are the only Phase 4 delivery mechanism. They are not messages, email, social posts, or native OS toasts. Communication providers remain disabled and no external recipient can be contacted.

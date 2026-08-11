@@ -25,6 +25,8 @@ python main.py --ui
 
 ## Working Features
 
+- Prompt 72 external communication foundation: provider profiles, explicit destination validation, outbound egress/content/attachment policy, rate/duplicate metadata, and non-sending CLI dry runs are implemented. External sending remains unavailable.
+
 - Core startup, health checks, clean shutdown, configuration, and rotating logs.
 - Ordinary local chat through Executive JARVIS, Reasoning, Provider Execution Manager, Provider Router, and Ollama.
 - Free-form prompts route visibly to local Ollama without requiring a `chat` prefix.
@@ -116,6 +118,7 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - Compilation, JSON validation, secret scan, runtime-artifact scan, absolute-path scan, and `git diff --check` passed.
 - Production-readiness result: blocked because the remaining required Phase 5 components from Prompts 72-84 are absent.
 - Prompt 71 verification: 12 focused tests, 150 focused/cross-system tests, and 1,780 full-suite tests passed with no skips, failures, or errors.
+- Prompt 72 verification: 12 focused tests, 39 focused/cross-system tests, and 1,792 full-suite tests passed with no skips, failures, or errors.
 
 - Prompt 41 focused image-generation suite: 13 passed, 0 skipped, 0 failed, 0 errors.
 - Prompt 42 focused video-editing suite: 49 passed, 0 skipped, 0 failed, 0 errors.

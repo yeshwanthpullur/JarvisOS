@@ -63,7 +63,8 @@ Updated: 2026-08-11
 ## Phase 5 Sequential Progress
 
 - Prompt 71 - External Integration Security and Provider Architecture: implemented and verified on `main`.
-- Prompts 72-84: specification-only; not started.
+- Prompt 72 - External Communication Provider Foundation: implemented and verified on `main`.
+- Prompts 73-84: specification-only; not started.
 - Prompt 85 validation remains blocked until every prerequisite is implemented.
 
 ## Next Milestone

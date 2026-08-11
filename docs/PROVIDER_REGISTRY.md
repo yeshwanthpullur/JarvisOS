@@ -1,5 +1,7 @@
 # External Provider Registry
 
+Prompt 72 communication profiles reference central provider IDs and cannot elevate central provider state or enable execution.
+
 The registry stores typed provider identity, category, capabilities, risk, permissions, side effects, locality, cost class, credential references, health metadata, and policy. Duplicate identifiers and duplicate per-provider capabilities are rejected.
 
 Registered does not mean ready. Prompt 71 entries are disabled and unconfigured, and their execution policy is false. Health is cached metadata and never performs a network probe from diagnostics.

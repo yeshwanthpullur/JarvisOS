@@ -3,4 +3,5 @@ from .agent import *
 from .cli import render_communication_command
 from .planner import CommunicationPlanner
 from .providers import CommunicationProviderRegistry
+from .external import *
 __all__=[x for x in globals() if not x.startswith("_")]

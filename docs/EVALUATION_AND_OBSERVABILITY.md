@@ -1,5 +1,7 @@
 # Evaluation And Observability
 
+External communication observability is bounded to provider/action/status/rate/error/approval-reference metadata. Message bodies, contact lists, credentials, sessions, and attachments are excluded.
+
 ## Execution Audit
 
 Phase 4 audit metadata is bounded and content-free: action, state transition, counts, safe error codes, and duration. It excludes secrets, file contents, command output, notification bodies, transcripts, and private absolute paths. No cloud telemetry or remote logging is enabled.

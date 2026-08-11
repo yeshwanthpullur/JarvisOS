@@ -1,5 +1,7 @@
 # Prime Agent
 
+Prime may route drafts and send plans to Communication Agent, but cannot authorize or dispatch an external message. Bulk and secret-send intents remain blocked.
+
 ## Controlled Execution Routing
 
 Prime recognizes execution, approval, and notification intents, but its decisions remain plans. Force-push, broad deletion, secret access, and similar critical requests are blocked. A Prime route never substitutes for exact approval or the broker's immediate policy validation.

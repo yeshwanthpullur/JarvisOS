@@ -41,7 +41,7 @@ _SUBCOMMANDS = {
     "document status", "document help", "document plan", "document safety", "document types", "document inspect", "document extract", "document summarize", "document ask", "document show", "document history",
     "browser status", "browser help", "browser plan", "browser safety", "browser capabilities", "browser sources", "browser summarize", "browser show", "browser history",
     "scheduler status", "scheduler help", "scheduler plan", "scheduler safety", "scheduler validate", "scheduler preview", "scheduler capabilities", "scheduler show", "scheduler history",
-    "communication status", "communication help", "communication providers", "communication plan", "communication safety", "communication draft", "communication notify-plan", "communication show", "communication history",
+    "communication status", "communication help", "communication providers", "communication plan", "communication safety", "communication draft", "communication notify-plan", "communication show", "communication history", "communication provider-status", "communication provider-show", "communication provider-health", "communication destination-validate", "communication send-plan", "communication send-safety", "communication send-dry-run", "communication attachment-check", "communication rate-status",
     "adapter status", "adapter help", "adapter list", "adapter show", "adapter plan", "adapter safety", "adapter permissions", "adapter capabilities", "adapter show-job", "adapter history",
     "model advanced",
     "evaluation status", "evaluation help", "evaluation run", "evaluation routing", "evaluation safety", "evaluation truthfulness", "evaluation observability", "evaluation show", "evaluation history",
