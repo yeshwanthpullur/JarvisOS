@@ -1,5 +1,7 @@
 # External Provider Registry
 
+Provider registration and health do not establish trust. Every use remains subject to identity, permission, privacy, egress, credential, risk, policy, approval, and Broker boundaries.
+
 Prompt 83 observes provider readiness and circuit state as bounded metadata. A healthy provider remains subject to locality, credential, egress, cost, capability, and execution policy; health never grants authority.
 
 Model endpoints reuse provider security boundaries; remote inference requires explicit configuration, HTTPS, credential isolation, and data-egress policy.

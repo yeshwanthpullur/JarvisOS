@@ -15,6 +15,7 @@ from jarvis.research import ResearchAgent, ResearchEvidenceCollector, ResearchHi
 from jarvis.knowledge import InMemoryKnowledgeIndex
 from jarvis.coding import CodingAgent, CodingHistoryStore, CodingPlanner, DiffReviewer, RepoInspector
 from jarvis.reliability import ReliabilityLimits, ReliabilityRuntime, build_default_reliability_runtime
+from jarvis.governance import GovernanceLimits, GovernanceRuntime, build_default_governance_runtime
 from jarvis.integrations import ExternalIntegrationControlPlane
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
@@ -282,6 +283,22 @@ class JarvisManager:
         for name,health in defaults.health.items(): self.reliability.record_health(name,health.state,health.health_score)
         self.prime_agent.reliability_runtime=self.reliability
         self.workflow.runtime.reliability_runtime=self.reliability
+        governance_config=getattr(context.settings,"governance",None) if context else None
+        self.governance=GovernanceRuntime(GovernanceLimits(
+            max_audit_records=getattr(governance_config,"max_audit_records",500),
+            max_security_events=getattr(governance_config,"max_security_events",200),
+            max_policy_cache=getattr(governance_config,"max_policy_cache",100),
+            max_trust_cache=getattr(governance_config,"max_trust_cache",100),
+            max_incidents=getattr(governance_config,"max_incidents",100),
+        ))
+        governance_defaults=build_default_governance_runtime()
+        for role in governance_defaults.roles.values():self.governance.register_role(role)
+        for identity in governance_defaults.identities.values():self.governance.register_identity(identity)
+        for policy in governance_defaults.policies.values():self.governance.register_policy(policy)
+        self.prime_agent.governance_runtime=self.governance
+        self.workflow.runtime.governance_runtime=self.governance
+        self.reliability.governance_runtime=self.governance
+        if coordinating_orchestrator is not None:coordinating_orchestrator.governance_runtime=self.governance
         self.retrieval = RetrievalManager()
         self.department_registry = JarvisDepartmentRegistry()
         self.metrics = JarvisMetrics()
@@ -339,6 +356,7 @@ class JarvisManager:
             "skills": self.skills,
             "workflow": self.workflow,
             "reliability": self.reliability,
+            "governance": self.governance,
             "retrieval": self.retrieval,
             "reasoning": self.reasoning,
             "reflection": self.reflection,
@@ -429,5 +447,5 @@ class JarvisManager:
             web_automation=self.web_automation,
             mobile_automation=self.mobile_automation,
             logger=self.logger,
-            metadata={**(base.metadata if base else {}), "external_integrations": self.external_integrations, "telegram_runtime": self.telegram_runtime, "workflow_runtime": self.workflow.runtime, "reliability_runtime": self.reliability, **request.metadata},
+            metadata={**(base.metadata if base else {}), "external_integrations": self.external_integrations, "telegram_runtime": self.telegram_runtime, "workflow_runtime": self.workflow.runtime, "reliability_runtime": self.reliability, "governance_runtime": self.governance, **request.metadata},
         )

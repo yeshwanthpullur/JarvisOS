@@ -25,7 +25,7 @@ class Prompt85ReleaseReadinessTests(unittest.TestCase):
         self.assertNotIn("external_integration_control_plane", report.missing_components)
         self.assertNotIn("external_communication_runtime", report.missing_components)
         self.assertNotIn("telegram_connector", report.missing_components)
-        self.assertIn("enterprise_governance", report.missing_components)
+        self.assertNotIn("enterprise_governance", report.missing_components)
         self.assertGreater(report.blocked, 0)
 
     def test_phase4_authorities_remain_passed(self):

@@ -1,5 +1,7 @@
 # Multi-Agent Orchestration
 
+Prompt 84 attaches governance metadata to orchestration boundaries. Delegated identity chains can only retain or reduce permissions; each boundary remains independently validated.
+
 Prompt 83 attaches bounded reliability metadata to the orchestrator. Health, capacity, dependency, and recovery-plan information remain advisory and do not grant execution authority or create background agent loops.
 
 Prompt 82 workflows can reference multi-agent participants and bounded artifacts while the Prompt 81 orchestrator remains the specialist coordination authority. Workflow graphs do not duplicate agent task graphs or grant agent execution authority.

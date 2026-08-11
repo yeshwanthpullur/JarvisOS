@@ -1,5 +1,7 @@
 # Prime Agent
 
+Prime receives a governance runtime reference for identity-chain and policy diagnostics. Prime remains a coordinator and cannot turn trust, risk, audit, or compliance output into execution authority.
+
 Prime may own Prompt 82 workflow plans, assign registered agents, and consume bounded workflow diagnostics. Workflow recovery does not elevate Prime permissions or bypass policy, approval, or Broker checks.
 
 Prompt 81 keeps Prime as the single orchestration owner and coordinator. Delegation creates bounded task metadata; it does not grant permissions, approval, provider credentials, or execution authority.

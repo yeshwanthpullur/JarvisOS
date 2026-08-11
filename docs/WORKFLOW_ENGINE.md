@@ -1,5 +1,7 @@
 # Workflow Engine
 
+Workflow identity, effective permissions, privacy scope, and policy references propagate as bounded metadata. Governance cannot start, pause, resume, cancel, or recover a workflow.
+
 Prompt 83 makes workflow health visible through the reliability control plane. Reliability may diagnose or propose recovery, but workflow state remains authoritative and any privileged recovery still requires Policy, Approval, and Broker enforcement.
 
 ## Prompt 82 Runtime

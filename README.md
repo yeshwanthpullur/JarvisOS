@@ -1,5 +1,7 @@
 # JARVIS OS
 
+Prompt 84 adds an enterprise governance foundation: zero-trust validation, identity and role metadata, least-privilege authorization, deterministic policy precedence, contextual trust and risk, tamper-evident bounded audit, advisory compliance, and security incident tracking. Governance has no execution authority and makes no certification claim. See [Enterprise Security](docs/ENTERPRISE_SECURITY.md).
+
 Prompt 83 adds bounded on-demand runtime health, dependency diagnostics, circuit breakers, fault isolation, resource/queue thresholds, alerts, metrics, capacity estimates, and governed recovery plans. Health is informational; privileged self-healing, distributed clustering, and cloud telemetry are disabled.
 
 Prompt 82 extends the existing Workflow Engine with bounded dependency graphs, metadata-only checkpoints, recovery, pause/resume/cancel, retries, timeouts, simulation, artifact metadata, audit, and metrics. It coordinates but never authorizes side effects; Executive JARVIS, Execution Policy, Approval, and the Execution Broker remain authoritative.
@@ -26,7 +28,7 @@ JARVIS OS is currently at **v1.7.0-alpha - Phase 3 Batch 2 Foundation**, with th
 
 Phase 4 adds explicit local approvals and a central execution broker for narrowly scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations. Execution remains `plan_only` by default; critical actions, secrets, force-push, browser writes, external messaging, and hidden/background operation remain blocked.
 
-Prompt 85 now provides a validation-only production-readiness gate evaluator. Its current result is **blocked** because Prompts 71-84 remain specifications only and their Phase 5 runtimes are absent. No `v2.0.0` tag or release has been created. See [Phase 5 Final Validation](docs/PHASE_5_FINAL_VALIDATION.md).
+Prompt 85 provides the next validation-only production-readiness gate. Prompts 71-84 are implemented sequentially; no `v2.0.0` tag or release has been created. See [Phase 5 Final Validation](docs/PHASE_5_FINAL_VALIDATION.md).
 
 Prompt 71 adds a disabled-by-default [External Integration Control Plane](docs/EXTERNAL_INTEGRATIONS.md) with a truthful [Provider Registry](docs/PROVIDER_REGISTRY.md), [security policy](docs/EXTERNAL_SECURITY.md), [data-egress classification](docs/DATA_EGRESS_POLICY.md), and credential-reference-only [credential handling](docs/CREDENTIAL_HANDLING.md). It enables no provider and performs no external action.
 

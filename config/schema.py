@@ -266,6 +266,15 @@ class ReliabilityConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class GovernanceConfig:
+    enabled:bool=True;zero_trust_enabled:bool=True;audit_enabled:bool=True;compliance_enabled:bool=True;policy_strict_mode:bool=True;risk_enabled:bool=True;identity_enabled:bool=True;authorization_enabled:bool=True;trust_enabled:bool=True;event_correlation_enabled:bool=True;dashboard_enabled:bool=True;metrics_enabled:bool=True;policy_registry_enabled:bool=True;retention_enabled:bool=True;policy_versioning_enabled:bool=True;incident_tracking_enabled:bool=True;max_security_events:int=200;max_audit_records:int=500;max_policy_cache:int=100;max_trust_cache:int=100;max_incidents:int=100
+    def __post_init__(self):
+        flags=(self.enabled,self.zero_trust_enabled,self.audit_enabled,self.compliance_enabled,self.policy_strict_mode,self.risk_enabled,self.identity_enabled,self.authorization_enabled,self.trust_enabled,self.event_correlation_enabled,self.dashboard_enabled,self.metrics_enabled,self.policy_registry_enabled,self.retention_enabled,self.policy_versioning_enabled,self.incident_tracking_enabled)
+        if any(not isinstance(value,bool) for value in flags):raise ValueError("invalid_governance_boolean")
+        if any(value<1 or value>5000 for value in (self.max_security_events,self.max_audit_records,self.max_policy_cache,self.max_trust_cache,self.max_incidents)):raise ValueError("invalid_governance_limit")
+
+
+@dataclass(frozen=True, slots=True)
 class DocumentsConfig:
     enabled: bool = True; default_mode: str = "plan_only"; max_file_bytes: int = 1000000; max_extract_chars: int = 4000; max_history_items: int = 25; allow_pdf: bool = False; allow_office: bool = False; allow_ocr: bool = False; allow_cloud_parsing: bool = False; allow_bulk_ingestion: bool = False; save_history: bool = True; store_extracted_content: bool = False; local_only: bool = True
 
@@ -568,6 +577,7 @@ class AppSettings:
     orchestrator: OrchestratorConfig = field(default_factory=OrchestratorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
     reliability: ReliabilityConfig = field(default_factory=ReliabilityConfig)
+    governance: GovernanceConfig = field(default_factory=GovernanceConfig)
     documents: DocumentsConfig = field(default_factory=DocumentsConfig)
     browser: BrowserAgentConfig = field(default_factory=BrowserAgentConfig)
     scheduler: SchedulerConfig = field(default_factory=SchedulerConfig)

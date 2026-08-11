@@ -295,6 +295,29 @@ reliability:
   max_metric_history: 500
   max_parallel_health_checks: 4
 
+governance:
+  enabled: true
+  zero_trust_enabled: true
+  audit_enabled: true
+  compliance_enabled: true
+  policy_strict_mode: true
+  risk_enabled: true
+  identity_enabled: true
+  authorization_enabled: true
+  trust_enabled: true
+  event_correlation_enabled: true
+  dashboard_enabled: true
+  metrics_enabled: true
+  policy_registry_enabled: true
+  retention_enabled: true
+  policy_versioning_enabled: true
+  incident_tracking_enabled: true
+  max_security_events: 200
+  max_audit_records: 500
+  max_policy_cache: 100
+  max_trust_cache: 100
+  max_incidents: 100
+
 web_automation:
   enabled: true
   mode: "read_only"

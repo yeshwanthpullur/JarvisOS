@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased - Prompt 84 Enterprise Governance Runtime
+
+- Added zero-trust identity, role, authorization, policy, privacy, risk, trust, compliance, audit, security-event, and incident models.
+- Added deterministic policy precedence, conflict detection, least-privilege delegation, fail-closed validation, bounded metrics, and advisory governance diagnostics.
+- Added tamper-evident append-only audit records with secret and path redaction.
+- Integrated governance metadata with Executive JARVIS, Prime, Workflow, Orchestrator, Reliability, project status, configuration, and CLI.
+- Preserved Execution Policy, Approval System, and Execution Broker authority; governance cannot execute or approve actions.
+
 ## Unreleased - Prompt 83 Production Reliability Runtime
 
 - Added bounded component/dependency health, resource and queue thresholds, circuit breakers, fault isolation, diagnostics, alerts, metrics, capacity planning, and governed recovery plans.

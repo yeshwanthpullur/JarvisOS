@@ -32,6 +32,7 @@ from jarvis.mcp_runtime import MCPRuntime,render_mcp_command
 from jarvis.plugin_runtime import PluginRuntime,render_plugin_command
 from workflow import WorkflowRuntime, render_workflow_command
 from jarvis.reliability import ReliabilityRuntime, build_default_reliability_runtime, render_runtime_command as render_reliability_command
+from jarvis.governance import GovernanceRuntime, build_default_governance_runtime, render_security_command
 
 
 def _manager(context: CommandContext):
@@ -110,6 +111,10 @@ def _workflow_runtime(context: CommandContext) -> WorkflowRuntime:
 def _reliability_runtime(context: CommandContext) -> ReliabilityRuntime:
     conversation=context.conversation_context;metadata=getattr(conversation,"metadata",{}) or {} if conversation is not None else {};runtime=metadata.get("reliability_runtime")
     return runtime if isinstance(runtime,ReliabilityRuntime) else build_default_reliability_runtime()
+
+def _governance_runtime(context:CommandContext)->GovernanceRuntime:
+    conversation=context.conversation_context;metadata=getattr(conversation,"metadata",{}) or {} if conversation is not None else {};runtime=metadata.get("governance_runtime")
+    return runtime if isinstance(runtime,GovernanceRuntime) else build_default_governance_runtime()
 
 
 def _existing_ollama_state(context: CommandContext) -> tuple[bool, tuple[str, ...], bool]:
@@ -419,6 +424,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         model_runtime_status=_advanced_model_runtime(context).status()
         phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
         orchestration_status=getattr(getattr(getattr(_agent_manager(context),"orchestrator",None),"runtime",None),"status",lambda:{"status":"unavailable"})()
+        governance_status=_governance_runtime(context).dashboard()
         phase3_text = (
             "phase3="
             f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
@@ -430,7 +436,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"skills:{skill_summary['ready_skills']}/{skill_summary['total_skills']} "
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
-            f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} mrt:R o:R w:R r:R p85={release_status.status.value} "
+            f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} p5:m/o/w/r/g:R p85={release_status.status.value} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -485,6 +491,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "external_providers_total": external_summary["total"],
             "external_providers_enabled": external_summary["enabled"],
             "external_execution_enabled": bool(external_summary["execution_enabled"]),
+            "governance_status":governance_status["security_health"],"zero_trust_enabled":governance_status["zero_trust"],"governance_execution_authority":False,
         }
     return _text_response(
         "Project status: "
@@ -918,6 +925,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("workflow list", "List workflows", "workflow", (), CommandPermission.WORKFLOW),
         *tuple((f"workflow {operation}", f"Workflow {operation}", "workflow", (), CommandPermission.WORKFLOW) for operation in ("status", "show", "graph", "trace", "events", "checkpoints", "checkpoint-show", "pause", "resume", "cancel", "simulate", "health", "metrics", "cleanup-plan", "artifact-list", "artifact-show")),
         *tuple((f"runtime {operation}", f"Runtime reliability {operation}", "runtime", (), CommandPermission.SYSTEM) for operation in ("status","health","components","dependencies","metrics","diagnostics","alerts","providers","models","queues","resources","breakers","recovery-plan","recovery-history","events","dashboard","profile","capacity","verify")),
+        *tuple((f"security {operation}", f"Enterprise governance {operation}", "security", (), CommandPermission.DIAGNOSTIC) for operation in ("status","health","identities","permissions","policies","trust","incidents","audit","compliance","risks","governance","events","metrics","dashboard","validate","verify","policy-show","incident-show","audit-show","trust-show")),
         ("config", "Show config summary", "configuration", (), CommandPermission.CONFIGURATION),
         ("config show", "Show configuration metadata", "configuration", (), CommandPermission.CONFIGURATION),
         ("profile", "Show personal intelligence summary", "personal", (), CommandPermission.CONVERSATION),
@@ -1044,6 +1052,8 @@ def _handler_for(name: str):
             return _text_response(render_workflow_command(_workflow_runtime(context), name, context.arguments))
         if name.startswith("runtime "):
             return _text_response(render_reliability_command(_reliability_runtime(context),name,context.arguments))
+        if name.startswith("security "):
+            return _text_response(render_security_command(_governance_runtime(context),name,context.arguments))
         if name.startswith("knowledge "):
             return _text_response(render_knowledge_command(_knowledge_index(context),name,context.arguments))
         if name.startswith("coding "):

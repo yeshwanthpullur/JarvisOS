@@ -1,5 +1,7 @@
 # Execution Broker
 
+Governance validation is an additional fail-closed input, not a replacement for Broker validation. Only the Broker can dispatch to a registered executor after all existing checks pass.
+
 The Prompt 83 reliability runtime has no executor. Any future approved privileged recovery must still be dispatched through this Broker to a registered, policy-allowed executor.
 
 Prompt 82 can submit an already-authorized step to a supplied Broker route, but it has no executor of its own. Missing or blocked Broker results become waiting or failed workflow states and never synthetic success.

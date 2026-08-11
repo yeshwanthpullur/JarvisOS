@@ -1,5 +1,7 @@
 # Execution Policy
 
+Prompt 84 policy metadata does not replace this execution authority. A governance allow result cannot bypass an Execution Policy denial.
+
 Reliability recovery plans are requests, not permission. Prompt 83 cannot weaken policy, convert health into approval, or execute privileged recovery directly.
 
 Workflow steps preserve their policy and privacy scope. Prompt 82 never treats a workflow state transition, checkpoint, restore, or simulation as policy authorization.

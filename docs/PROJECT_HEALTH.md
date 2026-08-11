@@ -1,5 +1,7 @@
 # Project Health
 
+Prompt 84 adds tested enterprise governance and zero-trust metadata while preserving every existing authority boundary. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
+
 Prompt 83 adds the production reliability control plane with bounded health and diagnostics. It does not add distributed execution or privileged self-healing. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
 
 Prompt 82 adds the verified bounded Workflow Engine checkpoint/recovery runtime while preserving Executive, Policy, Approval, and Broker authority. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.

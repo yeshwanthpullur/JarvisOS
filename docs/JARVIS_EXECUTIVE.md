@@ -1,5 +1,7 @@
 # Executive JARVIS Core
 
+Prompt 84 governance coordinates validation metadata beneath Executive authority. Governance cannot override Executive, Policy, Approval, Broker, memory, workflow, provider, or subsystem ownership.
+
 Prompt 82 preserves Executive JARVIS as the authority above Workflow coordination. A workflow may schedule, pause, checkpoint, recover, or simulate steps, but it cannot approve, authorize, or directly perform a side effect.
 
 Executive JARVIS remains authoritative above Prime and the Prompt 81 Orchestrator. Coordination changes execution ordering only; it does not alter user authority or subsystem ownership.
