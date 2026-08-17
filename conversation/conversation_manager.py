@@ -12,6 +12,7 @@ from conversation.conversation_history import ConversationHistory
 from conversation.conversation_memory import ConversationMemory
 from conversation.conversation_metrics import ConversationMetrics
 from conversation.conversation_request import ConversationRequest
+from conversation.conversation_routing import classify_conversation_route
 from conversation.conversation_response import ConversationResponse
 from conversation.conversation_session import ConversationSession
 from conversation.conversation_summary import ConversationSummary
@@ -145,6 +146,8 @@ class ConversationManager:
         self.active_session.request_id = request_id
         stripped_input = user_input.strip()
         is_command = self.command_manager.is_command_candidate(stripped_input)
+        route_decision = classify_conversation_route(stripped_input, command_matched=is_command)
+        self.active_session.metadata["last_conversation_route"] = route_decision.as_metadata()
         plan = None if is_command else self.conversation_intelligence.prepare(
             stripped_input,
             {
@@ -212,6 +215,7 @@ class ConversationManager:
                 "conversation_intelligence_manager": self.conversation_intelligence,
                 "conversation_original_input": stripped_input,
                 "conversation_plan": plan,
+                "conversation_route": route_decision.as_metadata(),
                 "document_agent": self.document_agent,
                 "browser_agent": self.browser_agent,
                 "scheduler_agent": self.scheduler_agent,

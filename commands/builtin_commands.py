@@ -10,6 +10,7 @@ from commands.command_context import CommandContext
 from commands.command_permissions import CommandPermission
 from commands.command_registry import CommandRecord, CommandRegistry
 from conversation.conversation_response import ConversationResponse
+from conversation.conversation_routing import classify_conversation_route, render_route_decision
 from providers import ProviderRequest
 from jarvis.project_limitations import LimitationsRegister, LimitationsRegisterError
 from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents, render_agent_command, render_prime_command, ResearchAgent, render_research_command
@@ -572,6 +573,9 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("limitations next", "Show the highest-priority limitation", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("limitations summary", "Show limitation counts and priority", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("conversation status", "Show conversation state", "conversation", (), CommandPermission.CONVERSATION),
+        ("conversation diagnostics", "Show bounded routing diagnostics", "conversation", (), CommandPermission.CONVERSATION),
+        ("conversation route", "Inspect conversation routing", "conversation", (), CommandPermission.CONVERSATION),
+        ("route inspect", "Inspect deterministic request routing", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("conversation reset", "Clear in-memory conversation context", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation summary", "Show bounded conversation summary", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation mode", "Show conversation mode", "conversation", (), CommandPermission.CONVERSATION),
@@ -719,6 +723,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("providers", "Show provider summary", "provider", (), CommandPermission.PROVIDER),
         ("provider list", "List providers", "provider", (), CommandPermission.PROVIDER),
         ("provider status", "Show provider status", "provider", (), CommandPermission.PROVIDER),
+        ("provider current", "Show current provider selection", "provider", (), CommandPermission.PROVIDER),
         ("provider health", "Show provider health", "provider", (), CommandPermission.PROVIDER),
         ("provider enable", "Enable a provider", "provider", (), CommandPermission.PROVIDER),
         ("provider disable", "Disable a provider", "provider", (), CommandPermission.PROVIDER),
@@ -953,6 +958,8 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("objective show", "Show the current objective", "conversation", (), CommandPermission.CONVERSATION),
         ("goal", "Show goal intelligence summary", "goal", (), CommandPermission.CONVERSATION),
         ("goal show", "Show the active goal", "goal", (), CommandPermission.CONVERSATION),
+        ("goal status", "Show goal status", "goal", (), CommandPermission.CONVERSATION),
+        ("goal route-check", "Inspect whether input may route to goals", "goal", (), CommandPermission.CONVERSATION),
         ("goal list", "List goals", "goal", (), CommandPermission.CONVERSATION),
         ("goal review", "Review a goal", "goal", (), CommandPermission.CONVERSATION),
         ("goal progress", "Show goal progress", "goal", (), CommandPermission.CONVERSATION),
@@ -1003,7 +1010,16 @@ def _handler_for(name: str):
             return _text_response(render_mcp_command(name,context.arguments,_mcp_runtime(context)))
         if name == "plugins" or name.startswith("plugin "):
             return _text_response(render_plugin_command("plugin status" if name=="plugins" else name,context.arguments,_plugin_runtime(context)))
+        if name == "route inspect":
+            return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))
         if name.startswith("conversation "):
+            if name == "conversation route":
+                return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))
+            if name == "conversation diagnostics":
+                session = getattr(context.conversation_context, "session", None)
+                last_route = getattr(session, "metadata", {}).get("last_conversation_route") if session is not None else None
+                route_text = "none" if not isinstance(last_route, dict) else ",".join(f"{key}={value}" for key, value in sorted(last_route.items()))
+                return _text_response(f"Conversation diagnostics: routing=deterministic uncertain=chat goal_requires_explicit=yes last={route_text}")
             intelligence = _conversation_intelligence(context)
             if intelligence is None:
                 return _text_response("Conversation intelligence is unavailable.")
@@ -1757,7 +1773,7 @@ def _handler_for(name: str):
             return _text_response(render_external_command(name, context.arguments, _external_integrations(context)))
         if name == "provider health" and context.arguments and _external_integrations(context).registry.get(context.arguments[0]):
             return _text_response(render_external_command(name, context.arguments, _external_integrations(context)))
-        if name in {"providers", "provider list", "provider status", "provider health"}:
+        if name in {"providers", "provider list", "provider status", "provider current", "provider health"}:
             provider_manager = _provider_manager(context)
             if provider_manager is None:
                 if name == "provider list":
@@ -1770,9 +1786,10 @@ def _handler_for(name: str):
             policy = _cloud_policy(session)
             preferred_provider = metadata.get("provider_preference") or metadata.get("local_provider") or metadata.get("cloud_provider")
             preferred_model = metadata.get("model_preference") or metadata.get("local_model") or metadata.get("cloud_model")
-            if name == "provider status":
+            if name in {"provider status", "provider current"}:
+                label = "Provider current" if name == "provider current" else "Provider status"
                 return _text_response(
-                    "Provider status: "
+                    f"{label}: "
                     f"mode={policy} "
                     f"provider={preferred_provider or 'automatic'} "
                     f"model={preferred_model or 'automatic'} "
@@ -2188,7 +2205,9 @@ def _handler_for(name: str):
             if not objective:
                 return _text_response("There is no active objective right now.")
             return _text_response(f"Current objective: {objective}")
-        if name in {"goal", "goal show", "goal review", "goal progress", "goal next", "goal blockers", "goal evaluate", "goal conflicts", "goal align", "goal portfolio", "goal pause", "goal resume", "goal complete"}:
+        if name == "goal route-check":
+            return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))
+        if name in {"goal", "goal show", "goal status", "goal review", "goal progress", "goal next", "goal blockers", "goal evaluate", "goal conflicts", "goal align", "goal portfolio", "goal pause", "goal resume", "goal complete"}:
             goal_intel = _goal_manager(context)
             conversation = context.conversation_context
             if goal_intel is None or conversation is None:
@@ -2198,6 +2217,8 @@ def _handler_for(name: str):
                 return _text_response(goal_intel.prepare_request("Show the current goal portfolio.", conversation.session).immediate_response)
             if name == "goal show":
                 return _text_response(goal_intel.prepare_request("Show the active goal.", conversation.session).immediate_response)
+            if name == "goal status":
+                return _text_response(goal_intel.goal_portfolio().immediate_response)
             if name == "goal list":
                 return _text_response(goal_intel.goal_portfolio().immediate_response)
             if name == "goal review":

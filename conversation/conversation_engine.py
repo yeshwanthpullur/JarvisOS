@@ -12,6 +12,7 @@ from conversation.conversation_response import ConversationResponse
 from conversation.conversation_router import ConversationRouter
 from conversation.conversation_state import ConversationState
 from conversation.conversation_validator import ConversationValidator
+from conversation.conversation_routing import ConversationIntent
 
 
 class ConversationEngine:
@@ -110,8 +111,14 @@ class ConversationEngine:
                 pass
         goal_manager = context.metadata.get("goal_intelligence_manager")
         if goal_manager is not None and hasattr(goal_manager, "prepare_request"):
-            normalized = request.normalized_input
-            if self._is_goal_related(normalized):
+            route_metadata = context.metadata.get("conversation_route", {})
+            route_intent = str(route_metadata.get("intent", "")) if isinstance(route_metadata, dict) else ""
+            goal_allowed = bool(route_metadata.get("goal_routing_allowed")) if isinstance(route_metadata, dict) else False
+            if goal_allowed and route_intent in {
+                ConversationIntent.GOAL_CREATE.value,
+                ConversationIntent.GOAL_UPDATE.value,
+                ConversationIntent.GOAL_STATUS.value,
+            }:
                 try:
                     goal_report = goal_manager.prepare_request(request.user_input, context.session)
                     context.metadata["goal_analysis"] = {
@@ -159,24 +166,3 @@ class ConversationEngine:
             execution_state="completed" if jarvis_response.success else "failed",
         )
 
-    def _is_goal_related(self, normalized: str) -> bool:
-        return any(
-            marker in normalized
-            for marker in (
-                "goal",
-                "goals",
-                "milestone",
-                "progress",
-                "blocker",
-                "conflict",
-                "next step",
-                "what should i do next",
-                "complete",
-                "pause this goal",
-                "resume the goal",
-                "what goals",
-                "portfolio",
-                "align task",
-                "why am i doing this task",
-            )
-        )

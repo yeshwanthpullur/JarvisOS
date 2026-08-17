@@ -3,6 +3,12 @@
 from conversation.conversation_context import ConversationContext
 from conversation.conversation_request import ConversationRequest
 from conversation.conversation_response import ConversationResponse
+from conversation.conversation_routing import (
+    ConversationIntent,
+    ConversationRouteDecision,
+    classify_conversation_route,
+    render_route_decision,
+)
 from conversation.conversation_session import ConversationSession
 from conversation.conversation_state import ConversationState
 from conversation.conversation_intelligence import (
@@ -24,6 +30,10 @@ __all__ = [
     "ConversationPlan",
     "ConversationRequest",
     "ConversationResponse",
+    "ConversationIntent",
+    "ConversationRouteDecision",
+    "classify_conversation_route",
+    "render_route_decision",
     "ConversationSession",
     "ConversationState",
     "ConversationStatistics",

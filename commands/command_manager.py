@@ -46,6 +46,12 @@ class CommandManager:
         resolved_name = self.aliases.resolve(parsed.name)
         if resolved_name != parsed.name:
             parsed = self.parser.parse(resolved_name + (" " + " ".join(parsed.arguments) if parsed.arguments else ""))
+        if self.registry.lookup(parsed.name) is None:
+            namespace_response = self._unknown_namespace_response(parsed.name, parsed.arguments)
+            if namespace_response is not None:
+                self.history.append(parsed, namespace_response)
+                self.metrics.commands_failed += 1
+                return namespace_response
         response = self.dispatcher.dispatch(parsed, conversation_context or self)
         self.history.append(parsed, response)
         if response.warnings:
@@ -53,6 +59,22 @@ class CommandManager:
         else:
             self.metrics.commands_executed += 1
         return response
+
+    def _unknown_namespace_response(self, name: str, arguments: tuple[str, ...]) -> ConversationResponse | None:
+        root = name.split(maxsplit=1)[0]
+        matches = sorted(record.name for record in self.registry.list_commands() if record.name.startswith(f"{root} "))
+        if not matches:
+            return None
+        suffix = name.split(maxsplit=1)[1:] + list(arguments)
+        attempted = " ".join(suffix).strip() or "(missing)"
+        preferred = [f"{root} {item}" for item in ("status", "list", "health", "help")]
+        ordered = [item for item in preferred if item in matches] + [item for item in matches if item not in preferred]
+        suggestions = ", ".join(ordered[:8])
+        return ConversationResponse(
+            response=f"Unknown {root} command: {attempted}. Try: {suggestions}.",
+            warnings=("unknown_command_subcommand",),
+            execution_state="failed",
+        )
 
     def is_command_candidate(self, text: str) -> bool:
         """Identify command-shaped input without invoking shell-style parsing."""
