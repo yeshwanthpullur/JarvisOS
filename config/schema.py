@@ -262,7 +262,7 @@ class WorkflowConfig:
 
 @dataclass(frozen=True, slots=True)
 class ReliabilityConfig:
-    enabled:bool=True;monitor_interval_seconds:int=30;enable_metrics:bool=True;enable_diagnostics:bool=True;enable_health_dashboard:bool=True;enable_alerts:bool=True;enable_circuit_breakers:bool=True;enable_fault_isolation:bool=True;enable_self_healing:bool=True;max_retry_attempts:int=2;max_health_history:int=200;max_alert_history:int=100;max_metric_history:int=500;max_parallel_health_checks:int=4
+    enabled:bool=True;monitor_interval_seconds:int=30;enable_metrics:bool=True;enable_diagnostics:bool=True;enable_health_dashboard:bool=True;enable_alerts:bool=True;enable_circuit_breakers:bool=True;enable_fault_isolation:bool=True;enable_self_healing:bool=False;max_retry_attempts:int=2;max_health_history:int=200;max_alert_history:int=100;max_metric_history:int=500;max_parallel_health_checks:int=4
 
 
 @dataclass(frozen=True, slots=True)

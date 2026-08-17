@@ -1,7 +1,7 @@
 """Provider-neutral, metadata-only production reliability runtime."""
 from __future__ import annotations
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import StrEnum
 from collections import deque
 import os,re
@@ -78,6 +78,14 @@ class ReliabilityRuntime:
  """Aggregates health without gaining recovery or execution authority."""
  def __init__(self,limits:ReliabilityLimits|None=None):
   self.limits=limits or ReliabilityLimits();self.health:dict[str,RuntimeHealth]={};self.nodes:dict[str,RuntimeNode]={};self.services:dict[str,ServiceRecord]={};self.dependencies:dict[str,set[str]]={};self.breakers:dict[str,CircuitBreaker]={};self.metrics=deque(maxlen=self.limits.max_metric_history);self.alerts=deque(maxlen=self.limits.max_alert_history);self.history=deque(maxlen=self.limits.max_health_history);self.recoveries=deque(maxlen=self.limits.max_health_history);self.events=deque(maxlen=self.limits.max_health_history)
+  self._last_transition_ts: str | None = None
+ def _transition_timestamp(self) -> str:
+  timestamp=now()
+  if self._last_transition_ts is not None and timestamp<=self._last_transition_ts:
+   previous=datetime.fromisoformat(self._last_transition_ts)
+   timestamp=(previous+timedelta(microseconds=1)).isoformat()
+  self._last_transition_ts=timestamp
+  return timestamp
  def register_service(self,record:ServiceRecord)->None:
   if record.service_id in self.services:raise ValueError("duplicate_reliability_service")
   self.services[record.service_id]=record;self.dependencies[record.service_id]=set(record.dependencies)
@@ -95,7 +103,7 @@ class ReliabilityRuntime:
   return True
  def record_health(self,component:str,state:HealthState,score:float,*,warnings:tuple[str,...]=(),errors:tuple[str,...]=())->RuntimeHealth:
   previous=self.health.get(component);dependencies=tuple(f"{dep}:{self.health.get(dep,RuntimeHealth('none',dep,HealthState.UNKNOWN,0,False)).state.value}" for dep in sorted(self.dependencies.get(component,set())))
-  item=RuntimeHealth(ident("runtime"),component,state,score,state is HealthState.READY,dependency_health=dependencies,warnings=warnings,errors=errors,last_transition=previous.last_transition if previous and previous.state is state else now())
+  item=RuntimeHealth(ident("runtime"),component,state,score,state is HealthState.READY,dependency_health=dependencies,warnings=warnings,errors=errors,last_transition=previous.last_transition if previous and previous.state is state else self._transition_timestamp())
   self.health[component]=item;self.history.append(item);self.events.append((now(),safe(component,100),"health_transition",state.value))
   breaker=self.breakers.setdefault(component,CircuitBreaker(component,self.limits.failure_threshold,self.limits.recovery_success_threshold))
   if state in {HealthState.FAILED,HealthState.OFFLINE}:breaker.failure()

@@ -131,7 +131,7 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 
 No next roadmap prompt starts automatically. Maintenance or a future roadmap requires separate planning and explicit authorization. The optional `v2.0.0` publication checkpoint also requires separate authorization.
 
-The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through Prompt 50.
+The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through the current roadmap checkpoints.
 
 ## Last Verified Tests
 

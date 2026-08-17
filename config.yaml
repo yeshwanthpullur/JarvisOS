@@ -288,7 +288,7 @@ reliability:
   enable_alerts: true
   enable_circuit_breakers: true
   enable_fault_isolation: true
-  enable_self_healing: true
+  enable_self_healing: false
   max_retry_attempts: 2
   max_health_history: 200
   max_alert_history: 100

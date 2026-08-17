@@ -325,6 +325,14 @@ def _foundation_instance(context: CommandContext, name: str, factory):
     return direct or metadata.get(name) or factory()
 
 
+def _phase4_runtime(context: CommandContext):
+    return _foundation_instance(
+        context,
+        "phase4_runtime",
+        lambda: get_phase4_runtime(Path(__file__).resolve().parents[1]),
+    )
+
+
 def _document_agent(context: CommandContext) -> DocumentAgent:
     root = Path(__file__).resolve().parents[1]
     return _foundation_instance(context, "document_agent", lambda: DocumentAgent(root))
@@ -422,7 +430,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         mcp_status=_mcp_runtime(context).status()
         plugin_status=_plugin_runtime(context).status()
         model_runtime_status=_advanced_model_runtime(context).status()
-        phase4 = get_phase4_runtime(Path(__file__).resolve().parents[1])
+        phase4 = _phase4_runtime(context)
         orchestration_status=getattr(getattr(getattr(_agent_manager(context),"orchestrator",None),"runtime",None),"status",lambda:{"status":"unavailable"})()
         governance_status=_governance_runtime(context).dashboard()
         phase3_text = (
@@ -1058,7 +1066,7 @@ def _handler_for(name: str):
         if name.startswith("coding "):
             return _text_response(render_coding_command(_coding_agent(context), name, context.arguments))
         if name.split(" ", 1)[0] in {"execution","approval","broker","file-exec","command","git-exec","notification"} or name in {"browser policy","browser validate","browser dry-run","browser read","browser read-show","browser read-history","scheduler runtime-status","scheduler jobs","scheduler due","scheduler create","scheduler run","scheduler run-due","scheduler pause","scheduler resume","scheduler cancel","scheduler runs","scheduler runtime-policy"}:
-            return _text_response(render_phase4_command(get_phase4_runtime(Path(__file__).resolve().parents[1]), name, context.arguments, context.flags))
+            return _text_response(render_phase4_command(_phase4_runtime(context), name, context.arguments, context.flags))
         if name.startswith("document "):
             return _text_response(render_document_command(_document_agent(context), name, context.arguments))
         if name.startswith("browser "):

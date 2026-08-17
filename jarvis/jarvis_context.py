@@ -62,6 +62,16 @@ class JarvisContext:
     skill_registry: Any | None = None
     research_agent: Any | None = None
     coding_agent: Any | None = None
+    document_agent: Any | None = None
+    browser_agent: Any | None = None
+    scheduler_agent: Any | None = None
+    communication_agent: Any | None = None
+    adapter_agent: Any | None = None
+    advanced_model_planner: Any | None = None
+    advanced_model_runtime: Any | None = None
+    evaluation_runner: Any | None = None
+    release_readiness_evaluator: Any | None = None
+    phase4_runtime: Any | None = None
     tool_manager: Any | None = None
     autonomous_planning: Any | None = None
     voice_intelligence: Any | None = None

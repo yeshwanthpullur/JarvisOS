@@ -9,12 +9,21 @@ from pathlib import Path
 from jarvis.jarvis_cache import JarvisCache
 from jarvis.jarvis_context import JarvisContext
 from jarvis.agents import AgentRegistry, PrimeAgent, register_specialist_agents
+from jarvis.adapters import AdapterAgent
+from jarvis.browser import BrowserAgent
+from jarvis.communication import CommunicationAgent
 from jarvis.models import ModelRouter, build_default_model_registry
+from jarvis.models import AdvancedModelPlanner, AdvancedModelRuntime
 from jarvis.skills import build_default_skill_registry
 from jarvis.research import ResearchAgent, ResearchEvidenceCollector, ResearchHistoryStore, ResearchPlanner
 from jarvis.knowledge import InMemoryKnowledgeIndex
 from jarvis.coding import CodingAgent, CodingHistoryStore, CodingPlanner, DiffReviewer, RepoInspector
+from jarvis.documents import DocumentAgent
+from jarvis.evaluation import EvaluationRunner
+from jarvis.execution.cli import Phase4Runtime
 from jarvis.reliability import ReliabilityLimits, ReliabilityRuntime, build_default_reliability_runtime
+from jarvis.release_readiness import ReleaseReadinessEvaluator
+from jarvis.scheduler import SchedulerAgent
 from jarvis.governance import GovernanceLimits, GovernanceRuntime, build_default_governance_runtime
 from jarvis.integrations import ExternalIntegrationControlPlane
 from jarvis.jarvis_controller import JarvisController
@@ -216,6 +225,36 @@ class JarvisManager:
             block_secrets_access=getattr(coding_config, "block_secrets_access", True),
             max_history_items=getattr(coding_config, "max_history_items", 25),
         )
+        documents_config = getattr(context.settings, "documents", None) if context else None
+        self.document_agent = DocumentAgent(
+            coding_root,
+            enabled=getattr(documents_config, "enabled", True),
+            max_file_bytes=getattr(documents_config, "max_file_bytes", 1_000_000),
+            max_extract_chars=getattr(documents_config, "max_extract_chars", 4000),
+            max_history_items=getattr(documents_config, "max_history_items", 25),
+        )
+        browser_config = getattr(context.settings, "browser", None) if context else None
+        self.browser_agent = BrowserAgent(
+            enabled=getattr(browser_config, "enabled", True),
+            read_only_available=getattr(browser_config, "default_mode", "read_only") == "read_only",
+            max_history_items=getattr(browser_config, "max_history_items", 25),
+        )
+        scheduler_config = getattr(context.settings, "scheduler", None) if context else None
+        self.scheduler_agent = SchedulerAgent(
+            enabled=getattr(scheduler_config, "enabled", True),
+            max_history_items=getattr(scheduler_config, "max_history_items", 25),
+        )
+        communication_config = getattr(context.settings, "communication", None) if context else None
+        self.communication_agent = CommunicationAgent(
+            enabled=getattr(communication_config, "enabled", True),
+            max_history_items=getattr(communication_config, "max_history_items", 25),
+        )
+        adapters_config = getattr(context.settings, "adapters", None) if context else None
+        self.adapter_agent = AdapterAgent(
+            enabled=getattr(adapters_config, "enabled", True),
+            max_history_items=getattr(adapters_config, "max_history_items", 25),
+        )
+        self.phase4_runtime = Phase4Runtime(coding_root)
         agent_limit = getattr(getattr(context.settings, "agents", None), "max_agents", 64) if context else 64
         self.agent_registry = AgentRegistry(max_agents=agent_limit)
         provider_manager = context.metadata.get("provider_manager") if context else None
@@ -249,6 +288,16 @@ class JarvisManager:
             max_plan_steps=getattr(prime_config, "max_plan_steps", 8),
             block_critical_risk=getattr(prime_config, "block_critical_risk", True),
         )
+        self.advanced_model_planner = AdvancedModelPlanner()
+        self.advanced_model_runtime = AdvancedModelRuntime(provider_registry=self.model_registry)
+        evaluation_config = getattr(context.settings, "evaluation", None) if context else None
+        self.evaluation_runner = EvaluationRunner(
+            self.prime_agent,
+            self.adapter_agent,
+            self.advanced_model_planner,
+            max_history_items=getattr(evaluation_config, "max_history_items", 25),
+        )
+        self.release_readiness_evaluator = ReleaseReadinessEvaluator(coding_root)
         self.skills = JarvisSkills()
         workflow_config = getattr(context.settings, "workflow", None) if context else None
         from workflow import WorkflowLimits
@@ -345,6 +394,16 @@ class JarvisManager:
             "research_agent": self.research_agent,
             "knowledge_index": self.knowledge_index,
             "coding_agent": self.coding_agent,
+            "document_agent": self.document_agent,
+            "browser_agent": self.browser_agent,
+            "scheduler_agent": self.scheduler_agent,
+            "communication_agent": self.communication_agent,
+            "adapter_agent": self.adapter_agent,
+            "advanced_model_planner": self.advanced_model_planner,
+            "advanced_model_runtime": self.advanced_model_runtime,
+            "evaluation_runner": self.evaluation_runner,
+            "release_readiness_evaluator": self.release_readiness_evaluator,
+            "phase4_runtime": self.phase4_runtime,
             "mobile_automation": self.mobile_automation,
             "agent_registry": self.agent_registry,
             "prime_agent": self.prime_agent,
@@ -437,6 +496,16 @@ class JarvisManager:
             skill_registry=self.skill_registry,
             research_agent=self.research_agent,
             coding_agent=self.coding_agent,
+            document_agent=self.document_agent,
+            browser_agent=self.browser_agent,
+            scheduler_agent=self.scheduler_agent,
+            communication_agent=self.communication_agent,
+            adapter_agent=self.adapter_agent,
+            advanced_model_planner=self.advanced_model_planner,
+            advanced_model_runtime=self.advanced_model_runtime,
+            evaluation_runner=self.evaluation_runner,
+            release_readiness_evaluator=self.release_readiness_evaluator,
+            phase4_runtime=self.phase4_runtime,
             tool_manager=self.tools,
             autonomous_planning=self.autonomous_planning,
             voice_intelligence=self.voice_intelligence,
@@ -447,5 +516,23 @@ class JarvisManager:
             web_automation=self.web_automation,
             mobile_automation=self.mobile_automation,
             logger=self.logger,
-            metadata={**(base.metadata if base else {}), "external_integrations": self.external_integrations, "telegram_runtime": self.telegram_runtime, "workflow_runtime": self.workflow.runtime, "reliability_runtime": self.reliability, "governance_runtime": self.governance, **request.metadata},
+            metadata={
+                **(base.metadata if base else {}),
+                "external_integrations": self.external_integrations,
+                "telegram_runtime": self.telegram_runtime,
+                "workflow_runtime": self.workflow.runtime,
+                "reliability_runtime": self.reliability,
+                "governance_runtime": self.governance,
+                "document_agent": self.document_agent,
+                "browser_agent": self.browser_agent,
+                "scheduler_agent": self.scheduler_agent,
+                "communication_agent": self.communication_agent,
+                "adapter_agent": self.adapter_agent,
+                "advanced_model_planner": self.advanced_model_planner,
+                "advanced_model_runtime": self.advanced_model_runtime,
+                "evaluation_runner": self.evaluation_runner,
+                "release_readiness_evaluator": self.release_readiness_evaluator,
+                "phase4_runtime": self.phase4_runtime,
+                **request.metadata,
+            },
         )

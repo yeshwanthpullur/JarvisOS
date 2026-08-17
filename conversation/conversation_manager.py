@@ -65,6 +65,16 @@ class ConversationManager:
         web_automation: object | None = None,
         research_agent: object | None = None,
         coding_agent: object | None = None,
+        document_agent: object | None = None,
+        browser_agent: object | None = None,
+        scheduler_agent: object | None = None,
+        communication_agent: object | None = None,
+        adapter_agent: object | None = None,
+        advanced_model_planner: object | None = None,
+        advanced_model_runtime: object | None = None,
+        evaluation_runner: object | None = None,
+        release_readiness_evaluator: object | None = None,
+        phase4_runtime: object | None = None,
         mobile_automation: object | None = None,
         personal_intelligence_manager: PersonalIntelligenceManager | None = None,
         context_intelligence_manager: ContextIntelligenceManager | None = None,
@@ -100,6 +110,16 @@ class ConversationManager:
         self.web_automation = web_automation
         self.research_agent = research_agent
         self.coding_agent = coding_agent
+        self.document_agent = document_agent
+        self.browser_agent = browser_agent
+        self.scheduler_agent = scheduler_agent
+        self.communication_agent = communication_agent
+        self.adapter_agent = adapter_agent
+        self.advanced_model_planner = advanced_model_planner
+        self.advanced_model_runtime = advanced_model_runtime
+        self.evaluation_runner = evaluation_runner
+        self.release_readiness_evaluator = release_readiness_evaluator
+        self.phase4_runtime = phase4_runtime
         self.mobile_automation = mobile_automation
         self.personal_intelligence = personal_intelligence_manager
         self.context_intelligence = context_intelligence_manager
@@ -171,6 +191,16 @@ class ConversationManager:
             web_automation=self.web_automation,
             research_agent=self.research_agent,
             coding_agent=self.coding_agent,
+            document_agent=self.document_agent,
+            browser_agent=self.browser_agent,
+            scheduler_agent=self.scheduler_agent,
+            communication_agent=self.communication_agent,
+            adapter_agent=self.adapter_agent,
+            advanced_model_planner=self.advanced_model_planner,
+            advanced_model_runtime=self.advanced_model_runtime,
+            evaluation_runner=self.evaluation_runner,
+            release_readiness_evaluator=self.release_readiness_evaluator,
+            phase4_runtime=self.phase4_runtime,
             mobile_automation=self.mobile_automation,
             metadata={
                 "session_metadata": dict(self.active_session.metadata),
@@ -182,6 +212,16 @@ class ConversationManager:
                 "conversation_intelligence_manager": self.conversation_intelligence,
                 "conversation_original_input": stripped_input,
                 "conversation_plan": plan,
+                "document_agent": self.document_agent,
+                "browser_agent": self.browser_agent,
+                "scheduler_agent": self.scheduler_agent,
+                "communication_agent": self.communication_agent,
+                "adapter_agent": self.adapter_agent,
+                "advanced_model_planner": self.advanced_model_planner,
+                "advanced_model_runtime": self.advanced_model_runtime,
+                "evaluation_runner": self.evaluation_runner,
+                "release_readiness_evaluator": self.release_readiness_evaluator,
+                "phase4_runtime": self.phase4_runtime,
             },
         )
         response = (
