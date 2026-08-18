@@ -1,5 +1,7 @@
 # MCP Runtime
 
+The Phase 6 connector view keeps MCP discovery distinct from configuration, authentication, health, connection, and execution. Remote MCP and automatic server startup are disabled; discovered content remains untrusted and cannot bypass the MCP Runtime, Policy, Approval, or Broker.
+
 Model-produced MCP requests still pass independent MCP trust, policy, approval, and Broker controls.
 
 Plugin and MCP trust are independent: a verified plugin does not implicitly trust its MCP tools, and MCP trust does not authorize plugin code.

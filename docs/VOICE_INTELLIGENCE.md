@@ -1,5 +1,7 @@
 # Voice Intelligence
 
+Prompt 93 preserves explicit push-to-talk and interruptible playback. Faster-Whisper/Piper are optional adapters; Vosk/SAPI remain the verified local path. Wake-word activation, continuous listening, hidden capture, raw-audio retention, cloud upload, and transcript-to-memory writes remain disabled.
+
 Voice Intelligence is a local-first input/output layer that feeds validated transcripts into the existing Command and Conversation Engines. It never executes commands, tools, plans, agents, or workflows itself. Voice recognition and wake-word events are not authentication or approval.
 
 Voice, microphone input, wake words, continuous listening, and raw-audio retention are disabled by default. Text mode remains fully operational when every audio dependency is unavailable.

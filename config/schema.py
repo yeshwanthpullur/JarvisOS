@@ -251,6 +251,17 @@ class CodingConfig:
     require_approval_for_write: bool = True
     require_approval_for_push: bool = True
     block_secrets_access: bool = True
+    aider_enabled: bool = False
+    open_interpreter_enabled: bool = False
+    external_mode: str = "plan_only"
+    external_environment: str = "tools/coding/.venv"
+    external_file_write_allowed: bool = False
+    external_shell_allowed: bool = False
+    external_network_allowed: bool = False
+    external_approval_required: bool = True
+    max_files_per_change: int = 10
+    max_diff_lines: int = 1000
+    max_runtime_seconds: int = 600
 
 @dataclass(frozen=True, slots=True)
 class KnowledgeConfig:
@@ -406,11 +417,11 @@ class PlanningConfig:
 
 @dataclass(frozen=True,slots=True)
 class VoiceConfig:
- enabled:bool=False; mode:str="off"; language:str="en-US"; local_only:bool=True; privacy_mode:str="standard"; input_enabled:bool=False; output_enabled:bool=False; input_backend:str="offline-stt"; output_backend:str="windows-sapi"; input_device:str|None=None; output_device:str|None=None; confidence_threshold:float=.75; confirmation_threshold:float=.6; max_capture_seconds:int=30; silence_timeout_seconds:int=3; max_audio_size:int=20000000; max_transcript_length:int=4000; max_spoken_response_length:int=500; max_auto_speech_chars:int=12000; rate:int=0; volume:int=100; raw_audio_persistence:bool=False; retention_limit:int=0; temp_audio_lifetime_seconds:int=300; voice_input_audit_retention:int=50; stt_model_path:Path|None=None; stt_executable:Path|None=None; wake_word_enabled:bool=False; wake_word_backend:str|None=None; activation_phrase:str="jarvis"; interruption_enabled:bool=True; temp_directory:Path|None=None; allowed_audio_directories:tuple[Path,...]=()
+ enabled:bool=False; mode:str="off"; language:str="en-US"; local_only:bool=True; privacy_mode:str="standard"; input_enabled:bool=False; output_enabled:bool=False; input_backend:str="offline-stt"; output_backend:str="windows-sapi"; input_device:str|None=None; output_device:str|None=None; confidence_threshold:float=.75; confirmation_threshold:float=.6; max_capture_seconds:int=30; silence_timeout_seconds:int=3; max_audio_size:int=20000000; max_transcript_length:int=4000; max_spoken_response_length:int=500; max_auto_speech_chars:int=12000; rate:int=0; volume:int=100; raw_audio_persistence:bool=False; retention_limit:int=0; temp_audio_lifetime_seconds:int=300; voice_input_audit_retention:int=50; stt_model_path:Path|None=None; stt_executable:Path|None=None; wake_word_enabled:bool=False; wake_word_backend:str|None=None; activation_phrase:str="jarvis"; interruption_enabled:bool=True; temp_directory:Path|None=None; allowed_audio_directories:tuple[Path,...]=(); stt_primary:str="faster_whisper"; stt_backup:str="vosk"; tts_primary:str="piper"; tts_backup:str="windows_sapi"; retain_audio:bool=False; continuous_listening:bool=False; max_session_minutes:int=30; idle_timeout_seconds:int=15
 
 @dataclass(frozen=True,slots=True)
 class VisionConfig:
- enabled:bool=True; local_only:bool=True; privacy_mode:str="standard"; provider:str="ollama"; model:str="llava"; ollama_host:str="http://127.0.0.1:11434"; max_image_size:int=20000000; timeout_seconds:int=60; audit_enabled:bool=True; audit_retention:int=100; store_image_content:bool=False; allowed_directories:tuple[Path,...]=()
+ enabled:bool=True; local_only:bool=True; privacy_mode:str="standard"; provider:str="ollama"; model:str="llava"; ollama_host:str="http://127.0.0.1:11434"; max_image_size:int=20000000; timeout_seconds:int=60; audit_enabled:bool=True; audit_retention:int=100; store_image_content:bool=False; allowed_directories:tuple[Path,...]=(); ocr_enabled:bool=False; ocr_primary:str="paddleocr"; ocr_backup:str="easyocr"; camera_enabled:bool=False; retain_frames:bool=False; camera_max_session_minutes:int=10; cloud_processing_allowed:bool=False; max_images_per_request:int=4
 
 @dataclass(frozen=True, slots=True)
 class ImageGenerationConfig:
@@ -554,6 +565,26 @@ class AutomationConfig:
     enabled: bool
     queue_dir: Path
     max_concurrent_jobs: int
+    desktop_enabled: bool = False
+    desktop_approval_required: bool = True
+    filesystem_write_allowed: bool = False
+    filesystem_delete_allowed: bool = False
+    commands_enabled: bool = False
+    allow_arbitrary_shell: bool = False
+    command_approval_required: bool = True
+    scheduler_allow_execution_actions: bool = False
+    system_read_status_allowed: bool = True
+    system_settings_change_allowed: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class ConnectorsConfig:
+    enabled: bool = True; auto_discovery: bool = True; auto_enable: bool = False; auto_authenticate: bool = False; communication_send_default: bool = False; mcp_remote_enabled: bool = False; mcp_auto_start_servers: bool = False; external_plugins_enabled: bool = False; plugin_auto_install: bool = False; plugin_auto_update: bool = False; max_connectors: int = 64
+
+
+@dataclass(frozen=True, slots=True)
+class ObservabilityConfig:
+    enabled: bool = True; local_only: bool = True; telemetry_upload: bool = False; metrics_enabled: bool = True; metrics_retention_hours: int = 24; traces_enabled: bool = True; traces_include_payloads: bool = False; profiling_enabled: bool = False; alerts_enabled: bool = True; prometheus_enabled: bool = False; opentelemetry_enabled: bool = False; max_metrics: int = 500; max_traces: int = 200
 
 
 @dataclass(frozen=True, slots=True)
@@ -607,6 +638,8 @@ class AppSettings:
     security: SecurityConfig
     desktop: DesktopConfig
     mobile: MobileConfig
+    connectors: ConnectorsConfig = field(default_factory=ConnectorsConfig)
+    observability: ObservabilityConfig = field(default_factory=ObservabilityConfig)
     prime: PrimeConfig = field(default_factory=PrimeConfig)
     skills: SkillsConfig = field(default_factory=SkillsConfig)
     research: ResearchConfig = field(default_factory=ResearchConfig)

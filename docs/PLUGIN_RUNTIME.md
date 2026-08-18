@@ -1,5 +1,7 @@
 # Secure Plugin Runtime
 
+Phase 6 may display manifest discovery metadata, but external plugin installation, update, enablement, arbitrary loading, background execution, and authority grants remain disabled. Capability-name collisions are diagnostic, not automatic selection.
+
 Model-provider plugins may register metadata but cannot bypass model/provider registries, endpoint policy, or runtime readiness checks.
 
 Prompt 77 adds a metadata-first extensibility boundary. Strict manifests enter the Plugin Registry, where provenance, compatibility, integrity, dependencies, credentials, capabilities, permissions, and protected-name collisions are checked before enablement can be planned.

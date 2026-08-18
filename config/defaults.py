@@ -286,6 +286,9 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "require_approval_for_write": True,
         "require_approval_for_push": True,
         "block_secrets_access": True,
+        "aider_enabled": False, "open_interpreter_enabled": False, "external_mode": "plan_only", "external_environment": "tools/coding/.venv",
+        "external_file_write_allowed": False, "external_shell_allowed": False, "external_network_allowed": False, "external_approval_required": True,
+        "max_files_per_change": 10, "max_diff_lines": 1000, "max_runtime_seconds": 600,
     },
     "knowledge": {
         "enabled": True,
@@ -569,8 +572,8 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
     },
     "reliability": {"enabled":True,"monitor_interval_seconds":30,"enable_metrics":True,"enable_diagnostics":True,"enable_health_dashboard":True,"enable_alerts":True,"enable_circuit_breakers":True,"enable_fault_isolation":True,"enable_self_healing":False,"max_retry_attempts":2,"max_health_history":200,"max_alert_history":100,"max_metric_history":500,"max_parallel_health_checks":4},
     "governance": {"enabled":True,"zero_trust_enabled":True,"audit_enabled":True,"compliance_enabled":True,"policy_strict_mode":True,"risk_enabled":True,"identity_enabled":True,"authorization_enabled":True,"trust_enabled":True,"event_correlation_enabled":True,"dashboard_enabled":True,"metrics_enabled":True,"policy_registry_enabled":True,"retention_enabled":True,"policy_versioning_enabled":True,"incident_tracking_enabled":True,"max_security_events":200,"max_audit_records":500,"max_policy_cache":100,"max_trust_cache":100,"max_incidents":100},
-    "voice":{"enabled":False,"mode":"off","language":"en-US","local_only":True,"privacy_mode":"standard","input_enabled":False,"output_enabled":False,"input_backend":"offline-stt","output_backend":"windows-sapi","input_device":None,"output_device":None,"confidence_threshold":0.75,"confirmation_threshold":0.6,"max_capture_seconds":30,"silence_timeout_seconds":3,"max_audio_size":20000000,"max_transcript_length":4000,"max_spoken_response_length":500,"max_auto_speech_chars":12000,"rate":0,"volume":100,"raw_audio_persistence":False,"retention_limit":0,"temp_audio_lifetime_seconds":300,"voice_input_audit_retention":50,"stt_model_path":None,"stt_executable":None,"wake_word_enabled":False,"wake_word_backend":None,"activation_phrase":"jarvis","interruption_enabled":True,"temp_directory":"data/voice-temp","allowed_audio_directories":["data/voice-input"]},
-    "vision":{"enabled":True,"local_only":True,"privacy_mode":"standard","provider":"ollama","model":"llava","ollama_host":"http://127.0.0.1:11434","max_image_size":20000000,"timeout_seconds":60,"audit_enabled":True,"audit_retention":100,"store_image_content":False,"allowed_directories":[]},
+    "voice":{"enabled":False,"mode":"off","language":"en-US","local_only":True,"privacy_mode":"standard","input_enabled":False,"output_enabled":False,"input_backend":"offline-stt","output_backend":"windows-sapi","input_device":None,"output_device":None,"confidence_threshold":0.75,"confirmation_threshold":0.6,"max_capture_seconds":30,"silence_timeout_seconds":3,"max_audio_size":20000000,"max_transcript_length":4000,"max_spoken_response_length":500,"max_auto_speech_chars":12000,"rate":0,"volume":100,"raw_audio_persistence":False,"retention_limit":0,"temp_audio_lifetime_seconds":300,"voice_input_audit_retention":50,"stt_model_path":None,"stt_executable":None,"wake_word_enabled":False,"wake_word_backend":None,"activation_phrase":"jarvis","interruption_enabled":True,"temp_directory":"data/voice-temp","allowed_audio_directories":["data/voice-input"],"stt_primary":"faster_whisper","stt_backup":"vosk","tts_primary":"piper","tts_backup":"windows_sapi","retain_audio":False,"continuous_listening":False,"max_session_minutes":30,"idle_timeout_seconds":15},
+    "vision":{"enabled":True,"local_only":True,"privacy_mode":"standard","provider":"ollama","model":"llava","ollama_host":"http://127.0.0.1:11434","max_image_size":20000000,"timeout_seconds":60,"audit_enabled":True,"audit_retention":100,"store_image_content":False,"allowed_directories":[],"ocr_enabled":False,"ocr_primary":"paddleocr","ocr_backup":"easyocr","camera_enabled":False,"retain_frames":False,"camera_max_session_minutes":10,"cloud_processing_allowed":False,"max_images_per_request":4},
     "image_generation": {
         "enabled": False,
         "default_provider": "unavailable",
@@ -644,7 +647,12 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "enabled": False,
         "queue_dir": "data/automation-queue",
         "max_concurrent_jobs": 2,
+        "desktop_enabled": False, "desktop_approval_required": True, "filesystem_write_allowed": False, "filesystem_delete_allowed": False,
+        "commands_enabled": False, "allow_arbitrary_shell": False, "command_approval_required": True, "scheduler_allow_execution_actions": False,
+        "system_read_status_allowed": True, "system_settings_change_allowed": False,
     },
+    "connectors": {"enabled": True, "auto_discovery": True, "auto_enable": False, "auto_authenticate": False, "communication_send_default": False, "mcp_remote_enabled": False, "mcp_auto_start_servers": False, "external_plugins_enabled": False, "plugin_auto_install": False, "plugin_auto_update": False, "max_connectors": 64},
+    "observability": {"enabled": True, "local_only": True, "telemetry_upload": False, "metrics_enabled": True, "metrics_retention_hours": 24, "traces_enabled": True, "traces_include_payloads": False, "profiling_enabled": False, "alerts_enabled": True, "prometheus_enabled": False, "opentelemetry_enabled": False, "max_metrics": 500, "max_traces": 200},
     "security": {
         "secrets_dir": "data/secrets",
         "allow_shell_execution": False,

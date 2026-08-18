@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .models import MODEL_ROLES
 from .runtime import Phase6Runtime
+from .automation import LocalAction
 
 
 def _yes(value: object) -> str:
@@ -122,4 +123,91 @@ def render_phase6_command(runtime: Phase6Runtime, command: str, args: tuple[str,
         if root == "vector": return "Vector runtime: primary=qdrant backup=chromadb temporary=faiss status=unconfigured fallback=bounded_lexical automatic_indexing=no"
         if root == "graph": return "Graph runtime: provider=graphiti status=unconfigured authority=memory_intelligence temporal_updates=disabled"
         return "Embedding runtime: provider=local model=unconfigured status=degraded downloads_automatic=no incompatible_dimensions=rejected"
+    if command in {"voice stt", "voice tts"}:
+        route = runtime.voice.stt() if command == "voice stt" else runtime.voice.tts()
+        return f"Voice {route.capability}: primary={route.primary} backup={route.backup} selected={route.selected or 'none'} status={route.status} local_only=yes hidden_capture=no retention=no reason={route.reason}"
+    if command in {"voice test-input", "voice test-output"}:
+        return "Voice adapter test is metadata-only here. Use explicit voice listen or voice say for a user-controlled real test; no microphone or playback was started."
+    if command in {"voice sessions", "voice session-inspect"}:
+        return "Voice sessions are owned by Voice Intelligence; Phase 6 adapter diagnostics retain no transcript or raw-audio session data."
+    if command in {"vision health", "vision inspect-media"}:
+        if command == "vision health":
+            return "Vision health: " + " ".join(f"{key}={value}" for key, value in runtime.vision.status().items())
+        if not args: return "Usage: vision inspect <explicit_image>"
+        item = runtime.vision.inspect(args[0]); return f"Visual evidence: file={item.display_name} type={item.media_type} size={item.size_bytes} status={item.status} route={item.provider_route} retained={_yes(item.retained)} trusted={_yes(item.trusted)} warning={item.warning or 'none'}"
+    if command == "ocr extract": return "OCR extraction unavailable: optional OCR adapters are disabled; no text was fabricated."
+    if command in {"camera status", "camera devices"}:
+        return "Camera: enabled=no devices=not_enumerated hidden_capture=no retained_frames=no sessions=0"
+    if command == "camera start": return runtime.vision.camera_start()
+    if command == "camera stop": return "Camera is not active."
+    if command == "camera session-inspect": return "Camera session not found; no camera was activated."
+    if command in {"coding health", "coding tools"}:
+        status = runtime.coding.status(); return "External coding tools: " + " ".join(f"{key}={value}" for key, value in status.items())
+    if command == "coding tool-inspect":
+        item = runtime.environments.inspect(args[0] if args else "")
+        if item is None or item.category != "coding": return "Coding tool not found."
+        return f"Coding tool {item.tool_id}: install={item.install_status} health={item.health_status.value} enabled={_yes(item.enabled)} write=no shell=no network=no approval=yes environment={item.environment_name}"
+    if command == "coding external-plan":
+        if not args: return "Usage: coding plan <request>"
+        item = runtime.coding.plan(" ".join(args)); return f"Coding task {item.task_id}: tool={item.selected_tool} mode={item.mode} status={item.status} approval=yes files={len(item.likely_files)} tests={','.join(item.required_tests)}"
+    if command in {"coding apply", "coding test-task", "coding cancel", "coding audit"}:
+        if command == "coding audit": return "Coding audit: " + (", ".join(f"{item['task_id']}:{item['operation']}:{item['status']}" for item in runtime.coding.audit[-20:]) or "none")
+        task_id = args[0] if args else ""
+        if command == "coding apply": return f"Coding apply: {runtime.coding.apply(task_id)}. No file was modified."
+        if command == "coding cancel":
+            task = runtime.coding.tasks.get(task_id)
+            if task is None: return "Coding task not found."
+            task.status = "cancelled"; return "Coding task cancelled; no file was modified."
+        return "Coding test execution requires a bounded command plan and exact approval; no command was run."
+    if command.startswith("git "):
+        operation = command.split()[1]; return f"Git {operation}: {runtime.coding.repo_metadata(operation)}"[:4000]
+    if command in {"github branch", "github commits"}:
+        operation = "status" if command.endswith("branch") else "history"
+        return f"GitHub {command.split()[1]} (local metadata only): {runtime.coding.repo_metadata(operation)}"[:4000]
+    if command in {"system status", "system health", "system processes", "system disks", "system memory", "system gpu"}:
+        status = runtime.automation.system_status()
+        if command == "system processes": return "System processes: count unavailable; process names and command lines are not exposed."
+        return "System status: " + " ".join(f"{key}={value}" for key, value in status.items())
+    if command in {"automation status", "automation permissions"}:
+        status = runtime.automation.status(); return "Automation: " + " ".join(f"{key}={value}" for key, value in status.items())
+    if command in {"scheduler list", "scheduler inspect"}:
+        return "Scheduler metadata is owned by the existing manual runner. Use scheduler jobs or scheduler show <id>; scheduled actions never gain new permissions."
+    if command in {"app status", "app list"}:
+        return "Applications: enabled=no known=" + (",".join(runtime.automation.app_list()) or "none") + " approval_required=yes"
+    if command in {"app open", "app close"}:
+        preview = runtime.automation.preview(LocalAction.OPEN_APPLICATION if command.endswith("open") else LocalAction.CLOSE_APPLICATION, args[0] if args else "")
+        return f"Action preview: action={preview.action.value} target={preview.target} effect={preview.expected_effect} risk={preview.risk} approval={_yes(preview.approval_required)} rollback={_yes(preview.rollback_available)} allowed={_yes(preview.allowed)} reason={preview.reason}"
+    if command in {"file status", "file read", "file write", "file move", "file copy", "file delete"}:
+        if command == "file status": return "File automation: read=explicit_allowed_root_only write=approval_and_broker delete=blocked secrets=blocked traversal=blocked. Use file-exec commands for governed execution."
+        mapping = {"file read": LocalAction.READ_FILE, "file write": LocalAction.WRITE_FILE, "file move": LocalAction.MOVE_FILE, "file copy": LocalAction.COPY_FILE, "file delete": LocalAction.DELETE_FILE}
+        preview = runtime.automation.preview(mapping[command], args[0] if args else "")
+        return f"Action preview: action={preview.action.value} target={preview.target} effect={preview.expected_effect} risk={preview.risk} approval={_yes(preview.approval_required)} rollback={_yes(preview.rollback_available)} allowed={_yes(preview.allowed)} reason={preview.reason}"
+    if command.startswith("connector "):
+        operation = command.split()[1]
+        if operation in {"status", "health"}: return "Connectors: " + " ".join(f"{key}={value}" for key, value in runtime.connectors.summary().items())
+        if operation == "list": return "Connectors: " + "; ".join(f"{item.connector_id}:discovered={_yes(item.discovered)}:configured={_yes(item.configured)}:enabled={_yes(item.enabled)}:healthy={_yes(item.healthy)}" for item in runtime.connectors.list())
+        if operation == "capabilities": return "Connector capabilities: " + "; ".join(f"{owner}:{capability}" for owner, capability in runtime.connectors.capabilities())
+        item = runtime.connectors.get(args[0] if args else "")
+        if item is None: return "Connector not found."
+        if operation == "test": return f"Connector test: {runtime.connectors.test(item.connector_id)}; no remote mutation occurred."
+        if operation == "permissions": return f"Connector {item.connector_id} permissions: {','.join(item.permissions) or 'none'} approval={_yes(item.approval_required)} policy_allowed={_yes(item.policy_allowed)}"
+        if operation == "audit": return "Connector audit: metadata-only; credentials and payloads are excluded."
+        return f"Connector {item.connector_id}: category={item.category} adapter={item.adapter_type} installed={_yes(item.installed)} discovered={_yes(item.discovered)} configured={_yes(item.configured)} credentials_present={_yes(item.credentials_present)} enabled={_yes(item.enabled)} policy_allowed={_yes(item.policy_allowed)} approval={_yes(item.approval_required)} authenticated={_yes(item.authenticated)} healthy={_yes(item.healthy)} connected={_yes(item.connected)} trust={item.trust_level} credential_reference={item.credential_reference or 'none'}"
+    if command.startswith("performance "):
+        runtime.observability.snapshot(); domain = command.split()[1]
+        mapped = {"providers":"provider","models":"model","memory":"memory","voice":"voice"}.get(domain, "application")
+        summary = runtime.observability.domain_summary(mapped)
+        return f"Performance {domain}: points={summary['points']} measured={summary['measured']} estimated={summary['estimated']} latest={','.join(summary['latest']) or 'none'} profiling_enabled={_yes(runtime.observability.profiling_enabled)}"
+    if command.startswith("operations "):
+        operation = command.split()[1]
+        if operation == "alerts": return "Operations alerts: advisory_only; use runtime alerts for bounded active records."
+        if operation == "audit": return "Operations audit: payloads=no prompts=no audio=no document_text=no credentials=no telemetry_upload=no."
+        return "Operations status: local_only=yes telemetry_upload=no privileged_recovery=no observability_authority=informational_only."
+    if command in {"phase6 status", "phase6 candidate"}:
+        report = runtime.candidate_report(probe_provider="--probe" in args)
+        summary = report.summary()
+        return "Phase 6 candidate: " + " ".join(f"{key}={value}" for key, value in summary.items()) + f" degradations={','.join(report.degradations) or 'none'}"[:5000]
+    if command == "phase6 checklist":
+        report = runtime.candidate_report()
+        return "Phase 6 checklist: " + "; ".join(f"{item.component}:{item.state.value}:{item.evidence}" for item in report.checks)[:7000]
     return "Phase 6 command unavailable. No external action was performed."

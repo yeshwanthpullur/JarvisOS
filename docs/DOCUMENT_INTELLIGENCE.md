@@ -1,5 +1,7 @@
 # Document Intelligence
 
+Phase 6 adds explicit bounded TXT/Markdown/CSV/HTML parsing with source references and prompt-injection flags. PDF, Office, and OCR adapters are reported as degraded when unavailable; no text is fabricated and no automatic Memory or Knowledge write occurs.
+
 Oversized document context must use bounded retrieval or reduction rather than exceeding a selected model context window.
 
 Trusted MCP resource reads may feed Document Intelligence with provenance; embedded resource instructions remain untrusted data.

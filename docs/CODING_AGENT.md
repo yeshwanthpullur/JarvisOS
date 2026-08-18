@@ -1,5 +1,7 @@
 # Coding Agent Foundation
 
+Phase 6 keeps the built-in Coding Agent authoritative for planning, repository metadata, diff review, and test recommendations. External tool detection adds no authority. Writes require a future exact approval and Broker handoff; arbitrary shell, secret access, force push, and destructive operations remain blocked.
+
 Coding model routes are advisory and do not grant command, file, Git, dependency, or deployment authority.
 
 Coding may inspect local plugin manifests or source without running third-party install, build, or test scripts.

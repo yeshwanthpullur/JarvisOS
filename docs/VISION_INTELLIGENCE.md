@@ -1,5 +1,7 @@
 # Vision Intelligence
 
+Prompt 95 treats explicit images and OCR text as untrusted evidence. The adapter records display name, type, size, route, and policy state only; it does not retain media or write Memory/Knowledge. Camera and cloud processing remain disabled.
+
 Vision Intelligence provides optional real local image analysis through the registered Ollama provider. It validates images, applies privacy and safety policy, and submits approved requests through the existing Provider Router. It does not create a second provider or execution authority.
 
 Local Ollama LLaVA image description and image question answering are manually verified on the current machine. This establishes working local still-image analysis, not live camera/video vision, reverse image search, image generation, identity recognition, or guaranteed OCR accuracy.

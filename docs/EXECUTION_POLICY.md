@@ -1,5 +1,7 @@
 # Execution Policy
 
+Phase 6 adapters can classify and preview actions, but cannot grant permission. File writes, command execution, application control, Git mutation, browser interaction, connector sends, MCP calls, plugin execution, and recovery remain denied unless this policy explicitly allows the exact scoped action.
+
 Prompt 84 policy metadata does not replace this execution authority. A governance allow result cannot bypass an Execution Policy denial.
 
 Reliability recovery plans are requests, not permission. Prompt 83 cannot weaken policy, convert health into approval, or execute privileged recovery directly.

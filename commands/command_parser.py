@@ -29,8 +29,9 @@ _SUBCOMMANDS = {
     "cloud status", "cloud providers", "cloud models", "cloud refresh", "cloud use", "cloud test", "cloud explain-selection", "cloud only",
     "tool list", "tool show", "tool health", "tool match", "tool permissions", "tool dry-run", "tool history", "tool invocation", "tool cancel", "tool mode", "tool limits", "tools status",
     "plan status", "plan list", "plan show", "plan steps", "plan validate", "plan alternatives", "plan approve", "plan reject", "plan pause", "plan resume", "plan cancel", "plan replan", "plan history", "plan mode", "plan limits",
-    "voice status", "voice on", "voice off", "voice listen", "voice cleanup", "voice stop", "voice pause", "voice resume", "voice speaking", "voice speaking status", "voice repeat", "voice replay", "voice correction", "voice cancel", "voice interrupt", "voice session", "voice devices", "voice backend", "voice device", "voice input", "voice output", "voice say", "voice transcribe", "voice mode", "voice privacy", "voice language", "voice rate", "voice volume", "voice raw-audio", "voice limits", "voice health",
-    "vision status", "vision models", "vision analyze", "vision describe", "vision ask", "vision audit", "vision cleanup",
+    "voice status", "voice on", "voice off", "voice listen", "voice cleanup", "voice stop", "voice pause", "voice resume", "voice speaking", "voice speaking status", "voice repeat", "voice replay", "voice correction", "voice cancel", "voice interrupt", "voice session", "voice sessions", "voice session-inspect", "voice devices", "voice backend", "voice device", "voice input", "voice output", "voice say", "voice transcribe", "voice mode", "voice privacy", "voice language", "voice rate", "voice volume", "voice raw-audio", "voice limits", "voice health", "voice stt", "voice tts", "voice test-input", "voice test-output",
+    "vision status", "vision health", "vision models", "vision inspect", "vision analyze", "vision describe", "vision ask", "vision audit", "vision cleanup",
+    "ocr extract", "camera status", "camera devices", "camera start", "camera stop", "camera session", "camera session-inspect",
     "image status", "image help", "image providers", "image generate", "image plan", "image safety", "image history", "image show", "image config",
     "video status", "video help", "video providers", "video plan", "video safety", "video history", "video show", "video config",
     "sync status", "sync on", "sync off", "sync queue", "sync add", "sync inspect", "sync cancel", "sync retry", "sync cleanup", "sync run", "sync conflicts",
@@ -39,7 +40,10 @@ _SUBCOMMANDS = {
     "conversation status", "conversation diagnostics", "conversation route", "conversation reset", "conversation summary", "conversation mode", "conversation confidence", "conversation topic", "route inspect",
     "research status", "research help", "research providers", "research provider-health", "research budget", "research plan", "research safety", "research search", "research sources", "research quick", "research standard", "research deep", "research verify", "research summarize", "research evidence", "research contradictions", "research citations", "research knowledge-candidates", "research show", "research history",
     "knowledge status","knowledge help","knowledge sources","knowledge source-show","knowledge source-status","knowledge register-plan","knowledge ingest-plan","knowledge search","knowledge show","knowledge provenance","knowledge reindex-plan","knowledge remove-plan","knowledge embedding-status","knowledge backend-status","knowledge health","knowledge history",
-    "coding status", "coding help", "coding inspect", "coding plan", "coding risk", "coding diff", "coding review", "coding tests", "coding show", "coding history",
+    "coding status", "coding health", "coding tools", "coding tool", "coding tool-inspect", "coding help", "coding inspect", "coding plan", "coding risk", "coding diff", "coding review", "coding tests", "coding apply", "coding cancel", "coding audit", "coding show", "coding history",
+    "git status", "git diff", "git history", "git verify", "system status", "system health", "system processes", "system disks", "system memory", "system gpu", "app status", "app list", "app open", "app close", "file status", "file read", "file write", "file move", "file copy", "file delete", "automation status", "automation permissions", "scheduler list", "scheduler inspect",
+    "connector status", "connector list", "connector health", "connector inspect", "connector capabilities", "connector permissions", "connector test", "connector audit",
+    "performance status", "performance startup", "performance providers", "performance models", "performance memory", "performance voice", "operations status", "operations alerts", "operations audit", "phase6 status", "phase6 candidate", "phase6 checklist",
     "document status", "document health", "document help", "document plan", "document safety", "document types", "document parse", "document inspect", "document extract", "document summarize", "document ask", "document chunks", "document sources", "document audit", "document clear-session", "document show", "document history",
     "ocr status", "ocr health", "ocr parse", "knowledge ingest-document", "knowledge source", "knowledge source-inspect",
     "browser status", "browser health", "browser help", "browser plan", "browser safety", "browser capabilities", "browser permissions", "browser test", "browser session", "browser session-list", "browser session-inspect", "browser session-close", "browser sources", "browser summarize", "browser show", "browser history",
@@ -51,7 +55,7 @@ _SUBCOMMANDS = {
     *{f"discord {x}" for x in ("status","help","health","destinations","validate-destination","send-plan","send-dry-run","send","rate-status","history")},
     *{f"email {x}" for x in ("status","help","providers","health","validate-address","send-plan","send-dry-run","send","rate-status","history")},
     *{f"slack {x}" for x in ("status","help","health","destinations","validate-destination","send-plan","send-dry-run","send","rate-status","history")},
-    *{f"github {x}" for x in ("status","help","auth-status","health","repo","capabilities","rate-status","issues","issue-show","issue-plan","issue-create","prs","pr-show","pr-plan","pr-create","releases","release-show","release-plan","release-create","workflows","checks","history")},
+    *{f"github {x}" for x in ("status","help","auth-status","health","repo","branch","commits","capabilities","rate-status","issues","issue-show","issue-plan","issue-create","prs","pr-show","pr-plan","pr-create","releases","release-show","release-plan","release-create","workflows","checks","history")},
     *{f"mcp {x}" for x in ("status","help","servers","server-show","server-health","tools","tool-show","classify","capabilities","resources","resource-show","resource-read","prompts","start","stop","call-plan","call-dry-run","call","history")},
     "adapter status", "adapter help", "adapter list", "adapter show", "adapter plan", "adapter safety", "adapter permissions", "adapter capabilities", "adapter show-job", "adapter history",
     "model advanced",
@@ -68,7 +72,7 @@ _SUBCOMMANDS = {
     *{f"scheduler {x}" for x in ("runtime-status","jobs","due","create","run","run-due","pause","resume","cancel","runs","runtime-policy")},
     *{f"browser {x}" for x in ("policy","validate","dry-run","read","read-show","read-history")},
     "limitations status", "limitations list", "limitations open", "limitations fixed", "limitations show", "limitations category", "limitations next", "limitations summary",
-    *{f"runtime {x}" for x in ("status","health","components","dependencies","metrics","diagnostics","alerts","providers","models","queues","resources","breakers","recovery-plan","recovery-history","events","dashboard","profile","capacity","verify")},
+    *{f"runtime {x}" for x in ("status","health","components","dependencies","metrics","traces","diagnostics","alerts","providers","models","queues","resources","breakers","circuits","recovery-plan","recovery-history","events","dashboard","profile","capacity","verify")},
     *{f"security {x}" for x in ("status","health","identities","permissions","policies","trust","incidents","audit","compliance","risks","governance","events","metrics","dashboard","validate","verify","policy-show","incident-show","audit-show","trust-show")},
     "prime status", "prime route", "prime plan", "prime risk", "prime explain",
     "model status", "model providers", "model capabilities", "model route", "model explain", "model hardware", "model policy", "model list", "model health", "model inspect", "model roles", "model select", "model test",
@@ -118,4 +122,6 @@ class CommandParser:
                 name = f"{name} {args.pop(0)}"
             if name in {"browser session", "research source", "knowledge source"} and args and args[0] in {"list", "inspect", "close"}:
                 name = f"{name.split()[0]} {name.split()[1]}-{args.pop(0)}"
+            if name in {"camera session", "coding tool", "voice session"} and args and args[0] == "inspect":
+                name = f"{name.split()[0]} {name.split()[1]}-inspect"
         return ParsedCommand(name=name.lower(), arguments=tuple(args), flags=flags, raw=text)

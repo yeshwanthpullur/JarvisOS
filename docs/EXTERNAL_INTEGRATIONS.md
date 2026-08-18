@@ -1,5 +1,7 @@
 # External Integrations
 
+The Phase 6 Connector Registry is a normalized diagnostic view over existing providers. It stores credential references, never credential values, and separates discovery from configured/enabled/authenticated/healthy/connected state. It does not duplicate provider runtimes.
+
 Remote model runtimes are external integrations and remain disabled by default.
 
 External plugin manifests are capability proposals, not authority grants; providers remain controlled by the Provider Registry and local policy.

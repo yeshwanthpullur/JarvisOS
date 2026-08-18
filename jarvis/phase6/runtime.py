@@ -10,6 +10,12 @@ from .models import LocalModelCatalog
 from .web import WebControlPlane
 from .documents import DocumentPipeline
 from .memory import MemoryRetrievalControlPlane
+from .modalities import VoiceAdapterRouter, VisionControlPlane
+from .coding_tools import ExternalCodingControlPlane
+from .automation import LocalAutomationControlPlane
+from .connectors import ConnectorRegistry
+from .observability import ObservabilityRuntime
+from .integration import Phase6CandidateReport, evaluate_candidate
 
 
 class Phase6Runtime:
@@ -20,11 +26,20 @@ class Phase6Runtime:
         self.web = WebControlPlane()
         self.documents = DocumentPipeline(self.root)
         self.memory = MemoryRetrievalControlPlane()
+        self.voice = VoiceAdapterRouter(self.environments)
+        self.vision = VisionControlPlane()
+        self.coding = ExternalCodingControlPlane(self.root, self.environments)
+        self.automation = LocalAutomationControlPlane(self.root)
+        self.connectors = ConnectorRegistry()
+        self.observability = ObservabilityRuntime()
         self.execution_authority = False
         self.local_only = True
 
     def status(self) -> dict[str, object]:
-        return {"phase": 6, "mode": "controlled_local_first", "execution_authority": self.execution_authority, "environment": self.environments.summary(), "models": self.models.summary(), "web": self.web.status(), "documents": self.documents.status(), "memory": self.memory.status()}
+        return {"phase": 6, "mode": "controlled_local_first", "execution_authority": self.execution_authority, "environment": self.environments.summary(), "models": self.models.summary(), "web": self.web.status(), "documents": self.documents.status(), "memory": self.memory.status(), "voice": self.voice.status(), "vision": self.vision.status(), "coding": self.coding.status(), "automation": self.automation.status(), "connectors": self.connectors.summary(), "observability": self.observability.snapshot()}
+
+    def candidate_report(self, *, probe_provider: bool = False) -> Phase6CandidateReport:
+        return evaluate_candidate(self, probe_provider=probe_provider)
 
 
 _runtime: Phase6Runtime | None = None

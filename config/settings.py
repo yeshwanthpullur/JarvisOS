@@ -50,6 +50,7 @@ from config.schema import (
     AdaptersConfig, AdvancedModelsConfig, EvaluationConfig, ReleaseReadinessConfig,
     ExecutionConfig, ApprovalsConfig, BrokerConfig,
     Phase6Config,
+    ConnectorsConfig, ObservabilityConfig,
 )
 
 
@@ -265,6 +266,7 @@ def load_settings(
             require_approval_for_write=_coerce_bool(raw_config["coding"]["require_approval_for_write"]),
             require_approval_for_push=_coerce_bool(raw_config["coding"]["require_approval_for_push"]),
             block_secrets_access=_coerce_bool(raw_config["coding"]["block_secrets_access"]),
+            **{key: raw_config["coding"][key] for key in ("aider_enabled","open_interpreter_enabled","external_mode","external_environment","external_file_write_allowed","external_shell_allowed","external_network_allowed","external_approval_required","max_files_per_change","max_diff_lines","max_runtime_seconds")},
         ),
         knowledge_index=KnowledgeConfig(**raw_config["knowledge"]),
         orchestrator=OrchestratorConfig(**raw_config["orchestrator"]),
@@ -312,7 +314,10 @@ def load_settings(
             enabled=_coerce_bool(raw_config["automation"]["enabled"]),
             queue_dir=_resolve_path(raw_config["automation"]["queue_dir"]),
             max_concurrent_jobs=int(raw_config["automation"]["max_concurrent_jobs"]),
+            **{key: raw_config["automation"][key] for key in ("desktop_enabled","desktop_approval_required","filesystem_write_allowed","filesystem_delete_allowed","commands_enabled","allow_arbitrary_shell","command_approval_required","scheduler_allow_execution_actions","system_read_status_allowed","system_settings_change_allowed")},
         ),
+        connectors=ConnectorsConfig(**raw_config["connectors"]),
+        observability=ObservabilityConfig(**raw_config["observability"]),
         security=SecurityConfig(
             secrets_dir=_resolve_path(raw_config["security"]["secrets_dir"]),
             allow_shell_execution=_coerce_bool(

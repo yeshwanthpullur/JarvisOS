@@ -442,6 +442,9 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         phase4 = _phase4_runtime(context)
         orchestration_status=getattr(getattr(getattr(_agent_manager(context),"orchestrator",None),"runtime",None),"status",lambda:{"status":"unavailable"})()
         governance_status=_governance_runtime(context).dashboard()
+        phase6_runtime = _phase6_runtime(context)
+        phase6_status = phase6_runtime.status()
+        phase6_candidate = phase6_runtime.candidate_report()
         phase3_text = (
             "phase3="
             f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
@@ -454,6 +457,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"approvals:{agent_summary['approval_required_capabilities']} "
             f"high_risk:{agent_summary['high_risk_capabilities']} "
             f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} p5:m/o/w/r/g:R p85={release_status.status.value} "
+            f"p6:cand:{'R' if phase6_candidate.candidate_ready else 'B'}/deg:{len(phase6_candidate.degradations)} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -503,7 +507,11 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "public_execution_api": False,
             "prompt85_validation_status": release_status.status.value,
             "phase5_missing_components": len(release_status.missing_components),
-            "phase6_started": False,
+            "phase6_started": True,
+            "phase6_status": phase6_status["mode"],
+            "phase6_candidate_ready": phase6_candidate.candidate_ready,
+            "phase6_degradations": len(phase6_candidate.degradations),
+            "phase6_execution_authority": phase6_status["execution_authority"],
             "external_provider_registry_status": "ready_metadata_only" if external_summary["valid"] else "error",
             "external_providers_total": external_summary["total"],
             "external_providers_enabled": external_summary["enabled"],
@@ -592,6 +600,11 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         *((name, "Phase 6 controlled web command", "browser", (), CommandPermission.DIAGNOSTIC) for name in ("browser health","browser permissions","browser test","browser session-list","browser session-inspect","browser session-close","crawl status","crawl health","crawl plan","crawl run","crawl inspect","research health","research source-list","research source-inspect","research audit","research clear-session")),
         *((name, "Phase 6 safe document command", "document", (), CommandPermission.DIAGNOSTIC) for name in ("document health","document parse","document chunks","document sources","document audit","document clear-session","ocr status","ocr health","ocr parse","knowledge ingest-document","knowledge source-inspect")),
         *((name, "Phase 6 memory backend diagnostic", "memory", (), CommandPermission.DIAGNOSTIC) for name in ("memory health","memory conflicts","vector status","vector health","vector collections","vector inspect","graph status","graph health","graph inspect","embedding status","embedding health","embedding models")),
+        *((name, "Phase 6 voice or vision adapter diagnostic", "media", (), CommandPermission.DIAGNOSTIC) for name in ("voice stt","voice tts","voice test-input","voice test-output","voice sessions","voice session-inspect","vision health","vision inspect","ocr extract","camera status","camera devices","camera start","camera stop","camera session-inspect")),
+        *((name, "Phase 6 external coding tool command", "coding", (), CommandPermission.DIAGNOSTIC) for name in ("coding health","coding tools","coding tool-inspect","coding apply","coding cancel","coding audit","git status","git diff","git history","git verify","github branch","github commits")),
+        *((name, "Phase 6 local automation command", "automation", (), CommandPermission.DIAGNOSTIC) for name in ("system status","system health","system processes","system disks","system memory","system gpu","app status","app list","app open","app close","file status","file read","file write","file move","file copy","file delete","automation status","automation permissions","scheduler list","scheduler inspect")),
+        *((name, "Phase 6 connector command", "integration", (), CommandPermission.DIAGNOSTIC) for name in ("connector status","connector list","connector health","connector inspect","connector capabilities","connector permissions","connector test","connector audit")),
+        *((name, "Phase 6 observability command", "diagnostic", (), CommandPermission.DIAGNOSTIC) for name in ("performance status","performance startup","performance providers","performance models","performance memory","performance voice","operations status","operations alerts","operations audit","phase6 status","phase6 candidate","phase6 checklist")),
         ("environment status", "Show isolated environment strategy status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("environment audit", "Run a passive dependency environment audit", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("tool status", "Show external tool environment readiness", "tool", (), CommandPermission.DIAGNOSTIC),
@@ -956,7 +969,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("workflow", "Show workflow summary", "workflow", (), CommandPermission.WORKFLOW),
         ("workflow list", "List workflows", "workflow", (), CommandPermission.WORKFLOW),
         *tuple((f"workflow {operation}", f"Workflow {operation}", "workflow", (), CommandPermission.WORKFLOW) for operation in ("status", "show", "graph", "trace", "events", "checkpoints", "checkpoint-show", "pause", "resume", "cancel", "simulate", "health", "metrics", "cleanup-plan", "artifact-list", "artifact-show")),
-        *tuple((f"runtime {operation}", f"Runtime reliability {operation}", "runtime", (), CommandPermission.SYSTEM) for operation in ("status","health","components","dependencies","metrics","diagnostics","alerts","providers","models","queues","resources","breakers","recovery-plan","recovery-history","events","dashboard","profile","capacity","verify")),
+        *tuple((f"runtime {operation}", f"Runtime reliability {operation}", "runtime", (), CommandPermission.SYSTEM) for operation in ("status","health","components","dependencies","metrics","traces","diagnostics","alerts","providers","models","queues","resources","breakers","circuits","recovery-plan","recovery-history","events","dashboard","profile","capacity","verify")),
         *tuple((f"security {operation}", f"Enterprise governance {operation}", "security", (), CommandPermission.DIAGNOSTIC) for operation in ("status","health","identities","permissions","policies","trust","incidents","audit","compliance","risks","governance","events","metrics","dashboard","validate","verify","policy-show","incident-show","audit-show","trust-show")),
         ("config", "Show config summary", "configuration", (), CommandPermission.CONFIGURATION),
         ("config show", "Show configuration metadata", "configuration", (), CommandPermission.CONFIGURATION),
@@ -1024,6 +1037,8 @@ def _handler_for(name: str):
             return _text_response(render_telegram_command(name,context.arguments,_telegram_runtime(context)))
         if name.startswith(("discord ","email ","slack ")):
             return _text_response(render_connector_command(name,context.arguments,_outbound_connectors(context)))
+        if name in {"github branch", "github commits"}:
+            return _text_response(render_phase6_command(_phase6_runtime(context), name, context.arguments))
         if name.startswith("github "):
             return _text_response(render_github_command(name,context.arguments,_github_provider(context)))
         if name.startswith("mcp "):
@@ -1032,13 +1047,16 @@ def _handler_for(name: str):
             return _text_response(render_plugin_command("plugin status" if name=="plugins" else name,context.arguments,_plugin_runtime(context)))
         if name == "route inspect":
             return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))
-        phase6_commands = {"tool status", "tool audit", "tool environments", "tool inspect", "tool environment-show", "provider inspect", "provider test", "model list", "model health", "model inspect", "model roles", "model select", "model test", "browser health", "browser permissions", "browser test", "browser session-list", "browser session-inspect", "browser session-close", "crawl status", "crawl health", "crawl plan", "crawl run", "crawl inspect", "research health", "research source-list", "research source-inspect", "research audit", "research clear-session", "document health", "document parse", "document chunks", "document sources", "document audit", "document clear-session", "ocr status", "ocr health", "ocr parse", "knowledge ingest-document", "knowledge source-inspect", "memory health", "memory conflicts", "vector status", "vector health", "vector collections", "vector inspect", "graph status", "graph health", "graph inspect", "embedding status", "embedding health", "embedding models"}
+        phase6_commands = {"tool status", "tool audit", "tool environments", "tool inspect", "tool environment-show", "provider inspect", "provider test", "model list", "model health", "model inspect", "model roles", "model select", "model test", "browser health", "browser permissions", "browser test", "browser session-list", "browser session-inspect", "browser session-close", "crawl status", "crawl health", "crawl plan", "crawl run", "crawl inspect", "research health", "research source-list", "research source-inspect", "research audit", "research clear-session", "document health", "document parse", "document chunks", "document sources", "document audit", "document clear-session", "ocr status", "ocr health", "ocr parse", "ocr extract", "knowledge ingest-document", "knowledge source-inspect", "memory health", "memory conflicts", "vector status", "vector health", "vector collections", "vector inspect", "graph status", "graph health", "graph inspect", "embedding status", "embedding health", "embedding models", "voice stt", "voice tts", "vision health", "vision inspect", "camera status", "camera devices", "camera start", "camera stop", "camera session-inspect", "coding health", "coding tools", "coding tool-inspect", "coding apply", "coding cancel", "coding audit", "git status", "git diff", "git history", "git verify", "github branch", "github commits", "system status", "system health", "system processes", "system disks", "system memory", "system gpu", "app status", "app list", "app open", "app close", "file status", "file read", "file write", "file move", "file copy", "file delete", "automation status", "automation permissions", "scheduler list", "scheduler inspect", "connector status", "connector list", "connector health", "connector inspect", "connector capabilities", "connector permissions", "connector test", "connector audit", "performance status", "performance startup", "performance providers", "performance models", "performance memory", "performance voice", "operations status", "operations alerts", "operations audit"}
+        phase6_commands.update({"voice test-input", "voice test-output", "voice sessions", "voice session-inspect", "phase6 status", "phase6 candidate", "phase6 checklist"})
         if name.startswith("environment ") or name in phase6_commands or (name in {"document inspect", "document summarize"} and context.arguments and context.arguments[0].startswith("doc-")):
             phase6_name = name
             if name == "document inspect" and context.arguments and context.arguments[0].startswith("doc-"):
                 phase6_name = "document inspect-id"
             elif name == "document summarize" and context.arguments and context.arguments[0].startswith("doc-"):
                 phase6_name = "document summarize-id"
+            elif name == "vision inspect":
+                phase6_name = "vision inspect-media"
             return _text_response(render_phase6_command(_phase6_runtime(context), phase6_name, context.arguments))
         if name.startswith("conversation "):
             if name == "conversation route":

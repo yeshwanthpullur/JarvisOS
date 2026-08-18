@@ -252,6 +252,14 @@ voice:
   interruption_enabled: true
   temp_directory: data/voice-temp
   allowed_audio_directories: [data/voice-input]
+  stt_primary: faster_whisper
+  stt_backup: vosk
+  tts_primary: piper
+  tts_backup: windows_sapi
+  retain_audio: false
+  continuous_listening: false
+  max_session_minutes: 30
+  idle_timeout_seconds: 15
 
 vision:
   enabled: true
@@ -266,6 +274,14 @@ vision:
   audit_retention: 100
   store_image_content: false
   allowed_directories: []
+  ocr_enabled: false
+  ocr_primary: paddleocr
+  ocr_backup: easyocr
+  camera_enabled: false
+  retain_frames: false
+  camera_max_session_minutes: 10
+  cloud_processing_allowed: false
+  max_images_per_request: 4
 
 sync:
   enabled: false
@@ -420,6 +436,44 @@ automation:
   enabled: false
   queue_dir: data/automation-queue
   max_concurrent_jobs: 2
+  desktop_enabled: false
+  desktop_approval_required: true
+  filesystem_write_allowed: false
+  filesystem_delete_allowed: false
+  commands_enabled: false
+  allow_arbitrary_shell: false
+  command_approval_required: true
+  scheduler_allow_execution_actions: false
+  system_read_status_allowed: true
+  system_settings_change_allowed: false
+
+connectors:
+  enabled: true
+  auto_discovery: true
+  auto_enable: false
+  auto_authenticate: false
+  communication_send_default: false
+  mcp_remote_enabled: false
+  mcp_auto_start_servers: false
+  external_plugins_enabled: false
+  plugin_auto_install: false
+  plugin_auto_update: false
+  max_connectors: 64
+
+observability:
+  enabled: true
+  local_only: true
+  telemetry_upload: false
+  metrics_enabled: true
+  metrics_retention_hours: 24
+  traces_enabled: true
+  traces_include_payloads: false
+  profiling_enabled: false
+  alerts_enabled: true
+  prometheus_enabled: false
+  opentelemetry_enabled: false
+  max_metrics: 500
+  max_traces: 200
 
 security:
   secrets_dir: data/secrets

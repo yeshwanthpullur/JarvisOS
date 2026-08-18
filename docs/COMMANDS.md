@@ -57,6 +57,80 @@ graph inspect <entity>
 embedding status
 embedding health
 embedding models
+
+voice stt
+voice tts
+voice test-input
+voice test-output
+voice sessions
+voice session inspect <id>
+
+vision health
+vision inspect <explicit_image>
+camera status
+camera devices
+camera start
+camera stop
+camera session inspect <id>
+
+coding health
+coding tools
+coding tool inspect <tool>
+coding apply <task_id>
+coding cancel <task_id>
+coding audit
+git status
+git diff
+git history
+git verify
+github branch
+github commits
+
+system status
+system health
+system processes
+system disks
+system memory
+system gpu
+app status
+app list
+app open <app_id>
+app close <app_id>
+file status
+file read <path>
+file write <path>
+file move <source> <target>
+file copy <source> <target>
+file delete <path>
+automation status
+automation permissions
+
+connector status
+connector list
+connector health
+connector inspect <id>
+connector capabilities
+connector permissions <id>
+connector test <id>
+connector audit
+
+runtime traces
+runtime circuits
+performance status
+performance startup
+performance providers
+performance models
+performance memory
+performance voice
+operations status
+operations alerts
+operations audit
+
+phase6 status
+phase6 candidate [--probe]
+phase6 checklist
 ```
 
 Unknown subcommands return namespace help and never fall through to chat.
+
+These commands expose metadata, policy decisions, or explicit existing capabilities. They do not install packages, download models, start hidden capture, authorize execution, send connector payloads, upload telemetry, or bypass Policy, Approval, Broker, Governance, Memory, Conversation, Workflow, or Reliability authority.
