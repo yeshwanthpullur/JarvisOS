@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased - Phase 6 Local Tooling and Integration Platform
+
+- Preserved ordinary chat, explicit goal routing, and registered command dispatch with deterministic diagnostics.
+- Added passive isolated-environment inventory and dependency auditing without automatic installation or repair.
+- Added local Ollama model discovery, role metadata, and provider health checks without model downloads or cloud fallback.
+- Added bounded public-web/crawl planning, explicit document ingestion, retrieval adapters, voice/vision routes, coding-tool plans, automation previews, connector normalization, and local payload-free observability.
+- Added Phase 6 candidate checks and cross-system tests covering authority, failure, lifecycle, stress bounds, privacy, configuration, and Vercel status-only isolation.
+- Kept camera capture, wake/continuous listening, arbitrary shell, unrestricted file/browser/coding actions, connector writes, remote MCP, external plugins, cloud providers, and telemetry upload disabled.
+- No Phase 7 work, tag, or release was created.
+
 ## Unreleased - Prompt 84 Enterprise Governance Runtime
 
 - Added zero-trust identity, role, authorization, policy, privacy, risk, trust, compliance, audit, security-event, and incident models.

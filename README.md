@@ -1,5 +1,7 @@
 # JARVIS OS
 
+Phase 6 is implemented as a controlled local-first tooling and intelligence layer. Prompts 86-100 harden conversation routing, add passive isolated-tool and local-model discovery, bounded browser/document/memory adapters, explicit voice/vision adapters, plan-only coding and automation controls, normalized connector metadata, payload-free observability, and a deterministic release-candidate checklist. Optional rich parsers, OCR, external coding tools, interactive browsers, connectors, MCP servers, plugins, and cloud providers remain disabled or unconfigured. See [Phase 6 Operations](docs/PRODUCTION_RUNBOOK.md) and [Phase 6 Commands](docs/COMMANDS.md).
+
 Prompt 84 adds an enterprise governance foundation: zero-trust validation, identity and role metadata, least-privilege authorization, deterministic policy precedence, contextual trust and risk, tamper-evident bounded audit, advisory compliance, and security incident tracking. Governance has no execution authority and makes no certification claim. See [Enterprise Security](docs/ENTERPRISE_SECURITY.md).
 
 Prompt 83 adds bounded on-demand runtime health, dependency diagnostics, circuit breakers, fault isolation, resource/queue thresholds, alerts, metrics, capacity estimates, and governed recovery plans. Health is informational; privileged self-healing, distributed clustering, and cloud telemetry are disabled.
@@ -24,7 +26,7 @@ Prompt 73 adds a secure [Telegram Connector](docs/TELEGRAM_CONNECTOR.md) with ex
 
 Prompt 74 adds disabled-by-default outbound text connectors for [Discord](docs/DISCORD_CONNECTOR.md), [email](docs/EMAIL_CONNECTOR.md), and [Slack](docs/SLACK_CONNECTOR.md). Each uses provider-specific validation, credential references, approvals, and Broker tools; inbound access, attachments, bulk, and scheduling remain disabled.
 
-JARVIS OS is currently at **Prompt 85 validated Phase 5 integration and production-readiness state** on `main`, with Phase 4 controlled execution and the Phase 3/4/5 foundations implemented locally. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental.
+JARVIS OS is currently at the **Phase 6 production-readiness validation checkpoint** on `main`, with the Phase 3-5 authorities preserved. The supported primary experience is the local CLI started with `python main.py`; the localhost web interface remains optional and experimental, and Vercel remains status-only.
 
 Phase 4 adds explicit local approvals and a central execution broker for narrowly scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations. Execution remains `plan_only` by default; critical actions, secrets, force-push, browser writes, external messaging, and hidden/background operation remain blocked.
 

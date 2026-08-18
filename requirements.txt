@@ -1,3 +1,2 @@
-# No runtime dependencies are required for the current local-first runtime.
-# Python 3.12+ standard library modules provide configuration, logging, paths,
-# and the localhost desktop interface service.
+# Core configuration dependency. Optional AI tools use separate environments.
+PyYAML>=6.0.2,<7

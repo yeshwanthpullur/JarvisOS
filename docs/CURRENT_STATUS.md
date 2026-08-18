@@ -1,6 +1,8 @@
 # Current Status
 
-Prompt 85 completes the Phase 5 integration and production-readiness validation milestone. All mandatory local validation gates pass across the implemented Prompt 71-84 runtimes. Release publication remains separately authorized: no `v2.0.0` tag or GitHub Release exists, no enterprise certification is claimed, and no Phase 6 work has started.
+Phase 6 Prompts 86-100 are implemented through the local production-readiness checkpoint. Conversation routing, environment isolation, local-model discovery, controlled web/document/memory adapters, voice/vision adapter policy, coding/automation planning, connector normalization, and payload-free observability are integrated without replacing existing authorities. Optional external tools remain truthful degraded states. No Phase 7 work, tag, or release has started.
+
+Phase 6 execution remains controlled: adapters have no execution authority; Policy, Approval, Broker, Governance, Memory, Conversation, Workflow, and Reliability remain authoritative. The local Ollama health probe detects `llama3.2:1b` and `llava:latest` on the verified workstation. Cloud fallback, telemetry upload, wake/continuous listening, camera capture, unrestricted browser/coding/file actions, connector writes, remote MCP, and external plugins remain disabled.
 
 Runtime Reliability: Prompt 83 implements bounded on-demand health aggregation, dependency validation, resource/queue monitoring, circuit breakers, fault isolation, diagnostics, alerts, capacity estimates, and recovery planning. Automatic privileged recovery and distributed execution remain disabled.
 
@@ -20,7 +22,7 @@ MCP Runtime: implemented foundation with zero registered servers. Explicitly con
 
 GitHub Provider: implemented and repository-scoped, but disabled/unverified by default. Reads require verified authentication; issue/PR/release writes remain approval/Broker-gated. Merge, workflow execution, secrets, and administration are blocked.
 
-Updated: 2026-08-11
+Updated: 2026-08-18
 
 ## Current Release
 
@@ -44,6 +46,8 @@ python main.py --ui
 ```
 
 ## Working Features
+
+- Phase 6 controlled runtime: bounded commands, live project-status metadata, local Ollama discovery, explicit text document parsing, local voice/vision routing, authority-preserving plans, and release-candidate diagnostics.
 
 - Prompt 74 outbound connector foundation: Discord, SMTP/API email, and Slack plain-text sends are implemented behind exact approval and Broker routing, with all provider runtimes disabled and unconfigured by default.
 
@@ -73,6 +77,8 @@ python main.py --ui
 - Prompt 71 external integration control plane: typed provider registry, credential references, data-egress policy, endpoint validation, cost/risk metadata, and bounded diagnostics are implemented; every external provider remains disabled and non-executing.
 
 ## Partially Working Features
+
+- Phase 6 optional tooling is degraded by design when isolated environments or adapters are absent: rich document/OCR tooling, semantic/vector/graph backends, interactive browser/crawlers, Aider/Open Interpreter, non-SAPI voice adapters, external connectors, MCP servers, and plugins are not configured.
 
 - Cloud provider framework: configured adapters, policy, normalization, mocked tests, and command access exist; paid live providers are not continuously verified.
 - Tool Intelligence: safe built-ins work, while broad external tool integrations are future work.
@@ -129,11 +135,13 @@ The audited register contains **47** limitations: **24 fixed** and **23 still op
 
 ## Next Recommended Prompt
 
-No next roadmap prompt starts automatically. Maintenance or a future roadmap requires separate planning and explicit authorization. The optional `v2.0.0` publication checkpoint also requires separate authorization.
+Phase 6 stops after Prompt 100. Phase 7 requires separate planning and explicit authorization. No release is created by this milestone.
 
 The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) and maps named milestones through the current roadmap checkpoints.
 
 ## Last Verified Tests
+
+- Phase 6 Prompt 86-99 focused and integration checks currently pass; final Prompt 100 totals are recorded in `PHASE_6_FINAL_VALIDATION.md` after the complete validation run.
 
 - Prompt 85 validation covers release gates, 21 authority contracts, 15 compatibility relationships, 14 end-to-end scenarios, and 11 informational scorecard categories.
 - Prompt 85 focused validation: 24 passed; Phase 5 integration: 317 passed; cross-subsystem regression: 499 passed; configuration/tracking: 42 passed.

@@ -103,7 +103,8 @@ class Prompt85ReleaseReadinessTests(unittest.TestCase):
         phase = health["phase5_validation"]
         self.assertFalse(phase["v2_tag_created"])
         self.assertFalse(phase["github_release_created"])
-        self.assertFalse(phase["phase6_started"])
+        self.assertTrue(phase["phase6_started"])
+        self.assertFalse(health["phase6"]["phase7_started"])
 
 
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 {
   "release": "v1.7.0-alpha",
-  "commit": "d2fe98726183b9c8d0f776663330d169f172f0b7",
-  "updated_at": "2026-08-11",
+  "commit": "Phase 6 final Git HEAD",
+  "updated_at": "2026-08-18",
   "primary_mode": "CLI via python main.py",
-  "next_milestone": "Maintenance / future roadmap",
-  "overall_mvp_readiness": 93,
+  "next_milestone": "Phase 7 requires explicit authorization",
+  "overall_mvp_readiness": 94,
   "limitations": {
     "total": 47,
     "fixed": 24,
@@ -14,7 +14,7 @@
   "categories": [
     {"name": "Core Runtime", "status": "Working", "confidence": 90, "evidence": "Startup, shutdown, health, and full regression coverage remain broad.", "next_action": "Keep startup checks bounded."},
     {"name": "CLI Experience", "status": "Working", "confidence": 88, "evidence": "Quiet CLI, free-form chat routing, bounded commands, and malformed-quote handling are stable.", "next_action": "Add usability fixes only from observed defects."},
-    {"name": "Local AI", "status": "Working", "confidence": 92, "evidence": "Real Ollama text chat and free-form routing are manually verified through Provider Router.", "next_action": "Keep truthful unavailable handling when the PC or Ollama is offline."},
+    {"name": "Local AI", "status": "Working", "confidence": 93, "evidence": "Real Ollama chat remains verified; Phase 6 health discovery detects local llama3.2:1b and llava:latest without download or cloud fallback.", "next_action": "Keep truthful unavailable handling when the PC or Ollama is offline."},
     {"name": "Conversation Intelligence", "status": "Working", "confidence": 80, "evidence": "Bounded multi-turn state, topics, entities, follow-up intent, references, clarification, repair, modes, confidence, and summaries are integrated with normal chat.", "next_action": "Improve language understanding from observed ambiguity without hidden persistence."},
     {"name": "Cloud Provider Foundation", "status": "Partial", "confidence": 65, "evidence": "Adapters, policy, normalization, commands, and mocked tests exist.", "next_action": "Add opt-in live smoke checks when authorized."},
     {"name": "External Integration Control Plane", "status": "Partial", "confidence": 70, "evidence": "Prompt 71 adds typed provider, credential-reference, egress, endpoint, cost, health, and routing metadata with all external execution disabled.", "next_action": "Implement Prompt 72 independently without enabling providers by default."},
@@ -30,13 +30,13 @@
     {"name": "Vision", "status": "Working", "confidence": 86, "evidence": "Local Ollama LLaVA image analysis and image Q&A are manually verified through governed routing with metadata-only audit.", "next_action": "Keep live camera/video, identity inference, and high-stakes certainty outside this scope."},
     {"name": "Deployment / Online Foundation", "status": "Working", "confidence": 90, "evidence": "Canonical jarvis-os production remains Ready and status-only.", "next_action": "Retain jarvis-os and leave jarvis-os-6oy2 unused."},
     {"name": "Online Sync", "status": "Partial", "confidence": 55, "evidence": "Bounded atomic local queue, allowlisted summaries, conflict/audit retention, and manual CLI work exist; no encrypted remote backend exists.", "next_action": "Design and verify an authenticated encrypted remote adapter before enabling transfer."},
-    {"name": "Web Automation", "status": "Partial", "confidence": 62, "evidence": "Read-only public page inspection and status work with DNS and redirect SSRF checks, bounded text extraction, CLI permissions, and redacted audit; no interactive browser control exists.", "next_action": "Keep sensitive actions blocked until a separate approval-gated interaction milestone."},
+    {"name": "Web Automation", "status": "Partial", "confidence": 66, "evidence": "Read-only inspection plus Phase 6 public-HTTPS crawl planning, limits, session metadata, and fail-closed interactive actions are tested.", "next_action": "Keep sensitive actions blocked until a separate approval-gated interaction milestone."},
     {"name": "Mobile Automation", "status": "Partial", "confidence": 45, "evidence": "Planning-only manager, policy gates, CLI commands, adapters, bounded redacted audit, and tests exist; no phone is accessed.", "next_action": "Add a separately approved real adapter and enrollment model without weakening current blocks."},
     {"name": "Study and Research Workflows", "status": "Partial", "confidence": 45, "evidence": "Conversation, retrieval, research, goals, planning, and read-only web foundations exist; no dedicated study workflow composes them.", "next_action": "Keep this partial until a dedicated future study workflow milestone is implemented."},
     {"name": "Research Agent", "status": "Partial", "confidence": 78, "evidence": "Bounded research orchestration, provider states, provenance, citations, claim/evidence support, freshness, contradiction representation, injection defense, and knowledge candidates are implemented; live search is unconfigured by default.", "next_action": "Configure only governed read-only providers while keeping execution and memory writes disabled."},
     {"name": "Knowledge Retrieval", "status": "Partial", "confidence": 72, "evidence": "Explicit sources, deterministic chunks/checksums, local lexical retrieval, privacy filters, provenance, and bounded context are implemented; semantic embeddings are unavailable.", "next_action": "Add a governed local embedding provider without enabling automatic ingestion or memory promotion."},
     {"name": "Multi-Agent Orchestrator", "status": "Partial", "confidence": 80, "evidence": "Validated graphs, segmented request context, immutable message references, finite budgets, cancellation, partial recovery, audit, and metrics are implemented without execution authority.", "next_action": "Keep every side effect behind existing Approval and Broker controls."},
-    {"name": "Coding Agent", "status": "Partial", "confidence": 66, "evidence": "Typed planning, deterministic intent/risk policy, read-only Git inspection, metadata-only diff review, bounded history, Prime routing, registry skills, and safe configuration are integrated; autonomous edits are not.", "next_action": "Keep write, command, commit, push, install, and deployment operations disabled until separately approved."},
+    {"name": "Coding Agent", "status": "Partial", "confidence": 72, "evidence": "Planning and read-only Git diagnostics include bounded Aider/Open Interpreter detection, redaction, approval handoff, and no direct write, shell, or network authority.", "next_action": "Keep write, command, commit, push, install, and deployment operations disabled until separately approved."},
     {"name": "Advanced Builder Workflows", "status": "Partial", "confidence": 35, "evidence": "Planning, tools, multi-agent review, providers, tests, and Git practices exist independently; Builder Mode is not formalized.", "next_action": "Formalize the governed workflow in a future dedicated milestone."},
     {"name": "Raspberry Pi and Hardware", "status": "Partial", "confidence": 20, "evidence": "General coding guidance is available, but no device profiles, deployment checks, or physical-action boundary exists.", "next_action": "Keep hardware work deferred to a future dedicated milestone."},
     {"name": "Creative Media Workflows", "status": "Partial", "confidence": 44, "evidence": "Governed image-generation and video-editing workflow foundations exist with prompt validation, safety policy, provider abstraction, dry-run planning, bounded metadata, and truthful unavailable-provider handling. Real local generation and real local editing still require configured providers.", "next_action": "Add real local media providers only with approved integrations."},
@@ -45,7 +45,7 @@
     {"name": "Controlled Execution", "status": "Partial", "confidence": 78, "evidence": "Exact approvals and a central broker govern scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations.", "next_action": "Keep unsupported and critical actions blocked; require separate review for every new executor."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 86, "evidence": "Execution modes, risk, exact approvals, locality, protected resources, timeout, rollback metadata, and executor-specific boundaries are tested.", "next_action": "Threat-review every new execution surface."},
     {"name": "Enterprise Governance", "status": "Partial", "confidence": 82, "evidence": "Zero-trust identity, authorization, policy, risk, trust, tamper-evident bounded audit, compliance, security event, and incident foundations are tested without execution authority.", "next_action": "Retain bounded governance and review future extensions only under a separately authorized roadmap."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 97, "evidence": "Prompt 85 focused validation, 317-test Phase 5 integration, 499-test regression, and final 2050-test suites pass with no skips, failures, or errors.", "next_action": "Keep release evidence and status docs current."}
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 98, "evidence": "Phase 6 adds deterministic candidate, authority, failure, lifecycle, configuration, security, and bounded stress validation; exact final totals are stored in the Phase 6 report.", "next_action": "Keep release evidence and status docs current; do not treat optional adapters as PASS."}
   ],
   "phase3": {
     "status": "Partial - plan-only multi-agent foundation",
@@ -115,10 +115,33 @@
     "release_candidate": "ready_validation_only_release_not_authorized",
     "v2_tag_created": false,
     "github_release_created": false,
-    "phase6_started": false,
+    "phase6_started": true,
     "execution_policy_authoritative": true,
     "approval_system_authoritative": true,
     "execution_broker_authoritative": true,
     "vercel_status_only": true
+  },
+  "phase6": {
+    "status": "complete_with_optional_degradations_pending_external_verification",
+    "prompts_86_100": "implemented_sequentially",
+    "conversation_routing": "verified_deterministic",
+    "environment_isolation": "passive_registry_ready_no_install_performed",
+    "local_model_provider": "ollama_healthy_local_only",
+    "browser_research": "bounded_read_only_foundation_interactive_disabled",
+    "documents": "builtin_text_ready_rich_parsers_and_ocr_optional",
+    "memory_retrieval": "authority_preserved_lexical_fallback",
+    "voice": "explicit_local_adapters_no_wake_or_continuous_listening",
+    "vision": "explicit_local_images_camera_disabled",
+    "coding": "plan_only_external_tools_optional",
+    "automation": "preview_only_existing_policy_approval_broker_authoritative",
+    "connectors": "normalized_metadata_unconfigured_by_default",
+    "observability": "bounded_local_payload_free",
+    "candidate_ready": true,
+    "critical_blockers": 0,
+    "cloud_fallback": false,
+    "telemetry_upload": false,
+    "execution_authority": false,
+    "vercel_status_only": true,
+    "phase7_started": false
   }
 }

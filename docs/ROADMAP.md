@@ -1,5 +1,7 @@
 # Roadmap
 
+- Prompts 86-100 - Phase 6 local tooling, integration, hardening, and production-readiness validation: implemented in order. Optional adapters remain degraded/unconfigured, no release was created, and Phase 7 was not started.
+
 - Prompt 85 - Phase 5 Final Integration, System Validation, and Production Readiness: complete and verified as validation-only. No tag or release was authorized, and no future phase starts automatically.
 
 - Prompt 84 - Enterprise Security, Governance, Zero-Trust Policy, Compliance, and Audit: complete and verified as a bounded coordination layer without execution authority. Roadmap order is unchanged.
@@ -91,7 +93,7 @@ Updated: 2026-08-11
 
 ## Next Milestone
 
-Prompt 85 is complete as an integration and validation milestone. No Phase 6 work has started, and future roadmap work requires separate planning and authorization.
+Phase 6 stops at Prompt 100. Phase 7 is not started and requires separate explicit authorization; roadmap order is unchanged.
 
 ## Phase 5 Validation Boundaries
 

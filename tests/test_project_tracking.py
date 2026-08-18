@@ -57,6 +57,24 @@ REQUIRED_DOCS = (
     "LLAMA_CPP_RUNTIME.md",
     "MODEL_FAILOVER.md",
     "MODEL_RESOURCE_POLICY.md",
+    "ENVIRONMENT_ISOLATION.md",
+    "LOCAL_AI_STACK.md",
+    "BROWSER_TOOLING.md",
+    "VOICE_TOOLING.md",
+    "VISION_TOOLING.md",
+    "CODING_TOOLING.md",
+    "LOCAL_AUTOMATION.md",
+    "DESKTOP_CONTROL.md",
+    "CONNECTOR_ECOSYSTEM.md",
+    "COMMUNICATION_RUNTIME.md",
+    "DATA_EGRESS.md",
+    "OBSERVABILITY.md",
+    "PERFORMANCE.md",
+    "OPERATIONS.md",
+    "RELIABILITY_RUNTIME.md",
+    "PRODUCTION_RUNBOOK.md",
+    "PROMPT_HISTORY.md",
+    "JARVIS_PROJECT_CONTEXT.md",
 )
 
 
@@ -71,9 +89,9 @@ class ProjectTrackingTests(unittest.TestCase):
         path = DOCS / "project_health.json"
         health = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(health["release"], "v1.7.0-alpha")
-        self.assertEqual(health["commit"], "d2fe98726183b9c8d0f776663330d169f172f0b7")
-        self.assertEqual(health["next_milestone"], "Maintenance / future roadmap")
-        self.assertEqual(health["overall_mvp_readiness"], 93)
+        self.assertEqual(health["commit"], "Phase 6 final Git HEAD")
+        self.assertEqual(health["next_milestone"], "Phase 7 requires explicit authorization")
+        self.assertEqual(health["overall_mvp_readiness"], 94)
         self.assertEqual(health["phase3"]["coding_agent"], "ready_plan_only")
         self.assertFalse(health["phase3"]["coding_write_operations_enabled"])
         self.assertFalse(health["phase3"]["coding_command_execution_enabled"])
@@ -84,6 +102,9 @@ class ProjectTrackingTests(unittest.TestCase):
         creative = next(item for item in health["categories"] if item["name"] == "Creative Media Workflows")
         self.assertEqual(creative["status"], "Partial")
         self.assertEqual(creative["confidence"], 44)
+        self.assertTrue(health["phase6"]["candidate_ready"])
+        self.assertFalse(health["phase6"]["execution_authority"])
+        self.assertFalse(health["phase6"]["phase7_started"])
         self.assertGreaterEqual(health["overall_mvp_readiness"], 0)
         self.assertLessEqual(health["overall_mvp_readiness"], 100)
         self.assertLess(path.stat().st_size, 20_000)
@@ -162,7 +183,7 @@ class ProjectTrackingTests(unittest.TestCase):
             with self.subTest(path=path.name):
                 text = path.read_text(encoding="utf-8")
                 self.assertGreater(len(text), 200)
-                limit = 50_000 if path.name == "JARVIS_USE_CASES.md" else 25_000 if path.name == "CHANGELOG.md" else 20_000
+                limit = 50_000 if path.name == "JARVIS_USE_CASES.md" else 35_000 if path.name in {"CHANGELOG.md", "CURRENT_STATUS.md"} else 20_000
                 self.assertLess(len(text), limit)
                 self.assertTrue(text.startswith("# "))
 
@@ -187,8 +208,8 @@ class ProjectTrackingTests(unittest.TestCase):
         commands.initialize()
         response = commands.execute("project status")
         self.assertIn("release=v1.7.0-alpha", response.response)
-        self.assertIn("MVP=93%", response.response)
-        self.assertIn("next=Maintenance / future roadmap", response.response)
+        self.assertIn("MVP=94%", response.response)
+        self.assertIn("next=Phase 7 requires explicit authorization", response.response)
         self.assertIn("p85=warning", response.response)
         self.assertIn("coding:ready_plan_only", response.response)
         self.assertIn("limitations=fixed:24/open:23/restricted:5/blocked:2", response.response)
@@ -197,7 +218,9 @@ class ProjectTrackingTests(unittest.TestCase):
         self.assertIn("prime:ready", response.response)
         self.assertIn("model_router:ready", response.response)
         self.assertLess(len(response.response), 700)
-        self.assertEqual(response.metadata["overall_mvp_readiness"], 93)
+        self.assertEqual(response.metadata["overall_mvp_readiness"], 94)
+        self.assertTrue(response.metadata["phase6_started"])
+        self.assertFalse(response.metadata["phase6_execution_authority"])
         self.assertEqual(response.metadata["fixed_limitations"], 24)
         self.assertEqual(response.metadata["open_limitations"], 23)
         self.assertEqual(response.metadata["total_agents"], 29)

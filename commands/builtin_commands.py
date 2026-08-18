@@ -1049,7 +1049,9 @@ def _handler_for(name: str):
             return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))
         phase6_commands = {"tool status", "tool audit", "tool environments", "tool inspect", "tool environment-show", "provider inspect", "provider test", "model list", "model health", "model inspect", "model roles", "model select", "model test", "browser health", "browser permissions", "browser test", "browser session-list", "browser session-inspect", "browser session-close", "crawl status", "crawl health", "crawl plan", "crawl run", "crawl inspect", "research health", "research source-list", "research source-inspect", "research audit", "research clear-session", "document health", "document parse", "document chunks", "document sources", "document audit", "document clear-session", "ocr status", "ocr health", "ocr parse", "ocr extract", "knowledge ingest-document", "knowledge source-inspect", "memory health", "memory conflicts", "vector status", "vector health", "vector collections", "vector inspect", "graph status", "graph health", "graph inspect", "embedding status", "embedding health", "embedding models", "voice stt", "voice tts", "vision health", "vision inspect", "camera status", "camera devices", "camera start", "camera stop", "camera session-inspect", "coding health", "coding tools", "coding tool-inspect", "coding apply", "coding cancel", "coding audit", "git status", "git diff", "git history", "git verify", "github branch", "github commits", "system status", "system health", "system processes", "system disks", "system memory", "system gpu", "app status", "app list", "app open", "app close", "file status", "file read", "file write", "file move", "file copy", "file delete", "automation status", "automation permissions", "scheduler list", "scheduler inspect", "connector status", "connector list", "connector health", "connector inspect", "connector capabilities", "connector permissions", "connector test", "connector audit", "performance status", "performance startup", "performance providers", "performance models", "performance memory", "performance voice", "operations status", "operations alerts", "operations audit"}
         phase6_commands.update({"voice test-input", "voice test-output", "voice sessions", "voice session-inspect", "phase6 status", "phase6 candidate", "phase6 checklist"})
-        if name.startswith("environment ") or name in phase6_commands or (name in {"document inspect", "document summarize"} and context.arguments and context.arguments[0].startswith("doc-")):
+        phase6_provider = name in {"provider inspect", "provider test"} and bool(context.arguments) and context.arguments[0] in {"ollama", "llama_cpp", "litellm", "vllm"}
+        phase6_match = name in phase6_commands and (name not in {"provider inspect", "provider test"} or phase6_provider)
+        if name.startswith("environment ") or phase6_match or (name in {"document inspect", "document summarize"} and context.arguments and context.arguments[0].startswith("doc-")):
             phase6_name = name
             if name == "document inspect" and context.arguments and context.arguments[0].startswith("doc-"):
                 phase6_name = "document inspect-id"
@@ -1057,7 +1059,8 @@ def _handler_for(name: str):
                 phase6_name = "document summarize-id"
             elif name == "vision inspect":
                 phase6_name = "vision inspect-media"
-            return _text_response(render_phase6_command(_phase6_runtime(context), phase6_name, context.arguments))
+            phase6_flags = tuple(f"--{key}" if value is True else f"--{key}={value}" for key, value in sorted(context.flags.items()))
+            return _text_response(render_phase6_command(_phase6_runtime(context), phase6_name, context.arguments + phase6_flags))
         if name.startswith("conversation "):
             if name == "conversation route":
                 return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))

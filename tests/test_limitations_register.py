@@ -91,7 +91,7 @@ class LimitationsRegisterTests(unittest.TestCase):
         project = manager.execute("project status")
         self.assertIn("restricted:", project.response)
         self.assertIn("blocked:", project.response)
-        self.assertIn("next=Maintenance / future roadmap", project.response)
+        self.assertIn("next=Phase 7 requires explicit authorization", project.response)
 
     def test_health_and_status_match_register(self) -> None:
         health = json.loads((DOCS / "project_health.json").read_text(encoding="utf-8"))

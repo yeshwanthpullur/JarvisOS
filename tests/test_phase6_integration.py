@@ -48,6 +48,13 @@ class RoutingIntegrationTests(unittest.TestCase):
                 self.assertLess(len(response), 7000)
                 self.assertNotIn(str(ROOT), response)
 
+    def test_phase6_flags_reach_bounded_diagnostics(self) -> None:
+        manager = CommandManager(); manager.initialize()
+        audit = manager.execute("environment audit --pip-check").response
+        self.assertNotIn("pip_check=not_run", audit)
+        candidate = manager.execute("phase6 candidate --probe").response
+        self.assertIn("candidate_ready=True", candidate)
+
 
 class AuthorityIntegrationTests(unittest.TestCase):
     def test_phase6_never_becomes_execution_authority(self) -> None:
