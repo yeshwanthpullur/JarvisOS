@@ -20,6 +20,13 @@ JARVIS OS keeps durable personal context in a local SQLite-backed memory engine.
 - It does not store hidden reasoning.
 - It does not store raw secrets, credentials, or private environment values.
 - It does not replace the authority of the command, conversation, or context engines.
+- It does not let Mem0, Qdrant, ChromaDB, FAISS, Graphiti, or an embedding provider write authoritative memory directly.
+
+## Phase 6 Retrieval Adapters
+
+Mem0 is the planned memory-framework adapter, Qdrant the primary persistent vector backend, ChromaDB the backup, FAISS the temporary in-process option, and Graphiti the temporal graph adapter. They are currently unconfigured and truthfully reported as degraded. Bounded lexical retrieval remains the fallback.
+
+All retrieval is namespace-scoped and context-budgeted. Durable records require provenance. Sensitive credential-shaped content is rejected. Explicit user correction and authoritative verified state supersede older records without erasing history. Backend failure never deletes authoritative memory metadata.
 
 ## CLI Examples
 

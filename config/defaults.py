@@ -36,6 +36,10 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "sensitive_storage_enabled": False,
         "consolidation_enabled": True,
         "secret_detection_enabled": True,
+        "authority": "memory_intelligence", "automatic_write": False, "conflict_detection": True, "provenance_required": True,
+        "semantic_primary": "qdrant", "semantic_backup": "chromadb", "graph_provider": "graphiti", "graph_enabled": False,
+        "memory_framework_provider": "mem0", "memory_framework_enabled": False, "embedding_provider": "local", "embedding_model": None,
+        "retrieval_max_results": 8, "retrieval_context_budget_chars": 3000,
     },
     "conversation": {
         "enabled": True,
@@ -267,6 +271,8 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "cache_ttl_seconds": 3600,
         "max_history_items": 25,
         "redact_sensitive_values": True,
+        "primary_crawler": "crawl4ai", "backup_crawler": "firecrawl", "max_pages": 5, "max_depth": 1,
+        "network_allowed": False, "citations_required": True,
     },
     "coding": {
         "enabled": True,
@@ -336,6 +342,9 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "save_history": True,
         "store_extracted_content": False,
         "local_only": True,
+        "primary_parser": "docling", "backup_parser": "marker", "max_pages": 100, "allow_private_documents": True,
+        "allow_secret_files": False, "require_citations": True, "memory_update_default": False, "knowledge_update_default": False,
+        "parser_timeout_seconds": 120,
     },
     "browser": {
         "enabled": True,
@@ -351,6 +360,8 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "max_history_items": 25,
         "save_history": True,
         "local_only": True,
+        "primary": "browser_use", "backup": "playwright", "approval_required": True, "max_session_minutes": 10,
+        "allowed_domains": [], "blocked_domains": [], "screenshots_allowed": False, "uploads_allowed": False, "form_submit_allowed": False,
     },
     "scheduler": {
         "enabled": True,

@@ -49,6 +49,20 @@ class MemoryConfig:
     sensitive_storage_enabled: bool = False
     consolidation_enabled: bool = True
     secret_detection_enabled: bool = True
+    authority: str = "memory_intelligence"
+    automatic_write: bool = False
+    conflict_detection: bool = True
+    provenance_required: bool = True
+    semantic_primary: str = "qdrant"
+    semantic_backup: str = "chromadb"
+    graph_provider: str = "graphiti"
+    graph_enabled: bool = False
+    memory_framework_provider: str = "mem0"
+    memory_framework_enabled: bool = False
+    embedding_provider: str = "local"
+    embedding_model: str | None = None
+    retrieval_max_results: int = 8
+    retrieval_context_budget_chars: int = 3000
 
 
 @dataclass(frozen=True, slots=True)
@@ -214,6 +228,12 @@ class ResearchConfig:
     cache_ttl_seconds: int = 3600
     max_history_items: int = 25
     redact_sensitive_values: bool = True
+    primary_crawler: str = "crawl4ai"
+    backup_crawler: str = "firecrawl"
+    max_pages: int = 5
+    max_depth: int = 1
+    network_allowed: bool = False
+    citations_required: bool = True
 
 
 @dataclass(frozen=True, slots=True)
@@ -276,11 +296,11 @@ class GovernanceConfig:
 
 @dataclass(frozen=True, slots=True)
 class DocumentsConfig:
-    enabled: bool = True; default_mode: str = "plan_only"; max_file_bytes: int = 1000000; max_extract_chars: int = 4000; max_history_items: int = 25; allow_pdf: bool = False; allow_office: bool = False; allow_ocr: bool = False; allow_cloud_parsing: bool = False; allow_bulk_ingestion: bool = False; save_history: bool = True; store_extracted_content: bool = False; local_only: bool = True
+    enabled: bool = True; default_mode: str = "plan_only"; max_file_bytes: int = 1000000; max_extract_chars: int = 4000; max_history_items: int = 25; allow_pdf: bool = False; allow_office: bool = False; allow_ocr: bool = False; allow_cloud_parsing: bool = False; allow_bulk_ingestion: bool = False; save_history: bool = True; store_extracted_content: bool = False; local_only: bool = True; primary_parser: str = "docling"; backup_parser: str = "marker"; max_pages: int = 100; allow_private_documents: bool = True; allow_secret_files: bool = False; require_citations: bool = True; memory_update_default: bool = False; knowledge_update_default: bool = False; parser_timeout_seconds: int = 120
 
 @dataclass(frozen=True, slots=True)
 class BrowserAgentConfig:
-    enabled: bool = True; default_mode: str = "read_only"; allow_interactive: bool = False; allow_login: bool = False; allow_forms: bool = False; allow_purchases: bool = False; allow_downloads: bool = False; allow_cookies: bool = False; allow_sessions: bool = False; allow_external_automation: bool = False; max_history_items: int = 25; save_history: bool = True; local_only: bool = True
+    enabled: bool = True; default_mode: str = "read_only"; allow_interactive: bool = False; allow_login: bool = False; allow_forms: bool = False; allow_purchases: bool = False; allow_downloads: bool = False; allow_cookies: bool = False; allow_sessions: bool = False; allow_external_automation: bool = False; max_history_items: int = 25; save_history: bool = True; local_only: bool = True; primary: str = "browser_use"; backup: str = "playwright"; approval_required: bool = True; max_session_minutes: int = 10; allowed_domains: tuple[str, ...] = (); blocked_domains: tuple[str, ...] = (); screenshots_allowed: bool = False; uploads_allowed: bool = False; form_submit_allowed: bool = False
 
 @dataclass(frozen=True, slots=True)
 class SchedulerConfig:

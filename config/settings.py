@@ -163,6 +163,7 @@ def load_settings(
             sensitive_storage_enabled=_coerce_bool(raw_config["memory"]["sensitive_storage_enabled"]),
             consolidation_enabled=_coerce_bool(raw_config["memory"]["consolidation_enabled"]),
             secret_detection_enabled=_coerce_bool(raw_config["memory"]["secret_detection_enabled"]),
+            **{key: raw_config["memory"][key] for key in ("authority","automatic_write","conflict_detection","provenance_required","semantic_primary","semantic_backup","graph_provider","graph_enabled","memory_framework_provider","memory_framework_enabled","embedding_provider","embedding_model","retrieval_max_results","retrieval_context_budget_chars")},
         ),
         conversation=ConversationIntelligenceConfig(
             enabled=_coerce_bool(raw_config["conversation"]["enabled"]),
@@ -268,7 +269,7 @@ def load_settings(
         knowledge_index=KnowledgeConfig(**raw_config["knowledge"]),
         orchestrator=OrchestratorConfig(**raw_config["orchestrator"]),
         documents=DocumentsConfig(**raw_config["documents"]),
-        browser=BrowserAgentConfig(**raw_config["browser"]),
+        browser=BrowserAgentConfig(**{**raw_config["browser"], "allowed_domains": tuple(raw_config["browser"]["allowed_domains"]), "blocked_domains": tuple(raw_config["browser"]["blocked_domains"])}),
         scheduler=SchedulerConfig(**raw_config["scheduler"]),
         communication=CommunicationConfig(**raw_config["communication"]),
         adapters=AdaptersConfig(**raw_config["adapters"]),

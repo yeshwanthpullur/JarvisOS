@@ -6,6 +6,8 @@ Trusted MCP resource reads may feed Document Intelligence with provenance; embed
 
 Prompt 53 adds an explicit, bounded, local Document Intelligence foundation. `document inspect`, `document extract`, `document summarize`, and `document ask` operate only on a user-supplied reference. Plain UTF-8 text, Markdown, JSON, CSV, and YAML have bounded text extraction; content is not persisted.
 
-PDF, Office, OCR, cloud parsing, recursive scanning, bulk ingestion, and hidden document discovery are unavailable. Secret-shaped or sensitive bulk requests fail closed. Semantic summary and Q&A remain plan-only unless a separately configured local model route is used by an authoritative future workflow.
+Phase 6 adds a safe ingestion boundary for explicit files. Built-in UTF-8 text, Markdown, CSV, and HTML parsing creates bounded chunks with source references and `untrusted_user_provided_source` trust metadata. Secret/credential files, unsupported types, and oversized files fail closed. Document prompt-injection phrases are flagged as untrusted data and are never executed.
 
-Commands: `document status`, `help`, `plan`, `safety`, `types`, `inspect`, `extract`, `summarize`, `ask`, `show`, and `history`.
+PDF, Office, and image formats remain degraded until Docling, Marker, or an OCR provider is available in an isolated environment. OCR, cloud parsing, recursive scanning, bulk ingestion, and hidden document discovery remain disabled. Parsing never updates Memory or Knowledge automatically.
+
+Commands also include `document health`, `parse`, `chunks`, `sources`, `audit`, `clear-session`, and `ocr status|health|parse`.

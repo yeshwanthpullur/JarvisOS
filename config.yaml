@@ -15,6 +15,20 @@ memory:
   storage_dir: memory
   task_store_dir: data/tasks
   vector_index_dir: data/vector-indexes
+  authority: memory_intelligence
+  automatic_write: false
+  conflict_detection: true
+  provenance_required: true
+  semantic_primary: qdrant
+  semantic_backup: chromadb
+  graph_provider: graphiti
+  graph_enabled: false
+  memory_framework_provider: mem0
+  memory_framework_enabled: false
+  embedding_provider: local
+  embedding_model:
+  retrieval_max_results: 8
+  retrieval_context_budget_chars: 3000
 
 conversation:
   enabled: true
@@ -437,6 +451,15 @@ documents:
   allow_cloud_parsing: false
   allow_bulk_ingestion: false
   store_extracted_content: false
+  primary_parser: docling
+  backup_parser: marker
+  max_pages: 100
+  allow_private_documents: true
+  allow_secret_files: false
+  require_citations: true
+  memory_update_default: false
+  knowledge_update_default: false
+  parser_timeout_seconds: 120
 
 browser:
   enabled: true
@@ -448,6 +471,15 @@ browser:
   allow_downloads: false
   allow_cookies: false
   allow_sessions: false
+  primary: browser_use
+  backup: playwright
+  approval_required: true
+  max_session_minutes: 10
+  allowed_domains: []
+  blocked_domains: []
+  screenshots_allowed: false
+  uploads_allowed: false
+  form_submit_allowed: false
 
 scheduler:
   enabled: true

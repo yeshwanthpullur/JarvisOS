@@ -589,6 +589,9 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("conversation mode", "Show conversation mode", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation confidence", "Show conversation confidence", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation topic", "Show active conversation topic", "conversation", (), CommandPermission.CONVERSATION),
+        *((name, "Phase 6 controlled web command", "browser", (), CommandPermission.DIAGNOSTIC) for name in ("browser health","browser permissions","browser test","browser session-list","browser session-inspect","browser session-close","crawl status","crawl health","crawl plan","crawl run","crawl inspect","research health","research source-list","research source-inspect","research audit","research clear-session")),
+        *((name, "Phase 6 safe document command", "document", (), CommandPermission.DIAGNOSTIC) for name in ("document health","document parse","document chunks","document sources","document audit","document clear-session","ocr status","ocr health","ocr parse","knowledge ingest-document","knowledge source-inspect")),
+        *((name, "Phase 6 memory backend diagnostic", "memory", (), CommandPermission.DIAGNOSTIC) for name in ("memory health","memory conflicts","vector status","vector health","vector collections","vector inspect","graph status","graph health","graph inspect","embedding status","embedding health","embedding models")),
         ("environment status", "Show isolated environment strategy status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("environment audit", "Run a passive dependency environment audit", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("tool status", "Show external tool environment readiness", "tool", (), CommandPermission.DIAGNOSTIC),
@@ -1029,8 +1032,14 @@ def _handler_for(name: str):
             return _text_response(render_plugin_command("plugin status" if name=="plugins" else name,context.arguments,_plugin_runtime(context)))
         if name == "route inspect":
             return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))
-        if name.startswith("environment ") or name in {"tool status", "tool audit", "tool environments", "tool inspect", "tool environment-show", "provider inspect", "provider test", "model list", "model health", "model inspect", "model roles", "model select", "model test"}:
-            return _text_response(render_phase6_command(_phase6_runtime(context), name, context.arguments))
+        phase6_commands = {"tool status", "tool audit", "tool environments", "tool inspect", "tool environment-show", "provider inspect", "provider test", "model list", "model health", "model inspect", "model roles", "model select", "model test", "browser health", "browser permissions", "browser test", "browser session-list", "browser session-inspect", "browser session-close", "crawl status", "crawl health", "crawl plan", "crawl run", "crawl inspect", "research health", "research source-list", "research source-inspect", "research audit", "research clear-session", "document health", "document parse", "document chunks", "document sources", "document audit", "document clear-session", "ocr status", "ocr health", "ocr parse", "knowledge ingest-document", "knowledge source-inspect", "memory health", "memory conflicts", "vector status", "vector health", "vector collections", "vector inspect", "graph status", "graph health", "graph inspect", "embedding status", "embedding health", "embedding models"}
+        if name.startswith("environment ") or name in phase6_commands or (name in {"document inspect", "document summarize"} and context.arguments and context.arguments[0].startswith("doc-")):
+            phase6_name = name
+            if name == "document inspect" and context.arguments and context.arguments[0].startswith("doc-"):
+                phase6_name = "document inspect-id"
+            elif name == "document summarize" and context.arguments and context.arguments[0].startswith("doc-"):
+                phase6_name = "document summarize-id"
+            return _text_response(render_phase6_command(_phase6_runtime(context), phase6_name, context.arguments))
         if name.startswith("conversation "):
             if name == "conversation route":
                 return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))

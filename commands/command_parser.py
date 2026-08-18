@@ -40,8 +40,11 @@ _SUBCOMMANDS = {
     "research status", "research help", "research providers", "research provider-health", "research budget", "research plan", "research safety", "research search", "research sources", "research quick", "research standard", "research deep", "research verify", "research summarize", "research evidence", "research contradictions", "research citations", "research knowledge-candidates", "research show", "research history",
     "knowledge status","knowledge help","knowledge sources","knowledge source-show","knowledge source-status","knowledge register-plan","knowledge ingest-plan","knowledge search","knowledge show","knowledge provenance","knowledge reindex-plan","knowledge remove-plan","knowledge embedding-status","knowledge backend-status","knowledge health","knowledge history",
     "coding status", "coding help", "coding inspect", "coding plan", "coding risk", "coding diff", "coding review", "coding tests", "coding show", "coding history",
-    "document status", "document help", "document plan", "document safety", "document types", "document inspect", "document extract", "document summarize", "document ask", "document show", "document history",
-    "browser status", "browser help", "browser plan", "browser safety", "browser capabilities", "browser sources", "browser summarize", "browser show", "browser history",
+    "document status", "document health", "document help", "document plan", "document safety", "document types", "document parse", "document inspect", "document extract", "document summarize", "document ask", "document chunks", "document sources", "document audit", "document clear-session", "document show", "document history",
+    "ocr status", "ocr health", "ocr parse", "knowledge ingest-document", "knowledge source", "knowledge source-inspect",
+    "browser status", "browser health", "browser help", "browser plan", "browser safety", "browser capabilities", "browser permissions", "browser test", "browser session", "browser session-list", "browser session-inspect", "browser session-close", "browser sources", "browser summarize", "browser show", "browser history",
+    "crawl status", "crawl health", "crawl plan", "crawl run", "crawl inspect", "research health", "research source", "research source-list", "research source-inspect", "research audit", "research clear-session",
+    "memory health", "memory inspect", "memory conflicts", "vector status", "vector health", "vector collections", "vector inspect", "graph status", "graph health", "graph inspect", "embedding status", "embedding health", "embedding models",
     "scheduler status", "scheduler help", "scheduler plan", "scheduler safety", "scheduler validate", "scheduler preview", "scheduler capabilities", "scheduler show", "scheduler history",
     "communication status", "communication help", "communication providers", "communication plan", "communication safety", "communication draft", "communication notify-plan", "communication show", "communication history", "communication provider-status", "communication provider-show", "communication provider-health", "communication destination-validate", "communication send-plan", "communication send-safety", "communication send-dry-run", "communication attachment-check", "communication rate-status",
     *{f"telegram {x}" for x in ("status","help","capabilities","identity","auth-status","pair","pair-status","unpair","chats","validate-chat","polling-status","start","stop","send-plan","send-dry-run","send","rate-status","history","health")},
@@ -113,4 +116,6 @@ class CommandParser:
                 args.pop(0)
             if name == "model advanced" and args and args[0] in {"status", "providers", "show", "plan", "compare", "hardware", "route", "safety", "checklist", "history"}:
                 name = f"{name} {args.pop(0)}"
+            if name in {"browser session", "research source", "knowledge source"} and args and args[0] in {"list", "inspect", "close"}:
+                name = f"{name.split()[0]} {name.split()[1]}-{args.pop(0)}"
         return ParsedCommand(name=name.lower(), arguments=tuple(args), flags=flags, raw=text)
