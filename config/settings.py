@@ -49,6 +49,7 @@ from config.schema import (
     DocumentsConfig, BrowserAgentConfig, SchedulerConfig, CommunicationConfig,
     AdaptersConfig, AdvancedModelsConfig, EvaluationConfig, ReleaseReadinessConfig,
     ExecutionConfig, ApprovalsConfig, BrokerConfig,
+    Phase6Config,
 )
 
 
@@ -339,6 +340,7 @@ def load_settings(
             store_private_data=_coerce_bool(raw_config["mobile"]["store_private_data"]),
         ),
         tools=ToolsConfig(**{key: int(value) for key, value in raw_config["tools"].items()}),
+        phase6=Phase6Config(**raw_config["phase6"]),
         planning=PlanningConfig(**{key: int(value) for key, value in raw_config["planning"].items()}),
         workflow=WorkflowConfig(**raw_config["workflow"]),
         reliability=ReliabilityConfig(**raw_config["reliability"]),

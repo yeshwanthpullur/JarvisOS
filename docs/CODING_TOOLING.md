@@ -1,0 +1,3 @@
+# Coding Tooling
+
+Aider and Open Interpreter are optional isolated adapters, not autonomous coding authorities. They are disabled by default, should use Python 3.11 in `tools/coding/.venv`, and cannot write files or execute commands unless a future explicit policy, scoped approval, and broker route all permit the exact action. The built-in Coding Agent remains plan-only by default.

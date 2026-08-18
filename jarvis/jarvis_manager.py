@@ -25,6 +25,7 @@ from jarvis.reliability import ReliabilityLimits, ReliabilityRuntime, build_defa
 from jarvis.release_readiness import ReleaseReadinessEvaluator
 from jarvis.scheduler import SchedulerAgent
 from jarvis.governance import GovernanceLimits, GovernanceRuntime, build_default_governance_runtime
+from jarvis.phase6 import Phase6Runtime
 from jarvis.integrations import ExternalIntegrationControlPlane
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
@@ -255,6 +256,7 @@ class JarvisManager:
             max_history_items=getattr(adapters_config, "max_history_items", 25),
         )
         self.phase4_runtime = Phase4Runtime(coding_root)
+        self.phase6_runtime = Phase6Runtime(coding_root)
         agent_limit = getattr(getattr(context.settings, "agents", None), "max_agents", 64) if context else 64
         self.agent_registry = AgentRegistry(max_agents=agent_limit)
         provider_manager = context.metadata.get("provider_manager") if context else None
@@ -404,6 +406,7 @@ class JarvisManager:
             "evaluation_runner": self.evaluation_runner,
             "release_readiness_evaluator": self.release_readiness_evaluator,
             "phase4_runtime": self.phase4_runtime,
+            "phase6_runtime": self.phase6_runtime,
             "mobile_automation": self.mobile_automation,
             "agent_registry": self.agent_registry,
             "prime_agent": self.prime_agent,
@@ -533,6 +536,7 @@ class JarvisManager:
                 "evaluation_runner": self.evaluation_runner,
                 "release_readiness_evaluator": self.release_readiness_evaluator,
                 "phase4_runtime": self.phase4_runtime,
+                "phase6_runtime": self.phase6_runtime,
                 **request.metadata,
             },
         )

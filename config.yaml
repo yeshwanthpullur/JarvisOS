@@ -175,6 +175,20 @@ tools:
   maximum_dry_run_seconds: 5
   maximum_history: 200
 
+phase6:
+  enabled: true
+  core_python_preference: "3.11-3.12"
+  isolate_external_tools: true
+  allow_global_install_repair: false
+  allow_automatic_install: false
+  allow_automatic_model_download: false
+  tool_default_enabled: false
+  local_only: true
+  cloud_fallback: false
+  dependency_audit_timeout_seconds: 20
+  health_check_timeout_seconds: 3
+  max_diagnostic_items: 32
+
 planning:
   maximum_steps: 12
   maximum_milestones: 5

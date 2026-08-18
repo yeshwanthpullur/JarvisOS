@@ -34,6 +34,7 @@ from jarvis.plugin_runtime import PluginRuntime,render_plugin_command
 from workflow import WorkflowRuntime, render_workflow_command
 from jarvis.reliability import ReliabilityRuntime, build_default_reliability_runtime, render_runtime_command as render_reliability_command
 from jarvis.governance import GovernanceRuntime, build_default_governance_runtime, render_security_command
+from jarvis.phase6 import Phase6Runtime, get_phase6_runtime, render_phase6_command
 
 
 def _manager(context: CommandContext):
@@ -116,6 +117,13 @@ def _reliability_runtime(context: CommandContext) -> ReliabilityRuntime:
 def _governance_runtime(context:CommandContext)->GovernanceRuntime:
     conversation=context.conversation_context;metadata=getattr(conversation,"metadata",{}) or {} if conversation is not None else {};runtime=metadata.get("governance_runtime")
     return runtime if isinstance(runtime,GovernanceRuntime) else build_default_governance_runtime()
+
+def _phase6_runtime(context: CommandContext) -> Phase6Runtime:
+    conversation = context.conversation_context
+    metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
+    runtime = getattr(conversation, "phase6_runtime", None) if conversation is not None else None
+    runtime = runtime if isinstance(runtime, Phase6Runtime) else metadata.get("phase6_runtime")
+    return runtime if isinstance(runtime, Phase6Runtime) else get_phase6_runtime(Path(__file__).resolve().parents[1])
 
 
 def _existing_ollama_state(context: CommandContext) -> tuple[bool, tuple[str, ...], bool]:
@@ -581,6 +589,14 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("conversation mode", "Show conversation mode", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation confidence", "Show conversation confidence", "conversation", (), CommandPermission.CONVERSATION),
         ("conversation topic", "Show active conversation topic", "conversation", (), CommandPermission.CONVERSATION),
+        ("environment status", "Show isolated environment strategy status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("environment audit", "Run a passive dependency environment audit", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("tool status", "Show external tool environment readiness", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("tool audit", "Audit external tool installation metadata", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("tool environments", "List isolated tool environments", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("tool inspect", "Inspect one external tool environment", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("tool environment-show", "Inspect one external tool environment", "tool", (), CommandPermission.DIAGNOSTIC),
+        ("provider inspect", "Show normalized provider state", "provider", (), CommandPermission.DIAGNOSTIC),
         ("research status", "Show research planning readiness", "research", (), CommandPermission.DIAGNOSTIC),
         ("research help", "Show research command help", "research", (), CommandPermission.DIAGNOSTIC),
         ("research providers", "Show governed search provider states", "research", (), CommandPermission.DIAGNOSTIC),
@@ -692,6 +708,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("model advanced safety", "Evaluate advanced model safety", "provider", (), CommandPermission.DIAGNOSTIC),
         ("model advanced checklist", "Show non-executing provider checklist", "provider", (), CommandPermission.DIAGNOSTIC),
         ("model advanced history", "Show bounded provider planning history", "provider", (), CommandPermission.DIAGNOSTIC),
+        *((f"model {op}", f"Local model metadata {op}", "provider", (), CommandPermission.DIAGNOSTIC) for op in ("list","health","inspect","roles","select","test")),
         *((f"model {op}", "Advanced runtime control-plane command", "provider", (), CommandPermission.DIAGNOSTIC) for op in ("runtime-status","runtimes","runtime-show","runtime-health","profiles","profile-show","provider-health","compatibility","resource-plan","route-explain","start-plan","start","stop","download-plan","download-status","fallback-status","circuit-status","aliases","alias-show")),
         ("evaluation status", "Show local evaluation status", "evaluation", (), CommandPermission.DIAGNOSTIC),
         ("evaluation help", "Show evaluation command help", "evaluation", (), CommandPermission.DIAGNOSTIC),
@@ -1012,6 +1029,8 @@ def _handler_for(name: str):
             return _text_response(render_plugin_command("plugin status" if name=="plugins" else name,context.arguments,_plugin_runtime(context)))
         if name == "route inspect":
             return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))
+        if name.startswith("environment ") or name in {"tool status", "tool audit", "tool environments", "tool inspect", "tool environment-show", "provider inspect", "provider test", "model list", "model health", "model inspect", "model roles", "model select", "model test"}:
+            return _text_response(render_phase6_command(_phase6_runtime(context), name, context.arguments))
         if name.startswith("conversation "):
             if name == "conversation route":
                 return _text_response(render_route_decision(classify_conversation_route(" ".join(context.arguments))))
