@@ -55,7 +55,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Communication Assistance | Partial | 70% | Prompts 73-74 implement disabled-by-default Telegram, Discord, email, and Slack text connectors with provider-specific validation and exact approval/Broker gates; runtimes are unconfigured. | Connector tests; provider status commands | Implement Prompt 75 independently; keep inbound, inbox, attachments, bulk, and scheduling disabled. |
 | Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 98% | Phase 6 adds deterministic candidate, failure, authority, lifecycle, configuration, security, and bounded stress checks; final totals are recorded in the Phase 6 validation report. | Phase 6 focused/integration/full suites and static gates | Keep release evidence and status docs current; do not treat optional adapters as PASS. |
+| Testing/Release Readiness | Working | 98% | Phase 6 passes 62 focused, 168 integration, 66 authority/security, and 2,118 full-suite tests with no skips, failures, or errors; all local static gates pass. | `PHASE_6_FINAL_VALIDATION.md` | Keep release evidence current; do not treat optional adapters as PASS. |
 
 ## Overall MVP Readiness
 

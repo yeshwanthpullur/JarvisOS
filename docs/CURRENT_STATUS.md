@@ -141,7 +141,7 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 
 ## Last Verified Tests
 
-- Phase 6 Prompt 86-99 focused and integration checks currently pass; final Prompt 100 totals are recorded in `PHASE_6_FINAL_VALIDATION.md` after the complete validation run.
+- Phase 6 focused: 62 passed; cross-phase integration: 168 passed; authority/security: 66 passed; full suite: 2,118 passed, 0 skipped, 0 failed, 0 errors. Compilation, config, JSON, docs, secret, artifact, path, and diff gates pass. See `PHASE_6_FINAL_VALIDATION.md`.
 
 - Prompt 85 validation covers release gates, 21 authority contracts, 15 compatibility relationships, 14 end-to-end scenarios, and 11 informational scorecard categories.
 - Prompt 85 focused validation: 24 passed; Phase 5 integration: 317 passed; cross-subsystem regression: 499 passed; configuration/tracking: 42 passed.

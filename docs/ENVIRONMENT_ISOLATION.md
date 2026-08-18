@@ -2,6 +2,8 @@
 
 Prompt 88 introduces passive per-tool environment records and `environment audit`. The current global Python 3.13 process is not treated as the authoritative optional-tool environment. Python 3.11/3.12 isolated environments are recommended; none are created or modified by diagnostics.
 
+Final validation created the ignored core `.venv` with Python 3.11.15 and installed only PyYAML 6.0.3 from `requirements.txt`. Its `pip check` passes. Known global Python 3.13 optional browser-package conflicts remain untouched and non-authoritative.
+
 JARVIS OS keeps its core runtime separate from optional AI tools. Installation is not authorization: every detected tool remains disabled until its adapter, policy, permissions, approval requirements, and broker route allow a specific action.
 
 ## Runtime layout
