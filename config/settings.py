@@ -285,7 +285,7 @@ def load_settings(
         email_connector=EmailConnectorConfig(**raw_config["email_connector"]),
         slack=SlackConfig(**raw_config["slack"]),
         github_provider=GitHubProviderConfig(**{**raw_config["github_provider"],"allowed_repositories":tuple(raw_config["github_provider"]["allowed_repositories"])}),
-        mcp=MCPConfig(**raw_config["mcp"]),
+        mcp=MCPConfig(**{**raw_config["mcp"],"allowed_executables":tuple(raw_config["mcp"].get("allowed_executables",("npx.cmd",))),"servers":tuple(raw_config["mcp"].get("servers",()))}),
         execution=ExecutionConfig(**raw_config["execution"]),
         approvals=ApprovalsConfig(**raw_config["approvals"]),
         broker=BrokerConfig(**raw_config["broker"]),

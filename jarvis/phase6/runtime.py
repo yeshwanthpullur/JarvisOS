@@ -21,7 +21,7 @@ from .integration import Phase6CandidateReport, evaluate_candidate
 class Phase6Runtime:
     def __init__(self, root: Path | None = None) -> None:
         self.root = (root or Path.cwd()).resolve()
-        self.environments: ToolEnvironmentRegistry = build_tool_environment_registry()
+        self.environments: ToolEnvironmentRegistry = build_tool_environment_registry(self.root)
         self.models = LocalModelCatalog()
         self.web = WebControlPlane()
         self.documents = DocumentPipeline(self.root)

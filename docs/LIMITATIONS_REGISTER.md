@@ -42,9 +42,9 @@ The machine-readable source is [`limitations_register.json`](limitations_registe
 | LIM-021 | Web automation had no governed foundation | Prompt 34 added strict policy, permissions, read-only commands, normalized results, bounded audit, and a truthful fallback adapter. |
 | LIM-028 | Web automation had no live read-only inspection or redirect verification | Prompt 34.1 added bounded standard-library inspection and redirect validation. |
 | LIM-022 | Mobile automation had no governed foundation | Prompt 35 added planning-only policy, adapters, commands, and redacted audit. |
-| LIM-023 | Real microphone STT was unavailable on the current machine | Vosk, a microphone, and an Indian-English local model passed manual `voice listen send` verification. |
+| LIM-023 | Real microphone STT was unavailable on the current machine | The implementation and earlier Vosk/microphone/Indian-English-model `voice listen send` verification fixed the original gap. In the repaired core environment, the same adapter is currently degraded because Vosk and `sounddevice` are detected only in an isolated environment. |
 | LIM-024 | Real semantic image analysis required an installed local vision model | Local Ollama LLaVA image analysis and image Q&A passed manual verification. |
-| LIM-040 | Local voice input had no executable offline STT/capture path | Prompt 36 added lazy Vosk recognition, explicit in-memory capture, normalized results, and safe CLI handoff. |
+| LIM-040 | Local voice input had no executable offline STT/capture path | Prompt 36 added lazy Vosk recognition, explicit in-memory capture, normalized results, and safe CLI handoff. The code path remains present, while current core-environment dependency availability is reported separately as degraded. |
 | LIM-041 | Vision had no explicit governed local Ollama analysis workflow | Prompt 37 added model capability discovery, Provider Router image execution, safety policy, bounded metadata-only audit, and complete CLI controls. |
 | LIM-047 | Free-form chat lacked bounded multi-turn conversation intelligence | Prompt 39 added bounded topics, entities, follow-ups, references, clarification, repair, modes, confidence, and summaries. |
 

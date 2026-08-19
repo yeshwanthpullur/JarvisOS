@@ -21,12 +21,12 @@ def render_phase6_command(runtime: Phase6Runtime, command: str, args: tuple[str,
         return f"Environment audit: python={audit.python_version} environment={audit.environment} isolated={_yes(audit.isolated)} pip={_yes(audit.pip_available)} pip_check={audit.pip_check_status} packages={audit.installed_packages_checked} tools={audit.detected_tools} incompatible={len(audit.incompatible_tools)} warnings={warnings}"[:4000]
     if command == "tool environments":
         records = runtime.environments.refresh()
-        return "Tool environments: " + "; ".join(f"{item.tool_id}:{item.install_status}:{item.health_status.value}:enabled={_yes(item.enabled)}:env={item.environment_name}" for item in records)[:6000]
+        return "Tool environments: " + "; ".join(f"{item.tool_id}:{item.install_status}:{item.health_status.value}:configured={_yes(item.configured)}:integrated={_yes(item.integrated)}:enabled={_yes(item.enabled)}:authorized={_yes(item.execution_authorized)}:env={item.environment_name}" for item in records)[:6000]
     if command in {"tool inspect", "tool environment-show"}:
         record = runtime.environments.inspect(args[0] if args else "")
         if record is None:
             return "Tool environment not found."
-        return f"Tool {record.tool_id}: category={record.category} role={record.primary_or_backup} install={record.install_status} health={record.health_status.value} enabled={_yes(record.enabled)} adapter={record.adapter_type} environment={record.environment_name} python={record.recommended_python} approval={_yes(record.approval_required)} permissions={','.join(record.permission_profile)} fallback={record.fallback} error={record.last_error or 'none'}"[:3000]
+        return f"Tool {record.tool_id}: category={record.category} role={record.primary_or_backup} installed={_yes(record.install_status == 'installed')} detected={_yes(record.detected)} configured={_yes(record.configured)} integrated={_yes(record.integrated)} enabled={_yes(record.enabled)} authorized={_yes(record.execution_authorized)} health={record.health_status.value} source={record.discovery_source or 'none'} adapter={record.adapter_type} environment={record.environment_name} python={record.recommended_python} approval={_yes(record.approval_required)} permissions={','.join(record.permission_profile)} fallback={record.fallback} error={record.last_error or 'none'}"[:3000]
     if command in {"provider inspect", "provider test"}:
         provider_id = args[0] if args else "ollama"
         if command == "provider test" and provider_id == "ollama":

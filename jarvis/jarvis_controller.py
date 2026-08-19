@@ -12,6 +12,7 @@ from jarvis.jarvis_response import JarvisResponse
 from jarvis.jarvis_response_builder import JarvisResponseBuilder
 from jarvis.jarvis_response_formatter import JarvisResponseFormatter
 from jarvis.jarvis_validator import JarvisValidator
+from jarvis.autonomous_planning import PlanningProviderError
 from provider_execution import ExecutionManager
 from reasoning import ReasoningManager, ReasoningRequest
 
@@ -81,17 +82,29 @@ class JarvisController:
             if configured_mode:
                 try: autonomous.set_mode(str(configured_mode))
                 except ValueError: pass
-            assessment = autonomous.assess(request.content)
+            original_input = str(request.metadata.get("conversation_original_input") or request.content).strip()
+            assessment = autonomous.assess(original_input)
             context.metadata["planning_assessment"] = assessment
             (context.logger or __import__("logging").getLogger("autonomous_planning")).info("planning_need_assessed request_id=%s requires_plan=%s mode=%s",request.request_id,assessment.requires_plan,assessment.recommended_planning_mode)
             if assessment.requires_plan and autonomous.mode.value != "off":
-                constraints = tuple(sentence.strip() for sentence in request.content.split(".") if sentence.strip().lower().startswith(("do not","must not","without")))
-                objective = autonomous.create_objective(request.request_id,request.content,constraints)
+                constraints = tuple(sentence.strip() for sentence in original_input.split(".") if sentence.strip().lower().startswith(("do not","must not","without")))
+                objective = autonomous.create_objective(request.request_id,original_input,constraints)
                 execution_manager = context.provider_execution_manager or context.metadata.get("provider_execution_manager")
                 try:
-                    generated = autonomous.generate_with_provider(objective,execution_manager,{**dict(request.metadata),**session_metadata}) if execution_manager else autonomous.generate(objective)
+                    provider_metadata = self._planning_provider_metadata(execution_manager,request.metadata,session_metadata)
+                    generated = autonomous.generate_with_provider(objective,execution_manager,provider_metadata) if execution_manager else autonomous.generate(objective)
+                except PlanningProviderError as exc:
+                    return JarvisResponse(
+                        request_id=request.request_id,
+                        content=f"Planning could not be completed through the permitted provider (provider={exc.provider}, reason={exc.code}). No plan was accepted; check provider status or select a healthy local provider.",
+                        response_type="planning",
+                        success=False,
+                        warnings=("planning_provider_failed",exc.code),
+                        diagnostics=(f"provider={exc.provider}",f"reason={exc.code}"),
+                    )
                 except RuntimeError:
-                    return JarvisResponse(request_id=request.request_id,content="Planning could not be completed because no permitted provider produced a valid response.",response_type="planning",success=False)
+                    (context.logger or __import__("logging").getLogger("autonomous_planning")).exception("planning_generation_failed request_id=%s",request.request_id)
+                    return JarvisResponse(request_id=request.request_id,content="Planning could not be completed because the permitted planning route failed validation (reason=planning_runtime_error). No plan was accepted.",response_type="planning",success=False,warnings=("planning_runtime_error",))
                 content = generated.summary + "\n\n" + "\n".join(f"{step.sequence}. {step.title}" for step in generated.steps)
                 return JarvisResponse(request_id=request.request_id,content=content,response_type="planning",execution_summary={"objective_id":objective.objective_id,"plan_id":generated.plan_id,"version":generated.version,"status":generated.status.value,"validation":generated.validation.valid if generated.validation else False,"risk":generated.risk_summary,"constraints":generated.constraints,"required_permissions":generated.required_permissions,"required_approvals":generated.required_approvals})
         tool_manager = context.tool_manager or context.metadata.get("tool_manager")
@@ -304,6 +317,21 @@ class JarvisController:
         response = self.response_builder.build(request, decision, plan, dispatch)
         self.validator.validate_response(response)
         return response
+
+    @staticmethod
+    def _planning_provider_metadata(execution_manager: object, request_metadata: dict[str, object], session_metadata: dict[str, object]) -> dict[str, object]:
+        """Apply the same explicit/default provider policy used by direct chat."""
+        values={**dict(request_metadata),**dict(session_metadata)}
+        settings=getattr(getattr(execution_manager,"context",None),"settings",None)
+        provider_settings=getattr(settings,"providers",None)
+        model_settings=getattr(settings,"models",None)
+        if not values.get("provider_preference"):
+            values["provider_preference"]=getattr(provider_settings,"default_provider",None) or None
+        if "local_only" not in request_metadata and "local_only" not in session_metadata:
+            values["local_only"]=bool(getattr(model_settings,"local_only_default",False))
+        if values.get("local_only") and not values.get("execution_policy"):
+            values["execution_policy"]="local_only"
+        return values
 
     @staticmethod
     def _provider_failure_message(provider_result: object) -> str:

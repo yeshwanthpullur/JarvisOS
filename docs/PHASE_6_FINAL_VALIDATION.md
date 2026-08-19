@@ -58,3 +58,7 @@ The ignored core `.venv` uses Python 3.11.15 and PyYAML 6.0.3; `pip check` passe
 | `llava:latest` | Ollama | vision | 4.7 GB; quantization not reported | healthy |
 
 No package other than the required core YAML loader was installed. No model was downloaded. No cloud provider, connector, MCP server, plugin, camera, microphone, or hidden worker was enabled.
+
+## Post-Phase-6 Repair Note (2026-08-19)
+
+This historical Phase 6 checkpoint is unchanged. A later repair validation fixed ordinary prompts being misclassified as plans, added an official-SDK local stdio MCP client, and registered Playwright MCP for discovery only. The repair also established passive installed/configured/integrated/enabled/authorized tool states. Current verification evidence and updated test totals are recorded separately in `POST_PHASE6_RUNTIME_REPAIR.md`; this section does not rewrite the original 2,118-test result.

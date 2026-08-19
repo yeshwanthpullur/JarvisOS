@@ -27,6 +27,7 @@ from jarvis.scheduler import SchedulerAgent
 from jarvis.governance import GovernanceLimits, GovernanceRuntime, build_default_governance_runtime
 from jarvis.phase6 import Phase6Runtime
 from jarvis.integrations import ExternalIntegrationControlPlane
+from jarvis.mcp_runtime import build_mcp_runtime
 from jarvis.jarvis_controller import JarvisController
 from jarvis.jarvis_department_registry import JarvisDepartmentRegistry
 from jarvis.jarvis_diagnostics import JarvisDiagnostics
@@ -257,6 +258,10 @@ class JarvisManager:
         )
         self.phase4_runtime = Phase4Runtime(coding_root)
         self.phase6_runtime = Phase6Runtime(coding_root)
+        self.mcp_runtime = build_mcp_runtime(
+            getattr(context.settings, "mcp", None) if context else None,
+            broker=self.phase4_runtime.broker,
+        )
         agent_limit = getattr(getattr(context.settings, "agents", None), "max_agents", 64) if context else 64
         self.agent_registry = AgentRegistry(max_agents=agent_limit)
         provider_manager = context.metadata.get("provider_manager") if context else None
@@ -407,6 +412,7 @@ class JarvisManager:
             "release_readiness_evaluator": self.release_readiness_evaluator,
             "phase4_runtime": self.phase4_runtime,
             "phase6_runtime": self.phase6_runtime,
+            "mcp_runtime": self.mcp_runtime,
             "mobile_automation": self.mobile_automation,
             "agent_registry": self.agent_registry,
             "prime_agent": self.prime_agent,
@@ -443,6 +449,7 @@ class JarvisManager:
     def shutdown(self) -> None:
         """Shutdown Executive JARVIS."""
         self.voice_intelligence.shutdown()
+        self.mcp_runtime.shutdown()
         if self.runtime.state.value != "shutdown":
             self.runtime.shutdown()
         self.initialized = False
@@ -537,6 +544,7 @@ class JarvisManager:
                 "release_readiness_evaluator": self.release_readiness_evaluator,
                 "phase4_runtime": self.phase4_runtime,
                 "phase6_runtime": self.phase6_runtime,
+                "mcp_runtime": self.mcp_runtime,
                 **request.metadata,
             },
         )

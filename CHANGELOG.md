@@ -2,6 +2,9 @@
 
 ## Unreleased - Phase 6 Local Tooling and Integration Platform
 
+- Repaired false planning classification for enriched ordinary prompts and made genuine plans inherit the configured permitted local provider.
+- Added an official-SDK bounded MCP stdio client and registered Playwright MCP for isolated discovery only; discovered tools remain untrusted, disabled, and non-executable.
+- Added passive installed-versus-integrated tool inventory and truthful voice adapter status without activating isolated environments.
 - Preserved ordinary chat, explicit goal routing, and registered command dispatch with deterministic diagnostics.
 - Added passive isolated-environment inventory and dependency auditing without automatic installation or repair.
 - Added local Ollama model discovery, role metadata, and provider health checks without model downloads or cloud fallback.

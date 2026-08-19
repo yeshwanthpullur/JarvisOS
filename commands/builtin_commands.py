@@ -29,7 +29,7 @@ from jarvis.execution.cli import get_phase4_runtime, render_phase4_command
 from jarvis.release_readiness import ReleaseReadinessEvaluator, render_release_command
 from jarvis.integrations import ExternalIntegrationControlPlane, GitHubProvider, build_outbound_connectors, render_connector_command, render_external_command, render_github_command
 from jarvis.integrations.telegram import TelegramRuntime, render_telegram_command
-from jarvis.mcp_runtime import MCPRuntime,render_mcp_command
+from jarvis.mcp_runtime import MCPRuntime,build_mcp_runtime,render_mcp_command
 from jarvis.plugin_runtime import PluginRuntime,render_plugin_command
 from workflow import WorkflowRuntime, render_workflow_command
 from jarvis.reliability import ReliabilityRuntime, build_default_reliability_runtime, render_runtime_command as render_reliability_command
@@ -243,7 +243,11 @@ def _github_provider(context:CommandContext):
 def _mcp_runtime(context:CommandContext):
     conversation=context.conversation_context;runtime=getattr(conversation,"mcp_runtime",None) if conversation is not None else None
     if isinstance(runtime,MCPRuntime):return runtime
-    runtime=MCPRuntime()
+    manager=getattr(getattr(conversation,"jarvis_core",None),"manager",None) if conversation is not None else None
+    runtime=getattr(manager,"mcp_runtime",None)
+    if isinstance(runtime,MCPRuntime):return runtime
+    settings=getattr(getattr(manager,"base_context",None),"settings",None)
+    runtime=build_mcp_runtime(getattr(settings,"mcp",None))
     if conversation is not None:
         try:setattr(conversation,"mcp_runtime",runtime)
         except Exception:pass
@@ -697,7 +701,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         *((f"email {op}", f"Email connector {op}", "communication", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","providers","health","validate-address","send-plan","send-dry-run","send","rate-status","history")),
         *((f"slack {op}", f"Slack connector {op}", "communication", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","health","destinations","validate-destination","send-plan","send-dry-run","send","rate-status","history")),
         *((f"github {op}", f"GitHub provider {op}", "developer", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","auth-status","health","repo","capabilities","rate-status","issues","issue-show","issue-plan","issue-create","prs","pr-show","pr-plan","pr-create","releases","release-show","release-plan","release-create","workflows","checks","history")),
-        *((f"mcp {op}", f"MCP runtime {op}", "developer", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","servers","server-show","server-health","tools","tool-show","classify","capabilities","resources","resource-show","resource-read","prompts","start","stop","call-plan","call-dry-run","call","history")),
+        *((f"mcp {op}", f"MCP runtime {op}", "developer", (), CommandPermission.DIAGNOSTIC) for op in ("status","help","servers","server-show","server-health","discover","tools","tool-show","classify","capabilities","resources","resource-show","resource-read","prompts","start","stop","call-plan","call-dry-run","call","history")),
         ("communication plan", "Plan draft-only communication", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication safety", "Evaluate communication safety", "communication", (), CommandPermission.DIAGNOSTIC),
         ("communication draft", "Create an unsent draft", "communication", (), CommandPermission.DIAGNOSTIC),
@@ -1297,6 +1301,14 @@ def _handler_for(name: str):
             if name=="voice status":
                 backend=voice.registry.get(voice.selected_output_backend);input_status=voice.input_status()
                 available=bool(backend and backend.available);retained=len(voice.retained_audio_files());playback_status=voice.playback_status()
+                tool_registry=_phase6_runtime(context).environments
+                adapter_states=[]
+                for adapter_id in ("faster_whisper","vosk","piper","windows_sapi"):
+                    adapter=tool_registry.inspect(adapter_id)
+                    if adapter is not None:
+                        adapter_states.append(
+                            f"{adapter_id}[installed={'yes' if adapter.detected else 'no'},configured={'yes' if adapter.configured else 'no'},integrated={'yes' if adapter.integrated else 'no'},status={adapter.health_status.value}]"
+                        )
                 return _text_response(
                     "Voice status: "
                     f"output={'on' if voice.output_enabled else 'off'} "
@@ -1308,8 +1320,9 @@ def _handler_for(name: str):
                     f"stt_provider={input_status['provider']} model={'ready' if input_status['model_ready'] else 'missing'} "
                     f"microphone={'ready' if input_status['microphone_available'] else input_status['capture_status']} "
                     f"raw_audio_persistence={'on' if voice.raw_audio_persistence else 'off'} "
-                    f"temp_directory={voice.temp_directory} retained_audio={retained} "
-                    f"mode={voice.mode.value} privacy={voice.privacy_mode} speaking={playback_status['state']}",
+                    f"temp_storage=isolated_runtime retained_audio={retained} "
+                    f"mode={voice.mode.value} privacy={voice.privacy_mode} speaking={playback_status['state']} "
+                    f"adapters={';'.join(adapter_states)}",
                     output_enabled=voice.output_enabled,
                     output_backend=voice.selected_output_backend,
                     playback_ready=available,
@@ -1322,7 +1335,7 @@ def _handler_for(name: str):
                     microphone_available=input_status["microphone_available"],
                     capture_status=input_status["capture_status"],
                     raw_audio_persistence=voice.raw_audio_persistence,
-                    temp_directory=str(voice.temp_directory),
+                    temp_storage="isolated_runtime",
                     retained_audio_count=retained,
                     playback=playback_status,
                 )

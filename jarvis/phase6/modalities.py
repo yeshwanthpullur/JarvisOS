@@ -20,15 +20,15 @@ class VoiceAdapterRouter:
 
     def _available(self, tool_id: str) -> bool:
         item = self.tools.inspect(tool_id)
-        return bool(item and item.install_status == "installed")
+        return bool(item and item.health_status.value == "ready" and item.detected and item.configured and item.integrated and item.enabled)
 
     def stt(self) -> AdapterRoute:
         selected = "faster_whisper" if self._available("faster_whisper") else "vosk" if self._available("vosk") else ""
-        return AdapterRoute("speech_to_text", "faster_whisper", "vosk", selected, "detected_disabled" if selected else "unavailable", "Adapters remain disabled until explicit push-to-talk and existing voice policy permit capture.")
+        return AdapterRoute("speech_to_text", "faster_whisper", "vosk", selected, "ready_for_explicit_capture" if selected else "unavailable", "Microphone capture remains explicit push-to-talk; detected adapters without a JARVIS adapter are not selected.")
 
     def tts(self) -> AdapterRoute:
-        selected = "piper" if self._available("piper") else "windows_sapi"
-        return AdapterRoute("text_to_speech", "piper", "windows_sapi", selected, "fallback_ready" if selected == "windows_sapi" else "detected_disabled", "Playback remains explicit, interruptible, and governed by Voice Intelligence.")
+        selected = "piper" if self._available("piper") else "windows_sapi" if self._available("windows_sapi") else ""
+        return AdapterRoute("text_to_speech", "piper", "windows_sapi", selected, "ready" if selected else "unavailable", "Playback remains explicit, interruptible, and governed by Voice Intelligence; detected adapters without a JARVIS adapter are not selected.")
 
     def status(self) -> dict[str, object]:
         return {"stt": self.stt(), "tts": self.tts(), "wake_enabled": False, "continuous_listening": False, "raw_audio_retained": False, "cloud_upload": False}

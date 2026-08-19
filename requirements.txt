@@ -1,2 +1,3 @@
 # Core configuration dependency. Optional AI tools use separate environments.
 PyYAML>=6.0.2,<7
+mcp==1.29.0

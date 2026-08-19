@@ -21,6 +21,15 @@ class StepStatus(StrEnum):
     PENDING="pending"; READY="ready"; AWAITING_APPROVAL="awaiting_approval"; RUNNING="running"; COMPLETED="completed"; PARTIALLY_COMPLETED="partially_completed"; FAILED="failed"; BLOCKED="blocked"; SKIPPED="skipped"; CANCELLED="cancelled"; TIMED_OUT="timed_out"
 
 
+class PlanningProviderError(RuntimeError):
+    """Safe, bounded provider failure raised before a plan is accepted."""
+
+    def __init__(self, code: str, provider: str = "automatic") -> None:
+        self.code = re.sub(r"[^a-z0-9_\-]", "_", code.lower())[:80] or "provider_error"
+        self.provider = re.sub(r"[^A-Za-z0-9_.\-]", "_", provider)[:80] or "automatic"
+        super().__init__(self.code)
+
+
 @dataclass(frozen=True, slots=True)
 class PlanningLimits:
     maximum_steps:int=12; maximum_milestones:int=5; maximum_alternatives:int=3; maximum_dependencies_per_step:int=4; maximum_plan_depth:int=2; maximum_retries:int=1; maximum_replans:int=3; maximum_concurrent:int=2; maximum_agents:int=3; maximum_tools:int=4; maximum_timeout_seconds:int=90; maximum_versions:int=10; maximum_output_bytes:int=100_000; maximum_assumptions:int=8
@@ -67,8 +76,30 @@ class AutonomousPlanning:
         prompt="Produce a concise implementation plan summary only. Do not execute anything. Objective: "+obj.user_objective+" Constraints: "+"; ".join(obj.constraints)
         req=execution_manager.build_execution_request(intent=prompt,goal=prompt,request_id=obj.parent_request_id,provider=metadata.get("provider_preference"),model=metadata.get("model_preference"),metadata={**metadata,"local_only":metadata.get("local_only",False),"execution_policy":metadata.get("execution_policy","automatic"),"task_type":"planning"})
         result=execution_manager.execute_through_provider_router(req)
-        if not result.success: raise RuntimeError("provider_plan_generation_failed")
-        return self.generate(obj,result.response)
+        provider=str(getattr(result,"provider","") or metadata.get("provider_preference") or "automatic")
+        response=getattr(result,"response","")
+        content=response.strip() if isinstance(response,str) else ""
+        if not getattr(result,"success",False):
+            raise PlanningProviderError(self._provider_error_code(result),provider)
+        valid,issues=execution_manager.validate_response(result) if hasattr(execution_manager,"validate_response") else (bool(content),())
+        if not valid or not content:
+            code="invalid_empty_response" if not content else "invalid_provider_response"
+            if issues and any("content" in str(item).lower() for item in issues):code="invalid_empty_response"
+            raise PlanningProviderError(code,provider)
+        return self.generate(obj,content[:4000])
+
+    @staticmethod
+    def _provider_error_code(result:Any)->str:
+        values=[str(item) for item in getattr(result,"warnings",())]
+        diagnostics=getattr(result,"diagnostics",{})
+        if isinstance(diagnostics,dict):
+            for item in diagnostics.get("fallback",()) or ():
+                if isinstance(item,dict):values.append(str(item.get("error","")))
+        text=" ".join(values).lower()
+        if any(term in text for term in ("api key","credential","unauthorized","authentication","401")):return "provider_not_configured"
+        if any(term in text for term in ("timeout","timed out")):return "provider_timeout"
+        if any(term in text for term in ("no provider","unavailable","connection refused")):return "provider_unavailable"
+        return "provider_execution_failed"
     def validate(self,plan:AutonomousPlan)->PlanValidation:
         errors=[]; ids=[s.step_id for s in plan.steps]
         if len(ids)!=len(set(ids)): errors.append("duplicate_step_id")

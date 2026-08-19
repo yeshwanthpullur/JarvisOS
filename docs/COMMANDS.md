@@ -129,8 +129,23 @@ operations audit
 phase6 status
 phase6 candidate [--probe]
 phase6 checklist
+
+mcp status
+mcp servers
+mcp server-show <server_id>
+mcp server-health <server_id>
+mcp discover <server_id>
+mcp tools [server_id]
+mcp tool-show <server_id> <tool_name>
+mcp classify <server_id> <tool_name>
+mcp resources [server_id]
+mcp resource-read <server_id> <resource_ref>
+mcp prompts [server_id]
+mcp stop <server_id>
 ```
 
 Unknown subcommands return namespace help and never fall through to chat.
 
-These commands expose metadata, policy decisions, or explicit existing capabilities. They do not install packages, download models, start hidden capture, authorize execution, send connector payloads, upload telemetry, or bypass Policy, Approval, Broker, Governance, Memory, Conversation, Workflow, or Reliability authority.
+`tool environments` and `tool inspect` distinguish installation, detection, configuration, integration, enablement, and execution authorization. Set `JARVIS_INSTALLATIONS_ROOTS` to an `os.pathsep`-separated list only when installations are outside the repository or mounted-drive discovery locations; CLI output uses safe aliases rather than private absolute paths.
+
+MCP discovery may start an explicitly configured local server long enough to perform handshake and metadata discovery. It does not call tools. These commands do not install packages, download models, start hidden capture, authorize execution, send connector payloads, upload telemetry, or bypass Policy, Approval, Broker, Governance, Memory, Conversation, Workflow, or Reliability authority.

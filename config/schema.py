@@ -365,7 +365,7 @@ class GitHubProviderConfig:
 
 @dataclass(frozen=True,slots=True)
 class MCPConfig:
- enabled:bool=True;allow_local_stdio:bool=True;allow_local_http:bool=True;allow_remote_http:bool=False;allow_tool_execution:bool=False;allow_resource_read:bool=True;allow_prompts:bool=False;allow_installation:bool=False;allow_scheduled_execution:bool=False;require_approval_for_side_effects:bool=True;max_servers:int=16;max_tools_per_server:int=50;max_resources_per_server:int=50;max_result_chars:int=8000;max_concurrent_calls:int=2;startup_timeout_seconds:int=10;call_timeout_seconds:int=30;max_retries:int=1;health_cache_seconds:int=60;save_history:bool=True;max_history_items:int=100;redact_sensitive_values:bool=True
+ enabled:bool=True;allow_local_stdio:bool=True;allow_local_http:bool=True;allow_remote_http:bool=False;allow_tool_execution:bool=False;allow_resource_read:bool=True;allow_prompts:bool=False;allow_installation:bool=False;allow_scheduled_execution:bool=False;require_approval_for_side_effects:bool=True;max_servers:int=16;max_tools_per_server:int=50;max_resources_per_server:int=50;max_result_chars:int=8000;max_concurrent_calls:int=2;startup_timeout_seconds:int=10;call_timeout_seconds:int=30;max_retries:int=1;health_cache_seconds:int=60;save_history:bool=True;max_history_items:int=100;redact_sensitive_values:bool=True;allowed_executables:tuple[str,...]=("npx.cmd",);servers:tuple[Mapping[str,Any],...]=()
 
 @dataclass(frozen=True, slots=True)
 class ExecutionConfig:

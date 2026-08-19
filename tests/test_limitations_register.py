@@ -112,7 +112,7 @@ class LimitationsRegisterTests(unittest.TestCase):
     def test_capability_statuses_match_verified_scope(self) -> None:
         health = json.loads((DOCS / "project_health.json").read_text(encoding="utf-8"))
         statuses = {item["name"]: item["status"] for item in health["categories"]}
-        self.assertEqual(statuses["Voice Input"], "Working")
+        self.assertEqual(statuses["Voice Input"], "Partial")
         self.assertEqual(statuses["Vision"], "Working")
         self.assertEqual(statuses["Online Sync"], "Partial")
         self.assertEqual(statuses["Web Interface"], "Experimental")

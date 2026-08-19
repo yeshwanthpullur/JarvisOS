@@ -1,6 +1,6 @@
 # Current Status
 
-Phase 6 Prompts 86-100 are implemented through the local production-readiness checkpoint. Conversation routing, environment isolation, local-model discovery, controlled web/document/memory adapters, voice/vision adapter policy, coding/automation planning, connector normalization, and payload-free observability are integrated without replacing existing authorities. Optional external tools remain truthful degraded states. No Phase 7 work, tag, or release has started.
+Phase 6 Prompts 86-100 remain implemented through the local production-readiness checkpoint. The post-Phase-6 runtime repair fixes normal free-form requests being falsely sent to planning, adds official-SDK MCP stdio protocol support, registers Playwright MCP for isolated discovery only, and adds truthful installed/configured/integrated/enabled/authorized tool states. No Phase 7 work, tag, release, push, or deployment is part of this repair.
 
 Phase 6 execution remains controlled: adapters have no execution authority; Policy, Approval, Broker, Governance, Memory, Conversation, Workflow, and Reliability remain authoritative. The local Ollama health probe detects `llama3.2:1b` and `llava:latest` on the verified workstation. Cloud fallback, telemetry upload, wake/continuous listening, camera capture, unrestricted browser/coding/file actions, connector writes, remote MCP, and external plugins remain disabled.
 
@@ -18,11 +18,11 @@ Advanced Model Runtime: implemented control plane. Ollama remains supported; vLL
 
 Plugin Runtime: implemented as a strict registry and inspection foundation. External plugins remain untrusted and disabled; no installation, arbitrary runtime execution, automatic update, scheduled execution, or authority grant is enabled.
 
-MCP Runtime: implemented foundation with zero registered servers. Explicitly configured local stdio/HTTP are supported by policy; remote HTTP, installation, scheduled execution, and global tool execution default disabled.
+MCP Runtime: implemented official-SDK local stdio client with one configured Playwright server. Real handshake and discovery returned 24 tools on the verified workstation; all remain untrusted, disabled, and non-executable. Resources and prompts are capability-aware. Remote HTTP, installation, scheduled execution, and global tool execution remain disabled.
 
 GitHub Provider: implemented and repository-scoped, but disabled/unverified by default. Reads require verified authentication; issue/PR/release writes remain approval/Broker-gated. Merge, workflow execution, secrets, and administration are blocked.
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 
 ## Current Release
 
@@ -60,7 +60,7 @@ python main.py --ui
 - Free-form prompts route visibly to local Ollama without requiring a `chat` prefix.
 - Focused CLI help, provider/tool status, and readable non-debug output.
 - Safe calculator and text-transformation tools through Tool Intelligence.
-- Local Vosk microphone input with an Indian-English model, including explicit `voice listen send` handoff.
+- Explicit Vosk microphone workflow and `voice listen send` handoff. This was manually verified previously; the current repaired core environment reports STT unavailable because Vosk and `sounddevice` are detected only in an isolated tool environment and cannot be imported by the core process.
 - Windows SAPI voice playback through `voice say` and full safe automatic spoken replies, including long-response chunking and non-blocking stop, resume, cancel, interrupt, repeat, and replay controls.
 - Vision Intelligence: local Ollama LLaVA still-image description and image question answering.
 - Persistent local memory and personal context through explicit memory commands, bounded retrieval, safe auto-session summaries, and secret-aware storage policy.
@@ -78,7 +78,7 @@ python main.py --ui
 
 ## Partially Working Features
 
-- Phase 6 optional tooling is degraded by design when isolated environments or adapters are absent: rich document/OCR tooling, semantic/vector/graph backends, interactive browser/crawlers, Aider/Open Interpreter, non-SAPI voice adapters, external connectors, MCP servers, and plugins are not configured.
+- Phase 6 detects isolated browser, research, document, memory, voice, runtime, coding, and optional-agent installations without activating them. Package presence does not imply JARVIS integration or execution authority. Windows SAPI is ready in the core process. Vosk is configured as the existing STT adapter but is currently degraded because its packages are only detected in an isolated environment; Faster-Whisper and Piper are installed but remain disabled until dedicated adapters are implemented and verified.
 
 - Cloud provider framework: configured adapters, policy, normalization, mocked tests, and command access exist; paid live providers are not continuously verified.
 - Tool Intelligence: safe built-ins work, while broad external tool integrations are future work.
@@ -141,6 +141,7 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 
 ## Last Verified Tests
 
+- Post-Phase-6 repair: 318 focused subsystem tests, 43 documentation/tracking tests, and 2,137 full-suite tests passed with 0 skips, failures, or errors. Real CLI validation covered free-form Ollama responses, structured status commands, Playwright MCP discovery, disabled tool inventory, truthful voice state, and clean shutdown. See `POST_PHASE6_RUNTIME_REPAIR.md`.
 - Phase 6 focused: 62 passed; cross-phase integration: 168 passed; authority/security: 66 passed; full suite: 2,118 passed, 0 skipped, 0 failed, 0 errors. Compilation, config, JSON, docs, secret, artifact, path, and diff gates pass. See `PHASE_6_FINAL_VALIDATION.md`.
 
 - Prompt 85 validation covers release gates, 21 authority contracts, 15 compatibility relationships, 14 end-to-end scenarios, and 11 informational scorecard categories.
@@ -169,7 +170,7 @@ The product direction is maintained in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.
 - Phase 3 Batch 2 final full suite: 1,727 passed, 0 skipped, 0 failed, 0 errors.
 - Real Ollama chat: working locally.
 - Local Ollama LLaVA vision: working locally.
-- Local Vosk microphone input with an Indian-English model and `voice listen send`: working locally.
+- Local Vosk microphone input with an Indian-English model and `voice listen send`: historically manually verified, currently degraded in the repaired core environment because the in-process dependencies are unavailable there.
 - Windows SAPI playback with non-blocking controls: working locally.
 - Research Agent foundation: plan-only research planning and bounded summaries are now available.
 - Research configuration, metadata-only runtime history, restricted-domain safety, Prime routing, registry integration, and all research CLI commands are covered by focused tests.

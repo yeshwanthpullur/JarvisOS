@@ -187,6 +187,8 @@ class VoiceTests(unittest.TestCase):
   response=commands.execute("voice status",context)
   expected_stt="ready" if self.v.input_status()["stt_available"] else "unavailable"
   for value in ("output=off","input=off",f"stt={expected_stt}","raw_audio_persistence=off","retained_audio=0"):self.assertIn(value,response.response)
+  for value in ("faster_whisper[installed=", "vosk[installed=", "piper[installed=", "windows_sapi[installed="):self.assertIn(value,response.response)
+  self.assertNotIn(str(self.v.temp_directory),response.response)
  def test_voice_input_commands_are_truthful_without_stt(self):
   self.force_stt_unavailable()
   commands=CommandManager();commands.initialize();context=ConversationContext(session=ConversationSession(),voice_intelligence=self.v)

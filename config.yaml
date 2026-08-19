@@ -723,6 +723,20 @@ mcp:
   save_history: true
   max_history_items: 100
   redact_sensitive_values: true
+  allowed_executables: [npx.cmd]
+  servers:
+    - server_id: playwright
+      display_name: Playwright MCP
+      transport: local_stdio
+      source_type: local_config
+      executable_ref: npx.cmd
+      args: [-y, "@playwright/mcp@latest", --isolated, --headless, --image-responses, omit]
+      required_credentials: []
+      allowed_tools: []
+      denied_tools: []
+      trust_state: trusted_for_discovery
+      enabled: true
+      notes: Discovery-only isolated browser context; tool execution remains disabled.
 
 release_readiness:
   enabled: true

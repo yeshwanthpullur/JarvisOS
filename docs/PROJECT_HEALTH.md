@@ -2,6 +2,8 @@
 
 Phase 6 implements the Prompt 86-100 local tooling and integration checkpoint while preserving Phase 3-5 authorities. MVP readiness is conservatively 94%; limitations remain 47 total, 24 fixed, and 23 open. Optional external tools and services remain degraded or unconfigured rather than being counted as complete.
 
+Post-Phase-6 repair: normal capability-summary prompts no longer become plans because of enriched context length; genuine plans inherit the configured local provider. Official-SDK MCP stdio discovery and installed-versus-integrated tool diagnostics are verified without adding execution authority. MVP and limitation counts are unchanged.
+
 Prompt 83 adds the production reliability control plane with bounded health and diagnostics. It does not add distributed execution or privileged self-healing. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
 
 Prompt 82 adds the verified bounded Workflow Engine checkpoint/recovery runtime while preserving Executive, Policy, Approval, and Broker authority. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
@@ -16,11 +18,11 @@ Prompt 78 adds tested runtime/profile/endpoint/resource/fallback/circuit archite
 
 Prompt 77 plugin security is implemented: versioned manifests, provenance/integrity/dependency checks, bounded diagnostics, capability/permission mapping, and fail-closed protected-name rules. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
 
-Prompt 76: MCP registry/runtime, trust, bounded discovery/resource, and approval/Broker tool foundations are implemented with zero configured servers. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
+Prompt 76: MCP registry/runtime, trust, bounded discovery/resource, and approval/Broker tool foundations are implemented. Post-Phase-6 integration configures Playwright for discovery-only local stdio; 24 tools were discovered and zero were trusted or enabled. MVP remains 94%; limitations remain 47 total, 24 fixed, and 23 open.
 
 Prompt 75: scoped GitHub reads and controlled service-write architecture are implemented; runtime defaults disabled/unverified. MVP remains 93%; limitations remain 47 total, 24 fixed, and 23 open.
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 
 Status values are evidence-based: **Working**, **Partial**, **Experimental**, **Not Started**, or **Blocked**. Confidence describes confidence in the status assessment, not percentage feature completion. Values are conservative and should change only after code, tests, or manual evidence changes.
 
@@ -32,13 +34,13 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Conversation Intelligence | Working | 80% | Bounded multi-turn state, topics, entities, follow-up intent, references, clarification, repair, modes, confidence, and summaries are integrated with normal chat. | Conversation intelligence tests; multi-turn CLI sequence | Improve language understanding from observed ambiguity without hidden persistence. |
 | Cloud Provider Foundation | Partial | 65% | Provider-neutral adapters, policy, mocks, and commands exist; no routine paid live verification. | Cloud mock tests; `cloud status` | Add opt-in provider smoke checks when authorized. |
 | External Integration Control Plane | Partial | 70% | Prompt 71 adds typed provider, credential-reference, egress, endpoint, cost, health, and routing metadata with all external execution disabled. | External integration tests; `integration status`; `provider validate` | Implement Prompt 72 independently without enabling providers by default. |
-| Tools | Partial | 75% | Governed calculator/text tools execute; Skill Registry adds explicit permission, risk, side-effect, approval, and availability metadata. | `tools status`; `skill diagnostics`; focused tests | Add executable skills only through separately verified owning milestones. |
-| Planning | Partial | 65% | Advisory provider-backed plans and validation exist; execution remains controlled. | Autonomous planning tests; `plan status` | Improve evidence and review UX without auto-execution. |
+| Tools | Partial | 78% | Governed calculator/text tools execute; passive discovery distinguishes detected, configured, integrated, enabled, and authorized external tools without activating isolated environments. | `tools status`; `tool environments`; focused tests | Add executable adapters only through separately verified owning milestones. |
+| Planning | Partial | 72% | Advisory provider-backed plans use original user intent for classification and the configured local provider policy; execution remains controlled. | Routing/planning regression tests; `plan status` | Improve evidence and review UX without auto-execution. |
 | Multi-Agent System | Partial | 78% | Typed protocols, a validated registry, specialist metadata, bounded diagnostics, and Prime Agent plan-only delegation work without side effects. | `agent diagnostics`; `prime status`; Phase 3 tests | Expand executable specialists only with evidence and scoped approvals. |
 | Model Router | Partial | 76% | Provider-neutral metadata, local-only route planning, unavailable fallbacks, cloud-disabled policy, and safe hardware hints are tested. | `model status`; `model policy`; router tests | Add providers only through explicit tested local adapters. |
-| Skill Registry | Partial | 76% | Native/future manifests declare permissions, side effects, risk, approvals, locality, and truthful status; plugins and MCP remain disabled. | `skill diagnostics`; registry tests | Keep external loading disabled until separately governed. |
+| Skill Registry | Partial | 76% | Native/future manifests declare permissions, side effects, risk, approvals, locality, and truthful status; plugins and MCP tool execution remain disabled. | `skill diagnostics`; registry and MCP tests | Keep external loading and calls disabled until separately governed. |
 | Voice Output | Working | 96% | Windows SAPI explicit/automatic playback, long safe replies, background playback, and stop/resume/cancel/interrupt/repeat controls are manually verified without persistent audio. | `voice speaking status`; playback-control tests; manual long reply | Preserve bounded interruption and safe speech filtering. |
-| Voice Input | Working | 88% | Local Vosk microphone capture with an Indian-English model and explicit `voice listen send` handoff are manually verified; no hidden recording or raw-audio persistence is enabled. | `voice input status`; `voice listen send`; STT tests | Add continuous conversation or multilingual switching only through separate privacy-reviewed work. |
+| Voice Input | Partial | 76% | The explicit Vosk workflow was manually verified previously, but the repaired core currently reports STT unavailable because Vosk and `sounddevice` are detected only in an isolated environment. No hidden recording or raw-audio persistence is enabled. | `voice status`; `tool inspect vosk`; STT tests | Add a tested core-process or subprocess adapter without enabling hidden listening. |
 | Memory | Working | 82% | Persistent context, explicit controls, bounded retrieval, safe summaries, and non-destructive startup retention/duplicate compaction are tested. | Memory lifecycle, retrieval, and command tests | Review lifecycle outcomes from real use without automatic deletion. |
 | Web Interface | Experimental | 55% | Loopback interface works and is tested, but responsiveness may feel laggy. | `python main.py --ui`; browser checks | Keep optional until a separate stabilization milestone. |
 | Vision | Working | 86% | Local Ollama LLaVA image analysis and image Q&A are manually verified through the governed adapter with bounded metadata-only audit. | `vision status`; real `vision describe`/`vision ask`; focused tests | Keep live camera/video, identity inference, and high-stakes certainty outside this scope. |
@@ -55,7 +57,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Communication Assistance | Partial | 70% | Prompts 73-74 implement disabled-by-default Telegram, Discord, email, and Slack text connectors with provider-specific validation and exact approval/Broker gates; runtimes are unconfigured. | Connector tests; provider status commands | Implement Prompt 75 independently; keep inbound, inbox, attachments, bulk, and scheduling disabled. |
 | Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 98% | Phase 6 passes 62 focused, 168 integration, 66 authority/security, and 2,118 full-suite tests with no skips, failures, or errors; all local static gates pass. | `PHASE_6_FINAL_VALIDATION.md` | Keep release evidence current; do not treat optional adapters as PASS. |
+| Testing/Release Readiness | Working | 98% | The post-Phase-6 repair passes 318 focused subsystem, 43 documentation/tracking, and 2,137 full-suite tests with no skips, failures, or errors. The historical Phase 6 checkpoint remains recorded separately. | `POST_PHASE6_RUNTIME_REPAIR.md`; `PHASE_6_FINAL_VALIDATION.md` | Keep release evidence current; do not treat optional adapters as PASS. |
 
 ## Overall MVP Readiness
 

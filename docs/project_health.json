@@ -1,7 +1,7 @@
 {
   "release": "v1.7.0-alpha",
   "commit": "Phase 6 final Git HEAD",
-  "updated_at": "2026-08-18",
+  "updated_at": "2026-08-19",
   "primary_mode": "CLI via python main.py",
   "next_milestone": "Phase 7 requires explicit authorization",
   "overall_mvp_readiness": 94,
@@ -18,13 +18,13 @@
     {"name": "Conversation Intelligence", "status": "Working", "confidence": 80, "evidence": "Bounded multi-turn state, topics, entities, follow-up intent, references, clarification, repair, modes, confidence, and summaries are integrated with normal chat.", "next_action": "Improve language understanding from observed ambiguity without hidden persistence."},
     {"name": "Cloud Provider Foundation", "status": "Partial", "confidence": 65, "evidence": "Adapters, policy, normalization, commands, and mocked tests exist.", "next_action": "Add opt-in live smoke checks when authorized."},
     {"name": "External Integration Control Plane", "status": "Partial", "confidence": 70, "evidence": "Prompt 71 adds typed provider, credential-reference, egress, endpoint, cost, health, and routing metadata with all external execution disabled.", "next_action": "Implement Prompt 72 independently without enabling providers by default."},
-    {"name": "Tools", "status": "Partial", "confidence": 75, "evidence": "Governed calculator/text tools execute and the metadata-only Skill Registry declares permissions, side effects, approval, and future integrations; external breadth remains limited.", "next_action": "Add executable skills only through separately verified owning milestones."},
-    {"name": "Planning", "status": "Partial", "confidence": 76, "evidence": "Advisory plans can hand exact supported actions to a local approval and broker path; autonomous execution remains unavailable.", "next_action": "Keep execution explicit, scoped, and reversible where possible."},
+    {"name": "Tools", "status": "Partial", "confidence": 78, "evidence": "Passive discovery distinguishes detected, configured, integrated, enabled, and authorized external tools without activating isolated environments.", "next_action": "Add executable adapters only through separately verified owning milestones."},
+    {"name": "Planning", "status": "Partial", "confidence": 78, "evidence": "Advisory plans use original user intent for classification and the configured local provider policy; autonomous execution remains unavailable.", "next_action": "Keep execution explicit, scoped, and reversible where possible."},
     {"name": "Multi-Agent System", "status": "Partial", "confidence": 85, "evidence": "Typed protocols, Prime routing, and plan-only Document, Browser, Scheduler, Communication, Adapter, advanced-model, and evaluation foundations are integrated with truthful unavailable states.", "next_action": "Add execution only through separately approved providers and scoped permissions."},
     {"name": "Model Router", "status": "Partial", "confidence": 82, "evidence": "Provider-neutral local routing now includes document, browser, scheduler, communication, and adapter planning plus disabled advanced-provider profiles; routing does not execute models.", "next_action": "Integrate additional local runtimes only through explicit tested adapters."},
-    {"name": "Skill Registry", "status": "Partial", "confidence": 82, "evidence": "Batch 2 skills declare bounded planning capabilities and disabled runtime counterparts; external plugins, MCP, sending, browser writes, scheduling, and model startup remain disabled.", "next_action": "Keep runtime skills disabled until separately approved."},
+    {"name": "Skill Registry", "status": "Partial", "confidence": 82, "evidence": "Batch 2 skills declare bounded planning capabilities; external plugins and MCP tool execution remain disabled while discovery metadata is available.", "next_action": "Keep runtime skills disabled until separately approved."},
     {"name": "Voice Output", "status": "Working", "confidence": 96, "evidence": "Windows SAPI long replies and non-blocking stop, resume, cancel, interrupt, repeat, and replay controls are manually verified without persistent audio.", "next_action": "Preserve bounded interruption and safe speech filtering."},
-    {"name": "Voice Input", "status": "Working", "confidence": 88, "evidence": "Local Vosk microphone input with an Indian-English model and explicit voice listen send handoff are manually verified.", "next_action": "Keep wake word, continuous conversation, and multilingual switching separate and privacy-reviewed."},
+    {"name": "Voice Input", "status": "Partial", "confidence": 76, "evidence": "The explicit Vosk workflow was manually verified previously, but the repaired core reports STT unavailable because Vosk and sounddevice are detected only in an isolated environment.", "next_action": "Add a tested core-process or subprocess adapter without enabling hidden listening."},
     {"name": "Memory", "status": "Working", "confidence": 82, "evidence": "Local memory, explicit controls, bounded retrieval, safe summaries, and non-destructive startup retention/duplicate compaction are tested.", "next_action": "Review lifecycle outcomes from real use without automatic deletion."},
     {"name": "Web Interface", "status": "Experimental", "confidence": 55, "evidence": "Loopback UI works but may feel laggy and is not primary.", "next_action": "Use CLI until a dedicated stabilization milestone."},
     {"name": "Vision", "status": "Working", "confidence": 86, "evidence": "Local Ollama LLaVA image analysis and image Q&A are manually verified through governed routing with metadata-only audit.", "next_action": "Keep live camera/video, identity inference, and high-stakes certainty outside this scope."},
@@ -45,7 +45,7 @@
     {"name": "Controlled Execution", "status": "Partial", "confidence": 78, "evidence": "Exact approvals and a central broker govern scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations.", "next_action": "Keep unsupported and critical actions blocked; require separate review for every new executor."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 86, "evidence": "Execution modes, risk, exact approvals, locality, protected resources, timeout, rollback metadata, and executor-specific boundaries are tested.", "next_action": "Threat-review every new execution surface."},
     {"name": "Enterprise Governance", "status": "Partial", "confidence": 82, "evidence": "Zero-trust identity, authorization, policy, risk, trust, tamper-evident bounded audit, compliance, security event, and incident foundations are tested without execution authority.", "next_action": "Retain bounded governance and review future extensions only under a separately authorized roadmap."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 98, "evidence": "Phase 6 passes 62 focused, 168 integration, 66 authority/security, and 2118 full-suite tests with no skips, failures, or errors; all local static gates pass.", "next_action": "Keep release evidence current; do not treat optional adapters as PASS."}
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 98, "evidence": "The post-Phase-6 repair passes 318 focused subsystem, 43 documentation/tracking, and 2137 full-suite tests with no skips, failures, or errors; the historical Phase 6 checkpoint remains separately recorded.", "next_action": "Keep release evidence current; do not treat optional adapters as PASS."}
   ],
   "phase3": {
     "status": "Partial - plan-only multi-agent foundation",
@@ -76,7 +76,9 @@
     "default_execution_mode": "plan_only",
     "cloud_providers_enabled": false,
     "external_plugins_enabled": false,
-    "mcp_enabled": false
+    "mcp_enabled": true,
+    "mcp_registered_servers": 1,
+    "mcp_tool_execution_enabled": false
   },
   "phase4": {
     "status": "Partial - controlled local execution foundation",
@@ -103,7 +105,7 @@
     "prompt_73_telegram_connector": "implemented_runtime_unconfigured",
     "prompt_74_discord_email_slack": "implemented_runtimes_unconfigured",
     "prompt_75_github_provider": "implemented_runtime_unconfigured",
-    "prompt_76_mcp_runtime": "implemented_no_servers_configured",
+    "prompt_76_mcp_runtime": "implemented_playwright_discovery_only_tool_execution_disabled",
     "prompt_77_plugin_runtime": "implemented_registry_external_execution_disabled",
     "prompt_78_advanced_model_runtime": "implemented_optional_runtimes_unconfigured",
     "prompt_79_research_runtime": "implemented_live_search_unconfigured",

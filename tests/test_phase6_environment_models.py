@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import os
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
 from commands import CommandManager
-from jarvis.phase6 import EnvironmentStatus, LocalModelCatalog, Phase6Runtime, build_tool_environment_registry
+from jarvis.phase6 import EnvironmentStatus, LocalModelCatalog, Phase6Runtime, ToolEnvironmentRecord, ToolEnvironmentRegistry, build_tool_environment_registry
 from jarvis.phase6.models import ModelRecord
 
 
@@ -16,9 +19,9 @@ class ToolEnvironmentTests(unittest.TestCase):
         registry = build_tool_environment_registry()
         records = registry.list()
         self.assertEqual(len(records), len({item.tool_id for item in records}))
-        self.assertLessEqual(len(records), 32)
+        self.assertLessEqual(len(records), 48)
         self.assertFalse(registry.summary()["execution_authority"])
-        self.assertTrue(all(not item.enabled for item in records))
+        self.assertTrue(all(not item.execution_authorized for item in records))
 
     def test_duplicate_tool_rejected(self) -> None:
         registry = build_tool_environment_registry()
@@ -29,7 +32,7 @@ class ToolEnvironmentTests(unittest.TestCase):
     def test_failed_detection_is_safe(self, _version) -> None:
         registry = build_tool_environment_registry()
         record = registry.inspect("playwright")
-        self.assertIn(record.health_status, {EnvironmentStatus.MISSING, EnvironmentStatus.DEGRADED, EnvironmentStatus.INCOMPATIBLE})
+        self.assertIsNot(record.health_status, EnvironmentStatus.READY)
         self.assertTrue(record.last_error)
 
     def test_permission_profiles_do_not_grant_writes(self) -> None:
@@ -45,6 +48,32 @@ class ToolEnvironmentTests(unittest.TestCase):
         self.assertEqual(audit.pip_check_status, "not_run")
         self.assertLessEqual(len(audit.warnings), 12)
         self.assertTrue(audit.python_version)
+
+    def test_isolated_install_is_detected_but_not_execution_authorized(self) -> None:
+        with TemporaryDirectory() as folder:
+            installations = Path(folder) / "installations"
+            site = installations / "browser" / ".venv" / "Lib" / "site-packages"
+            (site / "browser_use-9.9.9.dist-info").mkdir(parents=True)
+            record = ToolEnvironmentRecord("fixture", "Fixture", "browser", "optional", "installations/browser/.venv", "3.11", package_name="browser-use", environment_key="browser")
+            with patch.dict(os.environ, {"JARVIS_INSTALLATIONS_ROOTS": str(installations)}):
+                checked = ToolEnvironmentRegistry((record,), root=Path(folder)).inspect("fixture")
+            self.assertTrue(checked.detected)
+            self.assertEqual(checked.detected_version, "9.9.9")
+            self.assertEqual(checked.health_status, EnvironmentStatus.DISABLED)
+            self.assertFalse(checked.execution_authorized)
+
+    def test_playwright_mcp_launcher_is_not_claimed_as_package_install(self) -> None:
+        record = build_tool_environment_registry().inspect("playwright_mcp")
+        if record.detected:
+            self.assertEqual(record.install_status, "runtime_detected")
+            self.assertIs(record.health_status, EnvironmentStatus.DEGRADED)
+
+    def test_isolated_in_process_voice_dependency_is_degraded(self) -> None:
+        registry = build_tool_environment_registry()
+        record = registry.inspect("vosk")
+        if record.discovery_source.startswith("isolated_environment"):
+            self.assertIs(record.health_status, EnvironmentStatus.DEGRADED)
+            self.assertIn("cannot import", record.last_error)
 
 
 class LocalModelTests(unittest.TestCase):

@@ -100,7 +100,7 @@ class FailureAndLifecycleTests(unittest.TestCase):
             self.assertEqual(runtime.documents.parse("missing.pdf").status, "blocked")
             self.assertEqual(runtime.web.run_crawl("http://127.0.0.1/private").status, "blocked")
             self.assertEqual(runtime.connectors.test("missing"), "connector_not_found")
-            self.assertIn(runtime.voice.stt().status, {"unavailable", "detected_disabled"})
+            self.assertIn(runtime.voice.stt().status, {"unavailable", "detected_disabled", "ready_for_explicit_capture"})
 
     def test_explicit_sessions_close_and_bounded_state_survives_stress(self) -> None:
         runtime = Phase6Runtime(ROOT)
