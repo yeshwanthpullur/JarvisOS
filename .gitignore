@@ -63,3 +63,9 @@ dist/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Local JarvisOS installation/runtime artifacts
+installations/
+jarvis/voice_intelligence.py.backup
+models/vosk-backup-small-en-us/
+models/vosk/
