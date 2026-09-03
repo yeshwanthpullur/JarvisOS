@@ -21,4 +21,6 @@ The official Python MCP SDK provides the local stdio lifecycle:
 
 Unsupported optional capabilities return an empty collection rather than failing otherwise valid discovery. External results remain untrusted data.
 
+`mcp start <server_id>` performs both initialization and bounded discovery, then retains the classified tools and resources in the shared runtime for subsequent `server-show`, `tools`, `capabilities`, `resources`, and `history` commands. `mcp discover <server_id>` remains available as an explicit refresh. Start and discovery history contains metadata and counts only.
+
 Trust is granular: unknown, blocked, reviewed, discovery, resources, or specific tools. A server cannot mutate its own manifest, trust, allowlist, policy, approval, or Broker decision.

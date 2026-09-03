@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from config.settings import load_settings
+from commands.command_manager import CommandManager
 from commands.command_parser import CommandParser
 from jarvis.mcp_runtime import (
     LocalStdioTransport,
@@ -16,6 +17,7 @@ from jarvis.mcp_runtime import (
     MCPRuntime,
     MCPServerManifest,
     MCPServerState,
+    MCPToolCategory,
     MCPTransportError,
     MCPTransportType,
     MCPTrustState,
@@ -77,6 +79,61 @@ class MCPProtocolIntegrationTests(unittest.TestCase):
             runtime.shutdown()
         self.assertFalse(transport.health())
 
+    def test_start_discovers_persists_and_remains_non_executable_in_cli_session(self):
+        transport = self._transport()
+        runtime = MCPRuntime(transports={"fixture": transport})
+        runtime.registry.register(
+            MCPServerManifest(
+                "fixture",
+                "Fixture",
+                MCPTransportType.LOCAL_STDIO,
+                trust_state=MCPTrustState.TRUSTED_FOR_DISCOVERY,
+                enabled=True,
+            )
+        )
+        commands = CommandManager()
+        commands.initialize()
+        context = SimpleNamespace(mcp_runtime=runtime)
+        try:
+            started = commands.execute("mcp start fixture", context).response
+            shown = commands.execute("mcp server-show fixture", context).response
+            tools = commands.execute("mcp tools fixture", context).response
+            capabilities = commands.execute("mcp capabilities fixture", context).response
+            history = commands.execute("mcp history", context).response
+            self.assertIn("status=completed", started)
+            self.assertIn("tools=1", started)
+            self.assertIn("tools=1", shown)
+            self.assertIn("count=1", tools)
+            self.assertIn("count=1", capabilities)
+            self.assertIn("trusted=no", tools)
+            self.assertIn("enabled=no", tools)
+            self.assertIn("discovery:completed", history)
+            self.assertIn("start:completed", history)
+            self.assertIn("tools=1", history)
+            discovered = runtime.registry.tools[("fixture", "search_docs")]
+            self.assertEqual(discovered.category, MCPToolCategory.SEARCH)
+            self.assertFalse(discovered.trusted)
+            self.assertFalse(discovered.enabled)
+            self.assertFalse(discovered.execution_available)
+            self.assertFalse(runtime.policy.allow_tool_execution)
+            call = runtime.call("fixture", "search_docs", {"query": "Jarvis"})
+            self.assertEqual(call.error, "tool_not_trusted")
+        finally:
+            runtime.shutdown()
+
+    def test_start_does_not_discover_an_untrusted_server(self):
+        transport = self._transport()
+        runtime = MCPRuntime(transports={"fixture": transport})
+        runtime.registry.register(MCPServerManifest("fixture", "Fixture", MCPTransportType.LOCAL_STDIO, enabled=True))
+        try:
+            result = runtime.start("fixture")
+            self.assertEqual(result.status, "completed")
+            self.assertIn("discovery was not trusted", result.bounded_summary)
+            self.assertEqual(runtime.registry.tools, {})
+            self.assertFalse(runtime.policy.allow_tool_execution)
+        finally:
+            runtime.shutdown()
+
     def test_prompts_are_not_listed_when_policy_disables_them(self):
         transport = self._transport()
         runtime = MCPRuntime(transports={"fixture": transport})
@@ -110,9 +167,17 @@ class MCPProtocolIntegrationTests(unittest.TestCase):
     def test_transport_failure_is_normalized(self):
         runtime = MCPRuntime(transports={"broken": BrokenTransport()})
         runtime.registry.register(MCPServerManifest("broken", "Broken", MCPTransportType.LOCAL_STDIO, trust_state=MCPTrustState.TRUSTED_FOR_DISCOVERY, enabled=True))
-        result = runtime.discover("broken")
+        result = runtime.start("broken")
         self.assertEqual(result.error, "mcp_server_start_failed")
         self.assertEqual(runtime.registry.get("broken").state, MCPServerState.ERROR)
+        self.assertEqual(runtime.history[-1]["action"], "start")
+        self.assertEqual(runtime.history[-1]["status"], "failed")
+        commands = CommandManager()
+        commands.initialize()
+        output = commands.execute("mcp start broken", SimpleNamespace(mcp_runtime=runtime)).response
+        self.assertIn("mcp_server_start_failed", output)
+        self.assertLess(len(output), 3000)
+        self.assertNotIn("Traceback", output)
 
     def test_playwright_manifest_loads_discovery_only(self):
         settings = load_settings()

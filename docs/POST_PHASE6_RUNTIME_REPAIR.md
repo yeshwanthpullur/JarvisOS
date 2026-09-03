@@ -11,6 +11,7 @@ Status: verified locally. This work is not Phase 7 and creates no tag, release, 
 - Planner failures use bounded normalized provider diagnostics, and malformed provider output is rejected without bypassing validation.
 - MCP local stdio uses the pinned official Python SDK for initialization, discovery, resource reads, optional prompt discovery, guarded tool calls, timeout handling, and clean shutdown.
 - Playwright MCP is configured with an isolated headless browser context and discovery-only trust. Its cached package may be resolved without invoking npm installation. The verified discovery returned 24 tools; zero are trusted or enabled, and global MCP tool execution remains disabled.
+- MCP session wiring makes `mcp start` perform handshake plus discovery and retain classified metadata for subsequent inspection commands. Explicit `mcp discover` remains a safe refresh, and bounded history records both operations.
 - Tool inventory distinguishes installed, detected, configured, integrated, enabled, and execution-authorized states. Discovery does not activate an isolated environment or grant authority.
 - Voice diagnostics report Windows SAPI ready, Vosk degraded when available only outside the core interpreter, and detected Faster-Whisper/Piper adapters disabled until dedicated integrations exist.
 

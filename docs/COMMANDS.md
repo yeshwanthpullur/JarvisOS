@@ -134,6 +134,7 @@ mcp status
 mcp servers
 mcp server-show <server_id>
 mcp server-health <server_id>
+mcp start <server_id>
 mcp discover <server_id>
 mcp tools [server_id]
 mcp tool-show <server_id> <tool_name>
@@ -148,4 +149,4 @@ Unknown subcommands return namespace help and never fall through to chat.
 
 `tool environments` and `tool inspect` distinguish installation, detection, configuration, integration, enablement, and execution authorization. Set `JARVIS_INSTALLATIONS_ROOTS` to an `os.pathsep`-separated list only when installations are outside the repository or mounted-drive discovery locations; CLI output uses safe aliases rather than private absolute paths.
 
-MCP discovery may start an explicitly configured local server long enough to perform handshake and metadata discovery. It does not call tools. These commands do not install packages, download models, start hidden capture, authorize execution, send connector payloads, upload telemetry, or bypass Policy, Approval, Broker, Governance, Memory, Conversation, Workflow, or Reliability authority.
+`mcp start <server_id>` performs the handshake and bounded metadata discovery in the current CLI session. `mcp discover <server_id>` explicitly refreshes the same tool/resource registry. Neither command calls tools or grants trust. These commands do not install packages, download models, start hidden capture, authorize execution, send connector payloads, upload telemetry, or bypass Policy, Approval, Broker, Governance, Memory, Conversation, Workflow, or Reliability authority.

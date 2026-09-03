@@ -36,6 +36,11 @@ from .transports import HTTPMCPTransport, LocalStdioTransport, MCPTransportError
 
 CRITICAL = ("shell", "command", "delete", "credential", "secret", "admin", "install", "package", "force push")
 _SAFE_ID = re.compile(r"^[a-z0-9][a-z0-9_.-]{0,79}$")
+_DISCOVERY_TRUST = {
+    MCPTrustState.TRUSTED_FOR_DISCOVERY,
+    MCPTrustState.TRUSTED_FOR_RESOURCES,
+    MCPTrustState.TRUSTED_FOR_SPECIFIC_TOOLS,
+}
 
 
 def classify_tool(server_id: str, raw: dict[str, Any], trusted_tools: tuple[str, ...] = ()) -> MCPTool:
@@ -145,6 +150,38 @@ class MCPRuntime:
         }
 
     def start(self, server_id: str) -> MCPToolResult:
+        handshake = self._start_handshake(server_id)
+        if handshake.status != "completed":
+            self._record_history("start", server_id, handshake.status, error=handshake.error or "mcp_start_failed")
+            return handshake
+        server = self.registry.get(server_id)
+        if not server or server.manifest.trust_state not in _DISCOVERY_TRUST:
+            self._record_history("start", server_id, "completed")
+            return MCPToolResult(
+                server_id,
+                "start",
+                "completed",
+                bounded_summary="MCP handshake completed; discovery was not trusted and no tool was executed.",
+            )
+        discovery = self._discover_connected(server_id)
+        if discovery.status != "completed":
+            self._record_history("start", server_id, discovery.status, error=discovery.error or "mcp_discovery_failed")
+            return MCPToolResult(server_id, "start", discovery.status, error=discovery.error)
+        summary = bounded(
+            f"MCP handshake and discovery completed; {discovery.bounded_summary}. No tool was executed.",
+            self.policy.max_result_chars,
+        )
+        self._record_history(
+            "start",
+            server_id,
+            "completed",
+            tools=server.tool_count,
+            resources=server.resource_count,
+            prompts=server.prompt_count,
+        )
+        return MCPToolResult(server_id, "start", "completed", bounded_summary=summary)
+
+    def _start_handshake(self, server_id: str) -> MCPToolResult:
         server = self.registry.get(server_id)
         transport = self.transports.get(server_id)
         if not server:
@@ -170,6 +207,22 @@ class MCPRuntime:
         server.protocol_ready = True
         server.health_status = "ready"
         return MCPToolResult(server_id, "start", "completed", bounded_summary="MCP handshake completed; no tool was executed.")
+
+    def _record_history(self, action: str, server_id: str, status: str, **metadata: object) -> None:
+        if not self.policy.save_history:
+            return
+        item: dict[str, object] = {
+            "action": bounded(action, 40),
+            "server": bounded(server_id, 80),
+            "status": bounded(status, 40),
+        }
+        for key in ("tools", "resources", "prompts", "error"):
+            value = metadata.get(key)
+            if isinstance(value, int):
+                item[key] = max(0, value)
+            elif isinstance(value, str) and value:
+                item[key] = bounded(value, 120)
+        self.history.append(item)
 
     def stop(self, server_id: str) -> MCPToolResult:
         server = self.registry.get(server_id)
@@ -199,15 +252,32 @@ class MCPRuntime:
         server = self.registry.get(server_id)
         transport = self.transports.get(server_id)
         if not server:
-            return MCPToolResult(server_id, "discovery", "blocked", error="unknown_server")
-        if not server.manifest.enabled or server.manifest.trust_state not in {MCPTrustState.TRUSTED_FOR_DISCOVERY, MCPTrustState.TRUSTED_FOR_RESOURCES, MCPTrustState.TRUSTED_FOR_SPECIFIC_TOOLS}:
-            return MCPToolResult(server_id, "discovery", "blocked", error="discovery_not_trusted")
+            result = MCPToolResult(server_id, "discovery", "blocked", error="unknown_server")
+            self._record_history("discovery", server_id, result.status, error=result.error or "unknown_server")
+            return result
+        if not server.manifest.enabled or server.manifest.trust_state not in _DISCOVERY_TRUST:
+            result = MCPToolResult(server_id, "discovery", "blocked", error="discovery_not_trusted")
+            self._record_history("discovery", server_id, result.status, error=result.error or "discovery_not_trusted")
+            return result
         if not transport:
-            return MCPToolResult(server_id, "discovery", "unavailable", error="transport_unavailable")
+            result = MCPToolResult(server_id, "discovery", "unavailable", error="transport_unavailable")
+            self._record_history("discovery", server_id, result.status, error=result.error or "transport_unavailable")
+            return result
+        handshake = self._start_handshake(server_id)
+        if handshake.status != "completed":
+            result = MCPToolResult(server_id, "discovery", handshake.status, error=handshake.error)
+            self._record_history("discovery", server_id, result.status, error=result.error or "mcp_start_failed")
+            return result
+        return self._discover_connected(server_id)
+
+    def _discover_connected(self, server_id: str) -> MCPToolResult:
+        server = self.registry.get(server_id)
+        transport = self.transports.get(server_id)
+        if not server or not transport:
+            result = MCPToolResult(server_id, "discovery", "unavailable", error="transport_unavailable")
+            self._record_history("discovery", server_id, result.status, error=result.error or "transport_unavailable")
+            return result
         try:
-            start = self.start(server_id)
-            if start.status not in {"completed"}:
-                return MCPToolResult(server_id, "discovery", start.status, error=start.error)
             raw_tools = tuple(transport.list_tools())[: self.policy.max_tools_per_server]
             raw_resources = tuple(transport.list_resources())[: self.policy.max_resources_per_server]
             raw_prompts = tuple(transport.list_prompts())[:25] if self.policy.allow_prompts else ()
@@ -245,14 +315,25 @@ class MCPRuntime:
             server.prompt_count = len(raw_prompts)
             server.protocol_ready = True
             server.state = MCPServerState.PROTOCOL_READY
-            self.history.append({"action": "discovery", "server": server_id, "status": "completed", "tools": len(raw_tools), "resources": len(raw_resources)})
+            self._record_history(
+                "discovery",
+                server_id,
+                "completed",
+                tools=len(raw_tools),
+                resources=len(raw_resources),
+                prompts=len(raw_prompts),
+            )
             return MCPToolResult(server_id, "discovery", "completed", bounded_summary=f"tools={len(raw_tools)} resources={len(raw_resources)} prompts={len(raw_prompts)}")
         except MCPTransportError as exc:
             server.state = MCPServerState.ERROR
-            return MCPToolResult(server_id, "discovery", "failed", error=exc.code)
+            result = MCPToolResult(server_id, "discovery", "failed", error=exc.code)
+            self._record_history("discovery", server_id, result.status, error=exc.code)
+            return result
         except Exception:
             server.state = MCPServerState.ERROR
-            return MCPToolResult(server_id, "discovery", "failed", error="mcp_discovery_failed")
+            result = MCPToolResult(server_id, "discovery", "failed", error="mcp_discovery_failed")
+            self._record_history("discovery", server_id, result.status, error=result.error or "mcp_discovery_failed")
+            return result
 
     def read_resource(self, server_id: str, resource_ref: str) -> MCPToolResult:
         item = self.registry.resources.get((server_id, resource_ref))
@@ -396,7 +477,7 @@ def render_mcp_command(command: str, args: tuple[str, ...], runtime: MCPRuntime)
         return "MCP server health: " + " ".join(f"{key}={str(value).lower() if isinstance(value, bool) else value}" for key, value in health.items())
     if op == "start":
         result = runtime.start(server_id)
-        return f"MCP start: server={server_id or 'missing'} status={result.status} error={result.error or 'none'} tool_execution=no"
+        return f"MCP start: server={server_id or 'missing'} status={result.status} {result.bounded_summary} error={result.error or 'none'} tool_execution=no"[:3000]
     if op == "stop":
         result = runtime.stop(server_id)
         return f"MCP stop: server={server_id or 'missing'} status={result.status} error={result.error or 'none'}"
@@ -428,5 +509,10 @@ def render_mcp_command(command: str, args: tuple[str, ...], runtime: MCPRuntime)
     if op in {"call-plan", "call-dry-run", "call"}:
         return f"MCP {op}: execution_disabled_by_default approval_required=yes executed=no"
     if op == "history":
-        return ("MCP history: " + ("; ".join(f"{item['action']}:{item['status']}" for item in runtime.history) or "none"))[:3000]
+        values: list[str] = []
+        for item in runtime.history:
+            details = [f"{item['action']}:{item['status']}", f"server={item.get('server', 'unknown')}"]
+            details.extend(f"{key}={item[key]}" for key in ("tools", "resources", "prompts", "error") if key in item)
+            values.append(":".join(details))
+        return ("MCP history: " + ("; ".join(values) or "none"))[:3000]
     return "mcp help"
