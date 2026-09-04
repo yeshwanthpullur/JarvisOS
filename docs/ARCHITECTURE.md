@@ -1,6 +1,10 @@
 # JARVIS OS Architecture
 
-JARVIS OS is organized as a modular Python application. The current foundation intentionally avoids AI implementation so the system can grow around stable boundaries first.
+## External Worker Flow
+
+`User -> Executive JARVIS -> Goal/Work Manager -> validated Task DAG -> worker/model selector -> non-authoritative adapter -> structured result -> independent review/evidence -> Executive JARVIS -> User`. The worker facade reuses internal registries and execution authorities. Munder is optional beside direct Codex, Hermes, OpenCode, and Aider adapters; no external harness becomes authoritative.
+
+JARVIS OS is organized as a modular Python application. Local AI, conversation, memory, and specialist foundations sit behind explicit registries and authority boundaries so optional workers can be added without becoming Executive JARVIS.
 
 ## Design Principles
 
@@ -25,4 +29,3 @@ JARVIS OS is organized as a modular Python application. The current foundation i
 - Add reusable abilities under `skills/`.
 - Add external integrations under `plugins/`.
 - Add APIs under `server/`.
-

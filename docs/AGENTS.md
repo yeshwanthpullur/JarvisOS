@@ -1,5 +1,9 @@
 # Agent Protocol and Registry
 
+## External Worker Facade
+
+`jarvis.workers` complements the internal Agent Registry with non-authoritative adapters for installed coding workers. It does not replace Prime Agent or register external tools as trusted specialists. Detection, health, planning, cancellation, result references, and diagnostics are available; execution remains disabled and must use existing Approval, Policy, Broker, Git review, and workspace controls. See [Agent Adapter Contract](AGENT_ADAPTER_CONTRACT.md).
+
 Agents coordinate only through the Prompt 81 runtime using session-scoped references and least-context segments. No hidden direct agent call grants authority.
 
 `research_agent` now has a bounded evidence runtime. It remains read/analyze oriented; command, Git, communication, plugin/MCP trust, task, goal, and memory mutation remain outside its authority.

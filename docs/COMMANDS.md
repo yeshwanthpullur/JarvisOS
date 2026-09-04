@@ -1,5 +1,9 @@
 # Phase 6 Commands
 
+## Pre-Old-Phone Worker Foundation
+
+`worker status|list|show|health|inventory|models|model-refresh|providers|route|select|task-plan` exposes bounded detection and planning. `work status|plan|show|graph|worktree-plan|context|messages` exposes bounded coordination metadata. These commands never start worker execution, grant approval, create a worktree, commit, push, merge, read secrets, or start Phase 7.
+
 Phase 6 commands expose bounded metadata and policy decisions. Detection is not authorization.
 
 ```text

@@ -1,5 +1,9 @@
 # Model Provider Registry and Router
 
+## Worker Model Catalog
+
+The external-worker catalog extends advisory routing with dynamic OpenCode model identifiers and safe references for future cloud providers. It does not replace the existing model router or Ollama execution path. Local Ollama is preferred when detected; hybrid modes are explicit, cloud providers remain disabled, and exact prices are not invented. `ox-alpha` remains unresolved until an exact runtime identifier is discovered. See [Dynamic Model Registry](DYNAMIC_MODEL_REGISTRY.md).
+
 Model routes are untrusted advisory choices. Governance does not activate a model, start a runtime, enable cloud use, or authorize generated tool calls.
 
 Prompt 83 adds advisory provider/model health, circuit, and capacity signals. Routing may avoid an unhealthy route, but the reliability layer cannot start runtimes, download models, enable cloud providers, or execute inference.

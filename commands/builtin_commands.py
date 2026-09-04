@@ -35,6 +35,7 @@ from workflow import WorkflowRuntime, render_workflow_command
 from jarvis.reliability import ReliabilityRuntime, build_default_reliability_runtime, render_runtime_command as render_reliability_command
 from jarvis.governance import GovernanceRuntime, build_default_governance_runtime, render_security_command
 from jarvis.phase6 import Phase6Runtime, get_phase6_runtime, render_phase6_command
+from jarvis.workers import WorkerRuntime, get_worker_runtime, render_worker_command
 
 
 def _manager(context: CommandContext):
@@ -124,6 +125,17 @@ def _phase6_runtime(context: CommandContext) -> Phase6Runtime:
     runtime = getattr(conversation, "phase6_runtime", None) if conversation is not None else None
     runtime = runtime if isinstance(runtime, Phase6Runtime) else metadata.get("phase6_runtime")
     return runtime if isinstance(runtime, Phase6Runtime) else get_phase6_runtime(Path(__file__).resolve().parents[1])
+
+
+def _worker_runtime(context: CommandContext) -> WorkerRuntime:
+    conversation = context.conversation_context
+    metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
+    runtime = getattr(conversation, "worker_runtime", None) if conversation is not None else None
+    runtime = runtime if isinstance(runtime, WorkerRuntime) else metadata.get("worker_runtime")
+    if not isinstance(runtime, WorkerRuntime) and conversation is not None:
+        core = getattr(conversation, "jarvis_core", None)
+        runtime = getattr(getattr(core, "manager", None), "worker_runtime", None)
+    return runtime if isinstance(runtime, WorkerRuntime) else get_worker_runtime(Path(__file__).resolve().parents[1])
 
 
 def _existing_ollama_state(context: CommandContext) -> tuple[bool, tuple[str, ...], bool]:
@@ -449,6 +461,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         phase6_runtime = _phase6_runtime(context)
         phase6_status = phase6_runtime.status()
         phase6_candidate = phase6_runtime.candidate_report()
+        worker_status = _worker_runtime(context).status()
         phase3_text = (
             "phase3="
             f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
@@ -462,6 +475,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             f"high_risk:{agent_summary['high_risk_capabilities']} "
             f"p4:ext:{external_summary['enabled']}/{external_summary['total']}/off tg:{telegram_status['state']} mcp:{mcp_status['registered']} plg:{plugin_status['enabled']}/{plugin_status['registered']} p5:m/o/w/r/g:R p85={release_status.status.value} "
             f"p6:cand:{'R' if phase6_candidate.candidate_ready else 'B'}/deg:{len(phase6_candidate.degradations)} "
+            f"workers:{worker_status['detected_workers']}/{worker_status['registered_workers']}:exec:{worker_status['execution_enabled']} "
         )
         phase3_metadata = {
             "agent_system_status": "ready",
@@ -516,6 +530,10 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "phase6_candidate_ready": phase6_candidate.candidate_ready,
             "phase6_degradations": len(phase6_candidate.degradations),
             "phase6_execution_authority": phase6_status["execution_authority"],
+            "worker_foundation_status": worker_status["status"],
+            "worker_detected": worker_status["detected_workers"],
+            "worker_registered": worker_status["registered_workers"],
+            "worker_execution_enabled": worker_status["execution_enabled"],
             "external_provider_registry_status": "ready_metadata_only" if external_summary["valid"] else "error",
             "external_providers_total": external_summary["total"],
             "external_providers_enabled": external_summary["enabled"],
@@ -805,6 +823,8 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("prime plan", "Create a side-effect-free delegation plan", "agent", (), CommandPermission.AGENT),
         ("prime risk", "Classify request risk and approval needs", "agent", (), CommandPermission.AGENT),
         ("prime explain", "Explain a delegation decision", "agent", (), CommandPermission.AGENT),
+        *((f"worker {op}", "External worker metadata and planning", "agent", (), CommandPermission.DIAGNOSTIC) for op in ("status", "list", "show", "health", "inventory", "models", "model-refresh", "providers", "route", "select", "task-plan")),
+        *((f"work {op}", "Bounded goal and work coordination", "agent", (), CommandPermission.DIAGNOSTIC) for op in ("status", "plan", "show", "graph", "worktree-plan", "context", "messages")),
         ("model status", "Show model router status", "provider", (), CommandPermission.PROVIDER),
         ("model providers", "List provider-neutral model routes", "provider", (), CommandPermission.PROVIDER),
         ("model capabilities", "List model capabilities", "provider", (), CommandPermission.PROVIDER),
@@ -1032,6 +1052,8 @@ def _handler_for(name: str):
             return _text_response(manager.help.render(manager.registry))
         if name == "project status":
             return _project_health_summary(context)
+        if name.startswith("worker ") or name.startswith("work "):
+            return _text_response(render_worker_command(_worker_runtime(context), name, context.arguments))
         if name.startswith("limitations "):
             try:
                 return _text_response(LimitationsRegister().command(name, context.arguments))

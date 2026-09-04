@@ -1,5 +1,11 @@
 # CLI Guide
 
+## External Worker And Work Planning
+
+Use `worker status`, `worker list`, `worker show <id>`, `worker health <id>`, `worker inventory`, `worker models [provider]`, `worker model-refresh`, `worker providers`, `worker route <task> [routing_mode]`, and `worker task-plan <worker> <objective>` for bounded metadata and plan-only diagnostics. `worker inventory` is machine-readable JSON. Refresh commands may run installed tools' metadata discovery but never install a tool, download a model, or start an agent task. `workers.allow_cloud_routes` is false by default, and a non-local routing mode does not override that policy.
+
+Use `work status`, `work plan <goal>`, `work show <id>`, `work graph <session>`, `work worktree-plan <task_id> <title>`, `work context <id>`, and `work messages` for bounded coordination metadata. A worktree plan does not create a worktree; creation requires the existing authorization path. No command here approves, executes, commits, pushes, merges, or shares personal context.
+
 ## Phase 5 Validation
 
 Use `release-readiness status`, `gates`, `contracts`, `missing`, `candidate`, `matrix`, `scenarios`, `scorecard`, `checklist`, and `verify` for bounded Prompt 85 evidence. These commands only inspect local project metadata. They never create a tag, GitHub Release, deployment, approval, or execution action.

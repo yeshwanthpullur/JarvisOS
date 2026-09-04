@@ -32,6 +32,7 @@ from config.schema import (
     OrchestratorConfig,
     SecurityConfig,
     SkillsConfig,
+    WorkersConfig,
     ToolsConfig,
     PlanningConfig,
     VoiceConfig,
@@ -253,6 +254,7 @@ def load_settings(
             require_approval_for_side_effects=_coerce_bool(raw_config["skills"]["require_approval_for_side_effects"]),
             block_secrets_access=_coerce_bool(raw_config["skills"]["block_secrets_access"]),
         ),
+        workers=WorkersConfig(**raw_config["workers"]),
         research=ResearchConfig(**raw_config["research"]),
         coding=CodingConfig(
             enabled=_coerce_bool(raw_config["coding"]["enabled"]),

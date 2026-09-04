@@ -1,5 +1,7 @@
 # Roadmap
 
+- Pre-old-phone foundation steps 2-20 - implemented locally as bounded worker discovery, adapters, model metadata, Goal/Work coordination, worktree plans, structured communication, and scoped context. The exact next action is Roadmap Step 21; it has not started. This does not reorder the roadmap or start Phase 7/old-phone implementation.
+
 - Prompts 86-100 - Phase 6 local tooling, integration, hardening, and production-readiness validation: implemented in order. Optional adapters remain degraded/unconfigured, no release was created, and Phase 7 was not started.
 
 - Prompt 85 - Phase 5 Final Integration, System Validation, and Production Readiness: complete and verified as validation-only. No tag or release was authorized, and no future phase starts automatically.

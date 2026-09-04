@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased - Pre-Old-Phone Foundation Steps 2-20
+
+- Added a machine-readable external-worker inventory and a common metadata/plan-only adapter contract for Codex, Hermes, OpenCode, Aider, Munder, and future workers.
+- Added dynamic OpenCode model discovery with refresh, unavailable-model retention, free/temporary metadata, and exact-only alias resolution; `ox-alpha` remains unresolved.
+- Added credential-reference-only provider metadata and local-first/private/hybrid routing with bounded fallback and independent-review selection.
+- Added bounded Goal/Work records, validated task DAGs, lifecycle, cancellation, timeouts, concurrency caps, metadata-only persistence, and evidence-required completion claims.
+- Added approval-delegated `jarvis/task-...` worktree plans, structured worker messages, and provenance-aware scoped context with personal references excluded by default.
+- Added bounded `worker` and `work` CLI diagnostics and tests; external execution, auto-merge, cloud enablement, hidden context sharing, Phase 7, and old-phone work remain disabled.
+- Verified Codex login metadata, Hermes health, seven dynamic OpenCode models, an isolated no-tool OpenCode smoke response, and authoritative Ollama-first routing without exposing private executable paths.
+- Final verification passes 53 focused tests, 362 broader regression tests plus 129 subtests, and 2,192 full-suite tests plus 331 subtests with zero failures.
+
 ## Unreleased - Phase 6 Local Tooling and Integration Platform
 
 - Repaired false planning classification for enriched ordinary prompts and made genuine plans inherit the configured permitted local provider.

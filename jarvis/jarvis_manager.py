@@ -26,6 +26,8 @@ from jarvis.release_readiness import ReleaseReadinessEvaluator
 from jarvis.scheduler import SchedulerAgent
 from jarvis.governance import GovernanceLimits, GovernanceRuntime, build_default_governance_runtime
 from jarvis.phase6 import Phase6Runtime
+from jarvis.workers import WorkerRuntime
+from jarvis.workers.models import WorkRuntimeLimits
 from jarvis.integrations import ExternalIntegrationControlPlane
 from jarvis.mcp_runtime import build_mcp_runtime
 from jarvis.jarvis_controller import JarvisController
@@ -258,6 +260,23 @@ class JarvisManager:
         )
         self.phase4_runtime = Phase4Runtime(coding_root)
         self.phase6_runtime = Phase6Runtime(coding_root)
+        workers_config = getattr(context.settings, "workers", None) if context else None
+        self.worker_runtime = WorkerRuntime(coding_root, WorkRuntimeLimits(
+            enabled=getattr(workers_config, "enabled", True),
+            default_mode=getattr(workers_config, "default_mode", "plan_only"),
+            default_routing_mode=getattr(workers_config, "default_routing_mode", "local_only"),
+            max_workers=getattr(workers_config, "max_workers", 16),
+            max_parallel_tasks=getattr(workers_config, "max_parallel_tasks", 2),
+            max_tasks=getattr(workers_config, "max_tasks", 64),
+            max_messages=getattr(workers_config, "max_messages", 200),
+            max_context_fragments=getattr(workers_config, "max_context_fragments", 64),
+            max_context_chars=getattr(workers_config, "max_context_chars", 12000),
+            default_timeout_seconds=getattr(workers_config, "default_timeout_seconds", 180),
+            max_fallbacks=getattr(workers_config, "max_fallbacks", 2),
+            allow_cloud_routes=getattr(workers_config, "allow_cloud_routes", False),
+            require_approval_for_writes=getattr(workers_config, "require_approval_for_writes", True),
+            worktree_auto_merge=getattr(workers_config, "worktree_auto_merge", False),
+        ))
         self.mcp_runtime = build_mcp_runtime(
             getattr(context.settings, "mcp", None) if context else None,
             broker=self.phase4_runtime.broker,
@@ -267,6 +286,7 @@ class JarvisManager:
         provider_manager = context.metadata.get("provider_manager") if context else None
         ollama_record = getattr(getattr(provider_manager, "registry", None), "get", lambda _name: None)("ollama")
         ollama_ready = bool(ollama_record and ollama_record.health and ollama_record.health.available)
+        self.worker_runtime.set_ollama_health(ollama_ready)
         stored_models = tuple(
             getattr(item, "model_id", "")
             for item in getattr(getattr(ollama_record, "provider", None), "_models", ())
@@ -412,6 +432,7 @@ class JarvisManager:
             "release_readiness_evaluator": self.release_readiness_evaluator,
             "phase4_runtime": self.phase4_runtime,
             "phase6_runtime": self.phase6_runtime,
+            "worker_runtime": self.worker_runtime,
             "mcp_runtime": self.mcp_runtime,
             "mobile_automation": self.mobile_automation,
             "agent_registry": self.agent_registry,
@@ -544,6 +565,7 @@ class JarvisManager:
                 "release_readiness_evaluator": self.release_readiness_evaluator,
                 "phase4_runtime": self.phase4_runtime,
                 "phase6_runtime": self.phase6_runtime,
+                "worker_runtime": self.worker_runtime,
                 "mcp_runtime": self.mcp_runtime,
                 **request.metadata,
             },

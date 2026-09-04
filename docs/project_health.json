@@ -1,7 +1,7 @@
 {
   "release": "v1.7.0-alpha",
   "commit": "Phase 6 final Git HEAD",
-  "updated_at": "2026-08-19",
+  "updated_at": "2026-09-04",
   "primary_mode": "CLI via python main.py",
   "next_milestone": "Phase 7 requires explicit authorization",
   "overall_mvp_readiness": 94,
@@ -45,7 +45,7 @@
     {"name": "Controlled Execution", "status": "Partial", "confidence": 78, "evidence": "Exact approvals and a central broker govern scoped file, allowlisted command, Git, public-page read, console-notification, and manual scheduler operations.", "next_action": "Keep unsupported and critical actions blocked; require separate review for every new executor."},
     {"name": "Security/Permissions", "status": "Partial", "confidence": 86, "evidence": "Execution modes, risk, exact approvals, locality, protected resources, timeout, rollback metadata, and executor-specific boundaries are tested.", "next_action": "Threat-review every new execution surface."},
     {"name": "Enterprise Governance", "status": "Partial", "confidence": 82, "evidence": "Zero-trust identity, authorization, policy, risk, trust, tamper-evident bounded audit, compliance, security event, and incident foundations are tested without execution authority.", "next_action": "Retain bounded governance and review future extensions only under a separately authorized roadmap."},
-    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 98, "evidence": "The post-Phase-6 repair passes 318 focused subsystem, 43 documentation/tracking, and 2137 full-suite tests with no skips, failures, or errors; the historical Phase 6 checkpoint remains separately recorded.", "next_action": "Keep release evidence current; do not treat optional adapters as PASS."}
+    {"name": "Testing/Release Readiness", "status": "Working", "confidence": 98, "evidence": "Current pre-old-phone verification passes 53 focused, 362 broader regression, and 2192 full-suite tests plus 331 subtests with zero failures; one pre-existing collection warning remains.", "next_action": "Keep release evidence current; do not treat optional adapters as executable."}
   ],
   "phase3": {
     "status": "Partial - plan-only multi-agent foundation",
@@ -145,5 +145,29 @@
     "execution_authority": false,
     "vercel_status_only": true,
     "phase7_started": false
+  },
+  "pre_old_phone_foundation": {
+    "status": "implemented_metadata_and_plan_only",
+    "roadmap_steps": "2-20",
+    "focused_tests_passed": 53,
+    "broader_regression_tests_passed": 362,
+    "full_tests_passed": 2192,
+    "subtests_passed": 331,
+    "worker_registry": "ready_bounded",
+    "detected_at_verification": ["codex", "hermes", "aider", "opencode"],
+    "munder": "not_detected_optional",
+    "dynamic_model_registry": "ready_runtime_refresh",
+    "detected_versions": {"codex": "0.153.0", "hermes": "0.20.4", "aider": "0.86.2", "opencode": "1.18.27"},
+    "opencode_models_discovered": 7,
+    "ox_alpha_alias": "unresolved_exact_identifier_not_discovered",
+    "default_routing_mode": "local_only",
+    "cloud_routes_enabled": false,
+    "worker_execution_enabled": false,
+    "auto_merge_enabled": false,
+    "approval_bypass": false,
+    "broker_bypass": false,
+    "personal_context_shared_by_default": false,
+    "phase7_started": false,
+    "old_phone_started": false
   }
 }

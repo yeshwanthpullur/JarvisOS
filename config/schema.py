@@ -189,6 +189,26 @@ class SkillsConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class WorkersConfig:
+    """External worker discovery and bounded coordination settings."""
+
+    enabled: bool = True
+    default_mode: str = "plan_only"
+    default_routing_mode: str = "local_only"
+    max_workers: int = 16
+    max_parallel_tasks: int = 2
+    max_tasks: int = 64
+    max_messages: int = 200
+    max_context_fragments: int = 64
+    max_context_chars: int = 12000
+    default_timeout_seconds: int = 180
+    max_fallbacks: int = 2
+    allow_cloud_routes: bool = False
+    require_approval_for_writes: bool = True
+    worktree_auto_merge: bool = False
+
+
+@dataclass(frozen=True, slots=True)
 class ResearchConfig:
     """Local-first, bounded Research Agent settings."""
 
@@ -642,6 +662,7 @@ class AppSettings:
     observability: ObservabilityConfig = field(default_factory=ObservabilityConfig)
     prime: PrimeConfig = field(default_factory=PrimeConfig)
     skills: SkillsConfig = field(default_factory=SkillsConfig)
+    workers: WorkersConfig = field(default_factory=WorkersConfig)
     research: ResearchConfig = field(default_factory=ResearchConfig)
     coding: CodingConfig = field(default_factory=CodingConfig)
     knowledge_index: KnowledgeConfig = field(default_factory=KnowledgeConfig)

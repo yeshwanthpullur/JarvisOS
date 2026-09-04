@@ -75,6 +75,8 @@ _SUBCOMMANDS = {
     *{f"runtime {x}" for x in ("status","health","components","dependencies","metrics","traces","diagnostics","alerts","providers","models","queues","resources","breakers","circuits","recovery-plan","recovery-history","events","dashboard","profile","capacity","verify")},
     *{f"security {x}" for x in ("status","health","identities","permissions","policies","trust","incidents","audit","compliance","risks","governance","events","metrics","dashboard","validate","verify","policy-show","incident-show","audit-show","trust-show")},
     "prime status", "prime route", "prime plan", "prime risk", "prime explain",
+    *{f"worker {x}" for x in ("status", "list", "show", "health", "inventory", "models", "model-refresh", "providers", "route", "select", "task-plan")},
+    *{f"work {x}" for x in ("status", "plan", "show", "graph", "worktree-plan", "context", "messages")},
     "model status", "model providers", "model capabilities", "model route", "model explain", "model hardware", "model policy", "model list", "model health", "model inspect", "model roles", "model select", "model test",
     "skill status", "skill list", "skill capabilities", "skill show", "skill find", "skill permissions", "skill diagnostics",
     "research status", "research help", "research providers", "research provider-health", "research budget", "research plan", "research safety", "research search", "research sources", "research quick", "research standard", "research deep", "research verify", "research summarize", "research evidence", "research contradictions", "research citations", "research knowledge-candidates", "research show", "research history",

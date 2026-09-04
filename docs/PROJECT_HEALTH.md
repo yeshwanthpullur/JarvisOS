@@ -1,5 +1,7 @@
 # Project Health
 
+Pre-old-phone foundation steps 2-20 add tested worker discovery, dynamic model metadata, bounded routing, Goal/Work DAGs, structured communication, controlled context, and approval-delegated worktree plans. This improves architectural readiness but does not add autonomous execution or change the conservative 94% MVP readiness and 47/24/23 limitation counts. Codex, Hermes, Aider, and OpenCode were detected; Munder and other optional workers remain truthful degraded/unavailable states. The pre-change baseline was 2,139 tests plus 331 subtests; final verification passes 2,192 tests plus 331 subtests with zero failures, and normal pytest collection now excludes `installations/`.
+
 Phase 6 implements the Prompt 86-100 local tooling and integration checkpoint while preserving Phase 3-5 authorities. MVP readiness is conservatively 94%; limitations remain 47 total, 24 fixed, and 23 open. Optional external tools and services remain degraded or unconfigured rather than being counted as complete.
 
 Post-Phase-6 repair: normal capability-summary prompts no longer become plans because of enriched context length; genuine plans inherit the configured local provider. Official-SDK MCP stdio discovery and installed-versus-integrated tool diagnostics are verified without adding execution authority. MVP and limitation counts are unchanged.
@@ -57,7 +59,7 @@ Status values are evidence-based: **Working**, **Partial**, **Experimental**, **
 | Communication Assistance | Partial | 70% | Prompts 73-74 implement disabled-by-default Telegram, Discord, email, and Slack text connectors with provider-specific validation and exact approval/Broker gates; runtimes are unconfigured. | Connector tests; provider status commands | Implement Prompt 75 independently; keep inbound, inbox, attachments, bulk, and scheduling disabled. |
 | Personal Workspace | Partial | 30% | CLI access and project tracking exist, but capabilities are not yet unified into a complete multi-tool replacement workspace. | `python main.py`; `project status`; product vision review | Compose approved capabilities in Prompt 49 without duplicating authorities. |
 | Security/Permissions | Partial | 75% | Permission, approval, provider, tool, interface, and locality boundaries are tested. | Security-focused subsystem tests | Continue threat review for every external integration. |
-| Testing/Release Readiness | Working | 98% | The post-Phase-6 repair passes 318 focused subsystem, 43 documentation/tracking, and 2,137 full-suite tests with no skips, failures, or errors. The historical Phase 6 checkpoint remains recorded separately. | `POST_PHASE6_RUNTIME_REPAIR.md`; `PHASE_6_FINAL_VALIDATION.md` | Keep release evidence current; do not treat optional adapters as PASS. |
+| Testing/Release Readiness | Working | 98% | Current pre-old-phone verification passes 53 focused, 362 broader regression, and 2,192 full-suite tests plus 331 subtests with zero failures. One pre-existing collection warning remains. | `PRE_OLD_PHONE_FOUNDATION.md`; full scoped test suite | Keep release evidence current; do not treat optional adapters as executable. |
 
 ## Overall MVP Readiness
 
