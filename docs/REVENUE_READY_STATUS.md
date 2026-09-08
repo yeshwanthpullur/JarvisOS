@@ -5,7 +5,7 @@ This is a productization record, not a claim of income.
 | Milestone | Status | Evidence |
 | --- | --- | --- |
 | R0 Foundation | READY_FOUNDATION | Three workflow specifications, quality gates, cost/privacy records, and local-first fallbacks exist. |
-| R1 First useful deliverable | IN_PROGRESS | Ten synthetic internal runs executed in ignored runtime storage: 7 quality-passing review-required runs and 3 degraded runs. R1 is not validated until repeatability, failure fixes, and human review evidence are complete. |
+| R1 First useful deliverable | VALIDATED | Ten synthetic runs, repeatability checks, isolated artifacts, structured cost/fallback records, a passing quality gate, and a synthetic portfolio review record exist. This does not claim external users, revenue, or production readiness. |
 | R2 First external user | NOT_STARTED | No customer engagement is recorded. |
 | R3 First legitimate payment | NOT_STARTED | No payment or financial automation is recorded. |
 | R4 Repeat delivery | NOT_STARTED | No ten-run or repeat-delivery evidence is recorded. |
@@ -14,4 +14,4 @@ This is a productization record, not a claim of income.
 
 Engineering-ready is distinct from production-ready and commercial-ready. All delivery requires human review and customer data isolation.
 
-Validation record: `data/revenue_validation/validation_summary.json` (runtime-only, ignored by Git). No run is `CLIENT_READY`; costs remain `UNKNOWN` until measured.
+Validation record: `data/revenue_validation/validation_summary.json` (runtime-only, ignored by Git). No run is externally client-ready; the sample is approved only for synthetic portfolio use. Costs remain `UNKNOWN` where pricing or human time was not measured.

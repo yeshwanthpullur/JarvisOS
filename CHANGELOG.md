@@ -406,4 +406,4 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 # R1 activation
 
 - Added the reusable `EngineeringResearchPackage` skill, isolated run records, bounded Markdown deliverables, evidence/citation checks, and human-review quality gates.
-- Executed ten synthetic validation cases; R1 remains `IN_PROGRESS` with degraded cases explicitly retained.
+- Closed R1 synthetic validation with ten structured runs, repeatability evidence, explicit cost/fallback fields, a human-review checklist, and a synthetic portfolio review. Degraded cases remain visible; R2 is not started.

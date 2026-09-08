@@ -28,7 +28,11 @@ def test_run_creates_isolated_quality_gated_deliverable(tmp_path: Path):
     assert quality.passed is True
     assert result.summary is not None
     assert (tmp_path / "r1-001" / "output" / "final_report.md").is_file()
+    assert (tmp_path / "r1-001" / "output" / "metadata.json").is_file()
     assert (tmp_path / "r1-001" / "audit" / "run_record.json").is_file()
+    review = EngineeringResearchPackage().review(quality)
+    assert review["review_outcome"] == "APPROVED_FOR_SYNTHETIC_PORTFOLIO_ONLY"
+    assert review["human_review_required"] is True
 
 
 def test_missing_evidence_is_degraded_and_honest(tmp_path: Path):

@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 import json
 from pathlib import Path
 import re
+import time
 from uuid import uuid4
 
 from jarvis.research import ResearchAgent, ResearchPlanner
@@ -60,6 +61,16 @@ class QualityReport:
 
 
 @dataclass(frozen=True, slots=True)
+class CostMeasurement:
+    provider_cost: str = "UNKNOWN"
+    tool_cost: str = "UNKNOWN"
+    compute_cost: str = "UNKNOWN"
+    total_direct_cost: str = "UNKNOWN"
+    manual_minutes: str = "UNKNOWN"
+    automated_minutes: str = "UNKNOWN"
+
+
+@dataclass(frozen=True, slots=True)
 class WorkflowRunRecord:
     workflow_id: str
     request: str
@@ -106,6 +117,7 @@ class EngineeringResearchPackage:
         }
 
     def run(self, request: ResearchPackageRequest, workspace: Path, *, evidence: tuple[ResearchEvidence, ...] = (), provider_state: str = "local") -> tuple[WorkflowRunRecord, QualityReport, ResearchResult]:
+        started = time.perf_counter()
         start = _now()
         workspace = Path(workspace).resolve()
         for name in ("input", "working", "evidence", "output", "audit"):
@@ -116,17 +128,29 @@ class EngineeringResearchPackage:
         if evidence:
             (workspace / "evidence" / "evidence.json").write_text(json.dumps([asdict(item) for item in evidence[: self.max_evidence]], indent=2), encoding="utf-8")
         quality = self.quality_gate(request, plan_result, provider_state=provider_state)
+        automated_minutes = f"{(time.perf_counter() - started) / 60:.4f}"
+        cost = CostMeasurement(automated_minutes=automated_minutes)
         summary = plan_result.summary.answer if plan_result.summary else "Evidence unavailable; plan-only result."
         report = "# Engineering Research Package\n\n## Executive Summary\n" + _bound(summary) + "\n\n## References\n" + "\n".join(f"- {item.source_ref}" for item in plan_result.evidence) + "\n\n## Limitations\n" + "\n".join(f"- {item}" for item in (plan_result.summary.limitations if plan_result.summary else ("Evidence unavailable.",)))
         (workspace / "output" / "final_report.md").write_text(report[:6000], encoding="utf-8")
         (workspace / "output" / "executive_summary.md").write_text(_bound(summary), encoding="utf-8")
         (workspace / "output" / "references.md").write_text("\n".join(item.source_ref for item in plan_result.evidence), encoding="utf-8")
         (workspace / "audit" / "quality_report.json").write_text(json.dumps(asdict(quality), indent=2), encoding="utf-8")
+        (workspace / "output" / "metadata.json").write_text(json.dumps({"label": "SYNTHETIC PORTFOLIO SAMPLE" if provider_state == "synthetic" else "INTERNAL VALIDATION", "workflow_version": self.version, "provider_state": provider_state, "cost": asdict(cost)}, indent=2), encoding="utf-8")
         status = "completed_review_required" if quality.passed else "degraded"
         failure_class = "" if quality.passed else ("PROVIDER" if provider_state not in {"local", "synthetic"} else "RESEARCH" if not evidence else "QUALITY")
-        record = WorkflowRunRecord(self.skill_id, _bound(request.topic, 240), start, _now(), ("ResearchAgent", "local_document_writer"), ("research_agent", "document_agent"), (provider_state,), ("output/final_report.md", "output/executive_summary.md", "output/references.md", "audit/quality_report.json"), ("quality_gate",), quality.status, "REQUIRED", "UNKNOWN", "measured separately", "bounded", status, failure_class)
+        record = WorkflowRunRecord(self.skill_id, _bound(request.topic, 240), start, _now(), ("ResearchAgent", "local_document_writer"), ("research_agent", "document_agent"), (provider_state,), ("output/final_report.md", "output/executive_summary.md", "output/references.md", "output/metadata.json", "audit/quality_report.json"), ("quality_gate",), quality.status, "REQUIRED", cost.total_direct_cost, cost.manual_minutes, cost.automated_minutes, status, failure_class)
         (workspace / "audit" / "run_record.json").write_text(json.dumps(asdict(record), indent=2), encoding="utf-8")
         return record, quality, plan_result
+
+    @staticmethod
+    def human_review_checklist() -> tuple[str, ...]:
+        return ("requirements coverage", "factual correctness", "source quality", "citation/provenance", "formatting", "completeness", "privacy", "obvious hallucinations", "unsupported claims")
+
+    def review(self, quality: QualityReport, *, reviewer_role: str = "QA lead") -> dict[str, object]:
+        """Record a bounded review decision; it does not grant external delivery authority."""
+        outcome = "APPROVED_FOR_SYNTHETIC_PORTFOLIO_ONLY" if quality.passed else "REJECTED_FOR_CORRECTION"
+        return {"reviewer_role": reviewer_role[:80], "checklist": self.human_review_checklist(), "review_outcome": outcome, "issues_found": quality.failures, "corrections": (), "final_outcome": outcome, "human_review_required": True}
 
     def quality_gate(self, request: ResearchPackageRequest, result: ResearchResult, *, provider_state: str) -> QualityReport:
         checks = ["completeness", "accuracy", "source quality", "citation/provenance", "requirement coverage", "formatting", "consistency", "privacy"]

@@ -10,6 +10,7 @@
 - Engineering Research Package focused tests: 11 passed.
 - Synthetic validation: 10 isolated runtime runs; 7 quality-passing review-required, 3 degraded; no client-ready output claimed.
 - Runtime records remain ignored under `data/revenue_validation/`.
+- R1 closure matrix, review checklist, and synthetic portfolio review are documented in `docs/R1_VALIDATION_MATRIX.md`, `docs/R1_HUMAN_REVIEW_CHECKLIST.md`, and `JARVIS_OS/10_AUTOMATION/PORTFOLIO/synthetic_review_record.md`.
 
 ## Engineering Steps 64-94
 
