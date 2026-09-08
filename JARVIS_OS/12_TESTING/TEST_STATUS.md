@@ -5,6 +5,12 @@
 - Documentation and workflow-structure validation is covered by `tests/test_post122_activation.py`.
 - No commercial milestone is claimed without measured internal-run or external-delivery evidence.
 
+## R1 activation
+
+- Engineering Research Package focused tests: 11 passed.
+- Synthetic validation: 10 isolated runtime runs; 7 quality-passing review-required, 3 degraded; no client-ready output claimed.
+- Runtime records remain ignored under `data/revenue_validation/`.
+
 ## Engineering Steps 64-94
 
 - Focused reconciled-block/foundation run: 190 passed, 0 failed.

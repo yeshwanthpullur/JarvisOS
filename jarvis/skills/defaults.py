@@ -25,6 +25,7 @@ def build_default_skill_registry() -> SkillRegistry:
         _ready("limitations_skill", "system", "limitations", "Read bounded limitation metadata.", permissions=(P.SYSTEM_STATUS,)),
         _ready("vision_status_skill", "vision", "vision_status", "Read local vision status."),
         _ready("research_planning_skill", "research", "research_planning", "Plan bounded research requests."),
+        _ready("engineering_research_package_skill", "research", "engineering_research_package", "Run the isolated, quality-gated engineering research package workflow."),
         _ready("evidence_summary_skill", "research", "evidence_summary", "Summarize bounded evidence."),
         _ready("source_policy_skill", "research", "source_policy", "Explain safe source policy."),
         _ready("project_research_skill", "research", "project_research", "Plan repo and project research."),

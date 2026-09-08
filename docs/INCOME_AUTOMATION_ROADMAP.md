@@ -6,7 +6,9 @@ The sequence is: foundation, one useful deliverable, a small legitimate external
 
 `L0 Manual` -> `L1 AI-assisted` -> `L2 Script-assisted` -> `L3 JARVIS-orchestrated` -> `L4 Multi-agent` -> `L5 Scheduled` -> `L6 Verified repeatable`.
 
-Current services are `L0-L2 plan-only foundations`. Scheduling, publishing, unsolicited outreach, financial automation, and platform manipulation are out of scope.
+Current Engineering Research Package is `L2 SCRIPT-ASSISTED / REVIEW-REQUIRED` for synthetic validation. It is not L6 repeatable yet. Scheduling, publishing, unsolicited outreach, financial automation, and platform manipulation are out of scope.
+
+R1 evidence gate currently has ten internal synthetic runs, isolated run records, seven passing quality gates, three degraded cases, and a documented failure taxonomy. Next action is to fix/verify the degraded paths and complete human review records before considering R1 validation.
 
 ## Operating loop
 

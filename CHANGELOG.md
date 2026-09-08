@@ -402,3 +402,8 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 
 - Added evidence-based laptop baseline, reproducible startup/shutdown/troubleshooting guidance, explicit operating modes, revenue milestone tracking, three human-reviewed service workflow specifications, customer-workspace boundaries, tool-cost registry, and device migration safety documents.
 - No provider, device, payment, customer, or generated runtime data was enabled or committed.
+
+# R1 activation
+
+- Added the reusable `EngineeringResearchPackage` skill, isolated run records, bounded Markdown deliverables, evidence/citation checks, and human-review quality gates.
+- Executed ten synthetic validation cases; R1 remains `IN_PROGRESS` with degraded cases explicitly retained.

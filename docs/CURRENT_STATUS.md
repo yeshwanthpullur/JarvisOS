@@ -32,6 +32,8 @@ Updated: 2026-09-08
 
 The laptop baseline is `READY_FOUNDATION` and remains the primary platform. Post-122 operating mode defaults to `DEVELOPMENT/TESTING`. Revenue readiness is `R0 READY_FOUNDATION`; R1-R6 are not claimed because no internal-run, external-user, payment, repeat-delivery, unit-economics, or subscription-independence evidence has been recorded. Engineering Research Package, Technical Project Documentation, and Short-Form Technical Content are documented as human-reviewed, plan-only service foundations. Old-phone migration remains planning-only and untouched.
 
+R1 activation is now `IN_PROGRESS`: the Engineering Research Package skill produced ten synthetic isolated run records, with seven quality-passing review-required results and three degraded results for missing evidence or unavailable providers. No customer, payment, or client-ready claim exists.
+
 ## Current Release
 
 - Release: `v1.7.0-alpha - Phase 3 Batch 2 Foundation`
