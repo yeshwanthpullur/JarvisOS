@@ -4,10 +4,10 @@ This is the canonical engineering-step ledger. Prompt and Phase numbers are sepa
 
 ## Baseline
 
-- Latest reconciled block: **Steps 64-94**
-- Next target: **Step 95**
-- Remaining range: **Steps 95-122**
-- Remaining count: **28 steps**
+- Latest reconciled block: **Steps 95-122**
+- Next target: **Stop after Step 122; no Step 123 is authorized**
+- Remaining range: **None in the supplied roadmap**
+- Remaining count: **0 numbered steps in this block**
 - Evidence source: `docs/PRE_OLD_PHONE_FOUNDATION.md`, `docs/ROADMAP_STEPS_21_62.md`, `docs/PROMPT_HISTORY.md`, current tests, and the authoritative continuation specification received on 2026-09-08.
 - Step 63 definition: **UNKNOWN / NOT RECOVERED**. It must not be implemented until its authoritative definition is supplied or recovered.
 
@@ -16,7 +16,7 @@ This is the canonical engineering-step ledger. Prompt and Phase numbers are sepa
 - **CANONICAL / EVIDENCED:** Steps 21-62, as recorded in `docs/ROADMAP_STEPS_21_62.md` and verified by the current focused tests.
 - **RECOVERED ENGINEERING SPECIFICATION:** The supplied 64-94 continuation text defines a defensible engineering block. It is not claimed to be the original historical prompt.
 - **RECONCILED SPECIFICATION:** Steps 64-94 are individually mapped to existing code/tests/docs and recorded in `docs/ENGINEERING_STEPS_64_94.md`.
-- **UNKNOWN / NOT RECOVERED:** Individual authoritative definitions for Steps 1-20 and 95-122.
+- **UNKNOWN / NOT RECOVERED:** Individual authoritative definitions for Steps 1-20. Steps 95-122 use the supplied final-block continuation specification and are explicitly labeled reconciled/provisional below.
 
 ## Provisional Later-Roadmap Context
 
@@ -171,9 +171,44 @@ The supplied recovery summary groups later work approximately as follows. This t
 | 121 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
 | 122 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
 
+## Final Block 95-122 Reconciliation
+
+The placeholder `UNKNOWN / NOT RECOVERED` rows for Steps 95-122 are superseded by the supplied final engineering block and the detailed ledger in `docs/ENGINEERING_STEPS_95_122.md`. This is a reconciled implementation record, not a claim that the recovered wording is historical verbatim.
+
+| Step | Status | Evidence |
+| ---: | --- | --- |
+| 95 | READY_FOUNDATION | Privacy-aware route assessment and explicit denial tests. |
+| 96 | READY_FOUNDATION | Governed memory scopes and customer-data boundary records. |
+| 97 | READY_FOUNDATION | Privacy/cost/quality metadata and unknown-cost handling. |
+| 98 | READY_FOUNDATION | Explicit operational states and offline remote-provider rejection. |
+| 99 | READY_FOUNDATION | Fifteen-capability offline matrix. |
+| 100 | READY_FOUNDATION | Existing checkpoint/recovery/idempotency foundation. |
+| 101 | READY_FOUNDATION | Checkpoint/resume regression evidence. |
+| 102 | READY_FOUNDATION | Integrity-checked non-secret backup/restore. |
+| 103 | READY_FOUNDATION | Secret/path scans and secret-safe outputs. |
+| 104 | READY_FOUNDATION | External-content injection classification as data only. |
+| 105 | READY_FOUNDATION | Workspace boundary and protected-path checks. |
+| 106 | READY_FOUNDATION | Six-case final-block golden suite. |
+| 107 | READY_FOUNDATION | Repeatable focused/full regression process. |
+| 108 | READY_FOUNDATION | Bounded benchmark report with unknown metrics preserved. |
+| 109 | READY_FOUNDATION | Runtime-backed Control Room snapshot. |
+| 110 | READY_FOUNDATION | Bounded operations, events, health, and evidence view. |
+| 111 | DEGRADED | Local orchestration foundation; no external customer run claimed. |
+| 112 | DEGRADED | Research/document/RAG pipeline tested; live optional sources remain limited. |
+| 113 | DEGRADED | Coding planning/review tested; autonomous edits remain disabled. |
+| 114 | READY_FOUNDATION | Contract-based agent substitution foundation. |
+| 115 | READY_FOUNDATION | Privacy-safe provider fallback behavior. |
+| 116 | READY_FOUNDATION | Failure, injection, timeout, and denial coverage. |
+| 117 | READY_FOUNDATION | Three human-reviewed revenue workflow definitions. |
+| 118 | DEGRADED | Recovery primitives tested; repeated external stress not claimed. |
+| 119 | READY_FOUNDATION | Minimal final-block hardening and evidence ledger. |
+| 120 | READY_FOUNDATION | Laptop baseline snapshot; no cloud/phone dependency. |
+| 121 | READY_FOUNDATION | Final gate commands, docs, scans, and 28-row ledger. |
+| 122 | UNCONFIGURED | Old-phone transition planning only; no device changes. |
+
 ## Reconciliation Result
 
-The repository supports the Step 62 baseline, the Step 63 recovered voice foundation, and individually reconciled Steps 64-94. The supplied 64-94 text is explicitly labeled recovered/reconciled engineering specification rather than original historical prompt text. Steps 95-122 remain unrecovered at the individual-definition level.
+The repository supports the Step 62 baseline, the Step 63 recovered voice foundation, and individually reconciled Steps 64-122. The supplied continuation texts are explicitly labeled recovered/reconciled engineering specifications rather than original historical prompt text.
 
 ## Step 63 Record
 

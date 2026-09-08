@@ -1,11 +1,11 @@
 # Roadmap
 
-The current local engineering checkpoint is reconciled Steps 64-94. Every row
+The current local engineering checkpoint is reconciled Steps 95-122. Every row
 has an individual provenance/status record in
-[`ENGINEERING_STEPS_64_94.md`](ENGINEERING_STEPS_64_94.md). Step 95 has not
-started. Prompt/Phase numbering remains distinct from Engineering Step numbering.
+[`ENGINEERING_STEPS_95_122.md`](ENGINEERING_STEPS_95_122.md). No Step 123 is
+authorized. Prompt/Phase numbering remains distinct from Engineering Step numbering.
 
-- Engineering roadmap reconciliation: Steps 21-62 are evidenced in the current local working tree and Steps 64-94 are individually recorded in [`ENGINEERING_STEPS_64_94.md`](ENGINEERING_STEPS_64_94.md) and [`ENGINEERING_ROADMAP_1_122.md`](ENGINEERING_ROADMAP_1_122.md). Steps 1-20 and 95-122 remain `UNKNOWN / NOT RECOVERED` at the individual-definition level where repository evidence is absent. Step 63 and Steps 64-94 use explicit recovered/reconciled provenance. Prompt/Phase numbering remains separate from Engineering Step numbering.
+- Engineering roadmap reconciliation: Steps 21-62 are evidenced in the current local working tree and Steps 64-122 are individually recorded in the block ledgers and [`ENGINEERING_ROADMAP_1_122.md`](ENGINEERING_ROADMAP_1_122.md). Steps 1-20 remain `UNKNOWN / NOT RECOVERED` at the individual-definition level where repository evidence is absent. Steps 63-122 use explicit recovered/reconciled provenance. Prompt/Phase numbering remains separate from Engineering Step numbering.
 
 - Prompts 86-100 - Phase 6 local tooling, integration, hardening, and production-readiness validation: implemented in order. Optional adapters remain degraded/unconfigured, no release was created, and Phase 7 was not started.
 
@@ -159,6 +159,8 @@ The following earlier Prompt 43-49 assignments remain valid product-direction th
 The master product vision in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) still tracks longer-range themes such as study support, builder workflows, Raspberry Pi guidance, creative media, communication assistance, and the unified personal workspace. Those themes remain valid even when the exact prompt numbering evolved over time.
 
 ## Roadmap Rules
+
+The final continuation ledger is `docs/ENGINEERING_STEPS_95_122.md`; its 28 rows supersede older provisional text below. No Step 123 is authorized.
 
 - Finish and verify one milestone before beginning the next.
 - Update `CURRENT_STATUS.md`, `PROJECT_HEALTH.md`, `project_health.json`, and `CHANGELOG.md` with every release-worthy change.

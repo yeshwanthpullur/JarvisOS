@@ -6,8 +6,8 @@
 - Coverage includes backup integrity/secret rejection, privacy-aware provider
   routing, execution policy/Broker, scheduler, workflow, MCP, GitHub,
   communication, evaluation, and model-router regressions.
-- Full suite after this block: 2,316 passed, 331 subtests passed, 0 failed,
-  0 errors, and 1 pre-existing collection warning; no Step 95 work is included.
+- Full suite before this block: 2,316 passed, 331 subtests passed, 0 failed,
+  0 errors, and 1 pre-existing collection warning.
 
 Latest local verification before synchronization:
 
@@ -22,6 +22,22 @@ Latest local verification before synchronization:
 - Targeted compilation, JSON validation, secret scan, absolute-path scan, and `git diff --check`: passed.
 
 No physical microphone capture or audio playback was performed during automated verification.
+
+## Engineering Steps 95-122
+
+- Final-block focused suite: 12 passed.
+- Coverage includes privacy/offline routing, external-content classification,
+  workspace boundaries, backup integrity, golden evaluation, capability matrix,
+  laptop baseline, revenue workflow review, and CLI registration.
+- Full regression, security scans, and final hygiene checks are required before
+  the final checkpoint. Physical devices and optional external providers remain
+  unconfigured.
+
+Final block verification: 93 focused/integration tests passed; 2,328 full-suite
+tests passed with 331 subtests, 0 failures, 0 errors, and one pre-existing
+pytest collection warning. Source compilation, JSON validation, production
+secret scan, absolute-path scan, runtime-artifact review, and `git diff --check`
+passed.
 
 ## Step 63
 

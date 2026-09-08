@@ -13,4 +13,4 @@ This folder is an Obsidian-compatible, Markdown-only project memory mirror. GitH
 - [[01_PROJECT/LIMITATIONS]]
 
 Current checkpoint: Reconciled Engineering Steps 64-94.
-Next target: Step 95.
+Next target: Stop after Step 122; no Step 123 is authorized.

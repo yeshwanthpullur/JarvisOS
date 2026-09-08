@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased - Final Engineering Block 95-122
+
+- Added bounded privacy/offline route assessments, operational states, and a capability matrix.
+- Added external-content prompt-injection classification, workspace boundary checks, and explicit backup validation reuse.
+- Added final-block golden evaluation, laptop baseline reporting, revenue-safe workflow metadata, and engineering diagnostics commands.
+- Recorded all 28 steps individually with reconciled/provisional status and preserved old-phone work as planning-only.
+- No Step 123, device conversion, cloud dependency, release, or autonomous financial workflow was added.
+
 ## Unreleased - Reconciled Engineering Steps 64-94
 
 - Reconciled every Engineering Step 64-94 row against existing execution, skills, scheduler, goal, browser, MCP, GitHub, communication, observability, reliability, evaluation, Control Room, provider, and privacy evidence without conflating prompt/phase numbering.

@@ -36,6 +36,7 @@ from jarvis.reliability import ReliabilityRuntime, build_default_reliability_run
 from jarvis.governance import GovernanceRuntime, build_default_governance_runtime, render_security_command
 from jarvis.phase6 import Phase6Runtime, get_phase6_runtime, render_phase6_command
 from jarvis.workers import WorkerRuntime, get_worker_runtime, render_worker_command
+from jarvis.final_block import FinalBlockRuntime
 
 
 def _manager(context: CommandContext):
@@ -136,6 +137,18 @@ def _worker_runtime(context: CommandContext) -> WorkerRuntime:
         core = getattr(conversation, "jarvis_core", None)
         runtime = getattr(getattr(core, "manager", None), "worker_runtime", None)
     return runtime if isinstance(runtime, WorkerRuntime) else get_worker_runtime(Path(__file__).resolve().parents[1])
+
+
+def _final_block_runtime(context: CommandContext) -> FinalBlockRuntime:
+    conversation = context.conversation_context
+    metadata = getattr(conversation, "metadata", {}) or {} if conversation is not None else {}
+    runtime = metadata.get("final_block_runtime")
+    if isinstance(runtime, FinalBlockRuntime):
+        return runtime
+    runtime = FinalBlockRuntime(root=Path(__file__).resolve().parents[1])
+    if conversation is not None:
+        metadata["final_block_runtime"] = runtime
+    return runtime
 
 
 def _jarvis_runtime_manager(context: CommandContext):
@@ -474,6 +487,7 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         phase6_status = phase6_runtime.status()
         phase6_candidate = phase6_runtime.candidate_report()
         worker_status = _worker_runtime(context).status()
+        final_block_status = _final_block_runtime(context).status()
         jarvis_manager = _jarvis_runtime_manager(context)
         rag_runtime = getattr(jarvis_manager, "rag_runtime", None)
         memory_governance = getattr(jarvis_manager, "memory_governance", None)
@@ -564,6 +578,11 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "external_providers_enabled": external_summary["enabled"],
             "external_execution_enabled": bool(external_summary["execution_enabled"]),
             "governance_status":governance_status["security_health"],"zero_trust_enabled":governance_status["zero_trust"],"governance_execution_authority":False,
+            "final_engineering_block_status": final_block_status["status"],
+            "final_engineering_golden_passed": final_block_status["golden_passed"],
+            "final_engineering_golden_total": final_block_status["golden_total"],
+            "phone_transition_status": final_block_status["phone_transition"],
+            "cloud_required": final_block_status["cloud_required"],
         }
     return _text_response(
         "Project status: "
@@ -627,6 +646,11 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("version", "Show application version", "system", (), CommandPermission.SYSTEM),
         ("status", "Show system status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("project status", "Show project milestone health", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("engineering status", "Show final engineering block status", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("engineering matrix", "Show bounded offline capability matrix", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("engineering evaluate", "Run bounded final-block golden evaluation", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("engineering workflows", "Show revenue-safe workflow candidates", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("engineering architecture", "Show laptop baseline architecture summary", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("limitations status", "Show limitation counts and priority", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("limitations list", "Show limitations command help", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("limitations open", "List bounded open limitations", "diagnostic", (), CommandPermission.DIAGNOSTIC),
@@ -1082,6 +1106,22 @@ def _handler_for(name: str):
             return _text_response(manager.help.render(manager.registry))
         if name == "project status":
             return _project_health_summary(context)
+        if name.startswith("engineering "):
+            runtime = _final_block_runtime(context)
+            if name == "engineering status":
+                status = runtime.status()
+                return _text_response("Engineering 95-122 status: " + " ".join(f"{key}={value}" for key, value in status.items()))
+            if name == "engineering matrix":
+                rows = runtime.capability_matrix()
+                return _text_response("Engineering offline matrix: " + "; ".join(f"{row.capability}:{row.offline}" for row in rows[:15]))
+            if name == "engineering evaluate":
+                report = runtime.evaluate()
+                return _text_response(f"Engineering evaluation: {report.name} passed={report.passed}/{report.total} failed={report.failed}.")
+            if name == "engineering workflows":
+                return _text_response("Engineering revenue workflows: " + ", ".join(item.name for item in runtime.revenue_workflows()))
+            if name == "engineering architecture":
+                baseline = runtime.laptop_baseline()
+                return _text_response(f"Laptop baseline: status={baseline.status} components={len(baseline.components)} cloud_required={'yes' if baseline.cloud_required else 'no'} phone_transition={'allowed' if baseline.phone_transition_allowed else 'planning-only'}.")
         if name.startswith("worker ") or name.startswith("work "):
             return _text_response(render_worker_command(_worker_runtime(context), name, context.arguments))
         if name.startswith("limitations "):
