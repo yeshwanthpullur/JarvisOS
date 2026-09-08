@@ -31,6 +31,10 @@ authorized. Prompt/Phase numbering remains distinct from Engineering Step number
 
 Updated: 2026-08-11
 
+## Post-122 activation
+
+The next practical focus is validating one local engineering research deliverable, then documentation and technical-content workflows, with measured internal runs and isolated customer workspaces. This does not authorize a new engineering prompt, device modification, cloud dependency, or automatic financial activity.
+
 ## Completed Milestones
 
 - Prompt 27 - Cloud AI and Provider foundation.

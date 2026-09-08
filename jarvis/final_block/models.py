@@ -18,6 +18,15 @@ class OperationalState(StrEnum):
     RECOVERING = "RECOVERING"
 
 
+class OperatingMode(StrEnum):
+    DEVELOPMENT = "DEVELOPMENT"
+    TESTING = "TESTING"
+    PRODUCTION = "PRODUCTION"
+    REVENUE = "REVENUE"
+    OFFLINE = "OFFLINE"
+    RECOVERY = "RECOVERY"
+
+
 class StepStatus(StrEnum):
     NOT_STARTED = "NOT_STARTED"
     READY = "READY"

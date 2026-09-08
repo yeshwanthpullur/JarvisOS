@@ -169,5 +169,21 @@
     "personal_context_shared_by_default": false,
     "phase7_started": false,
     "old_phone_started": false
+  },
+  "post122": {
+    "laptop_baseline": "ready_foundation",
+    "default_operating_mode": "development_testing",
+    "production_readiness": "not_ready",
+    "commercial_readiness": "not_ready",
+    "revenue_milestone": "R0_foundation",
+    "r1_first_useful_deliverable": "not_validated",
+    "r2_first_external_user": "not_started",
+    "r3_first_payment": "not_started",
+    "r4_repeat_delivery": "not_started",
+    "r5_positive_unit_economics": "not_started",
+    "r6_subscription_independence": "not_started",
+    "old_phone_status": "planning_only_untouched",
+    "cloud_required": false,
+    "customer_data_in_repository": false
   }
 }

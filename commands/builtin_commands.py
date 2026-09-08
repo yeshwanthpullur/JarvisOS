@@ -651,6 +651,7 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("engineering evaluate", "Run bounded final-block golden evaluation", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("engineering workflows", "Show revenue-safe workflow candidates", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("engineering architecture", "Show laptop baseline architecture summary", "diagnostic", (), CommandPermission.DIAGNOSTIC),
+        ("engineering mode", "Show safe post-122 operating modes", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("limitations status", "Show limitation counts and priority", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("limitations list", "Show limitations command help", "diagnostic", (), CommandPermission.DIAGNOSTIC),
         ("limitations open", "List bounded open limitations", "diagnostic", (), CommandPermission.DIAGNOSTIC),
@@ -1122,6 +1123,8 @@ def _handler_for(name: str):
             if name == "engineering architecture":
                 baseline = runtime.laptop_baseline()
                 return _text_response(f"Laptop baseline: status={baseline.status} components={len(baseline.components)} cloud_required={'yes' if baseline.cloud_required else 'no'} phone_transition={'allowed' if baseline.phone_transition_allowed else 'planning-only'}.")
+            if name == "engineering mode":
+                return _text_response("Operating modes: default=DEVELOPMENT/TESTING available=" + ",".join(runtime.operating_modes()))
         if name.startswith("worker ") or name.startswith("work "):
             return _text_response(render_worker_command(_worker_runtime(context), name, context.arguments))
         if name.startswith("limitations "):

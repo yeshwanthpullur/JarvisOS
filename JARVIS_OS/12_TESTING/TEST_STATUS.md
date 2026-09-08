@@ -1,5 +1,10 @@
 # Test Status
 
+## Post-122 activation
+
+- Documentation and workflow-structure validation is covered by `tests/test_post122_activation.py`.
+- No commercial milestone is claimed without measured internal-run or external-delivery evidence.
+
 ## Engineering Steps 64-94
 
 - Focused reconciled-block/foundation run: 190 passed, 0 failed.

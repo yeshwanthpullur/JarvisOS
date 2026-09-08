@@ -20,6 +20,7 @@ from .models import (
     RevenueWorkflow,
     RouteAssessment,
     WorkspaceDecision,
+    OperatingMode,
 )
 
 
@@ -125,4 +126,8 @@ class FinalBlockRuntime:
 
     def status(self) -> dict[str, object]:
         report = self.evaluate()
-        return {"status": "ready_foundation", "operational_state": OperationalState.ONLINE.value, "matrix_capabilities": len(_CAPABILITY_MATRIX), "golden_passed": report.passed, "golden_total": report.total, "privacy_mode": PrivacyMode.LOCAL_ONLY.value, "cloud_required": False, "phone_transition": "planning_only", "history_items": len(self.history)}
+        return {"status": "ready_foundation", "operational_state": OperationalState.ONLINE.value, "operating_mode": OperatingMode.DEVELOPMENT.value + "/" + OperatingMode.TESTING.value, "matrix_capabilities": len(_CAPABILITY_MATRIX), "golden_passed": report.passed, "golden_total": report.total, "privacy_mode": PrivacyMode.LOCAL_ONLY.value, "cloud_required": False, "phone_transition": "planning_only", "history_items": len(self.history)}
+
+    @staticmethod
+    def operating_modes() -> tuple[str, ...]:
+        return tuple(mode.value for mode in OperatingMode)

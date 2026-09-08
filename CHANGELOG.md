@@ -398,3 +398,7 @@ All notable verified changes to JARVIS OS are recorded here. Unreleased architec
 - SAPI playback is synchronous.
 - Offline speech recognition requires a separately configured local STT model.
 - Vision, online sync, web automation, and mobile automation are not included.
+# Post-122 activation
+
+- Added evidence-based laptop baseline, reproducible startup/shutdown/troubleshooting guidance, explicit operating modes, revenue milestone tracking, three human-reviewed service workflow specifications, customer-workspace boundaries, tool-cost registry, and device migration safety documents.
+- No provider, device, payment, customer, or generated runtime data was enabled or committed.
