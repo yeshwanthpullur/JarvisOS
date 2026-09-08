@@ -4,18 +4,19 @@ This is the canonical engineering-step ledger. Prompt and Phase numbers are sepa
 
 ## Baseline
 
-- Latest checkpoint: **Step 62**
-- Next target: **Step 63**
-- Remaining range: **Steps 63-122**
-- Remaining count: **60 steps**
+- Latest reconciled block: **Steps 64-94**
+- Next target: **Step 95**
+- Remaining range: **Steps 95-122**
+- Remaining count: **28 steps**
 - Evidence source: `docs/PRE_OLD_PHONE_FOUNDATION.md`, `docs/ROADMAP_STEPS_21_62.md`, `docs/PROMPT_HISTORY.md`, current tests, and the authoritative continuation specification received on 2026-09-08.
 - Step 63 definition: **UNKNOWN / NOT RECOVERED**. It must not be implemented until its authoritative definition is supplied or recovered.
 
 ## Definition Provenance
 
 - **CANONICAL / EVIDENCED:** Steps 21-62, as recorded in `docs/ROADMAP_STEPS_21_62.md` and verified by the current focused tests.
-- **PROVISIONAL / RECOVERED SUMMARY:** The supplied recovery Markdown describes the broader architecture and gives an approximate later outline: voice completion/streaming; vision; capability/approval and safe execution; skills; scheduling; communications; observability/cost; privacy modes; offline resilience/recovery/backup; security; evaluation; dashboard; end-to-end validation; laptop freeze; stop; and later old-phone architecture. These summaries are context only, not step specifications.
-- **UNKNOWN / NOT RECOVERED:** Individual authoritative definitions for Steps 1-20 and 63-122.
+- **RECOVERED ENGINEERING SPECIFICATION:** The supplied 64-94 continuation text defines a defensible engineering block. It is not claimed to be the original historical prompt.
+- **RECONCILED SPECIFICATION:** Steps 64-94 are individually mapped to existing code/tests/docs and recorded in `docs/ENGINEERING_STEPS_64_94.md`.
+- **UNKNOWN / NOT RECOVERED:** Individual authoritative definitions for Steps 1-20 and 95-122.
 
 ## Provisional Later-Roadmap Context
 
@@ -110,37 +111,37 @@ The supplied recovery summary groups later work approximately as follows. This t
 | 61 | READY | Windows SAPI fallback, interruption, and long-reply playback. | Maintain Windows-specific path. |
 | 62 | READY_FOUNDATION | Explicit push-to-talk states, bounded buffers, cleanup, and normal dispatch. Physical microphone test pending. | Complete physical validation only when configured. |
 | 63 | READY_FOUNDATION | Recovered Engineering Specification: voice completion/streaming lifecycle beyond Step 62. Metadata-only playback events, ordered chunk lifecycle, observer isolation, and bounded event history are implemented and tested. | Continue to Step 64 using the recovered voice grouping; preserve explicit capture and playback boundaries. |
-| 64 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 65 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 66 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 67 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 68 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 69 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 70 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 71 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 72 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 73 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 74 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 75 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 76 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 77 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 78 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 79 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 80 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 81 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 82 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 83 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 84 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 85 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 86 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 87 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 88 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 89 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 90 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 91 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 92 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 93 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
-| 94 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
+| 64 | READY_FOUNDATION | Reconciled safe execution through Policy, Approval, Broker, bounded executors, denial, and audit. Details: `docs/ENGINEERING_STEPS_64_94.md`. | Maintain authority boundary. |
+| 65 | READY_FOUNDATION | Reconciled typed Skill Registry, permissions, built-ins, future placeholders, and no dynamic untrusted loading. | Maintain plan-only defaults. |
+| 66 | DEGRADED | Reconciled bounded schedule planning/manual runtime; unattended durable scheduling remains disabled. | Preserve manual-only state. |
+| 67 | READY_FOUNDATION | Reconciled bounded goal/task/worker/checkpoint/review foundations. | Maintain bounded rework. |
+| 68 | READY_FOUNDATION | Reconciled browser read-only capability with action separation and denial policy. | Keep actions approval-gated/unavailable. |
+| 69 | READY_FOUNDATION | Reconciled MCP local discovery, trust/enable/authorization separation, history, and execution-off policy. | Keep discovered tools non-executable. |
+| 70 | READY_FOUNDATION | Reconciled repository-scoped GitHub reads and approval/Broker-gated mutations. | Preserve disabled/unverified default. |
+| 71 | DEGRADED | Reconciled manual scheduler integration with workflow/checkpoint/recovery policy; restart persistence is incomplete. | Do not enable daemon/OS scheduler. |
+| 72 | DEGRADED | Reconciled provider-neutral communication plans and gated connectors; external credentials/sends unavailable. | Keep drafts and approvals explicit. |
+| 73 | READY_FOUNDATION | Reconciled bounded local observability, metrics, traces, health, alerts, and payload-free history. | Keep telemetry local-only. |
+| 74 | DEGRADED | Reconciled cost/resource metadata and unknown-price handling; exact billing telemetry unavailable. | Never invent prices or spend. |
+| 75 | READY_FOUNDATION | Reconciled local/offline status and truthful provider degradation; cloud fallback/downloads disabled. | Preserve local-first fallback. |
+| 76 | READY_FOUNDATION | Reconciled checkpoint/recovery/fault-isolation foundations with no authority escalation. | Preserve duplicate-execution safeguards. |
+| 77 | READY_FOUNDATION | Added explicit-path, size-bounded, SHA-256-verified non-secret backup/restore primitive. | Extend only under explicit state allowlists. |
+| 78 | READY_FOUNDATION | Reconciled zero-trust governance, least privilege, audit, approval, Broker, and denial paths. | Preserve security policy. |
+| 79 | READY_FOUNDATION | Reconciled bounded improvement proposals/evaluation/review with no silent self-promotion. | Keep self-improvement proposal-only. |
+| 80 | READY_FOUNDATION | Reconciled local evaluation cases, truthfulness checks, safety checks, suite results, and bounded history. | Expand only with verified cases. |
+| 81 | READY_FOUNDATION | Reconciled Control Room state/actions backed by tasks, workers, checkpoints, evidence, and policy. | Keep UI subordinate to runtime authority. |
+| 82 | READY_FOUNDATION | Reconciled laptop-first local CLI/runtime architecture and documented optional/degraded components. | Do not begin phone-primary work. |
+| 83 | DEGRADED | Reconciled deterministic multi-system integration coverage; physical/external stress evidence remains absent. | Run only safe configured acceptance later. |
+| 84 | UNCONFIGURED | Provisional phone transition planning only; no physical device node or migration. | Keep laptop primary. |
+| 85 | UNCONFIGURED | Provisional optional cloud/VPS planning; no paid service, credential, or dependency introduced. | Keep cloud replaceable/off by default. |
+| 86 | READY_FOUNDATION | Reconciled JARVIS-owned free-form routing/planning/status UX with visible bounded diagnostics. | Preserve user control. |
+| 87 | VERIFIED | Reconciled current-work consolidation for Steps 21-63, project memory, ledger, tests, and session evidence. | Preserve history and provenance. |
+| 88 | READY_FOUNDATION | Added individual 64-94 mapping with source classification, implementation, tests, evidence, and limitations. | Use ledger before future steps. |
+| 89 | READY_FOUNDATION | Added capability dependency map linking providers, fallbacks, policy, memory, and Broker boundaries. | Keep map synchronized. |
+| 90 | READY_FOUNDATION | Added privacy-aware route eligibility and truthful health/cost/fallback metadata. | Keep unavailable providers diagnostic-only. |
+| 91 | READY_FOUNDATION | Recorded local/free automation opportunities without activating unattended work. | Prioritize governed workflows. |
+| 92 | DEGRADED | Recorded resource/cost/quality/effort tradeoffs; exact external pricing remains unknown. | Recalculate only from evidence. |
+| 93 | READY_FOUNDATION | Added explicit `local_only`, `private_hybrid`, `normal_hybrid`, and `cloud_max` policy model. | No silent privacy downgrade. |
+| 94 | READY_FOUNDATION | Applied privacy policy, provider health, availability, and bounded fallback selection to real model routing. | Next: Step 95; not started. |
 | 95 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
 | 96 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
 | 97 | UNKNOWN / NOT RECOVERED | No authoritative definition recovered. | Supply or recover definition. |
@@ -172,7 +173,7 @@ The supplied recovery summary groups later work approximately as follows. This t
 
 ## Reconciliation Result
 
-The repository supports the Step 62 baseline and the known Steps 21-62 evidence. Step 63 now has a clearly labeled recovered engineering specification derived from the supplied recovery roadmap, existing voice architecture, and current tests. It is not claimed to be the original historical prompt. Steps 64-122 remain recovered group context or unrecovered individual definitions and must be handled with the same provenance discipline.
+The repository supports the Step 62 baseline, the Step 63 recovered voice foundation, and individually reconciled Steps 64-94. The supplied 64-94 text is explicitly labeled recovered/reconciled engineering specification rather than original historical prompt text. Steps 95-122 remain unrecovered at the individual-definition level.
 
 ## Step 63 Record
 

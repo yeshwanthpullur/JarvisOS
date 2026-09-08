@@ -19,6 +19,7 @@ from .models import (
 from .registry import WorkerRegistry, build_default_worker_registry, opencode_adapter
 from .work import GoalWorkManager, WorkStateStore
 from .worktrees import WorktreeIsolationManager
+from .assurance import WorkAssuranceRuntime
 
 
 class WorkerRuntime:
@@ -37,6 +38,7 @@ class WorkerRuntime:
         self.context = ControlledContextStore(self.limits.max_context_fragments, self.limits.max_context_chars)
         self.work = GoalWorkManager(self.limits, WorkStateStore(self.root / "data" / "workers" / "state.json"))
         self.worktrees = WorktreeIsolationManager(self.root, self.root / "data" / "agent-workspaces")
+        self.assurance = WorkAssuranceRuntime(self.root, self.registry)
 
     def refresh_workers(self, *, health: bool = False):
         records = self.registry.refresh(health=health)
@@ -111,6 +113,7 @@ class WorkerRuntime:
             "approval_bypass": False,
             "broker_bypass": False,
             "phase7_started": False,
+            "assurance": self.assurance.status(),
         }
 
 

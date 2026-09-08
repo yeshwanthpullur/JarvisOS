@@ -28,6 +28,12 @@ Keep JARVIS useful without turning local storage into an unbounded archive. Auth
 - Use bounded retrieval snippets when feeding memory back into chat so the CLI remains readable and fast.
 - Treat memory as local authority, not as a sync queue or a hidden transcript archive.
 
+## Governed Memory Scopes
+
+Roadmap Steps 52-56 enforce distinct `session`, `project`, `knowledge`, and `personal` scopes. Session and project identifiers are checked during retrieval; personal memory requires explicit Memory Intelligence authority and is never shared directly with workers. Inferred records enter `needs_review`, instruction-like content is marked, secrets are rejected, and all context assembly is bounded.
+
+Create, update/supersede, tombstone delete, expiry, restore, and stale transitions are explicit and audited with content-free metadata. Index updates follow authoritative record lifecycle; no backend may silently delete user memory. Mem0 and Graphiti are adapters under this policy, not alternate authorities, and report unconfigured when their optional packages are absent.
+
 ## Do Not Store
 
 - API keys, passwords, tokens, credentials, authorization headers, or raw environment values.

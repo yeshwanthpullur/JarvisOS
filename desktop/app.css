@@ -241,6 +241,19 @@ body[data-assistant-state="error"] .core-light, body[data-assistant-state="offli
 .record-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); gap: 8px 14px; border-top: 1px solid var(--line); margin-top: 10px; padding-top: 9px; }
 .record-grid span { color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .5px; }
 .record-grid strong { display: block; margin-top: 3px; overflow-wrap: anywhere; color: var(--text-soft); font-size: 11px; }
+.control-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line); margin-bottom: 13px; }
+.control-summary > div { min-width: 0; background: var(--panel-solid); padding: 11px; }
+.control-summary span { display: block; color: var(--muted); font-size: 9px; text-transform: uppercase; }
+.control-summary strong { display: block; margin-top: 4px; font-size: 18px; }
+.control-tabs { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.control-tabs button { border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); padding: 8px 10px; white-space: nowrap; font-size: 10px; }
+.control-tabs button.active { border-color: var(--cyan); color: var(--cyan-bright); }
+.control-panel { display: none; }.control-panel.active { display: block; }
+.kanban { display: grid; grid-template-columns: repeat(10, minmax(150px, 1fr)); gap: 7px; overflow-x: auto; padding-bottom: 8px; }
+.kanban-column { min-height: 180px; border-left: 1px solid var(--line); padding: 0 7px; }
+.kanban-column h3 { color: var(--muted); font-size: 9px; text-transform: uppercase; }
+.kanban-task { border: 1px solid var(--line); border-radius: 5px; background: var(--panel); margin-top: 7px; padding: 9px; }
+.kanban-task strong, .kanban-task span { display: block; overflow-wrap: anywhere; font-size: 10px; }.kanban-task span { margin-top: 5px; color: var(--muted); font-size: 9px; }
 .state { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 7px; color: var(--muted); font-size: 9px; white-space: nowrap; }
 .state.healthy, .state.completed, .state.ready { color: var(--green); }.state.processing, .state.running, .state.accepted { color: var(--cyan); }.state.warning, .state.awaiting_review, .state.awaiting_approval, .state.degraded { color: var(--amber); }.state.failed, .state.unavailable, .state.cancelled, .state.rejected { color: var(--red); }
 .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 8px; }

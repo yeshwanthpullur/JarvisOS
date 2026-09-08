@@ -335,6 +335,7 @@ class LocalInterfaceService:
             "/api/voice/speak": self.speak,
             "/api/voice/stop": self.stop_voice,
             "/api/approvals/decision": self.decide_approval,
+            "/api/control-room/action": self.control_room_action,
             "/api/settings": self.update_settings,
             "/api/shutdown": self.request_shutdown,
         }
@@ -387,6 +388,8 @@ class LocalInterfaceService:
             data = self.coordination(path.rsplit("/", 1)[-1])
         elif path == "/api/approvals":
             data = {"approvals": self.approvals()}
+        elif path == "/api/control-room":
+            data = self.control_room()
         elif path == "/api/settings":
             data = self.settings()
         else:
@@ -928,6 +931,28 @@ class LocalInterfaceService:
         record = orchestrator.store.get(coordination_id) if orchestrator is not None else None
         return json_safe(record) if record is not None else {"status": "unavailable", "error": "coordination_not_found"}
 
+    def control_room(self) -> dict[str, object]:
+        runtime = self._control_room()
+        return runtime.snapshot() if runtime is not None else {"status": "unavailable", "error": "control_room_unavailable"}
+
+    def control_room_action(self, payload: dict[str, object]) -> dict[str, object]:
+        runtime = self._control_room()
+        if runtime is None:
+            raise ValueError("control_room_unavailable")
+        action = payload.get("action")
+        if not isinstance(action, str):
+            raise ValueError("control_room_action_required")
+        allowed = {"pause_task", "resume_task", "cancel_task", "request_retry", "approve_step", "reject_candidate", "inspect_evidence"}
+        if action not in allowed:
+            raise ValueError("unsupported_control_room_action")
+        return runtime.action(
+            action,
+            task_id=str(payload.get("task_id", ""))[:80],
+            evidence_id=str(payload.get("evidence_id", ""))[:80],
+            candidate_id=str(payload.get("candidate_id", ""))[:80],
+            approval_ref=str(payload.get("approval_ref", ""))[:120],
+        )
+
     def approvals(self) -> list[dict[str, object]]:
         pending: list[dict[str, object]] = []
         planning = self._planning()
@@ -1112,6 +1137,9 @@ class LocalInterfaceService:
 
     def _orchestrator(self) -> Any | None:
         return self.startup.agent_manager.orchestrator if self.startup.agent_manager is not None else None
+
+    def _control_room(self) -> Any | None:
+        return self.startup.jarvis_core.manager.control_room if self.startup.jarvis_core is not None else None
 
 
 def run_local_interface(*, port: int | None = None, open_browser: bool = True) -> int:

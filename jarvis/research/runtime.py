@@ -291,7 +291,8 @@ class AutonomousResearchRuntime:
         normalized = _bound(request.question)
         subquestions = self._subquestions(normalized, mode)
         queries = self._dedupe((normalized,) + subquestions)[: budget.max_queries]
-        warnings = (() if safety.allowed else (safety.reason,)) + (("External search provider is unconfigured.",) if not self.providers.ready() else ())
+        privacy_blocks_web = request.privacy_classification.lower() in {"private", "sensitive", "local_only", "restricted"}
+        warnings = (() if safety.allowed else (safety.reason,)) + (("External search provider is unconfigured.",) if not self.providers.ready() else ()) + (("Privacy policy prohibits external web research.",) if privacy_blocks_web else ())
         return ExternalResearchPlan(request.request_id, normalized, subquestions, queries, (SourceType.OFFICIAL_DOCUMENTATION, SourceType.PRIMARY_SOURCE, SourceType.ACADEMIC), request.freshness_requirement, ("trace every external claim to evidence", "seek independent corroboration", "report contradictions"), 1 if mode is ResearchDepth.QUICK else 2, ("evidence sufficient", "query/source/time budget exhausted", "provider unavailable", "cancelled"), budget, warnings)
 
     @staticmethod
@@ -315,7 +316,8 @@ class AutonomousResearchRuntime:
         safety = evaluate_research_safety(request.question, classify_research_intent(request.question))
         if not safety.allowed:
             return self._record(ExternalResearchResult(request.request_id, "blocked", plan, warnings=(safety.reason,), stop_reason="policy_blocked"))
-        providers = self.providers.ready() if self.allow_external_search else ()
+        privacy_blocks_web = request.privacy_classification.lower() in {"private", "sensitive", "local_only", "restricted"}
+        providers = self.providers.ready() if self.allow_external_search and not privacy_blocks_web else ()
         if not providers:
             return self._record(ExternalResearchResult(request.request_id, "unavailable", plan, warnings=("Live external search is unconfigured; no evidence or citations were fabricated.",), stop_reason="provider_unavailable"))
         results: list[SearchResult] = []
@@ -323,9 +325,15 @@ class AutonomousResearchRuntime:
             if len(results) >= plan.budget.max_sources: break
             results.extend(providers[0].search(query, limit=plan.budget.max_sources - len(results)))
         sources = self._sources(results[: plan.budget.max_sources], providers[0].provider_id)
-        evidence = tuple(EvidenceChunk(str(uuid4()), source.source_id, result.snippet, freshness=source.freshness, extraction_confidence="medium") for source, result in zip(sources, results) if result.snippet)
+        evidence_items = []
+        for source in sources:
+            matching = next((item for item in results if item.snippet and normalize_url(item.url) == source.normalized_url), None)
+            if matching is not None:
+                evidence_items.append(EvidenceChunk(str(uuid4()), source.source_id, matching.snippet, freshness=source.freshness, extraction_confidence="medium"))
+        evidence = tuple(evidence_items)
         claim = self._claim(request.question, sources, evidence)
-        citations = tuple(source.normalized_url for source in sources if source.normalized_url)
+        cited_source_ids = {item.source_id for item in evidence}
+        citations = tuple(source.normalized_url for source in sources if source.normalized_url and source.source_id in cited_source_ids)
         candidates = (() if not evidence else (KnowledgeCandidate(str(uuid4()), _bound(request.question, 500), tuple(e.evidence_id for e in evidence), tuple(s.source_id for s in sources), "unknown", 86400),))
         return self._record(ExternalResearchResult(request.request_id, "completed" if evidence else "evidence_unavailable", plan, sources, evidence, (claim,), citations, candidates, ("External content remained untrusted data.",), "evidence_sufficient" if evidence else "no_evidence"))
 
@@ -337,7 +345,7 @@ class AutonomousResearchRuntime:
             if normalized in seen: continue
             seen.add(normalized)
             signals=("primary_source_preferred",) if item.source_type in {SourceType.OFFICIAL_DOCUMENTATION, SourceType.PRIMARY_SOURCE, SourceType.GOVERNMENT, SourceType.STANDARDS_BODY} else ()
-            output.append(ResearchSource(str(uuid4()), provider, normalized, normalized, _bound(item.title, 300), item.source_type, published_at=item.published_at, updated_at=item.updated_at, quality_signals=signals))
+            output.append(ResearchSource(str(uuid4()), provider, normalized, normalized, _bound(item.title, 300), item.source_type, published_at=item.published_at, updated_at=item.updated_at, quality_signals=signals, retrieval_status="retrieved" if item.snippet else "discovered"))
         return tuple(output)
 
     @staticmethod

@@ -433,13 +433,21 @@ async function loadTools() {
 }
 
 async function loadMultiagent() {
-  const data = await api("/api/multiagent");
-  renderRecords("multiagent-list", data.coordinations, {
-    title: (item) => item.objective, status: (item) => item.status,
-    summary: (item) => `${item.mode} collaboration with ${item.agents.length} agents`,
-    fields: (item) => [["Coordination", item.coordination_id], ["Agents", item.agents], ["Subtasks", item.subtasks.length], ["Conflicts", item.conflicts]],
-  });
+  const data = await api("/api/control-room");
+  const summary = byId("control-summary"); summary.replaceChildren();
+  Object.entries(data.overview || {}).forEach(([label, value]) => { const item = document.createElement("div"); const span = document.createElement("span"); span.textContent = label.replaceAll("_", " "); const strong = document.createElement("strong"); strong.textContent = escapeLabel(value); item.append(span, strong); summary.append(item); });
+  const states = ["queued", "planning", "ready", "running", "waiting", "reviewing", "rework", "blocked", "completed", "failed"];
+  const board = byId("control-board"); board.replaceChildren();
+  states.forEach((status) => { const column = document.createElement("section"); column.className = "kanban-column"; const heading = document.createElement("h3"); heading.textContent = status; const body = document.createElement("div"); (data.tasks || []).filter((item) => item.status === status || (status === "rework" && item.status === "retrying")).forEach((task) => { const card = document.createElement("article"); card.className = "kanban-task"; const title = document.createElement("strong"); title.textContent = task.title; const meta = document.createElement("span"); meta.textContent = `${task.owner} | ${task.risk}`; card.append(title, meta); body.append(card); }); if (!body.children.length) body.innerHTML = '<p class="empty-copy">None</p>'; column.append(heading, body); board.append(column); });
+  renderRecords("control-dag", data.dag || [], { title: (item) => item.task_id, status: (item) => item.status, fields: (item) => [["Depends on", item.dependencies.length ? item.dependencies : "None"]] });
+  renderRecords("control-workers", data.workers || [], { title: (item) => item.name, status: (item) => item.status, summary: (item) => item.health, fields: (item) => [["Worker", item.worker_id], ["Capabilities", item.capabilities], ["Execution", item.execution]] });
+  renderRecords("control-evidence", data.evidence || [], { title: (item) => item.type, status: (item) => item.validated ? "validated" : "unverified", summary: (item) => item.summary, fields: (item) => [["Evidence", item.evidence_id], ["Task", item.task_id], ["Stale", item.stale]] });
+  renderRecords("control-approvals", data.approvals || [], { title: (item) => item.approval_ref, status: (item) => item.state, fields: (item) => [["Task", item.task_ref]] });
+  renderRecords("control-providers", data.providers || [], { title: (item) => item.provider_id, status: (item) => item.status, fields: (item) => [["Local", item.local], ["Privacy", item.privacy]] });
+  renderRecords("control-activity", data.activity || [], { title: (item) => item.event_type, status: (item) => item.status, summary: (item) => item.summary, fields: (item) => [["Task", item.task_id], ["Time", formatDate(item.created_at)]] });
 }
+
+document.querySelectorAll("[data-control-tab]").forEach((button) => button.addEventListener("click", () => { document.querySelectorAll("[data-control-tab]").forEach((item) => item.classList.toggle("active", item === button)); document.querySelectorAll("[data-control-panel]").forEach((panel) => panel.classList.toggle("active", panel.dataset.controlPanel === button.dataset.controlTab)); }));
 
 async function loadVoice() {
   const voice = await api("/api/voice");

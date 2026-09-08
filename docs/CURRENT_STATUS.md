@@ -1,10 +1,10 @@
 # Current Status
 
-JARVIS OS is a local-first, privacy-preserving, CLI-first assistant with bounded conversation, memory, research, document, knowledge, worker, voice, workflow, approval, Broker, and status foundations. Pre-old-phone foundation steps 2-20 are implemented locally as a metadata, planning, and coordination layer. Codex `0.153.0`, Hermes `0.20.4`, Aider `0.86.2`, and OpenCode `1.18.27` were detected during verification; optional workers remain unavailable when absent. OpenCode model discovery is dynamic and returned seven current identifiers, while the exact `ox-alpha` alias remains unresolved because that identifier was not returned. External workers have zero execution authority in this layer, verified healthy local Ollama remains first choice, provider-managed/cloud routes remain disabled by default, worktree creation delegates to existing authorization, and personal context is excluded by default. Roadmap Steps 21-62 are now implemented in the local working tree to the bounded levels recorded in `ROADMAP_STEPS_21_62.md` and the canonical Engineering Steps 1-122 ledger. Step 63 is the next target, but its authoritative definition has not been recovered; it must not be inferred from Prompt or Phase numbering.
+JARVIS OS is a local-first, privacy-preserving, CLI-first assistant with bounded conversation, memory, research, document, knowledge, worker, voice, workflow, approval, Broker, execution, scheduling, observability, recovery, evaluation, and Control Room foundations. Pre-old-phone foundation steps 2-20 and reconciled Engineering Steps 21-94 are recorded at evidence-based statuses in the canonical ledger. Steps 64-94 use the supplied recovered engineering specification and are not claimed to be original historical prompt text. Existing provider, device, cloud, and external-service limitations remain explicit rather than being counted as ready.
 
-Latest local verification passes 132 focused Steps 21-62/tracking tests plus 129 subtests, 88 integration tests plus 41 subtests, 61 UI/API tests, 21 RAG/vector/memory tests, 114 voice tests plus 2 subtests, and 2,309 full-suite tests plus 331 subtests with zero failures. `pip check`, targeted compilation, JSON validation, secret/path scans, and `git diff --check` pass; one pre-existing test-helper collection warning remains.
+Latest local verification passes 255 focused block/integration tests and 2,316 full-suite tests plus 331 subtests with zero failures. Targeted compilation, tracked JSON validation, production secret/path scans, and `git diff --check` pass; one pre-existing test-helper collection warning remains.
 
-Phase 6 Prompts 86-100 remain implemented through the local production-readiness checkpoint. The post-Phase-6 runtime repair fixes normal free-form requests being falsely sent to planning, adds official-SDK MCP stdio protocol support, registers Playwright MCP for isolated discovery only, and adds truthful installed/configured/integrated/enabled/authorized tool states. No Phase 7 work, tag, release, push, or deployment is part of this repair.
+Phase 6 Prompts 86-100 remain implemented through the local production-readiness checkpoint. The post-Phase-6 runtime repair fixes normal free-form requests being falsely sent to planning, adds official-SDK MCP stdio protocol support, registers Playwright MCP for isolated discovery only, and adds truthful installed/configured/integrated/enabled/authorized tool states. Engineering Steps 64-94 add a bounded backup integrity primitive and explicit privacy-aware model routing; no Phase 7 or Engineering Step 95 work, tag, release, push, or deployment is part of this checkpoint.
 
 Phase 6 execution remains controlled: adapters have no execution authority; Policy, Approval, Broker, Governance, Memory, Conversation, Workflow, and Reliability remain authoritative. The local Ollama health probe detects `llama3.2:1b` and `llava:latest` on the verified workstation. Cloud fallback, telemetry upload, wake/continuous listening, camera capture, unrestricted browser/coding/file actions, connector writes, remote MCP, and external plugins remain disabled.
 
@@ -26,7 +26,7 @@ MCP Runtime: implemented official-SDK local stdio client with one configured Pla
 
 GitHub Provider: implemented and repository-scoped, but disabled/unverified by default. Reads require verified authentication; issue/PR/release writes remain approval/Broker-gated. Merge, workflow execution, secrets, and administration are blocked.
 
-Updated: 2026-08-19
+Updated: 2026-09-08
 
 ## Current Release
 

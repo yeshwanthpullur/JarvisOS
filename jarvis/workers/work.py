@@ -212,6 +212,8 @@ class GoalWorkManager:
             WorkerTaskStatus.REVIEWING: {WorkerTaskStatus.COMPLETED, WorkerTaskStatus.FAILED, WorkerTaskStatus.RETRYING},
             WorkerTaskStatus.RETRYING: {WorkerTaskStatus.RUNNING, WorkerTaskStatus.FAILED, WorkerTaskStatus.CANCELLED},
             WorkerTaskStatus.CANCELLED: {WorkerTaskStatus.QUEUED},
+            WorkerTaskStatus.FAILED: {WorkerTaskStatus.RETRYING},
+            WorkerTaskStatus.TIMED_OUT: {WorkerTaskStatus.RETRYING},
         }
         if status not in allowed.get(task.status, set()):
             raise ValueError("invalid_work_state_transition")
@@ -246,6 +248,16 @@ class GoalWorkManager:
         if task is None or task.status is not WorkerTaskStatus.CANCELLED:
             return False
         self.mark(task_id, WorkerTaskStatus.QUEUED)
+        return True
+
+    def request_retry(self, task_id: str) -> bool:
+        task = self.tasks.get(task_id)
+        if task is None or task.status not in {WorkerTaskStatus.FAILED, WorkerTaskStatus.TIMED_OUT}:
+            return False
+        if task.retry_count >= task.max_retries:
+            return False
+        self.tasks[task_id] = replace(task, status=WorkerTaskStatus.RETRYING, retry_count=task.retry_count + 1)
+        self.store.save(self)
         return True
 
     def send(self, message: StructuredMessage) -> StructuredMessage:

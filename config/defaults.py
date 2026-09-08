@@ -63,6 +63,7 @@ DEFAULT_CONFIG: Final[dict[str, Any]] = {
         "allow_local_models": True,
         "enabled": True,
         "local_only_default": True,
+        "privacy_mode": "local_only",
         "allow_cloud_providers": False,
         "default_chat_provider": "ollama_text",
         "default_reasoning_provider": "ollama_text",

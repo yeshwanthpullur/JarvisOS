@@ -1,6 +1,6 @@
 # Voice Intelligence
 
-Prompt 93 preserves explicit push-to-talk and interruptible playback. Faster-Whisper/Piper are optional adapters; Vosk/SAPI remain the verified local path. Wake-word activation, continuous listening, hidden capture, raw-audio retention, cloud upload, and transcript-to-memory writes remain disabled.
+Prompt 93 preserves explicit push-to-talk and interruptible playback. Roadmap Steps 57-62 add provider-neutral Faster-Whisper/Vosk STT routing, Piper/SAPI TTS routing, and an explicit push-to-talk controller. Wake-word activation, continuous listening, hidden capture, raw-audio retention, cloud upload, and transcript-to-memory writes remain disabled.
 
 Voice Intelligence is a local-first input/output layer that feeds validated transcripts into the existing Command and Conversation Engines. It never executes commands, tools, plans, agents, or workflows itself. Voice recognition and wake-word events are not authentication or approval.
 
@@ -12,7 +12,7 @@ Modes are `off`, `push-to-talk`, `single-listen`, `continuous-session-ready`, an
 
 ## Adapters and local backends
 
-The adapter registry validates identity and capabilities. Windows SAPI is the real local text-to-speech backend and supports WAV output and playback. Offline STT discovery recognizes Vosk, faster-whisper, and a configured whisper.cpp-style executable, but reports unavailable until an engine, model, and microphone capture adapter are ready. No model is downloaded and no cloud fallback occurs.
+The adapter registry validates identity and capabilities. Faster-Whisper is the preferred local STT route when its package and local model path are available; Vosk is the single bounded fallback. Piper is the preferred local TTS route when its executable and local voice model are available; Windows SAPI is the verified fallback and supports WAV output and interruptible playback. No model is downloaded and no cloud fallback occurs.
 
 Audio devices are normalized and only adapter-confirmed devices are listed. Microphone capture is not fabricated when no capture adapter exists. WAV input is checked for allowed path scope, extension, actual RIFF structure, size, duration, sample rate, and channels without modifying the source.
 
@@ -24,8 +24,8 @@ Strict privacy enforces local-only processing, no raw retention, and minimal met
 
 ## Commands
 
-Commands include `voice status`, `voice input status/on/off`, `voice listen`, `voice cleanup`, `voice output on/off`, `voice say`, `transcribe`, `stop`, `cancel`, `interrupt`, `session`, `devices`, `backend`, `device`, `mode`, `privacy`, `language`, `rate`, `volume`, `raw-audio`, `limits`, and `health`. Commands remain on the existing Command Engine path.
+Commands include `voice status`, `voice input status/on/off`, `voice listen`, `voice cleanup`, `voice output on/off`, `voice say`, `transcribe`, `stop`, `cancel`, `interrupt`, `session`, `devices`, `backend`, `device`, `mode`, `privacy`, `language`, `rate`, `volume`, `raw-audio`, `limits`, and `health`. Explicit PTT uses `voice ptt start`, `voice ptt stop`, `voice ptt process`, `voice ptt cancel`, and `voice ptt status`. Processing returns the validated transcript to the normal Executive JARVIS command/conversation path; it does not execute directly.
 
 ## Limitations
 
-Push-to-talk command/state and privacy boundaries are implemented, but real microphone capture requires a registered capture adapter plus a configured local STT engine/model. The current machine reports those missing capabilities truthfully. SAPI cancellation is cooperative at the process boundary; explicitly saved or acceptance-test WAV files remain local runtime artifacts and are not committed.
+Push-to-talk command/state and privacy boundaries are automated-verified, but the physical microphone workflow remains user-test pending because automated validation never opens the microphone. The current machine reports missing packages/models truthfully. SAPI cancellation is cooperative at the process boundary; explicitly saved or acceptance-test WAV files remain local runtime artifacts and are not committed.

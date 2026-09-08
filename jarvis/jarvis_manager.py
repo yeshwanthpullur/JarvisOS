@@ -17,6 +17,8 @@ from jarvis.models import AdvancedModelPlanner, AdvancedModelRuntime
 from jarvis.skills import build_default_skill_registry
 from jarvis.research import ResearchAgent, ResearchEvidenceCollector, ResearchHistoryStore, ResearchPlanner
 from jarvis.knowledge import InMemoryKnowledgeIndex
+from jarvis.knowledge import RAGRuntime, QdrantVectorStore, ChromaVectorStore, FaissVectorStore, VectorStoreRouter
+from jarvis.memory_governance import GovernedMemoryStore, Mem0Adapter, GraphitiAdapter
 from jarvis.coding import CodingAgent, CodingHistoryStore, CodingPlanner, DiffReviewer, RepoInspector
 from jarvis.documents import DocumentAgent
 from jarvis.evaluation import EvaluationRunner
@@ -27,6 +29,7 @@ from jarvis.scheduler import SchedulerAgent
 from jarvis.governance import GovernanceLimits, GovernanceRuntime, build_default_governance_runtime
 from jarvis.phase6 import Phase6Runtime
 from jarvis.workers import WorkerRuntime
+from jarvis.control_room import ControlRoomRuntime
 from jarvis.workers.models import WorkRuntimeLimits
 from jarvis.integrations import ExternalIntegrationControlPlane
 from jarvis.mcp_runtime import build_mcp_runtime
@@ -212,6 +215,11 @@ class JarvisManager:
         self.research_agent.runtime.allow_plugins = getattr(research_config, "allow_plugins", True)
         knowledge_config = getattr(context.settings, "knowledge_index", None) if context else None
         self.knowledge_index = InMemoryKnowledgeIndex(max_chunk_chars=getattr(knowledge_config,"max_chunk_chars",800),overlap_chars=getattr(knowledge_config,"chunk_overlap_chars",80),max_chunks_per_record=getattr(knowledge_config,"max_chunks_per_record",50))
+        vector_router = VectorStoreRouter((QdrantVectorStore(), ChromaVectorStore(), FaissVectorStore()))
+        self.rag_runtime = RAGRuntime(self.knowledge_index, vector_router, state_path=(context.settings.data_dir / "knowledge" / "rag_state.json") if context and context.settings else Path("data/knowledge/rag_state.json"))
+        self.memory_governance = GovernedMemoryStore((context.settings.data_dir / "memory" / "governed_memory.json") if context and context.settings else Path("data/memory/governed_memory.json"))
+        self.mem0_adapter = Mem0Adapter(self.memory_governance)
+        self.graphiti_adapter = GraphitiAdapter()
         coding_config = getattr(context.settings, "coding", None) if context else None
         coding_root = context.settings.base_dir if context and context.settings else Path.cwd()
         coding_max_files = getattr(coding_config, "max_files_listed", 20)
@@ -277,6 +285,12 @@ class JarvisManager:
             require_approval_for_writes=getattr(workers_config, "require_approval_for_writes", True),
             worktree_auto_merge=getattr(workers_config, "worktree_auto_merge", False),
         ))
+        self.control_room = ControlRoomRuntime(self.worker_runtime)
+        self.control_room.subsystem_status = {
+            "knowledge": lambda: {"status": self.rag_runtime.status()["pipeline"], "chunks": self.rag_runtime.status()["chunks"], "citations": self.rag_runtime.status()["citations"]},
+            "memory": lambda: self.memory_governance.status(),
+            "voice": lambda: {"status": "ready_foundation", "ptt": self.voice_intelligence.ptt.status()["state"], "capturing": self.voice_intelligence.ptt.status()["capturing"], "stt_primary": self.voice_intelligence.faster_whisper.detect().state.value, "tts_primary": self.voice_intelligence.piper.detect().state.value, "raw_audio_persistence": False},
+        }
         self.mcp_runtime = build_mcp_runtime(
             getattr(context.settings, "mcp", None) if context else None,
             broker=self.phase4_runtime.broker,
@@ -299,6 +313,7 @@ class JarvisManager:
             self.model_registry,
             local_only_default=getattr(model_config, "local_only_default", True),
             allow_cloud_providers=getattr(model_config, "allow_cloud_providers", False),
+            privacy_mode=getattr(model_config, "privacy_mode", "local_only"),
         )
         self.skill_registry = build_default_skill_registry()
         self.external_integrations = ExternalIntegrationControlPlane()

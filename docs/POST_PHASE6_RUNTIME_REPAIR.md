@@ -13,7 +13,7 @@ Status: verified locally. This work is not Phase 7 and creates no tag, release, 
 - Playwright MCP is configured with an isolated headless browser context and discovery-only trust. Its cached package may be resolved without invoking npm installation. The verified discovery returned 24 tools; zero are trusted or enabled, and global MCP tool execution remains disabled.
 - MCP session wiring makes `mcp start` perform handshake plus discovery and retain classified metadata for subsequent inspection commands. Explicit `mcp discover` remains a safe refresh, and bounded history records both operations.
 - Tool inventory distinguishes installed, detected, configured, integrated, enabled, and execution-authorized states. Discovery does not activate an isolated environment or grant authority.
-- Voice diagnostics report Windows SAPI ready, Vosk degraded when available only outside the core interpreter, and detected Faster-Whisper/Piper adapters disabled until dedicated integrations exist.
+- At this historical checkpoint, voice diagnostics reported Windows SAPI ready and the optional Faster-Whisper/Piper routes as disabled. Roadmap Steps 57-62 now provide dedicated local adapters and truthful configured/degraded health without changing the explicit-listening policy.
 
 ## Authority And Privacy
 
@@ -34,6 +34,6 @@ The normal `main.py` startup path accepted `hi`, answered a five-bullet capabili
 ## Current Degradations
 
 - Vosk and `sounddevice` are detected in an isolated voice environment but are not importable by the core in-process adapter, so explicit microphone STT is currently unavailable from this core environment.
-- Faster-Whisper and Piper are installed but have no enabled JARVIS adapters.
+- Faster-Whisper and Piper now have dedicated adapters, but remain degraded when their dependency/model assets are not configured in the active runtime.
 - Optional browser, research, document, memory, coding, runtime, and external-agent packages may be detected without being configured, integrated, enabled, trusted, or execution-authorized.
 - Exa and other credential-dependent external services are not activated or claimed as verified by this repair.

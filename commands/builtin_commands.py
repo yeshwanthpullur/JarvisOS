@@ -138,6 +138,12 @@ def _worker_runtime(context: CommandContext) -> WorkerRuntime:
     return runtime if isinstance(runtime, WorkerRuntime) else get_worker_runtime(Path(__file__).resolve().parents[1])
 
 
+def _jarvis_runtime_manager(context: CommandContext):
+    conversation = context.conversation_context
+    core = getattr(conversation, "jarvis_core", None) if conversation is not None else None
+    return getattr(core, "manager", None)
+
+
 def _existing_ollama_state(context: CommandContext) -> tuple[bool, tuple[str, ...], bool]:
     """Read already-discovered Ollama metadata without probing a provider."""
     manager = _provider_manager(context)
@@ -204,7 +210,13 @@ def _model_foundation(context: CommandContext) -> tuple[ModelProviderRegistry, M
             vision_ready=vision_ready,
         )
     if not isinstance(router, ModelRouter):
-        router = ModelRouter(registry)
+        model_config = getattr(getattr(context, "settings", None), "models", None)
+        router = ModelRouter(
+            registry,
+            local_only_default=getattr(model_config, "local_only_default", True),
+            allow_cloud_providers=getattr(model_config, "allow_cloud_providers", False),
+            privacy_mode=getattr(model_config, "privacy_mode", "local_only"),
+        )
     return registry, router
 
 
@@ -462,6 +474,13 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
         phase6_status = phase6_runtime.status()
         phase6_candidate = phase6_runtime.candidate_report()
         worker_status = _worker_runtime(context).status()
+        jarvis_manager = _jarvis_runtime_manager(context)
+        rag_runtime = getattr(jarvis_manager, "rag_runtime", None)
+        memory_governance = getattr(jarvis_manager, "memory_governance", None)
+        voice_runtime = getattr(jarvis_manager, "voice_intelligence", None)
+        rag_status = rag_runtime.status() if rag_runtime is not None else {"pipeline": "unavailable", "chunks": 0}
+        memory_status = memory_governance.status() if memory_governance is not None else {"authority": "unavailable", "records": 0}
+        ptt_status = voice_runtime.ptt.status() if voice_runtime is not None and hasattr(voice_runtime, "ptt") else {"state": "unavailable", "capturing": False}
         phase3_text = (
             "phase3="
             f"agents:{agent_summary['ready_agents']}/{agent_summary['total_agents']}"
@@ -534,6 +553,12 @@ def _project_health_summary(context: CommandContext | None = None) -> Conversati
             "worker_detected": worker_status["detected_workers"],
             "worker_registered": worker_status["registered_workers"],
             "worker_execution_enabled": worker_status["execution_enabled"],
+            "rag_pipeline_status": rag_status["pipeline"],
+            "rag_chunks": rag_status["chunks"],
+            "memory_governance_status": memory_status["authority"],
+            "memory_records": memory_status["records"],
+            "voice_ptt_status": ptt_status["state"],
+            "voice_capturing": ptt_status["capturing"],
             "external_provider_registry_status": "ready_metadata_only" if external_summary["valid"] else "error",
             "external_providers_total": external_summary["total"],
             "external_providers_enabled": external_summary["enabled"],
@@ -915,6 +940,11 @@ def register_builtin_commands(registry: CommandRegistry) -> None:
         ("voice raw-audio", "Set raw audio retention", "voice", (), CommandPermission.UTILITY),
         ("voice limits", "Show voice limits", "voice", (), CommandPermission.DIAGNOSTIC),
         ("voice health", "Show voice health", "voice", (), CommandPermission.DIAGNOSTIC),
+        ("voice ptt start", "Begin explicit push-to-talk capture", "voice", (), CommandPermission.UTILITY),
+        ("voice ptt stop", "Stop active push-to-talk capture", "voice", (), CommandPermission.UTILITY),
+        ("voice ptt cancel", "Cancel push-to-talk and clean temporary audio", "voice", (), CommandPermission.UTILITY),
+        ("voice ptt process", "Transcribe stopped push-to-talk audio", "voice", (), CommandPermission.UTILITY),
+        ("voice ptt status", "Show bounded push-to-talk state", "voice", (), CommandPermission.DIAGNOSTIC),
         ("vision status", "Show vision readiness", "vision", (), CommandPermission.DIAGNOSTIC),
         ("vision models", "Show local Ollama vision models", "vision", (), CommandPermission.DIAGNOSTIC),
         ("vision analyze", "Analyze an image locally", "vision", (), CommandPermission.UTILITY),
@@ -1320,6 +1350,26 @@ def _handler_for(name: str):
         if name.startswith("voice "):
             voice=_voice_manager(context);args=context.arguments
             if voice is None:return _text_response("Voice Intelligence is unavailable; text mode remains active.")
+            if name=="voice ptt status":
+                state=voice.ptt.status();return _text_response(f"Push-to-talk: state={state['state']} capturing={'yes' if state['capturing'] else 'no'} backend={state['backend']} backend_status={state['backend_status']} raw_audio_persistence=off transcript_persistence=off wake_word=off.",**state)
+            if name=="voice ptt start":
+                if not voice.enabled or not voice.input_enabled:return _text_response("Push-to-talk is disabled. Enable voice input explicitly before capture; no microphone was activated.")
+                try:session=voice.ptt.start_capture()
+                except ValueError as exc:return _text_response(f"Push-to-talk start rejected: {exc}.",state=voice.ptt.status())
+                return _text_response(f"Push-to-talk capture active: session={session.session_id}. Use 'voice ptt stop' to end capture.",session_id=session.session_id,state=session.state.value,capturing=True)
+            if name=="voice ptt stop":
+                try:session=voice.ptt.stop_capture()
+                except ValueError as exc:return _text_response(f"Push-to-talk stop rejected: {exc}.",state=voice.ptt.status())
+                return _text_response(f"Push-to-talk capture stopped: state={session.state.value} duration={session.duration:.2f}s. Use 'voice ptt process' to transcribe.",session_id=session.session_id,state=session.state.value,duration=session.duration)
+            if name=="voice ptt cancel":
+                session=voice.ptt.cancel_capture();voice.ptt.reset();return _text_response("Push-to-talk cancelled. Temporary audio was removed and microphone capture is inactive.",previous_state=session.state.value,state="idle")
+            if name=="voice ptt process":
+                try:session,result,_=voice.ptt.process_capture()
+                except ValueError as exc:return _text_response(f"Push-to-talk processing rejected: {exc}.",state=voice.ptt.status())
+                metadata={"session_id":session.session_id,"state":session.state.value,"stt_backend":result.backend_id,"fallback_used":result.fallback_used,"voice_transcript":result.text if result.status.value=="completed" else None,"dispatch_voice_transcript":result.status.value=="completed","raw_audio_persistence":False,"transcript_persistence":False}
+                voice.ptt.reset()
+                if result.status.value!="completed":return _text_response(f"Push-to-talk transcription {result.status.value}: {', '.join(result.errors) or 'no speech'}.",**metadata)
+                return _text_response(f"Push-to-talk transcript: {result.text}. Sending through the normal JARVIS path.",**metadata)
             if name=="voice status":
                 backend=voice.registry.get(voice.selected_output_backend);input_status=voice.input_status()
                 available=bool(backend and backend.available);retained=len(voice.retained_audio_files());playback_status=voice.playback_status()

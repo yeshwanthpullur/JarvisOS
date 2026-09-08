@@ -1,8 +1,16 @@
 # Changelog
 
+## Unreleased - Reconciled Engineering Steps 64-94
+
+- Reconciled every Engineering Step 64-94 row against existing execution, skills, scheduler, goal, browser, MCP, GitHub, communication, observability, reliability, evaluation, Control Room, provider, and privacy evidence without conflating prompt/phase numbering.
+- Added a bounded explicit-path backup/restore foundation with SHA-256 verification and secret-shaped filename rejection.
+- Added explicit `local_only`, `private_hybrid`, `normal_hybrid`, and `cloud_max` model privacy policies and applied them to deterministic provider routing without enabling cloud providers.
+- Added capability dependency and automation opportunity maps plus synchronized Obsidian engineering records.
+- Focused recovered-block foundation verification passes 190 tests. Step 95 was not started.
+
 ## Unreleased - Roadmap Steps 21-62 Local Foundation
 
-- Added the canonical Engineering Steps 1-122 reconciliation ledger and an Obsidian-compatible Markdown project-memory mirror. Step 62 remains the latest evidenced checkpoint; Step 63 is not implemented because its authoritative definition was not recovered.
+- Added the canonical Engineering Steps 1-122 reconciliation ledger and an Obsidian-compatible Markdown project-memory mirror. Steps 64-94 are now individually reconciled from recovered engineering text and repository evidence; Steps 95-122 remain unrecovered.
 - Preserved the supplied broad architecture and approximate later-roadmap outline as provisional recovery context; it does not authorize Step 63 implementation.
 - Step 63 recovered engineering foundation: added bounded metadata-only voice playback lifecycle events and observer-safe streaming progress without continuous listening or cloud dependencies.
 

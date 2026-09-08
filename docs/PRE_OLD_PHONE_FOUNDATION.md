@@ -12,7 +12,7 @@ OpenCode model discovery returned seven identifiers: `opencode/big-pickle`, `ope
 
 Before implementation, the scoped JARVIS suite passed `2,139` tests plus `331` subtests with zero failures, and `pip check` reported no broken requirements. Project-level pytest configuration now limits normal discovery to `tests/` and excludes `installations/`, preserving Hermes installation files and tests untouched. `git diff --check` reported no whitespace errors.
 
-After implementation, `53` focused tests, `362` broader regression tests plus `129` subtests, and the full `2,192` tests plus `331` subtests passed with zero failures. The one collection warning predates this work and concerns an existing test helper class with a constructor.
+At the earlier implementation checkpoint, `53` focused tests, `362` broader regression tests plus `129` subtests, and the full `2,192` tests plus `331` subtests passed with zero failures. The latest local Steps 21-62 verification supersedes that aggregate with `2,307` full-suite tests plus `331` subtests and zero failures. The one collection warning predates this work and concerns an existing test helper class with a constructor.
 
 ## Boundaries
 
@@ -27,4 +27,4 @@ After implementation, `53` focused tests, `362` broader regression tests plus `1
 
 Runtime metadata is stored only under ignored `data/workers/` when work is created. Objectives, source content, credentials, private paths, and personal payloads are not persisted by this layer.
 
-The exact next action is Roadmap Step 21. It has not been started.
+This document records the earlier Steps 2-20 checkpoint. Roadmap Steps 21-62 have since been implemented in the current local working tree; see `ROADMAP_STEPS_21_62.md`. Step 63 has not been started.

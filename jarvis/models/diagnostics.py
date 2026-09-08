@@ -18,7 +18,10 @@ def render_model_command(registry: ModelProviderRegistry, router: ModelRouter, c
     if command == "model hardware":
         return "Model hardware: " + " ".join(f"{key}={value}" for key, value in safe_hardware_summary().items())
     if command == "model policy":
-        return "Model policy: local_only_default=on cloud_providers=disabled automatic_downloads=off public_local_endpoints=blocked."
+        data = router.router_status()
+        values = " ".join(f"{key}={str(value).lower() if isinstance(value, bool) else value}" for key, value in data.items() if key in {"privacy_mode", "local_only_default", "cloud_providers_allowed"})
+        cloud = "enabled" if data.get("cloud_providers_allowed") else "disabled"
+        return "Model policy: " + values + f" cloud_providers={cloud} automatic_downloads=off public_local_endpoints=blocked."
     task = " ".join(arguments).strip()
     if not task:
         return f"Usage: {command} <task>"
@@ -26,4 +29,3 @@ def render_model_command(registry: ModelProviderRegistry, router: ModelRouter, c
         return "Model explanation: " + router.explain_route(task)
     route = router.route_for_task(task)
     return f"Model route: task={route.task_type} capability={route.capability.value} provider={route.selected_provider or 'none'} model={route.selected_model or 'none'} status={route.status.value} local_only={'yes' if route.local_only else 'no'}."
-

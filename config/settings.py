@@ -189,6 +189,7 @@ def load_settings(
             allow_local_models=_coerce_bool(raw_config["models"]["allow_local_models"]),
             enabled=_coerce_bool(raw_config["models"]["enabled"]),
             local_only_default=_coerce_bool(raw_config["models"]["local_only_default"]),
+            privacy_mode=str(raw_config["models"].get("privacy_mode", "local_only")),
             allow_cloud_providers=_coerce_bool(raw_config["models"]["allow_cloud_providers"]),
             default_chat_provider=str(raw_config["models"]["default_chat_provider"]),
             default_reasoning_provider=str(raw_config["models"]["default_reasoning_provider"]),

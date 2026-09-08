@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from .registry import ModelProviderRegistry
+from .privacy import PrivacyMode, PrivacyPolicy
 from .types import ModelCapability, ModelProviderStatus, ModelRoute
 
 
@@ -34,20 +35,37 @@ TASK_CAPABILITIES = {
 
 
 class ModelRouter:
-    def __init__(self, registry: ModelProviderRegistry, *, local_only_default: bool = True, allow_cloud_providers: bool = False) -> None:
+    def __init__(self, registry: ModelProviderRegistry, *, local_only_default: bool = True, allow_cloud_providers: bool = False, privacy_mode: PrivacyMode | str | None = None) -> None:
         self.registry = registry
         self.local_only_default = local_only_default
         self.allow_cloud_providers = allow_cloud_providers
+        self.privacy_policy = PrivacyPolicy.from_value(privacy_mode or (PrivacyMode.LOCAL_ONLY if local_only_default else PrivacyMode.NORMAL_HYBRID), allow_cloud_providers=allow_cloud_providers)
 
-    def route_for_task(self, task_type: str, *, preferred_provider: str | None = None, preferred_model: str | None = None, local_only: bool | None = None) -> ModelRoute:
+    def route_for_task(self, task_type: str, *, preferred_provider: str | None = None, preferred_model: str | None = None, local_only: bool | None = None, privacy_mode: PrivacyMode | str | None = None) -> ModelRoute:
         task = task_type.strip().lower()
         capability = TASK_CAPABILITIES.get(task, ModelCapability.UNKNOWN)
         local_policy = self.local_only_default if local_only is None else bool(local_only)
+        policy = PrivacyPolicy.from_value(privacy_mode or self.privacy_policy.mode, allow_cloud_providers=self.allow_cloud_providers)
+        if local_only is True:
+            policy = PrivacyPolicy.from_value(PrivacyMode.LOCAL_ONLY, allow_cloud_providers=False)
+        def matches_privacy_scope(item):
+            if item.privacy_mode.value == "cloud_only_blocked":
+                return False
+            if policy.mode is PrivacyMode.LOCAL_ONLY and not item.local:
+                return False
+            if not item.local and not policy.allow_cloud_providers:
+                return False
+            if policy.mode is PrivacyMode.PRIVATE_HYBRID and not item.local and item.privacy_mode.value != "optional_cloud":
+                return False
+            return True
+
+        # Keep unavailable providers in diagnostics/fallbacks, but never select
+        # them. This preserves truthful explanations without weakening routing.
         diagnostic_candidates = tuple(
             item for item in self.registry.list_providers()
-            if capability in item.capabilities and (not local_policy or item.local)
+            if capability in item.capabilities and matches_privacy_scope(item)
         )
-        all_candidates = tuple(item for item in diagnostic_candidates if item.enabled)
+        all_candidates = tuple(item for item in diagnostic_candidates if item.enabled and policy.evaluate(item).allowed)
         preferred = self.registry.get_provider(preferred_provider or "")
         selected = None
         if preferred and preferred in all_candidates and preferred.status is ModelProviderStatus.READY:
@@ -58,14 +76,14 @@ class ModelRouter:
         if selected is None:
             return ModelRoute(
                 task, None, None, capability, ModelProviderStatus.UNAVAILABLE, local_policy,
-                "No enabled ready provider supports this task under the local-only policy.", 0.0,
+                f"No enabled ready provider supports this task under the {policy.mode.value} privacy policy.", 0.0,
                 fallback_routes=fallbacks,
                 warnings=("Routing is advisory and performs no model call.",),
             )
         model = preferred_model if preferred_model in selected.available_models else selected.default_model
         return ModelRoute(
             task, selected.provider_id, model, capability, ModelProviderStatus.READY, local_policy,
-            f"Selected ready {'local' if selected.local else 'optional'} provider for {capability.value}.",
+            f"Selected ready {'local' if selected.local else 'optional'} provider for {capability.value} under {policy.mode.value}.",
             0.9, fallback_routes=fallbacks, warnings=("Routing is advisory and performs no model call.",),
         )
 
@@ -81,4 +99,4 @@ class ModelRouter:
 
     def router_status(self) -> dict[str, object]:
         summary = self.registry.registry_summary()
-        return {"enabled": True, "status": "ready", "local_only_default": self.local_only_default, "cloud_providers_allowed": self.allow_cloud_providers, **summary}
+        return {"enabled": True, "status": "ready", "privacy_mode": self.privacy_policy.mode.value, "local_only_default": self.local_only_default, "cloud_providers_allowed": self.allow_cloud_providers, **summary}

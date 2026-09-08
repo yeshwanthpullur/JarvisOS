@@ -25,6 +25,9 @@ from .runtime import (
     ResearchBudget, ResearchClaim, ResearchSource, SearchProviderRegistry,
     SearchProviderState, SearchResult, SourceType, SupportState, normalize_url,
 )
+from .crawlers import BoundedCrawlerAdapter, Crawl4AIAdapter, CrawlerRecord, CrawlerRegistry, CrawlerState, FirecrawlAdapter, NormalizedCrawlResult, build_default_crawler_registry
+from .verification import CitationReference, CitationStore, SourceLifecycle, SourceVerification, SourceVerifier
+from .deep import DeepResearchCoordinator, DeepResearchTask, FindingKind, ResearchRole, ResearchSynthesis
 
 __all__ = [
     "ResearchAgent",
@@ -55,4 +58,8 @@ __all__ = [
     "is_research_allowed",
     "render_research_command",
     "research_source_policy",
+    "BoundedCrawlerAdapter", "Crawl4AIAdapter", "CrawlerRecord", "CrawlerRegistry", "CrawlerState",
+    "FirecrawlAdapter", "NormalizedCrawlResult", "build_default_crawler_registry",
+    "CitationReference", "CitationStore", "SourceLifecycle", "SourceVerification", "SourceVerifier",
+    "DeepResearchCoordinator", "DeepResearchTask", "FindingKind", "ResearchRole", "ResearchSynthesis",
 ]

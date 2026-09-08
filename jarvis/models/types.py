@@ -84,6 +84,7 @@ class ModelProvider:
     available_models: tuple[str, ...] = ()
     reason: str = ""
     limitations: tuple[str, ...] = ()
+    cost_class: str = "unknown"
 
     def __post_init__(self) -> None:
         if not self.provider_id or len(self.provider_id) > 80:

@@ -12,5 +12,5 @@ This folder is an Obsidian-compatible, Markdown-only project memory mirror. GitH
 - [[12_TESTING/TEST_STATUS]]
 - [[01_PROJECT/LIMITATIONS]]
 
-Current checkpoint: Engineering Step 62.
-Next target: Step 63, `BLOCKED_PENDING_CANONICAL_STEP_63`.
+Current checkpoint: Reconciled Engineering Steps 64-94.
+Next target: Step 95.

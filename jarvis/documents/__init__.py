@@ -5,5 +5,9 @@ from .cli import render_document_command
 from .models import *
 from .planner import DocumentPlanner
 from .parser import SafeDocumentParser
+from .canonical import *
+from .parsers import *
+from .ocr import *
+from .pipeline import *
 
 __all__ = [name for name in globals() if not name.startswith("_")]

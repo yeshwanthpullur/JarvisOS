@@ -7,6 +7,7 @@ from pathlib import Path
 
 from jarvis.foundation_common import bounded, contains_secret, new_id, safe_ref
 from .models import *
+from .pipeline import DocumentIntelligenceRuntime
 
 SAFE_TEXT_TYPES = (".txt", ".md", ".json", ".csv", ".yaml", ".yml")
 PLANNED_TYPES = (".pdf", ".docx", ".xlsx", ".pptx")
@@ -42,13 +43,17 @@ class DocumentAgent:
     max_extract_chars: int = 4000
     max_history_items: int = 25
     history: list[DocumentResult] = field(default_factory=list)
+    runtime: DocumentIntelligenceRuntime = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.runtime = DocumentIntelligenceRuntime(self.root, max_file_bytes=self.max_file_bytes, max_extract_chars=self.max_extract_chars)
 
     def _record(self, result: DocumentResult) -> DocumentResult:
         self.history = (self.history + [result])[-self.max_history_items:]
         return result
 
     def status(self) -> dict[str, object]:
-        return {"status":"ready_text_only" if self.enabled else "disabled", "mode":"plan_only", "local_only":True, "text_extraction":True, "pdf_office":"planned_unavailable", "ocr":"disabled", "cloud_parsing":"disabled"}
+        pipeline=self.runtime.status(); return {"status":"ready_text_only" if self.enabled else "disabled", "canonical_pipeline":"ready_foundation" if self.enabled else "disabled", "mode":"plan_only", "local_only":True, "text_extraction":True, "pdf_office":"builtin_verified_optional_adapters_unavailable", "ocr":"adapter_unavailable" if not any(x["state"]=="ready" for x in pipeline["ocr"]["local"]) else "ready", "cloud_parsing":"disabled", "docling":next(x["state"] for x in pipeline["parsers"] if x["parser"]=="docling"), "marker":next(x["state"] for x in pipeline["parsers"] if x["parser"]=="marker")}
 
     def plan(self, request: str) -> DocumentResult:
         risk, allowed, reason = document_safety(request)
@@ -80,7 +85,14 @@ class DocumentAgent:
         path, error = self._resolve(value); request_id = new_id()
         if error: return self._record(DocumentResult(request_id, DocumentStatus.UNAVAILABLE, error=error))
         assert path is not None
-        if path.suffix.lower() not in SAFE_TEXT_TYPES: return self._record(DocumentResult(request_id, DocumentStatus.UNAVAILABLE, error="DOCUMENT_PARSER_UNAVAILABLE", warnings=("PDF, Office, OCR, and cloud parsing are not enabled.",)))
+        if path.suffix.lower() not in SAFE_TEXT_TYPES:
+            if path.suffix.lower() == ".pdf" and not path.read_bytes()[:4] == b"%PDF":
+                return self._record(DocumentResult(request_id, DocumentStatus.UNAVAILABLE, error="DOCUMENT_PARSER_UNAVAILABLE", warnings=("The PDF signature is invalid or no safe parser can read it.",)))
+            try: document=self.runtime.ingest(str(path))
+            except ValueError as exc: return self._record(DocumentResult(request_id, DocumentStatus.UNAVAILABLE, error=str(exc).upper()[:240]))
+            text="\n".join(item.text for item in document.blocks); preview=bounded(text,self.max_extract_chars)
+            extraction=DocumentExtraction(new_id(),document.document_id,DocumentStatus.EXTRACTED,preview,len(text),len(document.pages) or None,document.provenance[-1].backend if document.provenance else "unknown",tuple(document.provenance[-1].warnings if document.provenance else ()))
+            return self._record(DocumentResult(request_id,DocumentStatus.EXTRACTED,extraction=extraction,warnings=extraction.warnings))
         if path.stat().st_size > self.max_file_bytes: return self._record(DocumentResult(request_id, DocumentStatus.BLOCKED, error="DOCUMENT_TOO_LARGE"))
         try: text = path.read_text(encoding="utf-8", errors="replace")
         except OSError: return self._record(DocumentResult(request_id, DocumentStatus.FAILED, error="DOCUMENT_READ_FAILED"))

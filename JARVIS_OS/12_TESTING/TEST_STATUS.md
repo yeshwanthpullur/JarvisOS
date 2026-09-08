@@ -1,5 +1,14 @@
 # Test Status
 
+## Engineering Steps 64-94
+
+- Focused reconciled-block/foundation run: 190 passed, 0 failed.
+- Coverage includes backup integrity/secret rejection, privacy-aware provider
+  routing, execution policy/Broker, scheduler, workflow, MCP, GitHub,
+  communication, evaluation, and model-router regressions.
+- Full suite after this block: 2,316 passed, 331 subtests passed, 0 failed,
+  0 errors, and 1 pre-existing collection warning; no Step 95 work is included.
+
 Latest local verification before synchronization:
 
 - Full suite before Step 63: 2,307 passed, 331 subtests passed, 0 failed, 1 pre-existing collection warning.
@@ -18,4 +27,4 @@ No physical microphone capture or audio playback was performed during automated 
 
 - Focused voice/Steps 57-62 suite after the Step 63 change: 32 passed, 2 subtests passed.
 - New coverage: ordered playback lifecycle events, bounded metadata, observer-failure isolation, and no raw speech text in event records.
-- Full suite after Step 63: 2,309 passed, 331 subtests passed, 0 failed, 1 pre-existing collection warning.
+- Full suite after Step 63 before this block: 2,309 passed, 331 subtests passed, 0 failed, 1 pre-existing collection warning.

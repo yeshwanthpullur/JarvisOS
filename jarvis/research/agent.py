@@ -20,6 +20,9 @@ from .models import (
 from .planner import ResearchPlanner, classify_research_intent
 from .storage import ResearchHistoryRecord, ResearchHistoryStore
 from .runtime import AutonomousResearchRuntime, ExternalResearchRequest
+from .crawlers import CrawlerRegistry, build_default_crawler_registry
+from .verification import SourceVerifier
+from .deep import DeepResearchCoordinator
 
 
 @dataclass(slots=True)
@@ -38,10 +41,14 @@ class ResearchAgent:
     last_history_error: str | None = None
     history: list[ResearchResult] = field(default_factory=list)
     runtime: AutonomousResearchRuntime = field(default_factory=AutonomousResearchRuntime)
+    crawlers: CrawlerRegistry = field(default_factory=build_default_crawler_registry)
+    source_verifier: SourceVerifier = field(default_factory=SourceVerifier)
+    deep_research: DeepResearchCoordinator = field(init=False)
 
     def __post_init__(self) -> None:
         self.max_results = max(1, min(int(self.max_results), 100))
         self.default_depth = ResearchDepth(self.default_depth)
+        self.deep_research = DeepResearchCoordinator(self.runtime)
 
     def _record(self, result: ResearchResult) -> ResearchResult:
         self.history.append(result)
@@ -139,6 +146,9 @@ class ResearchAgent:
             "external_runtime": self.runtime.status()["runtime"],
             "live_search": self.runtime.status()["external_search"],
             "direct_memory_writes": False,
+            "crawlers": self.crawlers.summary(),
+            "source_verification": "ready",
+            "deep_research": "bounded_plan_and_synthesis",
         }
 
     def external(self, query: str, *, mode: ResearchDepth | str = ResearchDepth.STANDARD):

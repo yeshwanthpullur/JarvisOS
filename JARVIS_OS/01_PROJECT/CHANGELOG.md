@@ -1,5 +1,11 @@
 # Project Changelog
 
+## Reconciled Engineering Steps 64-94
+
+- Added individual provenance/status/evidence records for every step 64-94.
+- Added bounded backup integrity and privacy-aware provider routing foundations.
+- Final verification: 2,316 passed, 331 subtests, 0 failed, one pre-existing collection warning.
+
 Canonical implementation history remains in [[../../CHANGELOG]]. This vault records project-memory changes and does not replace the repository changelog.
 
 ## 2026-09-08

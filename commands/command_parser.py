@@ -29,7 +29,7 @@ _SUBCOMMANDS = {
     "cloud status", "cloud providers", "cloud models", "cloud refresh", "cloud use", "cloud test", "cloud explain-selection", "cloud only",
     "tool list", "tool show", "tool health", "tool match", "tool permissions", "tool dry-run", "tool history", "tool invocation", "tool cancel", "tool mode", "tool limits", "tools status",
     "plan status", "plan list", "plan show", "plan steps", "plan validate", "plan alternatives", "plan approve", "plan reject", "plan pause", "plan resume", "plan cancel", "plan replan", "plan history", "plan mode", "plan limits",
-    "voice status", "voice on", "voice off", "voice listen", "voice cleanup", "voice stop", "voice pause", "voice resume", "voice speaking", "voice speaking status", "voice repeat", "voice replay", "voice correction", "voice cancel", "voice interrupt", "voice session", "voice sessions", "voice session-inspect", "voice devices", "voice backend", "voice device", "voice input", "voice output", "voice say", "voice transcribe", "voice mode", "voice privacy", "voice language", "voice rate", "voice volume", "voice raw-audio", "voice limits", "voice health", "voice stt", "voice tts", "voice test-input", "voice test-output",
+    "voice status", "voice on", "voice off", "voice listen", "voice cleanup", "voice stop", "voice pause", "voice resume", "voice speaking", "voice speaking status", "voice repeat", "voice replay", "voice correction", "voice cancel", "voice interrupt", "voice session", "voice sessions", "voice session-inspect", "voice devices", "voice backend", "voice device", "voice input", "voice output", "voice say", "voice transcribe", "voice mode", "voice privacy", "voice language", "voice rate", "voice volume", "voice raw-audio", "voice limits", "voice health", "voice stt", "voice tts", "voice test-input", "voice test-output", "voice ptt start", "voice ptt stop", "voice ptt cancel", "voice ptt process", "voice ptt status",
     "vision status", "vision health", "vision models", "vision inspect", "vision analyze", "vision describe", "vision ask", "vision audit", "vision cleanup",
     "ocr extract", "camera status", "camera devices", "camera start", "camera stop", "camera session", "camera session-inspect",
     "image status", "image help", "image providers", "image generate", "image plan", "image safety", "image history", "image show", "image config",
@@ -113,6 +113,23 @@ class CommandParser:
                 flags[key] = value if value else True
             else: args.append(part)
         name = parts[0]
+        for count in range(min(3, len(args)), 0, -1):
+            candidate = " ".join((name, *args[:count]))
+            if candidate in _SUBCOMMANDS:
+                name = candidate
+                del args[:count]
+                break
+        if name in {"local only", "cloud only"} and args and args[0] in {"on", "off"}:
+            name = f"{name} {args.pop(0)}"
+        if name == "sync queue" and args and args[0] == "summary":
+            name = "sync queue summary"
+            args.pop(0)
+        if name == "model advanced" and args and args[0] in {"status", "providers", "show", "plan", "compare", "hardware", "route", "safety", "checklist", "history"}:
+            name = f"{name} {args.pop(0)}"
+        if name in {"browser session", "research source", "knowledge source"} and args and args[0] in {"list", "inspect", "close"}:
+            name = f"{name.split()[0]} {name.split()[1]}-{args.pop(0)}"
+        if name in {"camera session", "coding tool", "voice session"} and args and args[0] == "inspect":
+            name = f"{name.split()[0]} {name.split()[1]}-inspect"
         if args and f"{name} {args[0]}" in _SUBCOMMANDS:
             name = f"{name} {args.pop(0)}"
             if name in {"local only", "cloud only"} and args and args[0] in {"on", "off"}:

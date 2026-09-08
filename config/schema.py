@@ -98,6 +98,7 @@ class ModelsConfig:
     allow_local_models: bool
     enabled: bool = True
     local_only_default: bool = True
+    privacy_mode: str = "local_only"
     allow_cloud_providers: bool = False
     default_chat_provider: str = "ollama_text"
     default_reasoning_provider: str = "ollama_text"
@@ -437,7 +438,7 @@ class PlanningConfig:
 
 @dataclass(frozen=True,slots=True)
 class VoiceConfig:
- enabled:bool=False; mode:str="off"; language:str="en-US"; local_only:bool=True; privacy_mode:str="standard"; input_enabled:bool=False; output_enabled:bool=False; input_backend:str="offline-stt"; output_backend:str="windows-sapi"; input_device:str|None=None; output_device:str|None=None; confidence_threshold:float=.75; confirmation_threshold:float=.6; max_capture_seconds:int=30; silence_timeout_seconds:int=3; max_audio_size:int=20000000; max_transcript_length:int=4000; max_spoken_response_length:int=500; max_auto_speech_chars:int=12000; rate:int=0; volume:int=100; raw_audio_persistence:bool=False; retention_limit:int=0; temp_audio_lifetime_seconds:int=300; voice_input_audit_retention:int=50; stt_model_path:Path|None=None; stt_executable:Path|None=None; wake_word_enabled:bool=False; wake_word_backend:str|None=None; activation_phrase:str="jarvis"; interruption_enabled:bool=True; temp_directory:Path|None=None; allowed_audio_directories:tuple[Path,...]=(); stt_primary:str="faster_whisper"; stt_backup:str="vosk"; tts_primary:str="piper"; tts_backup:str="windows_sapi"; retain_audio:bool=False; continuous_listening:bool=False; max_session_minutes:int=30; idle_timeout_seconds:int=15
+ enabled:bool=False; mode:str="off"; language:str="en-US"; local_only:bool=True; privacy_mode:str="standard"; input_enabled:bool=False; output_enabled:bool=False; input_backend:str="offline-stt"; output_backend:str="windows-sapi"; input_device:str|None=None; output_device:str|None=None; confidence_threshold:float=.75; confirmation_threshold:float=.6; max_capture_seconds:int=30; max_audio_size:int=20000000; max_audio_duration:int=300; max_transcript_length:int=4000; max_spoken_response_length:int=500; max_auto_speech_chars:int=12000; max_tts_text_chars:int=12000; stt_timeout_seconds:int=60; tts_timeout_seconds:int=30; silence_timeout_seconds:int=3; rate:int=0; volume:int=100; raw_audio_persistence:bool=False; retention_limit:int=0; temp_audio_lifetime_seconds:int=300; voice_input_audit_retention:int=50; stt_model_path:Path|None=None; stt_executable:Path|None=None; faster_whisper_model_path:Path|None=None; faster_whisper_device:str="cpu"; faster_whisper_compute_type:str="int8"; piper_executable:Path|None=None; piper_voice_model_path:Path|None=None; wake_word_enabled:bool=False; wake_word_backend:str|None=None; activation_phrase:str="jarvis"; interruption_enabled:bool=True; temp_directory:Path|None=None; allowed_audio_directories:tuple[Path,...]=(); stt_primary:str="faster_whisper"; stt_backup:str="vosk"; tts_primary:str="piper"; tts_backup:str="windows_sapi"; retain_audio:bool=False; continuous_listening:bool=False; max_session_minutes:int=30; idle_timeout_seconds:int=15
 
 @dataclass(frozen=True,slots=True)
 class VisionConfig:

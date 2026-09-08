@@ -9,6 +9,9 @@ from .registry import WorkerRegistry, build_default_worker_registry
 from .runtime import WorkerRuntime, get_worker_runtime
 from .work import GoalWorkManager, WorkStateStore
 from .worktrees import WorktreeIsolationManager
+from .assurance import EvidenceStore, IntegrationCandidateGate, ReworkEngine, ReviewCoordinator, VerificationEngine, WorkAssuranceRuntime
+from .assurance_models import *
+from .checkpoints import CheckpointStore, RecoveryPlanner
 
 __all__ = [
     "CodexAdapter", "ControlledContextStore", "DynamicModelRegistry", "GoalWorkManager", "HermesAdapter",
@@ -16,4 +19,6 @@ __all__ = [
     "WorkerRegistry", "WorkerRoutePlanner", "WorkerRuntime", "WorkStateStore", "WorktreeIsolationManager",
     "build_default_adapters", "build_default_worker_registry", "build_provider_registry", "get_worker_runtime",
     "render_worker_command",
+    "CheckpointStore", "EvidenceStore", "IntegrationCandidateGate", "RecoveryPlanner", "ReworkEngine",
+    "ReviewCoordinator", "VerificationEngine", "WorkAssuranceRuntime",
 ]
