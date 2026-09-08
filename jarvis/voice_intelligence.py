@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
 from uuid import uuid4
 
 from jarvis.stt_intelligence import VoiceInputManager, VoiceInputStatus
@@ -37,13 +37,16 @@ class TranscriptionRequest:
  transcription_id:str; voice_session_id:str; parent_request_id:str|None; audio_reference:str; backend_id:str; language:str="en-US"; local_only:bool=True; enable_partial_results:bool=False; confidence_threshold:float=.75; maximum_output_length:int=4000; timeout:int=60; created_at:str=field(default_factory=now)
 @dataclass(frozen=True,slots=True)
 class TranscriptionResult:
- transcription_id:str; voice_session_id:str; parent_request_id:str|None; backend_id:str; status:VoiceStatus; text:str=""; normalized_text:str=""; language:str="en-US"; confidence:float=0; segments:tuple[dict[str,object],...]=(); partial:bool=False; duration:float=0; warnings:tuple[str,...]=(); errors:tuple[str,...]=(); started_at:str=field(default_factory=now); completed_at:str=field(default_factory=now)
+ transcription_id:str; voice_session_id:str; parent_request_id:str|None; backend_id:str; status:VoiceStatus; text:str=""; normalized_text:str=""; language:str="en-US"; confidence:float=0; segments:tuple[dict[str,object],...]=(); partial:bool=False; duration:float=0; warnings:tuple[str,...]=(); errors:tuple[str,...]=(); started_at:str=field(default_factory=now); completed_at:str=field(default_factory=now); model:str=""; latency:float=0; fallback_used:bool=False
 @dataclass(frozen=True,slots=True)
 class SpeechSynthesisRequest:
  synthesis_id:str; voice_session_id:str; parent_request_id:str|None; backend_id:str; text:str; language:str="en-US"; voice_id:str|None=None; rate:int=0; volume:int=100; output_mode:str="file"; output_path:str|None=None; local_only:bool=True; timeout:int=30; created_at:str=field(default_factory=now)
 @dataclass(frozen=True,slots=True)
 class SpeechSynthesisResult:
- synthesis_id:str; voice_session_id:str; parent_request_id:str|None; backend_id:str; status:VoiceStatus; audio_reference:str|None=None; output_mode:str="file"; duration:float=0; audio_size:int=0; warnings:tuple[str,...]=(); errors:tuple[str,...]=(); started_at:str=field(default_factory=now); completed_at:str=field(default_factory=now)
+ synthesis_id:str; voice_session_id:str; parent_request_id:str|None; backend_id:str; status:VoiceStatus; audio_reference:str|None=None; output_mode:str="file"; duration:float=0; audio_size:int=0; warnings:tuple[str,...]=(); errors:tuple[str,...]=(); started_at:str=field(default_factory=now); completed_at:str=field(default_factory=now); audio_format:str="wav"; sample_rate:int=0; voice_id:str|None=None; latency:float=0; fallback_used:bool=False
+@dataclass(frozen=True,slots=True)
+class VoicePlaybackEvent:
+ event_type:str; playback_session_id:str|None; state:PlaybackState; chunk_index:int=0; completed_chunks:int=0; remaining_chunks:int=0; timestamp:str=field(default_factory=now)
 
 class VoiceAdapter(Protocol):
  adapter_id:str; name:str; version:str; local:bool; capabilities:tuple[str,...]; supported_languages:tuple[str,...]; supported_formats:tuple[str,...]; available:bool
@@ -180,10 +183,14 @@ class VoiceIntelligence:
   configured_temp=getattr(config,"temp_directory",None);base=Path(getattr(settings,"base_dir",Path.cwd()))
   self.temp_directory=(Path(configured_temp) if configured_temp else base/"data"/"voice-temp").resolve()
   self.voice_input=VoiceInputManager(config,(Path(storage_dir)/"input") if storage_dir else None,self.logger);self.registry.register(self.voice_input.stt_adapter)
+  from jarvis.voice_pipeline import FasterWhisperAdapter, PiperAdapter, PushToTalkController, STTRouter, TTSRouter, VoskCanonicalAdapter
+  self.faster_whisper=FasterWhisperAdapter(getattr(config,"faster_whisper_model_path",None),device=str(getattr(config,"faster_whisper_device","cpu")),compute_type=str(getattr(config,"faster_whisper_compute_type","int8")),max_audio_bytes=int(getattr(config,"max_audio_size",20_000_000)),max_audio_seconds=int(getattr(config,"max_audio_duration",300)))
+  self.vosk_pipeline=VoskCanonicalAdapter(self.voice_input.stt_adapter);self.piper=PiperAdapter(getattr(config,"piper_executable",None),getattr(config,"piper_voice_model_path",None),self.temp_directory,max_text_chars=int(getattr(config,"max_tts_text_chars",12000)))
+  self.registry.register(self.faster_whisper);self.registry.register(self.piper);self.stt_router=STTRouter(self.faster_whisper,self.vosk_pipeline);self.tts_router=TTSRouter(self.piper,self.registry.get("windows-sapi"));self.ptt=PushToTalkController(self.stt_router,self.tts_router,self.temp_directory,max_recording_seconds=int(getattr(config,"max_capture_seconds",30)),max_audio_bytes=int(getattr(config,"max_audio_size",20_000_000)))
   requested_input=str(getattr(config,"input_backend","offline-stt"));requested_output=str(getattr(config,"output_backend","windows-sapi"));self.selected_input_backend=requested_input if self.registry.get(requested_input) else "offline-stt";self.selected_output_backend=requested_output if self.registry.get(requested_output) else "windows-sapi"
-  self.sessions:dict[str,VoiceSession]={};self.limits=VoiceLimits(max_capture_seconds=int(getattr(config,"max_capture_seconds",30)),max_audio_size=int(getattr(config,"max_audio_size",20_000_000)),max_transcript_length=int(getattr(config,"max_transcript_length",4000)),max_spoken_response_length=int(getattr(config,"max_spoken_response_length",500)),temp_lifetime_seconds=int(getattr(config,"temp_audio_lifetime_seconds",300)),retained_audio_count=max(0,int(getattr(config,"retention_limit",0))))
+  self.sessions:dict[str,VoiceSession]={};self.limits=VoiceLimits(max_capture_seconds=int(getattr(config,"max_capture_seconds",30)),max_audio_size=int(getattr(config,"max_audio_size",20_000_000)),max_audio_duration=int(getattr(config,"max_audio_duration",300)),max_transcript_length=int(getattr(config,"max_transcript_length",4000)),max_spoken_response_length=int(getattr(config,"max_spoken_response_length",500)),transcription_timeout=int(getattr(config,"stt_timeout_seconds",60)),synthesis_timeout=int(getattr(config,"tts_timeout_seconds",30)),temp_lifetime_seconds=int(getattr(config,"temp_audio_lifetime_seconds",300)),retained_audio_count=max(0,int(getattr(config,"retention_limit",0))))
   self._playback_lock=threading.RLock();self._pause_condition=threading.Condition(self._playback_lock);self._playback_thread=None;self._playback_stop=threading.Event();self._pause_requested=False;self._playback_state=PlaybackState.IDLE;self._playback_session_id=None;self._playback_chunks=();self._playback_parent_request_id=None;self._playback_current=0;self._playback_completed=0;self._playback_interrupted_index=None;self._playback_total=0;self._playback_remaining=0;self._playback_cancelled=False;self._playback_started_at=None;self._playback_last_error=None;self._last_safe_spoken_response=None;self._playback_audit=deque(maxlen=50)
-  self.initialized=True;self.cleanup_temp_audio(remove_all=False);self.logger.info("voice_initialized enabled=%s microphone=%s wake_word=false",self.enabled,self.input_enabled)
+  self._playback_event_handler:Callable[[VoicePlaybackEvent],None]|None=None;self.initialized=True;self.cleanup_temp_audio(remove_all=False);self.logger.info("voice_initialized enabled=%s microphone=%s wake_word=false",self.enabled,self.input_enabled)
  def create_session(self,user_session_id="default",parent_request_id=None):
   if len([s for s in self.sessions.values() if s.state not in {VoiceState.COMPLETED,VoiceState.CANCELLED,VoiceState.FAILED}])>=self.limits.max_sessions:raise ValueError("voice_session_limit")
   s=VoiceSession(str(uuid4()),user_session_id,self.mode,VoiceState.READY if self.enabled else VoiceState.UNAVAILABLE,parent_request_id, self.selected_input_backend,self.selected_output_backend,language=self.language,privacy_mode=self.privacy_mode,raw_audio_persistence=self.raw_audio_persistence,local_only=self.local_only or self.privacy_mode=="strict");self.sessions[s.voice_session_id]=s;self._save();return s
@@ -236,18 +243,25 @@ class VoiceIntelligence:
  def playback_status(self):
   with self._playback_lock:
    resumable=self._playback_state in {PlaybackState.STOPPED,PlaybackState.PAUSED} and self._playback_remaining>0 and not self._playback_cancelled
-   return {"state":self._playback_state.value,"playback_session_id":self._playback_session_id,"current_chunk":self._playback_current,"completed_chunks":self._playback_completed,"total_chunks":self._playback_total,"remaining_chunks":self._playback_remaining,"resumable":resumable,"cancelled":self._playback_cancelled,"interrupted_chunk":self._playback_interrupted_index is not None,"started_at":self._playback_started_at,"stop_requested":self._playback_stop.is_set(),"pause_requested":self._pause_requested,"interruption_available":self._playback_state in {PlaybackState.QUEUED,PlaybackState.SPEAKING,PlaybackState.PAUSED},"last_error":self._playback_last_error}
- def _audit_playback(self,action,result,error=None):
-  self._playback_audit.append({"timestamp":now(),"action":action,"state":self._playback_state.value,"chunk_count":self._playback_total,"result":result,"error":error})
- def start_playback(self,text,parent_request_id="voice-playback"):
+   return {"state":self._playback_state.value,"playback_session_id":self._playback_session_id,"current_chunk":self._playback_current,"completed_chunks":self._playback_completed,"total_chunks":self._playback_total,"remaining_chunks":self._playback_remaining,"resumable":resumable,"cancelled":self._playback_cancelled,"interrupted_chunk":self._playback_interrupted_index is not None,"started_at":self._playback_started_at,"stop_requested":self._playback_stop.is_set(),"pause_requested":self._pause_requested,"streaming":True,"event_count":len(self._playback_audit),"interruption_available":self._playback_state in {PlaybackState.QUEUED,PlaybackState.SPEAKING,PlaybackState.PAUSED},"last_error":self._playback_last_error}
+ def _audit_playback(self,action,result,error=None,chunk_index=0):
+  event=VoicePlaybackEvent(action,self._playback_session_id,self._playback_state,chunk_index,self._playback_completed,self._playback_remaining)
+  self._playback_audit.append({"timestamp":event.timestamp,"action":action,"state":event.state.value,"chunk_count":self._playback_total,"chunk_index":chunk_index,"completed_chunks":event.completed_chunks,"remaining_chunks":event.remaining_chunks,"result":result,"error":error})
+  handler=self._playback_event_handler
+  if handler is not None:
+   try:handler(event)
+   except Exception:self.logger.exception("voice_playback_event_handler_failed session_id=%s",self._playback_session_id)
+ def playback_events(self):
+  with self._playback_lock:return tuple(dict(item) for item in self._playback_audit)
+ def start_playback(self,text,parent_request_id="voice-playback",on_event=None):
   policy=self.response_policy(text)
   if not policy["speak"]:raise ValueError(str(policy["reason"]))
   chunks=self.speech_chunks(str(policy["text"]));self.cancel_playback(wait=True,replaced=True)
   with self._playback_lock:
    if self._playback_thread is not None and self._playback_thread.is_alive():raise RuntimeError("VOICE_STOP_FAILED")
   with self._pause_condition:
-   self._playback_stop=threading.Event();self._pause_requested=False;self._playback_state=PlaybackState.QUEUED;self._playback_session_id=str(uuid4());self._playback_chunks=chunks;self._playback_parent_request_id=parent_request_id;self._playback_current=0;self._playback_completed=0;self._playback_interrupted_index=None;self._playback_total=len(chunks);self._playback_remaining=len(chunks);self._playback_cancelled=False;self._playback_started_at=now();self._playback_last_error=None;self._last_safe_spoken_response=str(policy["text"])
-   self._start_playback_worker(0);self._audit_playback("start","queued")
+   self._playback_stop=threading.Event();self._pause_requested=False;self._playback_state=PlaybackState.QUEUED;self._playback_session_id=str(uuid4());self._playback_event_handler=on_event;self._playback_chunks=chunks;self._playback_parent_request_id=parent_request_id;self._playback_current=0;self._playback_completed=0;self._playback_interrupted_index=None;self._playback_total=len(chunks);self._playback_remaining=len(chunks);self._playback_cancelled=False;self._playback_started_at=now();self._playback_last_error=None;self._last_safe_spoken_response=str(policy["text"])
+   self._audit_playback("start","queued");self._start_playback_worker(0)
    return self.playback_status()
  def _start_playback_worker(self,start_index):
   self._playback_thread=threading.Thread(target=self._playback_worker,args=(start_index,self._playback_stop),name="jarvis-voice-playback",daemon=True);self._playback_thread.start()
@@ -260,7 +274,7 @@ class VoiceIntelligence:
     while self._pause_requested and not stop_event.is_set():
      self._playback_state=PlaybackState.PAUSED;self._playback_remaining=len(chunks)-self._playback_completed;self._pause_condition.wait(timeout=.25)
     if stop_event.is_set():break
-    self._playback_state=PlaybackState.SPEAKING;self._playback_current=index+1;self._playback_interrupted_index=None;self._playback_remaining=len(chunks)-self._playback_completed
+    self._playback_state=PlaybackState.SPEAKING;self._playback_current=index+1;self._playback_interrupted_index=None;self._playback_remaining=len(chunks)-self._playback_completed;self._audit_playback("chunk_started","streaming",chunk_index=index+1)
    request=SpeechSynthesisRequest(str(uuid4()),session_id,parent_request_id,self.selected_output_backend,chunk,self.language,rate=self.rate,volume=self.volume,output_mode="playback",local_only=self.local_only,timeout=self.limits.synthesis_timeout)
    try:
     result=adapter.synthesize_interruptible(request,stop_event) if hasattr(adapter,"synthesize_interruptible") else adapter.synthesize(request)
@@ -269,7 +283,7 @@ class VoiceIntelligence:
    with self._pause_condition:
     if stop_event.is_set():self._playback_interrupted_index=index;break
     if result.status!=VoiceStatus.COMPLETED:self._playback_state=PlaybackState.FAILED;self._playback_last_error=result.errors[0] if result.errors else "VOICE_PLAYBACK_FAILED";self._audit_playback("playback","failed",self._playback_last_error);return
-    self._playback_completed=index+1;self._playback_interrupted_index=None;self._playback_remaining=len(chunks)-self._playback_completed
+    self._playback_completed=index+1;self._playback_interrupted_index=None;self._playback_remaining=len(chunks)-self._playback_completed;self._audit_playback("chunk_completed","streaming",chunk_index=index+1)
   with self._pause_condition:
    if stop_event.is_set():
     if self._playback_cancelled:self._playback_state=PlaybackState.CANCELLED;self._playback_remaining=0;self._playback_interrupted_index=None;self._audit_playback("cancel","cancelled")
@@ -309,12 +323,15 @@ class VoiceIntelligence:
     self._pause_requested=False;self._pause_condition.notify_all();self._audit_playback("resume","resumed");return {"ok":True,"code":"VOICE_RESUMED","message":"Voice playback resumed from the retained queue."}
    if self._playback_state!=PlaybackState.STOPPED or self._playback_cancelled or self._playback_remaining<=0:return {"ok":False,"code":"VOICE_RESUME_UNAVAILABLE","message":"No resumable voice playback is available."}
    if self._playback_thread is not None and self._playback_thread.is_alive():return {"ok":False,"code":"VOICE_RESUME_UNAVAILABLE","message":"Voice playback is still stopping."}
-   start_index=self._playback_interrupted_index if self._playback_interrupted_index is not None else self._playback_completed;self._playback_stop=threading.Event();self._playback_state=PlaybackState.QUEUED;self._playback_cancelled=False;self._start_playback_worker(start_index);self._audit_playback("resume","queued");return {"ok":True,"code":"VOICE_RESUMED","message":"Voice playback resumed. An interrupted chunk restarts from its beginning."}
+   start_index=self._playback_interrupted_index if self._playback_interrupted_index is not None else self._playback_completed;self._playback_stop=threading.Event();self._playback_state=PlaybackState.QUEUED;self._playback_cancelled=False;self._start_playback_worker(start_index);self._audit_playback("resume","queued",chunk_index=start_index+1);return {"ok":True,"code":"VOICE_RESUMED","message":"Voice playback resumed. An interrupted chunk restarts from its beginning."}
+ def stream_playback(self,text,parent_request_id="voice-stream",on_event=None):
+  """Queue bounded sentence chunks and emit lifecycle events without exposing audio or raw text."""
+  return self.start_playback(text,parent_request_id,on_event=on_event)
  def repeat_last(self,parent_request_id="voice-repeat"):
   if not self._last_safe_spoken_response:return {"ok":False,"code":"VOICE_NOT_SPEAKING","message":"No safe spoken reply is available to repeat."}
   status=self.start_playback(self._last_safe_spoken_response,parent_request_id);return {"ok":True,"code":"VOICE_QUEUED","message":"Repeating the last safe spoken reply.",**status}
  def shutdown(self):
-  self.cancel_playback(wait=True);self.initialized=False
+  self.ptt.cancel_capture();self.ptt.reset();self.cancel_playback(wait=True);self.initialized=False
  def say(self,text,parent_request_id="voice-command",output_path:Path|None=None,playback:bool|None=None):
   if not self.output_enabled:raise ValueError("voice_output_disabled")
   policy=self.response_policy(text)
@@ -330,8 +347,9 @@ class VoiceIntelligence:
   if result is None:raise ValueError("empty_speech_text")
   self.sessions[session.voice_session_id]=replace(session,state=VoiceState.COMPLETED if result.status==VoiceStatus.COMPLETED else VoiceState.FAILED,synthesis_count=attempted,ended_at=now(),updated_at=now(),last_error=result.errors[0] if result.errors else None);self._save();self.logger.info("synthesis_completed request_id=%s voice_session_id=%s synthesis_id=%s backend_id=%s status=%s chunks=%s",parent_request_id,session.voice_session_id,result.synthesis_id,result.backend_id,result.status.value,attempted);return result
  def transcribe_file(self,path):
-  capture=self.validate_audio_file(path);result=self.voice_input.transcribe_wav(Path(capture.audio_reference or path),"voice-transcribe-file")
-  return self._normalize_input_result(result,capture.voice_session_id)
+  capture=self.validate_audio_file(path);self.vosk_pipeline.adapter=self.voice_input.stt_adapter
+  request=TranscriptionRequest(str(uuid4()),capture.voice_session_id,"voice-transcribe-file",str(capture.audio_reference or path),"router",self.language,local_only=True,maximum_output_length=self.limits.max_transcript_length,timeout=self.limits.transcription_timeout)
+  return self.stt_router.route(request)
  def listen(self,parent_request_id="voice-listen"):
   result=self.voice_input.listen(parent_request_id)
   return self._normalize_input_result(result,next(reversed(self.voice_input.sessions),"voice-input"))
@@ -344,7 +362,8 @@ class VoiceIntelligence:
   if not state["dependency_ready"]:missing.append("vosk_dependency")
   if not state["model_ready"]:missing.append("local_stt_model")
   if not state["microphone_available"]:missing.append("microphone_capture_adapter")
-  return {"enabled":self.input_enabled,"backend":self.selected_input_backend,"provider":state["provider"],"provider_status":state["provider_status"],"stt_available":state["stt_available"],"dependency_ready":state["dependency_ready"],"model_ready":state["model_ready"],"model_path":state["model_path"],"capture_backend":state["capture_adapter"],"capture_status":state["capture_status"],"microphone_available":state["microphone_available"],"ready":state["ready"],"missing_capabilities":tuple(missing),"raw_audio_persistence":False,"transcript_persistence":False,"wake_word":False,"continuous_listening":False}
+  model_ref=Path(str(state["model_path"])).name if state.get("model_path") else None
+  return {"enabled":self.input_enabled,"backend":self.selected_input_backend,"provider":state["provider"],"provider_status":state["provider_status"],"stt_available":state["stt_available"],"dependency_ready":state["dependency_ready"],"model_ready":state["model_ready"],"model_path":model_ref,"capture_backend":state["capture_adapter"],"capture_status":state["capture_status"],"microphone_available":state["microphone_available"],"ready":state["ready"],"primary_route":self.faster_whisper.health_check(),"fallback_route":self.vosk_pipeline.health_check(),"missing_capabilities":tuple(missing),"raw_audio_persistence":False,"transcript_persistence":False,"wake_word":False,"continuous_listening":False}
  def retained_audio_files(self):
   directories=[self.temp_directory]
   if self.storage_dir:directories.append((self.storage_dir/"voice-output").resolve())
@@ -372,7 +391,7 @@ class VoiceIntelligence:
   for sid,s in tuple(self.sessions.items()):
    if s.state not in {VoiceState.COMPLETED,VoiceState.CANCELLED,VoiceState.FAILED}:self.sessions[sid]=replace(s,state=VoiceState.CANCELLED,ended_at=now(),updated_at=now())
   self._save();return True
- def health(self):return {a.adapter_id:a.health_check() for a in self.registry.list()}|{"enabled":self.enabled,"input_enabled":self.input_enabled,"output_enabled":self.output_enabled,"voice_input":self.input_status(),"wake_word_enabled":False,"continuous_listening":False,"raw_audio_persistence":self.raw_audio_persistence,"temp_directory":str(self.temp_directory),"retained_audio_count":len(self.retained_audio_files())}
+ def health(self):return {a.adapter_id:a.health_check() for a in self.registry.list()}|{"enabled":self.enabled,"input_enabled":self.input_enabled,"output_enabled":self.output_enabled,"voice_input":self.input_status(),"stt_router":self.stt_router.status(),"tts_router":self.tts_router.status(),"push_to_talk":self.ptt.status(),"wake_word_enabled":False,"continuous_listening":False,"raw_audio_persistence":self.raw_audio_persistence,"temp_directory":"managed_local_temp","retained_audio_count":len(self.retained_audio_files())}
  def _save(self):
   if not self.storage_dir:return
   self.storage_dir.mkdir(parents=True,exist_ok=True);records=list(self.sessions.values())[-self.limits.retained_session_history:];(self.storage_dir/"sessions.json").write_text(json.dumps([asdict(x) for x in records],default=str,indent=2),encoding="utf-8")

@@ -194,6 +194,32 @@ class VoicePlaybackControlTests(unittest.TestCase):
             self.wait_for(PlaybackState.COMPLETED)
         self.assertEqual(calls, ["A safe reply.", "A safe reply."])
 
+    def test_stream_playback_emits_bounded_ordered_lifecycle_events(self) -> None:
+        events = []
+        text = "First streamed sentence contains enough bounded detail to occupy one playback chunk safely. Second streamed sentence also contains enough bounded detail to occupy the next playback chunk safely."
+        self.voice.limits = replace(self.voice.limits, max_spoken_response_length=30)
+        with patch.object(self.adapter, "synthesize_interruptible", side_effect=lambda request, _stop_event: self.completed(request)):
+            self.voice.stream_playback(text, on_event=events.append)
+            self.wait_for(PlaybackState.COMPLETED)
+        event_types = [event.event_type for event in events]
+        self.assertEqual(event_types[0], "start")
+        self.assertEqual(event_types[-1], "playback")
+        chunk_count = event_types.count("chunk_started")
+        self.assertGreaterEqual(chunk_count, 2)
+        self.assertEqual(event_types.count("chunk_completed"), chunk_count)
+        self.assertEqual([event.chunk_index for event in events if event.event_type == "chunk_started"], list(range(1, chunk_count + 1)))
+        self.assertTrue(all(not hasattr(event, "text") for event in events))
+        history = self.voice.playback_events()
+        self.assertEqual([item["action"] for item in history if item["action"].startswith("chunk_")], [action for _ in range(chunk_count) for action in ("chunk_started", "chunk_completed")])
+
+    def test_stream_event_handler_failure_does_not_break_playback(self) -> None:
+        def broken(_event):
+            raise RuntimeError("observer failure")
+        with patch.object(self.adapter, "synthesize_interruptible", side_effect=lambda request, _stop_event: self.completed(request)):
+            self.voice.stream_playback("A safe streamed response.", on_event=broken)
+            self.wait_for(PlaybackState.COMPLETED)
+        self.assertEqual(self.voice.playback_status()["state"], PlaybackState.COMPLETED.value)
+
     def test_shutdown_stops_worker_without_audio_files(self) -> None:
         entered = threading.Event()
         def blocking(request: object, stop_event: threading.Event) -> SpeechSynthesisResult:

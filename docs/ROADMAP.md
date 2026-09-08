@@ -1,6 +1,6 @@
 # Roadmap
 
-- Pre-old-phone foundation steps 2-20 - implemented locally as bounded worker discovery, adapters, model metadata, Goal/Work coordination, worktree plans, structured communication, and scoped context. The exact next action is Roadmap Step 21; it has not started. This does not reorder the roadmap or start Phase 7/old-phone implementation.
+- Engineering roadmap reconciliation: Steps 21-62 are evidenced in the current local working tree and indexed by [`ENGINEERING_ROADMAP_1_122.md`](ENGINEERING_ROADMAP_1_122.md). Steps 1-20 and 64-122 remain `UNKNOWN / NOT RECOVERED` at the individual-definition level where repository evidence is absent. Step 63 is `BLOCKED_PENDING_CANONICAL_STEP_63`; the supplied later-roadmap summary is provisional context only. Prompt/Phase numbering remains separate from Engineering Step numbering.
 
 - Prompts 86-100 - Phase 6 local tooling, integration, hardening, and production-readiness validation: implemented in order. Optional adapters remain degraded/unconfigured, no release was created, and Phase 7 was not started.
 
@@ -159,3 +159,7 @@ The master product vision in [`JARVIS_USE_CASES.md`](JARVIS_USE_CASES.md) still 
 - Update `CURRENT_STATUS.md`, `PROJECT_HEALTH.md`, `project_health.json`, and `CHANGELOG.md` with every release-worthy change.
 - Do not advance status based only on architecture or mocked tests.
 - Keep the CLI usable when optional providers, models, sync, vision, image generation, or automation are unavailable.
+
+## Local Steps 21-62 Checkpoint
+
+Roadmap Steps 21-62 are implemented in the current local working tree to the evidence-based levels recorded in [`ROADMAP_STEPS_21_62.md`](ROADMAP_STEPS_21_62.md). This checkpoint adds bounded assurance/control-room, research, document/OCR, RAG/vector, governed-memory, and provider-neutral voice foundations without changing milestone order. Optional backends remain degraded or unconfigured where absent, physical push-to-talk acceptance remains pending, and Step 63 has not started.

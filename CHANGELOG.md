@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased - Roadmap Steps 21-62 Local Foundation
+
+- Added the canonical Engineering Steps 1-122 reconciliation ledger and an Obsidian-compatible Markdown project-memory mirror. Step 62 remains the latest evidenced checkpoint; Step 63 is not implemented because its authoritative definition was not recovered.
+- Preserved the supplied broad architecture and approximate later-roadmap outline as provisional recovery context; it does not authorize Step 63 implementation.
+- Step 63 recovered engineering foundation: added bounded metadata-only voice playback lifecycle events and observer-safe streaming progress without continuous listening or cloud dependencies.
+
+- Added worker checkpoint/recovery, structured review, verification, bounded rework, candidate gating, and proof-of-work evidence under JARVIS authority.
+- Added an operational localhost Control Room backend and UI for bounded board, DAG, worker, evidence, approval, provider, and activity inspection.
+- Added governed crawler contracts, source verification, citation provenance, bounded deep-research coordination, and prompt-injection handling.
+- Added a canonical document model, parser/OCR routing, optional Docling/Marker/Paddle adapters, built-in bounded PDF/DOCX/PPTX extraction, and grounded QA/summarization.
+- Added a persistent provenance-aware RAG path, optional Qdrant/Chroma/FAISS contracts, deterministic local embeddings/reranking, and lexical fallback.
+- Added explicit session/project/knowledge/personal memory scopes, governed lifecycle controls, and Mem0/Graphiti adapters under Memory Intelligence authority.
+- Added provider-neutral Faster-Whisper/Vosk and Piper/SAPI routing plus explicit push-to-talk commands with bounded temporary audio and no transcript persistence.
+- Optional provider packages remain unconfigured where absent, physical PTT validation remains pending, and no automatic merge, push, release, cloud provider, hidden listening, or Step 63 work was added.
+
 ## Unreleased - Pre-Old-Phone Foundation Steps 2-20
 
 - Added a machine-readable external-worker inventory and a common metadata/plan-only adapter contract for Codex, Hermes, OpenCode, Aider, Munder, and future workers.
@@ -9,7 +24,7 @@
 - Added approval-delegated `jarvis/task-...` worktree plans, structured worker messages, and provenance-aware scoped context with personal references excluded by default.
 - Added bounded `worker` and `work` CLI diagnostics and tests; external execution, auto-merge, cloud enablement, hidden context sharing, Phase 7, and old-phone work remain disabled.
 - Verified Codex login metadata, Hermes health, seven dynamic OpenCode models, an isolated no-tool OpenCode smoke response, and authoritative Ollama-first routing without exposing private executable paths.
-- Final verification passes 53 focused tests, 362 broader regression tests plus 129 subtests, and 2,192 full-suite tests plus 331 subtests with zero failures.
+- Earlier checkpoint verification passed 53 focused tests, 362 broader regression tests plus 129 subtests, and 2,192 full-suite tests plus 331 subtests. The latest local verification supersedes that aggregate with 2,307 full-suite tests plus 331 subtests and zero failures.
 
 ## Unreleased - Phase 6 Local Tooling and Integration Platform
 
